@@ -4,7 +4,7 @@ public class PlayerTransform : MonoBehaviour
 {
     PlayerController pc;
     [SerializeField] private float timer = 0f;
-    private float timerTarget = 5f;
+    private float timerTarget = 10f;
     private void Awake()
     {
         pc = GetComponent<PlayerController>();
@@ -49,6 +49,7 @@ public class PlayerTransform : MonoBehaviour
     void BackToHuman()
     {
         if (pc.IsCurrentlyTransforming) return;
+        pc.PlayerMovement.IsBlocking = false;
         pc.IsCurrentlyTransforming = true;
         pc.Animator.SetTrigger("transformToHuman");
    

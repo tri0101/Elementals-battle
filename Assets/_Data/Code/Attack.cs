@@ -16,6 +16,12 @@ public class Attack : MonoBehaviour
         {
             if(other.transform.parent.parent.tag == "Enemy")
             {
+                EnemyReceiveDamage enemyReceiveDamage = other.gameObject.GetComponent<EnemyReceiveDamage>();
+                enemyReceiveDamage.ReceiveDamage(attackDamage);
+                enemyReceiveDamage.CallKnockBack(knockBack);
+            }
+            else
+            {
                 PlayerReceiveDamage playerReceiveDamage = other.gameObject.GetComponent<PlayerReceiveDamage>();
                 playerReceiveDamage.ReceiveDamage(attackDamage);
                 playerReceiveDamage.CallKnockBack(knockBack);

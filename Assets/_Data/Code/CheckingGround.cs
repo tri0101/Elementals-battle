@@ -11,6 +11,7 @@ public class CheckingGround : MonoBehaviour
     CapsuleCollider2D touchingCol;
   
     PlayerController pc;
+    EnemyController ec;
     RaycastHit2D[] groundHits = new RaycastHit2D[5];
     RaycastHit2D[] wallHits = new RaycastHit2D[5];
     RaycastHit2D[] ceilingHits = new RaycastHit2D[5];
@@ -27,8 +28,15 @@ public class CheckingGround : MonoBehaviour
     public bool IsOnCeiling => isOnCeiling;
     private void Awake()
     {
-        pc = GetComponent<PlayerController>();
-        touchingCol = transform.GetChild(0).Find("ColliderReceive").GetComponent<CapsuleCollider2D>();
+        if(transform.tag == "Player")
+        {
+            pc = GetComponent<PlayerController>();
+        }
+        else
+        {
+            ec = GetComponent<EnemyController>();
+        }
+            touchingCol = transform.GetChild(0).Find("ColliderReceive").GetComponent<CapsuleCollider2D>();
     }
 
     //void Update()
@@ -60,9 +68,19 @@ public class CheckingGround : MonoBehaviour
         isGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayDistance) > 0;
         isOnWall = touchingCol.Cast(checkWallDiretion, castFilter,wallHits, wallCheckDistance) >0;
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
-        pc.Animator.SetBool("isGrounded", isGrounded);
-        pc.Animator.SetBool("isOnWall", isOnWall);
-        pc.Animator.SetBool("isOnCeiling", isOnCeiling);
+        if(transform.tag == "Player")
+        {
+            pc.Animator.SetBool("isGrounded", isGrounded);
+            pc.Animator.SetBool("isOnWall", isOnWall);
+            pc.Animator.SetBool("isOnCeiling", isOnCeiling);
+        }
+        else
+        {
+            ec.Animator.SetBool("isGrounded", isGrounded);
+            ec.Animator.SetBool("isOnWall", isOnWall);
+            ec.Animator.SetBool("isOnCeiling", isOnCeiling);
+        }
+       
     }
 
 }

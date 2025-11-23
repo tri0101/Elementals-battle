@@ -4,11 +4,17 @@ public class PlayerEvent : MonoBehaviour
 {
     public LoadNormalAttack lnA;
     PlayerController pc;
-
+    EnemyController ec;
     private void Awake()
     {
-        
-        pc = transform.parent.GetComponent<PlayerController>();
+        if(transform.parent.tag == "Player")
+        {
+            pc = transform.parent.GetComponent<PlayerController>();
+        }
+        else
+        {
+            ec = transform.parent.GetComponent<EnemyController>();  
+        }
     }
 
  
@@ -62,15 +68,38 @@ public class PlayerEvent : MonoBehaviour
     }
     public void SetBoolTransform()
     {
-        pc.HasBeenTransformed = true;
+
+        if(transform.parent.tag == "Player")
+        {
+            pc.HasBeenTransformed = true;
+        }
+        else
+        {
+            ec.HasBeenTransformed = true;
+        }
+        
     }
     public void SetFalseTransform()
     {
-        pc.HasBeenTransformed = false;
+        if (transform.parent.tag == "Player")
+        {
+            pc.HasBeenTransformed = false;
+        }
+        else
+        {
+            ec.HasBeenTransformed = false;
+        }
     }
     public void DisableNormal()
     {
-        pc.NormalT.gameObject.SetActive(false);
+        if(transform.parent.tag == "Player")
+        {
+            pc.NormalT.gameObject.SetActive(false);
+        }
+        else
+        {
+            ec.NormalT.gameObject.SetActive(false);
+        }
     }
     //public void EnableTransform()
     //{
@@ -78,7 +107,14 @@ public class PlayerEvent : MonoBehaviour
     //}
     public void EnableNormal()
     {
-        pc.NormalT.gameObject.SetActive(true);
+        if(transform.parent.tag == "Player")
+        {
+            pc.NormalT.gameObject.SetActive(true);
+        }
+        else
+        {
+            ec.NormalT.gameObject.SetActive(true);
+        }
     }
     //public void DisableTransform()
     //{
@@ -86,6 +122,14 @@ public class PlayerEvent : MonoBehaviour
     //}
     public void SetFalseCurrentlyTransform()
     {
-        pc.IsCurrentlyTransforming = false;
+        if(transform.parent.tag == "Player")
+        {
+            pc.IsCurrentlyTransforming = false;
+        }
+        else
+        {
+            ec.IsCurrentlyTransforming = false;
+        }
+
     }
 }
