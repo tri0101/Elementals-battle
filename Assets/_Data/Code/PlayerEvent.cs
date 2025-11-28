@@ -1,13 +1,16 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 public class PlayerEvent : MonoBehaviour
 {
     public LoadNormalAttack lnA;
     PlayerController pc;
     EnemyController ec;
+  
+
     private void Awake()
     {
-        if(transform.parent.tag == "Player")
+        if(transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc = transform.parent.GetComponent<PlayerController>();
         }
@@ -66,10 +69,42 @@ public class PlayerEvent : MonoBehaviour
 
         transform.parent.localPosition = endPos;
     }
+    public void CallSlideToPositionBySpeed(Vector3 targetMove, float speed)
+    {
+        // Lấy startPos hiện tại
+        Vector3 startPos = transform.parent.localPosition;
+
+        // Tính endPos dựa vào hướng scale
+        Vector3 endPos;
+        if (transform.parent.localScale.x > 0)
+            endPos = startPos + new Vector3(targetMove.x, 0, 0);
+        else
+            endPos = startPos + new Vector3(-targetMove.x, 0, 0);
+
+        StartCoroutine(SlideToPositionFixedSpeed(endPos, speed));
+    }
+    private IEnumerator SlideToPositionFixedSpeed(Vector3 endPos, float speed)
+    {
+        while ((pc.Rb.transform.localPosition - endPos).sqrMagnitude > 0.001f)
+        {
+            Vector2 nextPos = Vector2.MoveTowards(
+                pc.Rb.transform.localPosition,
+                endPos,
+                speed * Time.fixedDeltaTime // PHẢI DÙNG fixedDeltaTime
+            );
+
+            pc.Rb.MovePosition(nextPos);
+
+            yield return new WaitForFixedUpdate(); // PHẢI CHỜ FRAME PHYSICS
+        }
+
+        pc.Rb.transform.localPosition = endPos;
+    }
+
     public void SetBoolTransform()
     {
 
-        if(transform.parent.tag == "Player")
+        if(transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc.HasBeenTransformed = true;
         }
@@ -81,7 +116,7 @@ public class PlayerEvent : MonoBehaviour
     }
     public void SetFalseTransform()
     {
-        if (transform.parent.tag == "Player")
+        if (transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc.HasBeenTransformed = false;
         }
@@ -92,7 +127,7 @@ public class PlayerEvent : MonoBehaviour
     }
     public void DisableNormal()
     {
-        if(transform.parent.tag == "Player")
+        if(transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc.NormalT.gameObject.SetActive(false);
         }
@@ -101,13 +136,10 @@ public class PlayerEvent : MonoBehaviour
             ec.NormalT.gameObject.SetActive(false);
         }
     }
-    //public void EnableTransform()
-    //{
-    //    pc.TransformT.gameObject.SetActive(true);
-    //}
+
     public void EnableNormal()
     {
-        if(transform.parent.tag == "Player")
+        if(transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc.NormalT.gameObject.SetActive(true);
         }
@@ -116,13 +148,10 @@ public class PlayerEvent : MonoBehaviour
             ec.NormalT.gameObject.SetActive(true);
         }
     }
-    //public void DisableTransform()
-    //{
-    //    pc.TransformT.gameObject.SetActive(false);
-    //}
+ 
     public void SetFalseCurrentlyTransform()
     {
-        if(transform.parent.tag == "Player")
+        if(transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc.IsCurrentlyTransforming = false;
         }
@@ -131,5 +160,27 @@ public class PlayerEvent : MonoBehaviour
             ec.IsCurrentlyTransforming = false;
         }
 
+    }
+   public void IsFinalAttack()
+    {
+        if (pc.PlayerReceiveDamage.IsFinalAttack)
+        {
+            StartCoroutine(PauseAnimCoroutine(pc.PlayerReceiveDamage.DurationFinalAttack));
+        }
+    }
+
+    private IEnumerator PauseAnimCoroutine(float duration)
+    {
+        pc.Animator.speed = 0f;                 // Dừng animation
+        yield return new WaitForSeconds(duration); // Đợi X giây
+        pc.Animator.speed = 1f;                 // Chạy lại bình thường
+    }
+    public void ResetIsFinalAttack()
+    {
+        if (pc.PlayerReceiveDamage.IsFinalAttack)
+        {
+            pc.PlayerReceiveDamage.ResetDurationAttack();
+        }
+        
     }
 }

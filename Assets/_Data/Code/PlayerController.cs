@@ -31,6 +31,9 @@ public class PlayerController : MonoBehaviour
     public PlayerReceiveDamage PlayerReceiveDamage => prd;
     PlayerEvent pe;
     public PlayerEvent PlayerEvent => pe;
+    [Header("KeyBiding")]
+    [SerializeField] KeyBinding keyBiding;
+    public KeyBinding KeyBiding => keyBiding;
     [Header("State")]
     private bool hasBeenTransformed = false;
     public bool HasBeenTransformed
@@ -57,9 +60,10 @@ public class PlayerController : MonoBehaviour
         pt = GetComponent<PlayerTransform>();
         pe = transform.GetChild(0).GetComponent<PlayerEvent>();
         prd = transform.GetChild(0).Find("ColliderReceive").GetComponent<PlayerReceiveDamage>();
-        string targetTag = CompareTag("Player") ? "Enemy" : "Player";
+        string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
         GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
         enemy = enemyObj.transform;
+        
     }
     
 }

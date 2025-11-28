@@ -1,5 +1,6 @@
-using UnityEngine;
+using System;
 using System.Collections;
+using UnityEngine;
 
 public class CheckingGround : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class CheckingGround : MonoBehaviour
     public bool IsOnCeiling => isOnCeiling;
     private void Awake()
     {
-        if(transform.tag == "Player")
+        if(transform.tag == "Player1" || transform.tag == "Player2")
         {
             pc = GetComponent<PlayerController>();
         }
@@ -68,7 +69,7 @@ public class CheckingGround : MonoBehaviour
         isGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayDistance) > 0;
         isOnWall = touchingCol.Cast(checkWallDiretion, castFilter,wallHits, wallCheckDistance) >0;
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
-        if(transform.tag == "Player")
+        if(CompareTag("Player1") ||CompareTag("Player2"))
         {
             pc.Animator.SetBool("isGrounded", isGrounded);
             pc.Animator.SetBool("isOnWall", isOnWall);

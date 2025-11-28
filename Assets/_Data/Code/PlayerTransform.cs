@@ -5,6 +5,11 @@ public class PlayerTransform : MonoBehaviour
     PlayerController pc;
     [SerializeField] private float timer = 0f;
     private float timerTarget = 10f;
+    public bool CanTransform
+    {
+        get => pc.Animator.GetBool("canTransform");
+        set => pc.Animator.SetBool("canTransform", value);
+    }
     private void Awake()
     {
         pc = GetComponent<PlayerController>();
@@ -30,12 +35,12 @@ public class PlayerTransform : MonoBehaviour
     void TranformTo()
     {
 
-        if (pc.HasBeenTransformed || pc.IsCurrentlyTransforming)
+        if (pc.HasBeenTransformed || pc.IsCurrentlyTransforming || !CanTransform)
         {
             return;
         }
 
-        if (Input.GetKeyDown(KeyCode.U))
+        if (Input.GetKeyDown(pc.KeyBiding.transformKey))
         {
 
             pc.IsCurrentlyTransforming = true;

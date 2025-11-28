@@ -5,11 +5,11 @@ using UnityEngine.Rendering;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
-    private float moveSpeed = 5f;
-    private float jumpForce = 7f;
-    private float airWalkSpeed = 3f;
-    private float dashPower = 20f;
-    private float dashDuration = 0.35f;
+    private float moveSpeed;
+    private float jumpForce;
+    private float airWalkSpeed;
+    private float dashPower;
+    private float dashDuration;
     private float dashCooldown = 0.5f;
     private Vector2 dashDirection;
     //private bool isBlocking = false;
@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     PlayerController pc;
- 
+    
     public bool CanMove
     {
        
@@ -45,10 +45,20 @@ public class PlayerMovement : MonoBehaviour
         get => pc.Animator.GetBool("canDash");
         set => pc.Animator.SetBool("canDash", value);
     }
+    public bool CanJump
+    {
+        get => pc.Animator.GetBool("canJump");
+        set => pc.Animator.SetBool("canJump", value);
+    }
 
     private void Awake()
     {
         pc = GetComponent<PlayerController>();
+        moveSpeed = pc.PlayerInfo.moveSpeed;
+        jumpForce = pc.PlayerInfo.jumpForce;
+        airWalkSpeed = pc.PlayerInfo.airWalkSpeed;
+        dashPower = pc.PlayerInfo.dashPower;
+        dashDuration = pc.PlayerInfo.dashDuration;
     }
 
     public float CurrentSpeed
@@ -81,13 +91,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(pc.KeyBiding.blockKey))
         {
             StartBlock();
         }
 
         // Nhả S → Hủy Block
-        if (Input.GetKeyUp(KeyCode.S))
+        if (Input.GetKeyUp(pc.KeyBiding.blockKey))
         {
             StopBlock();
         }
@@ -95,11 +105,11 @@ public class PlayerMovement : MonoBehaviour
         //Move
         Move();
         // Jump
-        if (Input.GetKeyDown(KeyCode.K) && pc.CheckingGround.IsGrounded && CanMove)
+        if (Input.GetKeyDown(pc.KeyBiding.jumpKey) && pc.CheckingGround.IsGrounded && CanMove && CanJump)
         {
             Jump();
         }
-        if (Input.GetKeyDown(KeyCode.L) )
+        if (Input.GetKeyDown(pc.KeyBiding.dashKey) )
         {
             StartDash();
         }
@@ -110,7 +120,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!pc.PlayerReceiveDamage.IsAlive) return;
         // Input
-        moveX = Input.GetAxisRaw("Horizontal");
+        moveX = 0;   
+
+        if (Input.GetKey(pc.KeyBiding.leftMove))
+            moveX = -1;
+        else if (Input.GetKey(pc.KeyBiding.rightMove))
+            moveX = 1;
+        else
+            moveX = 0;
+
+
         isWalking = moveX != 0;
 
 
