@@ -5,7 +5,8 @@ public class Attack : MonoBehaviour
     [SerializeField] private AttackInfo attackInfo;
     float attackDamage;
     Vector3 knockBack;
-    float duration;
+    float durationKnock;
+    float durationStopping;
     float speed;
     [SerializeField] string myTag;
 
@@ -13,7 +14,8 @@ public class Attack : MonoBehaviour
     {
         attackDamage = attackInfo.damageSend;
         knockBack = attackInfo.knockBack;
-        duration = attackInfo.duration;
+        durationKnock = attackInfo.durationKnockBack;
+        durationStopping = attackInfo.durationStopping;
         myTag = transform.parent.parent.parent.tag;
     }
     private void OnTriggerEnter2D(Collider2D other)
@@ -112,10 +114,12 @@ public class Attack : MonoBehaviour
                 //}
                 if (transform.name.Contains("Attack_Final"))
                 {
-                    player.CallIsFinal(duration);
+                    player.CallIsFinal();
                 }
+                player.CallStopAnim(durationStopping);
+
                 player.ReceiveDamage(attackDamage);
-                player.CallKnockBack(knockBack, duration);
+                player.CallKnockBack(knockBack, durationKnock);
                 
             }
 

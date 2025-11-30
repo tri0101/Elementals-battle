@@ -56,19 +56,25 @@ public class PlayerEvent : MonoBehaviour
 
         StartCoroutine(SlideToPosition(startPos, endPos, duration));
     }
-    private IEnumerator SlideToPosition(Vector3 startPos, Vector3 endPos, float duration)
+    private IEnumerator SlideToPosition(Vector2 startPos, Vector2 endPos, float duration)
     {
         float elapsed = 0f;
 
         while (elapsed < duration)
         {
-            transform.parent.localPosition = Vector3.Lerp(startPos, endPos, elapsed / duration);
-            elapsed += Time.deltaTime;
-            yield return null;
+            float t = elapsed / duration;
+            Vector2 newPos = Vector2.Lerp(startPos, endPos, t);
+
+            pc.Rb.MovePosition(newPos);  
+
+            elapsed += Time.fixedDeltaTime;
+            yield return new WaitForFixedUpdate(); 
         }
 
-        transform.parent.localPosition = endPos;
+        pc.Rb.MovePosition(endPos); 
     }
+
+
     public void CallSlideToPositionBySpeed(Vector3 targetMove, float speed)
     {
         // Lấy startPos hiện tại
@@ -161,9 +167,9 @@ public class PlayerEvent : MonoBehaviour
         }
 
     }
-   public void IsFinalAttack()
+   public void IsStopAnim()
     {
-        if (pc.PlayerReceiveDamage.IsFinalAttack)
+        if (pc.PlayerReceiveDamage.IsStopAnim)
         {
             StartCoroutine(PauseAnimCoroutine(pc.PlayerReceiveDamage.DurationFinalAttack));
         }

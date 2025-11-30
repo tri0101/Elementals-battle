@@ -91,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(pc.KeyBiding.blockKey))
+        if (Input.GetKey(pc.KeyBiding.blockKey) && pc.CheckingGround.IsGrounded)
         {
             StartBlock();
         }

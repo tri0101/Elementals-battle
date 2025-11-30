@@ -14,7 +14,7 @@ public class PlayerAttack : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(pc.KeyBiding.attackKey) && CanAttack)
+        if (Input.GetKeyDown(pc.KeyBiding.attackKey) && CanAttack && !pc.PlayerReceiveDamage.IsHit)
         {
             Attack();
         }
