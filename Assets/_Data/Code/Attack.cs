@@ -9,7 +9,7 @@ public class Attack : MonoBehaviour
     float durationStopping;
     float speed;
     [SerializeField] string myTag;
-
+    
     private void Awake()
     {
         attackDamage = attackInfo.damageSend;
@@ -17,55 +17,13 @@ public class Attack : MonoBehaviour
         durationKnock = attackInfo.durationKnockBack;
         durationStopping = attackInfo.durationStopping;
         myTag = transform.parent.parent.parent.tag;
+        ;
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.tag == "ReceiveField")
         {
-            //if (myTag.StartsWith("Player"))
-            //{
-            //    if (other.transform.parent.parent.tag == "Enemy")
-            //    {
-            //        EnemyReceiveDamage enemyReceiveDamage = other.gameObject.GetComponent<EnemyReceiveDamage>();
-            //        enemyReceiveDamage.ReceiveDamage(attackDamage);
-            //        enemyReceiveDamage.CallKnockBack(knockBack);
-            //    }
-            //    else if(myTag == "Player1")
-            //    {
-            //        if(other.transform.parent.parent.tag == "Player2")
-            //        {
-            //            PlayerReceiveDamage playerReceiveDamage = other.gameObject.GetComponent<PlayerReceiveDamage>();
-            //            playerReceiveDamage.ReceiveDamage(attackDamage);
-            //            playerReceiveDamage.CallKnockBack(knockBack);
-            //        }
-
-            //    }
-            //    else if (myTag == "Player2")
-            //    {
-            //        if (other.transform.parent.parent.tag == "Player1")
-            //        {
-            //            PlayerReceiveDamage playerReceiveDamage = other.gameObject.GetComponent<PlayerReceiveDamage>();
-            //            playerReceiveDamage.ReceiveDamage(attackDamage);
-            //            playerReceiveDamage.CallKnockBack(knockBack);
-            //        }
-
-            //    }
-
-            //}
-            //else
-            //{
-
-            //    if (other.transform.parent.parent.tag.StartsWith("Player"))
-            //    {
-            //        PlayerReceiveDamage playerReceiveDamage = other.gameObject.GetComponent<PlayerReceiveDamage>();
-            //        playerReceiveDamage.ReceiveDamage(attackDamage);
-            //        playerReceiveDamage.CallKnockBack(knockBack);
-            //    }
-
-
-            //}
-
-
+            
 
             // Lấy tag đối tượng bị đánh
             string targetTag = other.transform.parent.parent.tag;
@@ -102,25 +60,30 @@ public class Attack : MonoBehaviour
             PlayerReceiveDamage player = other.GetComponent<PlayerReceiveDamage>();
             if (player != null)
             {
-                //player.ReceiveDamage(attackDamage);
-                //if (transform.name.Contains("Attack_4"))
-                //{
-                //    player.CallKnockBackBySpeed(knockBack, speed);
+                
 
-                //}
-                //else
-                //{
-                //    player.CallKnockBack(knockBack, duration);
-                //}
+
+                if (player.IsImmortal) return;
+                player.ReceiveDamage(attackDamage);
                 if (transform.name.Contains("Attack_Final"))
                 {
                     player.CallIsFinal();
                 }
-                player.CallStopAnim(durationStopping);
+                if (transform.name.Contains("Skill"))
+                {
+                    player.ApplyStatus(attackInfo.statusEffect);
+                }
+                else
+                {
+                    player.CallStopAnim(durationStopping);
+                }
 
-                player.ReceiveDamage(attackDamage);
-                player.CallKnockBack(knockBack, durationKnock);
+                    
+
                 
+                player.CallKnockBack(knockBack, durationKnock);
+               
+
             }
 
 

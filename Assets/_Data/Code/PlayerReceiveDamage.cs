@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using static UnityEditor.U2D.ScriptablePacker;
 public class PlayerReceiveDamage : MonoBehaviour
 {
     PlayerController pc;
@@ -10,7 +11,7 @@ public class PlayerReceiveDamage : MonoBehaviour
     [SerializeField] private bool isFinalAttack = false;
     [SerializeField] private bool isStopAnim = false;
     [SerializeField] private float durationFinalAttack;
-
+    public string layerPlayer;
 
 
     public bool IsFinalAttack
@@ -51,6 +52,7 @@ public class PlayerReceiveDamage : MonoBehaviour
     private void Start()
     {
         capsuleCollider = pc.CheckingGround.TouchingCol;
+        layerPlayer = LayerMask.LayerToName(gameObject.layer);
     }
     public void ReceiveDamage(float damage)
     {
@@ -126,16 +128,21 @@ public class PlayerReceiveDamage : MonoBehaviour
     {
        
         durationFinalAttack = 0f;
+        isStopAnim = false;
+       
+        
+    }
+    public void CheckImmortal()
+    {
         if (isFinalAttack)
         {
             StartCoroutine(FinalAttackImmortalCoroutine());
         }
-        
     }
     private IEnumerator FinalAttackImmortalCoroutine()
     {
         IsImmortal = true; // ✅ Bật bất tử
-        yield return new WaitForSeconds(5f);   // ✅ 0.15 giây
+        yield return new WaitForSeconds(0.75f);   // ✅ 0.15 giây
         IsImmortal = false; // ✅ Tắt bất tử
         isFinalAttack = false; // ✅ Reset Final Attack
     }
@@ -164,14 +171,14 @@ public class PlayerReceiveDamage : MonoBehaviour
             
             return;
         }
-
+     
         // Lấy tag của đối tượng cha (Rigidbody root)
         if (pc.CheckingGround.IsOnPlayer)
         {
-           
+
             Physics2D.IgnoreCollision(capsuleCollider, col.collider, true);
         }
-        else if(pc.CheckingGround.IsXJumpPlayer && !pc.CheckingGround.IsGrounded)
+        else if (pc.CheckingGround.IsXJumpPlayer && !pc.CheckingGround.IsGrounded)
         {
             Physics2D.IgnoreCollision(capsuleCollider, col.collider, true);
         }
@@ -195,5 +202,40 @@ public class PlayerReceiveDamage : MonoBehaviour
 
     }
 
+    public void ApplyStatus(StatusEffect status)
+    {
+        pc.StatusEffect = status;
+        if(status == StatusEffect.Frozen)
+        {
+            StartFrozen();
+        }
+    }
+    public void StartFrozen()
+    {
+        StartCoroutine(FrozenCoroutine());
+    }
+    private IEnumerator FrozenCoroutine()
+    {
+        pc.Animator.SetTrigger("Hit");
+        yield return new WaitForSeconds(0.1f);
+        IsImmortal = true;
+        // Lưu lại màu cũ
+        Color originalColor = pc.SpriteRenderer.color;
+        pc.Animator.speed = 0f;
+        // Màu frozen: RGB(32,45,211) → Unity Color dùng 0~1 nên chia 255
+        Color frozenColor = new Color(32f / 255f, 45f / 255f, 211f / 255f);
 
+        // đổi màu
+        pc.SpriteRenderer.color = frozenColor;
+
+        // chờ 5 giây
+        yield return new WaitForSeconds(5f);
+
+        // trả về màu cũ
+        pc.SpriteRenderer.color = originalColor;
+        pc.Animator.speed = 1f;
+        IsImmortal = false;
+        // trạng thái về bình thường
+        ApplyStatus(StatusEffect.Normal);
+    }
 }

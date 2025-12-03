@@ -18,9 +18,19 @@ public class PlayerAttack : MonoBehaviour
         {
             Attack();
         }
+        else if(Input.GetKeyDown(pc.KeyBiding.rangedAttackKey) && CanAttack && !pc.PlayerReceiveDamage.IsHit)
+        {
+            
+            RangedAttack();
+            
+        }
     }
     private void Attack()
     {
         pc.Animator.SetTrigger("attack");
+    }
+    private void RangedAttack()
+    {
+        pc.Animator.SetTrigger("rangedAttack");
     }
 }

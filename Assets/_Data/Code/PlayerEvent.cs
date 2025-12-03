@@ -10,7 +10,9 @@ public class PlayerEvent : MonoBehaviour
 
     private void Awake()
     {
-        if(transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
+       
+
+        if (transform.parent.tag == "Player1" || transform.parent.tag == "Player2")
         {
             pc = transform.parent.GetComponent<PlayerController>();
         }
@@ -18,6 +20,7 @@ public class PlayerEvent : MonoBehaviour
         {
             ec = transform.parent.GetComponent<EnemyController>();  
         }
+
     }
 
  
@@ -165,10 +168,12 @@ public class PlayerEvent : MonoBehaviour
         {
             ec.IsCurrentlyTransforming = false;
         }
-
+        
     }
    public void IsStopAnim()
     {
+        if (pc.StatusEffect != StatusEffect.Normal) return;
+        
         if (pc.PlayerReceiveDamage.IsStopAnim)
         {
             StartCoroutine(PauseAnimCoroutine(pc.PlayerReceiveDamage.DurationFinalAttack));
@@ -181,6 +186,10 @@ public class PlayerEvent : MonoBehaviour
         yield return new WaitForSeconds(duration); // Đợi X giây
         pc.Animator.speed = 1f;                 // Chạy lại bình thường
     }
+    public void IsStopAnimAttack()
+    {
+        StartCoroutine(PauseAnimCoroutine(0.25f));
+    }
     public void ResetIsFinalAttack()
     {
         if (pc.PlayerReceiveDamage.IsFinalAttack)
@@ -188,5 +197,26 @@ public class PlayerEvent : MonoBehaviour
             pc.PlayerReceiveDamage.ResetDurationAttack();
         }
         
+    }
+    public void CallCheckImmortal()
+    {
+        pc.PlayerReceiveDamage.CheckImmortal();
+    }
+    public void EnableTriggerCollider()
+    {
+        pc.CheckingGround.TouchingCol.isTrigger = true;
+    }
+    public void DisableTriggerCollider()
+    {
+        pc.CheckingGround.TouchingCol.isTrigger = false;
+    }
+    public void ChangeLayerWhenDash()
+    {
+        pc.PlayerReceiveDamage.gameObject.layer = LayerMask.NameToLayer("DashPlayer");
+        
+    }
+    public void ReturnlayerExitDash()
+    {
+        pc.PlayerReceiveDamage.gameObject.layer = LayerMask.NameToLayer(pc.PlayerReceiveDamage.layerPlayer);
     }
 }

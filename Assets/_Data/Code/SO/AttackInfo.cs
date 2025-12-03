@@ -8,4 +8,5 @@ public class AttackInfo : ScriptableObject
     public float durationKnockBack;
     public float durationStopping;
     public float speed;
+    public StatusEffect statusEffect;
 }

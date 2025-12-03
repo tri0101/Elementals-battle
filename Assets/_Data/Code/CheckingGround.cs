@@ -90,6 +90,8 @@ public class CheckingGround : MonoBehaviour
             ec.Animator.SetBool("isOnWall", isOnWall);
             ec.Animator.SetBool("isOnCeiling", isOnCeiling);
         }
+        
+       
        
     }
 

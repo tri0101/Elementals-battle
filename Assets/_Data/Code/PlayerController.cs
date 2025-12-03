@@ -6,7 +6,8 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D Rb => rb;
     [SerializeField] private Animator animator;
     public Animator Animator => animator;
-
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    public SpriteRenderer SpriteRenderer => spriteRenderer;
 
     [SerializeField] private Transform normalT;
     public Transform NormalT => normalT;
@@ -15,7 +16,7 @@ public class PlayerController : MonoBehaviour
     public PlayerInfo PlayerInfo => playerInfo;
     [SerializeField] private Transform enemy;
     public Transform Enemy => enemy;
-    
+
     [Header("Staff")]
     PlayerMovement pm;
     public PlayerMovement PlayerMovement => pm;
@@ -34,6 +35,12 @@ public class PlayerController : MonoBehaviour
     [Header("KeyBiding")]
     [SerializeField] KeyBinding keyBiding;
     public KeyBinding KeyBiding => keyBiding;
+    [SerializeField] StatusEffect statusEffect;
+    public StatusEffect StatusEffect
+    {
+        get => statusEffect;
+        set => statusEffect = value;
+    }
     [Header("State")]
     private bool hasBeenTransformed = false;
     public bool HasBeenTransformed
@@ -52,6 +59,7 @@ public class PlayerController : MonoBehaviour
         normalT = transform.Find("Normal");
         //transformT = transform.Find("Transform");
         animator = normalT.GetComponent<Animator>();
+        spriteRenderer = normalT.GetComponent<SpriteRenderer>();
         //transformAnimator = transformT.GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         pm = GetComponent<PlayerMovement>();

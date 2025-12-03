@@ -143,6 +143,7 @@ public class PlayerMovement : MonoBehaviour
         if (!pc.PlayerReceiveDamage.IsAlive) return;
         pc.Rb.linearVelocity = new Vector2(pc.Rb.linearVelocity.x, jumpForce);
         pc.Animator.SetTrigger("isJump");
+        
     }
 
     void FixedUpdate()

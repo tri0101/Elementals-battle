@@ -4,7 +4,7 @@ public class PlayerTransform : MonoBehaviour
 {
     PlayerController pc;
     [SerializeField] private float timer = 0f;
-    private float timerTarget = 10f;
+    private float timerTarget = 30f;
     public bool CanTransform
     {
         get => pc.Animator.GetBool("canTransform");

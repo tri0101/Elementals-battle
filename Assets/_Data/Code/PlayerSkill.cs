@@ -9,7 +9,7 @@ public class PlayerSkill : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(pc.KeyBiding.skillKey))
+        if (Input.GetKeyDown(pc.KeyBiding.skillKey) && pc.Animator.GetFloat("yVelocity") == 0)
         {
             pc.Animator.SetTrigger("skill");
         }

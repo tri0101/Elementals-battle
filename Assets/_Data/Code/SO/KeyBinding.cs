@@ -7,6 +7,7 @@ public class KeyBinding : ScriptableObject
     public KeyCode blockKey;
     public KeyCode jumpKey;
     public KeyCode attackKey;
+    public KeyCode rangedAttackKey;
     public KeyCode dashKey;
     public KeyCode skillKey;
     public KeyCode transformKey;
