@@ -14,6 +14,7 @@ public class CheckingGround : MonoBehaviour
   
     PlayerController pc;
     EnemyController ec;
+
     RaycastHit2D[] groundHits = new RaycastHit2D[5];
     RaycastHit2D[] wallHits = new RaycastHit2D[5];
     RaycastHit2D[] ceilingHits = new RaycastHit2D[5];
@@ -40,10 +41,12 @@ public class CheckingGround : MonoBehaviour
         {
             pc = GetComponent<PlayerController>();
         }
-        else
+        
+        else if(transform.tag == "Enemy")
         {
             ec = GetComponent<EnemyController>();
         }
+       
             touchingCol = transform.GetChild(0).Find("ColliderReceive").GetComponent<CapsuleCollider2D>();
     }
 
@@ -73,8 +76,10 @@ public class CheckingGround : MonoBehaviour
     //}
      void FixedUpdate()
     {
-        isGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayDistance) > 0;
         isOnWall = touchingCol.Cast(checkWallDiretion, castFilter, wallHits, wallCheckDistance) > 0;
+
+        isGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayDistance) > 0;
+        
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
         isOnPlayer = touchingCol.Cast(Vector2.down, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayDistance) > 0;
         isXJumpPlayer = touchingCol.Cast(checkWallDiretion, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, wallCheckDistance) > 0;
