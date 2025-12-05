@@ -57,7 +57,11 @@ public class PlayerReceiveDamage : MonoBehaviour
     public void ReceiveDamage(float damage)
     {
         if (!IsAlive || IsImmortal || pc.PlayerMovement.IsBlocking) return;
-        pc.Animator.speed = 1f;
+        if(pc.StatusEffect == StatusEffect.Normal)
+        {
+            pc.Animator.speed = 1f;
+        }
+        
         pc.Animator.SetTrigger("Hit");
         health -= damage;
     
@@ -227,14 +231,17 @@ public class PlayerReceiveDamage : MonoBehaviour
 
         // đổi màu
         pc.SpriteRenderer.color = frozenColor;
-
+        yield return new WaitForSeconds(0.5f);
+        pc.Animator.speed = 0.5f;
+        IsImmortal = false;
+        pc.PlayerMovement.MinusProperty(0.3f);
         // chờ 5 giây
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(2f);
 
         // trả về màu cũ
         pc.SpriteRenderer.color = originalColor;
         pc.Animator.speed = 1f;
-        IsImmortal = false;
+        pc.PlayerMovement.PlusProperty(0.3f);
         // trạng thái về bình thường
         ApplyStatus(StatusEffect.Normal);
     }

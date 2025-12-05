@@ -6,8 +6,23 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     private float moveSpeed;
+    public float MoveSpeed
+    {
+        get => moveSpeed;
+        set => moveSpeed = value;
+    }
     private float jumpForce;
+    public float JumpForce
+    {
+        get => jumpForce;
+        set => jumpForce = value;
+    }
     private float airWalkSpeed;
+    public float AirWalkSpeed
+    {
+        get => airWalkSpeed;
+        set => airWalkSpeed = value;
+    }
     private float dashPower;
     private float dashDuration;
     private float dashCooldown = 0.5f;
@@ -261,5 +276,18 @@ public class PlayerMovement : MonoBehaviour
         //CanMove = true;
         //CanFlip = true;
     }
-
+    public void MinusProperty(float percent)
+    {
+        moveSpeed -= moveSpeed * percent; 
+        jumpForce -= jumpForce * percent;
+        airWalkSpeed -= airWalkSpeed * percent;
+        dashPower -= dashPower * percent;
+    }
+    public void PlusProperty(float percent)
+    {
+        moveSpeed += moveSpeed * percent;
+        jumpForce += jumpForce * percent;
+        airWalkSpeed += airWalkSpeed * percent;
+        dashPower += dashPower * percent;
+    }
 }

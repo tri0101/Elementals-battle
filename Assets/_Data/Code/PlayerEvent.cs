@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 public class PlayerEvent : MonoBehaviour
 {
@@ -193,9 +194,18 @@ public class PlayerEvent : MonoBehaviour
 
     private IEnumerator PauseAnimCoroutine(float duration)
     {
-        pc.Animator.speed = 0f;                 // Dừng animation
-        yield return new WaitForSeconds(duration); // Đợi X giây
-        pc.Animator.speed = 1f;                 // Chạy lại bình thường
+        pc.Animator.speed = 0f;                 
+        yield return new WaitForSeconds(duration);
+        if(pc.StatusEffect == StatusEffect.Frozen)
+        {
+            pc.Animator.speed = 0.5f;
+            
+        }
+        else
+        {
+            pc.Animator.speed = 1f;
+        }
+                  
     }
     public void IsStopAnimAttack()
     {
