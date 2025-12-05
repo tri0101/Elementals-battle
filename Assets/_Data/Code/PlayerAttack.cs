@@ -32,5 +32,6 @@ public class PlayerAttack : MonoBehaviour
     private void RangedAttack()
     {
         pc.Animator.SetTrigger("rangedAttack");
+       
     }
 }

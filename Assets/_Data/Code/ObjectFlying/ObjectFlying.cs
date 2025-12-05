@@ -9,7 +9,7 @@ public class ObjectFlying : MonoBehaviour
     public float speed = 5f;
 
     [Header("Direction")]
-    private bool isFlyingRight = true; 
+    private bool isFlyingRight => transform.localScale.x > 0 ? true : false;
 
     [SerializeField] private bool canFly = true; 
     public bool CanFly
@@ -23,7 +23,7 @@ public class ObjectFlying : MonoBehaviour
     private void Start()
     {
         objController = GetComponent<ObjectFlyingController>();
-        SetDirection(isFlyingRight);
+        SetDirection();
         
     }
 
@@ -41,9 +41,9 @@ public class ObjectFlying : MonoBehaviour
     {
         transform.position += moveDir * speed * Time.deltaTime;
     }
-    public void SetDirection(bool flyRight)
+    public void SetDirection()
     {
-        isFlyingRight = flyRight;
+       
 
         if (isFlyingRight)
         {

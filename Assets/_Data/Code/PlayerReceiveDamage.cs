@@ -80,11 +80,11 @@ public class PlayerReceiveDamage : MonoBehaviour
         }
         pc.PlayerEvent.CallSlideToPosition(transform.parent.parent.localPosition, knockPosition, duration);
     }
-    public void CallKnockBackBySpeed(Vector3 knockPosition, float speed)
-    {
-        if (IsImmortal) return;
-        pc.PlayerEvent.CallSlideToPositionBySpeed( knockPosition, speed);
-    }
+    //public void CallKnockBackBySpeed(Vector3 knockPosition, float speed)
+    //{
+    //    if (IsImmortal) return;
+    //    pc.PlayerEvent.CallSlideToPositionBySpeed( knockPosition, speed);
+    //}
     public void CallApplyKnockBack(Vector2 attackerPos)
     {
         

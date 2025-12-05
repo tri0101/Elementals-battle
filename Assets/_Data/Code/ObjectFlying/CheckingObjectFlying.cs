@@ -20,6 +20,16 @@ public class CheckingObjectFlying : MonoBehaviour
     {
         touchingCol = transform.GetChild(0).GetComponent<BoxCollider2D>();
         objController = GetComponent<ObjectFlyingController>();
+        if (transform.tag == "RangedAttackPlayer1")
+        {
+            castFilter.layerMask = LayerMask.GetMask("Player2");
+            transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("RangedPlayer1");
+        }
+        else if (transform.tag == "RangedAttackPlayer2")
+        {
+            castFilter.layerMask = LayerMask.GetMask("Player1");
+            transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("RangedPlayer2");
+        }
     }
     void FixedUpdate()
     {

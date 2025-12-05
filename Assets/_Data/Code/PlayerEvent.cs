@@ -44,18 +44,29 @@ public class PlayerEvent : MonoBehaviour
         StartCoroutine(SlideToPosition(startPos, endPos, duration));
 
     }
+    //==================================
+    //Tính giá trị endpos dựa trên scale
+    //==================================
+    public Vector3 ReturnEndPos(Vector3 startPos,Vector3 targetMove)
+    {
+        
+        if (transform.parent.localScale.x > 0)
+        {
+            return  startPos + new Vector3(targetMove.x, 0, 0);
+        }
+        else
+        {
+            return startPos + new Vector3(-targetMove.x, 0, 0);
+        }
+    }
+
+
+
     //dùng để gọi ở script khác
     public void CallSlideToPosition(Vector3 startPos, Vector3 targetMove, float duration)
     {
         Vector3 endPos;
-        if (transform.parent.localScale.x > 0)
-        {
-            endPos = startPos + new Vector3(targetMove.x, 0, 0);
-        }
-        else
-        {
-            endPos = startPos + new Vector3(-targetMove.x, 0, 0);
-        }
+        endPos = ReturnEndPos(startPos, targetMove);
 
         StartCoroutine(SlideToPosition(startPos, endPos, duration));
     }
@@ -78,37 +89,37 @@ public class PlayerEvent : MonoBehaviour
     }
 
 
-    public void CallSlideToPositionBySpeed(Vector3 targetMove, float speed)
-    {
-        // Lấy startPos hiện tại
-        Vector3 startPos = transform.parent.localPosition;
+    //public void CallSlideToPositionBySpeed(Vector3 targetMove, float speed)
+    //{
+    //    // Lấy startPos hiện tại
+    //    Vector3 startPos = transform.parent.localPosition;
 
-        // Tính endPos dựa vào hướng scale
-        Vector3 endPos;
-        if (transform.parent.localScale.x > 0)
-            endPos = startPos + new Vector3(targetMove.x, 0, 0);
-        else
-            endPos = startPos + new Vector3(-targetMove.x, 0, 0);
+    //    // Tính endPos dựa vào hướng scale
+    //    Vector3 endPos;
+    //    if (transform.parent.localScale.x > 0)
+    //        endPos = startPos + new Vector3(targetMove.x, 0, 0);
+    //    else
+    //        endPos = startPos + new Vector3(-targetMove.x, 0, 0);
 
-        StartCoroutine(SlideToPositionFixedSpeed(endPos, speed));
-    }
-    private IEnumerator SlideToPositionFixedSpeed(Vector3 endPos, float speed)
-    {
-        while ((pc.Rb.transform.localPosition - endPos).sqrMagnitude > 0.001f)
-        {
-            Vector2 nextPos = Vector2.MoveTowards(
-                pc.Rb.transform.localPosition,
-                endPos,
-                speed * Time.fixedDeltaTime // PHẢI DÙNG fixedDeltaTime
-            );
+    //    StartCoroutine(SlideToPositionFixedSpeed(endPos, speed));
+    //}
+    //private IEnumerator SlideToPositionFixedSpeed(Vector3 endPos, float speed)
+    //{
+    //    while ((pc.Rb.transform.localPosition - endPos).sqrMagnitude > 0.001f)
+    //    {
+    //        Vector2 nextPos = Vector2.MoveTowards(
+    //            pc.Rb.transform.localPosition,
+    //            endPos,
+    //            speed * Time.fixedDeltaTime // PHẢI DÙNG fixedDeltaTime
+    //        );
 
-            pc.Rb.MovePosition(nextPos);
+    //        pc.Rb.MovePosition(nextPos);
 
-            yield return new WaitForFixedUpdate(); // PHẢI CHỜ FRAME PHYSICS
-        }
+    //        yield return new WaitForFixedUpdate(); // PHẢI CHỜ FRAME PHYSICS
+    //    }
 
-        pc.Rb.transform.localPosition = endPos;
-    }
+    //    pc.Rb.transform.localPosition = endPos;
+    //}
 
     public void SetBoolTransform()
     {
@@ -218,5 +229,36 @@ public class PlayerEvent : MonoBehaviour
     public void ReturnlayerExitDash()
     {
         pc.PlayerReceiveDamage.gameObject.layer = LayerMask.NameToLayer(pc.PlayerReceiveDamage.layerPlayer);
+    }
+
+    public void SpawnRangedAttack(string nameObject)
+    {
+        float yDefault = lnA.spawnRangedPosition.y;
+        Vector3 startPos = transform.parent.position;
+        Vector3 endpos = ReturnEndPos(startPos, lnA.spawnRangedPosition);
+        Vector3 localScale = new Vector3(transform.parent.localScale.x > 0 ? 1: -1 , 1, 1);
+        endpos.y = yDefault;
+        string tag;
+        if(transform.parent.tag == "Player1")
+        {
+            tag = "RangedAttackPlayer1";
+        }
+        else
+        {
+            tag = "RangedAttackPlayer2";
+        }
+
+            RangedAttackSpawnPoint.instance.SpawnObjectAtPosition(nameObject, endpos, tag, localScale);
+    }
+
+
+    public void AddGravityScale(float addOn)
+    {
+        pc.Rb.gravityScale = addOn;
+    }
+    public void ReturnDefaultGravityScale()
+    {
+        if (pc.Rb.gravityScale == 1f) return;
+        pc.Rb.gravityScale = 1f;
     }
 }

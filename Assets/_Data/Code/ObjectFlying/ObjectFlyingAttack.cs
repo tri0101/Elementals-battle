@@ -28,6 +28,7 @@ public class ObjectFlyingAttack : MonoBehaviour
     {
         objController.Animator.SetTrigger("attack");
         objController.ObjectFlying.CanFly = false;
+        Destroy(gameObject, 0.5f);
     }
 
 }
