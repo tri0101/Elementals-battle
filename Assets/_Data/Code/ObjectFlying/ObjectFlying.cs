@@ -6,7 +6,7 @@ public class ObjectFlying : MonoBehaviour
     ObjectFlyingController objController;
     public ObjectFlyingController ObjController => objController;
     [Header("Speed")]
-    public float speed = 5f;
+    public float speed;
 
     [Header("Direction")]
     private bool isFlyingRight => transform.localScale.x > 0 ? true : false;
@@ -23,6 +23,7 @@ public class ObjectFlying : MonoBehaviour
     private void Start()
     {
         objController = GetComponent<ObjectFlyingController>();
+        speed = objController.ObjectFlyingSO.flySpeed;
         SetDirection();
         
     }

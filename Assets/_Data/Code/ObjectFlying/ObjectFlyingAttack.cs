@@ -5,6 +5,8 @@ public class ObjectFlyingAttack : MonoBehaviour
     ObjectFlyingController objController;
     public ObjectFlyingController ObjController => objController;
     private bool hasAttacked = false;
+
+    
     private void Start()
     {
         objController = GetComponent<ObjectFlyingController>();
@@ -14,7 +16,7 @@ public class ObjectFlyingAttack : MonoBehaviour
         if (objController.CheckingObjectFlying.IsOnWall && !hasAttacked)
         {
             hasAttacked = true;
-            StartCoroutine(DelayAttack(0.05f));
+            StartCoroutine(DelayAttack(objController.ObjectFlyingSO.delayAttack));
         }
     }
 

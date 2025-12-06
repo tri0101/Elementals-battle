@@ -132,11 +132,7 @@ public class Attack : MonoBehaviour
                 enemy.CallKnockBack(knockBack);
             }
 
-            // Nếu là ranged attack → destroy mũi tên
-            if (isRangedFromP1 || isRangedFromP2)
-            {
-                Destroy(gameObject);
-            }
+          
             return;
         }
 

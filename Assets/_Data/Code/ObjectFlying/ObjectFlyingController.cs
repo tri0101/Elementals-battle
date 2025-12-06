@@ -12,6 +12,10 @@ public class ObjectFlyingController : MonoBehaviour
 
     [SerializeField] private Animator animator;
     public Animator Animator => animator;
+
+
+    [SerializeField] private ObjectFlyingSO objSO;
+    public ObjectFlyingSO ObjectFlyingSO => objSO;
     private void Awake()
     {
         objF = GetComponent<ObjectFlying>();
