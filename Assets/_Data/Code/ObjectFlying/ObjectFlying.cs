@@ -1,9 +1,12 @@
 ﻿using NUnit.Framework.Internal;
 using UnityEngine;
-
+using System.Collections;
 public class ObjectFlying : MonoBehaviour
 {
     ObjectFlyingController objController;
+    private float despawnTimer;
+    private float timeToDespawn;
+    private bool despawnTriggered = false;
     public ObjectFlyingController ObjController => objController;
     [Header("Speed")]
     public float speed;
@@ -24,8 +27,9 @@ public class ObjectFlying : MonoBehaviour
     {
         objController = GetComponent<ObjectFlyingController>();
         speed = objController.ObjectFlyingSO.flySpeed;
+        timeToDespawn = objController.ObjectFlyingSO.timeToDespawn;
         SetDirection();
-        
+        StartCoroutine(DespawnAfterTime());
     }
 
     private void Update()
@@ -33,7 +37,16 @@ public class ObjectFlying : MonoBehaviour
         if (canFly)
         {
             Flying();
+            if (!despawnTriggered)
+            {
+                despawnTimer += Time.deltaTime;
 
+                if (despawnTimer >= timeToDespawn)
+                {
+                    despawnTriggered = true;
+                    Destroy(gameObject);
+                }
+            }
         }
       
     }
@@ -63,9 +76,14 @@ public class ObjectFlying : MonoBehaviour
             transform.localScale = scale;
         }
     }
+    private IEnumerator DespawnAfterTime()
+    {
+        yield return new WaitForSeconds(objController.ObjectFlyingSO.timeToDespawn);
 
-    
- 
+        Destroy(gameObject);
+    }
+
+
 
 
 }

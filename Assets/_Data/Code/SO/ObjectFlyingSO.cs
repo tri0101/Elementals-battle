@@ -5,4 +5,5 @@ public class ObjectFlyingSO : ScriptableObject
 {
     public float flySpeed;
     public float delayAttack;
+    public float timeToDespawn;
 }
