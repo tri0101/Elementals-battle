@@ -241,15 +241,29 @@ public class PlayerEvent : MonoBehaviour
         pc.PlayerReceiveDamage.gameObject.layer = LayerMask.NameToLayer(pc.PlayerReceiveDamage.layerPlayer);
     }
 
+    //public void SpawnRangedAttack(string nameObject)
+    //{
+    //    float yDefault = lnA.spawnRangedPosition.y;
+    //    Vector3 startPos = transform.parent.position;
+    //    Vector3 endpos = ReturnEndPos(startPos, lnA.spawnRangedPosition);
+    //    Vector3 localScale = new Vector3(transform.parent.localScale.x > 0 ? 1: -1 , 1, 1);
+    //    endpos.y = yDefault;
+    //    string tag;
+    //    if(transform.parent.tag == "Player1")
+    //    {
+    //        tag = "RangedAttackPlayer1";
+    //    }
+    //    else
+    //    {
+    //        tag = "RangedAttackPlayer2";
+    //    }
+
+    //    ObjectFlyingSpawnPoint.instance.SpawnObjectAtPosition(nameObject, endpos, tag, localScale);
+    //}
     public void SpawnRangedAttack(string nameObject)
     {
-        float yDefault = lnA.spawnRangedPosition.y;
-        Vector3 startPos = transform.parent.position;
-        Vector3 endpos = ReturnEndPos(startPos, lnA.spawnRangedPosition);
-        Vector3 localScale = new Vector3(transform.parent.localScale.x > 0 ? 1: -1 , 1, 1);
-        endpos.y = yDefault;
         string tag;
-        if(transform.parent.tag == "Player1")
+        if (transform.parent.tag == "Player1")
         {
             tag = "RangedAttackPlayer1";
         }
@@ -258,9 +272,22 @@ public class PlayerEvent : MonoBehaviour
             tag = "RangedAttackPlayer2";
         }
 
-            RangedAttackSpawnPoint.instance.SpawnObjectAtPosition(nameObject, endpos, tag, localScale);
+        ObjectFlyingSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform, tag);
     }
+    public void SpawnObject(string nameObject)
+    {
+        string tag;
+        if (transform.parent.tag == "Player1")
+        {
+            tag = "RangedAttackPlayer1";
+        }
+        else
+        {
+            tag = "RangedAttackPlayer2";
+        }
 
+        ObjectSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform, tag);
+    }
 
     public void AddGravityScale(float addOn)
     {

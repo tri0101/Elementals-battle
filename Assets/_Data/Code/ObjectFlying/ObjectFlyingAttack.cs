@@ -13,7 +13,7 @@ public class ObjectFlyingAttack : MonoBehaviour
     }
     private void Update()
     {
-        if (objController.CheckingObjectFlying.IsOnWall && !hasAttacked)
+        if (objController.CheckingObjectFlying.IsTouchPlayer && !hasAttacked)
         {
             hasAttacked = true;
             StartCoroutine(DelayAttack(objController.ObjectFlyingSO.delayAttack));

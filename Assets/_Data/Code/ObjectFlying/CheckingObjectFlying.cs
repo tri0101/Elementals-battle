@@ -4,15 +4,15 @@ public class CheckingObjectFlying : MonoBehaviour
 {
     ObjectFlyingController objController;
     public ObjectFlyingController ObjController => objController;
-    RaycastHit2D[] wallHits = new RaycastHit2D[5];
+    RaycastHit2D[] playerHits = new RaycastHit2D[5];
     BoxCollider2D touchingCol;
     public BoxCollider2D TouchingCol => touchingCol;
 
-    [SerializeField] private bool isOnWall = false;
-    public bool IsOnWall => isOnWall;
+    [SerializeField] private bool isTouchPlayer = false;
+    public bool IsTouchPlayer => isTouchPlayer;
 
 
-    public float wallCheckDistance = 0.2f;
+    public float playerCheckDistance = 0.2f;
     public ContactFilter2D castFilter;
   
     private Vector2 checkWallDiretion => gameObject.transform.localScale.x > 0 ? Vector2.right : Vector2.left;
@@ -33,7 +33,7 @@ public class CheckingObjectFlying : MonoBehaviour
     }
     void FixedUpdate()
     {
-        isOnWall = touchingCol.Cast(checkWallDiretion, castFilter, wallHits, wallCheckDistance) > 0;
+        isTouchPlayer = touchingCol.Cast(checkWallDiretion, castFilter, playerHits, playerCheckDistance) > 0;
 
 
     }
