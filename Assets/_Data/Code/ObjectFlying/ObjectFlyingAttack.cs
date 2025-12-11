@@ -28,9 +28,13 @@ public class ObjectFlyingAttack : MonoBehaviour
 
     void Attack()
     {
-        objController.Animator.SetTrigger("attack");
+        if (transform.name != "Arrow(Clone)")
+        {
+            objController.Animator.SetTrigger("attack");
+        }
+   
         objController.ObjectFlying.CanFly = false;
-        Destroy(gameObject, 0.5f);
+        Destroy(gameObject,objController.ObjectFlyingSO.timeToDespawnAttack);
     }
 
 }

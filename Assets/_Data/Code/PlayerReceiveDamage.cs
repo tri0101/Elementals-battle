@@ -56,7 +56,7 @@ public class PlayerReceiveDamage : MonoBehaviour
     }
     public void ReceiveDamage(float damage)
     {
-        if (!IsAlive || IsImmortal || pc.PlayerMovement.IsBlocking) return;
+        if (!IsAlive || IsImmortal ) return;
         if(pc.StatusEffect == StatusEffect.Normal)
         {
             pc.Animator.speed = 1f;
@@ -154,95 +154,67 @@ public class PlayerReceiveDamage : MonoBehaviour
     {
         isFinalAttack = true;
     }
-    void FixedUpdate()
-    {
-        if (pc.CheckingGround.IsOnPlayer && pc.Rb.linearVelocity.y < 0)
-        {
-            // Tạo hiệu ứng trượt xuống người khác
-            Vector2 vel = pc.Rb.linearVelocity;
-            vel.y = -50f; // tốc độ rơi trượt
-            pc.Rb.linearVelocity = vel;
-        }
-        
-    }
+    //void FixedUpdate()
+    //{
+    //    if (pc.CheckingGround.IsOnPlayer && pc.Rb.linearVelocity.y < 0)
+    //    {
+    //        // Tạo hiệu ứng trượt xuống người khác
+    //        Vector2 vel = pc.Rb.linearVelocity;
+    //        vel.y = -50f; // tốc độ rơi trượt
+    //        pc.Rb.linearVelocity = vel;
+    //    }
+    //    if (pc.CheckingGround.IsUnderPlayer && pc.Rb.linearVelocity.y < 0)
+    //    {
+    //        if(transform.parent)
+    //    }
+
+    //}
 
 
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        // Chỉ xử lý khi va chạm với collider tên "ColliderReceive"
-        if (col.collider.name != "ColliderReceive")
-        {
+    //private void OnCollisionEnter2D(Collision2D col)
+    //{
+    //    // Chỉ xử lý khi va chạm với collider tên "ColliderReceive"
+    //    if (col.collider.name != "ColliderReceive")
+    //    {
             
-            return;
-        }
+    //        return;
+    //    }
      
-        // Lấy tag của đối tượng cha (Rigidbody root)
-        if (pc.CheckingGround.IsOnPlayer)
-        {
+    //    // Lấy tag của đối tượng cha (Rigidbody root)
+    //    if (pc.CheckingGround.IsOnPlayer)
+    //    {
 
-            Physics2D.IgnoreCollision(capsuleCollider, col.collider, true);
-        }
-        else if (pc.CheckingGround.IsXJumpPlayer && !pc.CheckingGround.IsGrounded)
-        {
-            Physics2D.IgnoreCollision(capsuleCollider, col.collider, true);
-        }
+    //        Physics2D.IgnoreCollision(capsuleCollider, col.collider, true);
+    //    }
+    //    else if (pc.CheckingGround.IsXJumpPlayer && !pc.CheckingGround.IsGrounded)
+    //    {
+    //        Physics2D.IgnoreCollision(capsuleCollider, col.collider, true);
+    //    }
 
-    }
+    //}
 
-    private void OnCollisionExit2D(Collision2D col)
-    {
-        // Chỉ xử lý khi collider là "ColliderReceive"
-        if (col.collider.name != "ColliderReceive")
-        {
+    //private void OnCollisionExit2D(Collision2D col)
+    //{
+    //    // Chỉ xử lý khi collider là "ColliderReceive"
+    //    if (col.collider.name != "ColliderReceive")
+    //    {
             
-            return;
-        }
+    //        return;
+    //    }
 
-        if (pc.CheckingGround.IsGrounded) {
-            Physics2D.IgnoreCollision(capsuleCollider, col.collider, false);
+    //    if (pc.CheckingGround.IsGrounded) {
+    //        Physics2D.IgnoreCollision(capsuleCollider, col.collider, false);
 
-        }
+    //    }
 
 
-    }
+    //}
 
     public void ApplyStatus(StatusEffect status)
     {
         pc.StatusEffect = status;
-        if(status == StatusEffect.Frozen)
-        {
-            StartFrozen();
-        }
+        
     }
-    public void StartFrozen()
-    {
-        StartCoroutine(FrozenCoroutine());
-    }
-    private IEnumerator FrozenCoroutine()
-    {
-        pc.Animator.SetTrigger("Hit");
-        yield return new WaitForSeconds(0.1f);
-        IsImmortal = true;
-        // Lưu lại màu cũ
-        Color originalColor = pc.SpriteRenderer.color;
-        pc.Animator.speed = 0f;
-        // Màu frozen: RGB(32,45,211) → Unity Color dùng 0~1 nên chia 255
-        Color frozenColor = new Color(32f / 255f, 45f / 255f, 211f / 255f);
-
-        // đổi màu
-        pc.SpriteRenderer.color = frozenColor;
-        yield return new WaitForSeconds(0.5f);
-        pc.Animator.speed = 0.5f;
-        IsImmortal = false;
-        pc.PlayerMovement.MinusProperty(0.3f);
-        // chờ 5 giây
-        yield return new WaitForSeconds(2f);
-
-        // trả về màu cũ
-        pc.SpriteRenderer.color = originalColor;
-        pc.Animator.speed = 1f;
-        pc.PlayerMovement.PlusProperty(0.3f);
-        // trạng thái về bình thường
-        ApplyStatus(StatusEffect.Normal);
-    }
+  
+    
 }

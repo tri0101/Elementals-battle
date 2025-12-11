@@ -9,10 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d545f2c192d13c6498867615e5c24aba, type: 3}
-  m_Name: Arrow
+  m_Script: {fileID: 11500000, guid: d518b53757c8c3f4799e058d426cc826, type: 3}
+  m_Name: Arrow_Final
   m_EditorClassIdentifier: 
-  flySpeed: 50
-  delayAttack: 0
-  timeToDespawn: 55
-  timeToDespawnAttack: 55
+  damageSend: 20
+  knockBack: {x: -3, y: 0, z: 0}
+  durationKnockBack: 0.5
+  durationStopping: 0.5
+  speed: 0
+  statusEffect: 0

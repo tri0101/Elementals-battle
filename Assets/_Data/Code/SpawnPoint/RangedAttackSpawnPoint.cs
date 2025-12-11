@@ -29,11 +29,12 @@ public class RangedAttackSpawnPoint : MonoBehaviour
         }
         return null;
     }
-    public void SpawnObjectAtPosition(string objName, Vector3 objPosition, string tag, Vector3 scale)
+    public void SpawnObjectAtPosition(string objName, Vector3 objPosition, string player, Vector3 scale)
     {
         GameObject objSpawn = BrowseList(objName);
         GameObject tmpSpawwn = Instantiate(objSpawn);
-        tmpSpawwn.tag = tag;
+        tmpSpawwn.tag = player;
+        tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(player);
         tmpSpawwn.transform.position = objPosition;
         tmpSpawwn.transform.localScale = scale;
 

@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     public PlayerReceiveDamage PlayerReceiveDamage => prd;
     PlayerEvent pe;
     public PlayerEvent PlayerEvent => pe;
+    PlayerStatus pst;
+    public PlayerStatus PlayerStatus => pst;
     [Header("KeyBiding")]
     [SerializeField] KeyBinding keyBiding;
     public KeyBinding KeyBiding => keyBiding;
@@ -67,6 +69,7 @@ public class PlayerController : MonoBehaviour
         ps = gameObject.GetComponent<PlayerSkill>();
         pt = GetComponent<PlayerTransform>();
         pe = transform.GetChild(0).GetComponent<PlayerEvent>();
+        pst = GetComponent<PlayerStatus>();
         prd = transform.GetChild(0).Find("ColliderReceive").GetComponent<PlayerReceiveDamage>();
         string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
         GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);

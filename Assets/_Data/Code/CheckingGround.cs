@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEngine;
 
@@ -7,7 +7,9 @@ public class CheckingGround : MonoBehaviour
     [Header("Ground Check Settings")]
     public LayerMask groundLayer;
     public float rayDistance = 0.1f;
+    public float rayUnderDistance = 0.5f;
     public float wallCheckDistance = 0.2f;
+    public float checkXJump = 3f;
     public float ceilingDistance = 3.9f;
     CapsuleCollider2D touchingCol;
     public CapsuleCollider2D TouchingCol => touchingCol;
@@ -33,6 +35,8 @@ public class CheckingGround : MonoBehaviour
     public bool IsOnCeiling => isOnCeiling;
     [SerializeField] private bool isOnPlayer = false;
     public bool IsOnPlayer => isOnPlayer;
+    [SerializeField] private bool isUnderPlayer = false;
+    public bool IsUnderPlayer => isUnderPlayer;
     [SerializeField] private bool isXJumpPlayer = false;
     public bool IsXJumpPlayer => isXJumpPlayer;
     private void Awake()
@@ -82,8 +86,9 @@ public class CheckingGround : MonoBehaviour
         
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
         isOnPlayer = touchingCol.Cast(Vector2.down, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayDistance) > 0;
-        isXJumpPlayer = touchingCol.Cast(checkWallDiretion, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, wallCheckDistance) > 0;
-        if (CompareTag("Player1") ||CompareTag("Player2"))
+        isUnderPlayer = touchingCol.Cast(Vector2.up, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayUnderDistance) > 0;
+        isXJumpPlayer = touchingCol.Cast(checkWallDiretion, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, checkXJump) > 0;
+        if (CompareTag("Player1") || CompareTag("Player2"))
         {
             pc.Animator.SetBool("isGrounded", isGrounded);
             pc.Animator.SetBool("isOnWall", isOnWall);
@@ -103,5 +108,6 @@ public class CheckingGround : MonoBehaviour
        
        
     }
+
 
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEditor.Overlays;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -66,6 +67,7 @@ public class PlayerMovement : MonoBehaviour
         set => pc.Animator.SetBool("canJump", value);
     }
 
+    private bool isLockHorizontal = false;
     private void Awake()
     {
         pc = GetComponent<PlayerController>();
@@ -108,7 +110,19 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKey(pc.KeyBiding.blockKey) && pc.CheckingGround.IsGrounded)
         {
+            //Flip khi block
             StartBlock();
+            float baseScaleX = Mathf.Abs(transform.localScale.x);
+            if (transform.localPosition.x > pc.Enemy.transform.localPosition.x)
+            {
+                transform.localScale = new Vector3(-baseScaleX, transform.localScale.y, transform.localScale.z);
+            }
+            else
+            {
+
+                transform.localScale = new Vector3(baseScaleX, transform.localScale.y, transform.localScale.z);
+            }
+
         }
 
         // Nhả S → Hủy Block
@@ -119,9 +133,16 @@ public class PlayerMovement : MonoBehaviour
 
         //Move
         Move();
+   
+
         // Jump
         if (Input.GetKeyDown(pc.KeyBiding.jumpKey) && pc.CheckingGround.IsGrounded && CanMove && CanJump)
         {
+            if (pc.CheckingGround.IsXJumpPlayer)
+            {
+                CanMove = false;
+                StartCoroutine(ResetCanMove());
+            }
             Jump();
         }
         if (Input.GetKeyDown(pc.KeyBiding.dashKey) )
@@ -130,6 +151,11 @@ public class PlayerMovement : MonoBehaviour
         }
         // Flip
         Flip(moveX);
+    }
+    private IEnumerator ResetCanMove()
+    {
+        yield return new WaitForSeconds(0.35f);
+        CanMove = true;
     }
     private void Move()
     {
@@ -156,6 +182,14 @@ public class PlayerMovement : MonoBehaviour
     void Jump()
     {
         if (!pc.PlayerReceiveDamage.IsAlive) return;
+        //if (isLockHorizontal)
+        //{
+        //    pc.Rb.linearVelocity = new Vector2(0, jumpForce);
+        //}
+        //else
+        //{
+        //    pc.Rb.linearVelocity = new Vector2(pc.Rb.linearVelocity.x, jumpForce);
+        //}
         pc.Rb.linearVelocity = new Vector2(pc.Rb.linearVelocity.x, jumpForce);
         pc.Animator.SetTrigger("isJump");
         
@@ -176,8 +210,32 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
         pc.Rb.linearVelocity = new Vector2(moveX * CurrentSpeed, pc.Rb.linearVelocity.y);
+
+
+        if (pc.CheckingGround.IsOnPlayer && pc.Rb.linearVelocity.y < 0)
+        {
+            // Tạo hiệu ứng trượt xuống người khác
+            Vector2 vel = pc.Rb.linearVelocity;
+            vel.y = -50f; // tốc độ rơi trượt
+            pc.Rb.linearVelocity = vel;
+        }
+        if (pc.CheckingGround.IsUnderPlayer && pc.Rb.linearVelocity.y < 0)
+        {
+            Vector3 pos = transform.position;
+            if(transform.localScale.x > 0)
+            {
+                pos.x -= 1.5f;
+            }
+            else
+            {
+                pos.x += 1.5f;
+            }
+            transform.position = pos;
+        }
         pc.Animator.SetFloat("yVelocity", pc.Rb.linearVelocity.y);
     }
+    
+
     private void LateUpdate()
     {
         AutoFlip();
@@ -202,6 +260,7 @@ public class PlayerMovement : MonoBehaviour
 
        
     }
+   
     void AutoFlip()
     {
         if (!pc.PlayerReceiveDamage.IsAlive) return;
@@ -227,11 +286,22 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator Dash()
     {
         //isDashing = true;
-        IsDash = true; 
+        IsDash = true;
 
+        float x = 0f;
+        float y = 0f;
+        if (transform.tag == "Player1")
+        {
+            if (Input.GetKey(KeyCode.A)) x = -1;
+            if (Input.GetKey(KeyCode.D)) x = 1;
+        }
        
-        float x = Input.GetAxisRaw("Horizontal");
-        float y = Input.GetAxisRaw("Vertical");
+        else
+        {
+            if (Input.GetKey(KeyCode.LeftArrow)) x = -1;
+            if (Input.GetKey(KeyCode.RightArrow)) x = 1;
+        }
+
 
         if (x == 0 && y == 0)
             x = transform.localScale.x > 0 ? 1 : -1;
@@ -247,8 +317,7 @@ public class PlayerMovement : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        //isDashing = false;
-        //IsDash = false;
+  
         pc.Rb.linearVelocity = new Vector2(pc.Rb.linearVelocity.x, 0f);
         yield return new WaitForSeconds(0);
     }
@@ -257,24 +326,18 @@ public class PlayerMovement : MonoBehaviour
     void StartBlock()
     {
 
-        //isBlocking = true;
+       
         IsBlocking = true; 
 
-        
-        //CanMove = false;
-        //CanFlip = false;
-
+   
         
         pc.Rb.linearVelocity = Vector2.zero;
     }
     void StopBlock()
     {
-        //isBlocking = false;
+ 
         IsBlocking = false;
 
-    
-        //CanMove = true;
-        //CanFlip = true;
     }
     public void MinusProperty(float percent)
     {
