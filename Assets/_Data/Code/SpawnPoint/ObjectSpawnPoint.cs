@@ -8,18 +8,27 @@ using UnityEngine.UIElements;
 public class ObjectSpawnPoint : MonoBehaviour
 {
     [SerializeField] private List<GameObject> spawnPoints;
+    [SerializeField] private List<GameObject> poolObject;
+    private Transform holder;
     public static ObjectSpawnPoint instance;
     private void Awake()
     {
         instance = this;
-        foreach (Transform chill in transform)
+        holder = transform.GetChild(1);
+        AddPrefabs();
+      
+    }
+    private void AddPrefabs()
+    {
+        foreach (Transform chill in transform.GetChild(0))
         {
             spawnPoints.Add(chill.gameObject);
         }
     }
+  
     public GameObject BrowseList(string nameObject)
     {
-        foreach (Transform chill in transform)
+        foreach (Transform chill in transform.GetChild(0))
         {
             if (chill.name == nameObject)
             {
@@ -29,12 +38,31 @@ public class ObjectSpawnPoint : MonoBehaviour
         }
         return null;
     }
+    private GameObject GetObjectFromPool(GameObject gameObject)
+    {
+        foreach(GameObject obj in poolObject)
+        {
+            if(obj.name == gameObject.name)
+            {
+                poolObject.Remove(obj);
+                return obj;
+            }
+        }
+        GameObject tmpSpawwn = Instantiate(gameObject);
+        tmpSpawwn.name = gameObject.name;
+        return tmpSpawwn;
+    }
     public void SpawnObjectAtPosition(string objName, Transform playerSpawnPos, string playerSpawnTag)
     {
         GameObject objSpawn = BrowseList(objName);
+        if(objSpawn == null)
+        {
+            Debug.LogWarning("Object không có trong list");
+            return;
+        }
         ObjectSpawnPointController obc = objSpawn.GetComponent<ObjectSpawnPointController>();
         Vector3 spawnPoint = obc.ObjectSpawnPointSO.spawnPosition;
-        GameObject tmpSpawwn = Instantiate(objSpawn);
+        GameObject tmpSpawwn = GetObjectFromPool(objSpawn);
         tmpSpawwn.tag = playerSpawnTag;
         tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(playerSpawnTag);
 
@@ -54,5 +82,14 @@ public class ObjectSpawnPoint : MonoBehaviour
 
 
         tmpSpawwn.SetActive(true);
+        tmpSpawwn.transform.SetParent(holder);
+    }
+
+
+
+    public void AddToPool(GameObject obj)
+    {
+        poolObject.Add(obj);
+        obj.SetActive(false);
     }
 }

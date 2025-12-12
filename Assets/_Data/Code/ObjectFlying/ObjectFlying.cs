@@ -31,6 +31,10 @@ public class ObjectFlying : MonoBehaviour
         SetDirection();
         StartCoroutine(DespawnAfterTime());
     }
+    private void OnEnable()
+    {
+        SetDirection();
+    }
 
     private void Update()
     {
@@ -44,7 +48,7 @@ public class ObjectFlying : MonoBehaviour
                 if (despawnTimer >= timeToDespawn)
                 {
                     despawnTriggered = true;
-                    Destroy(gameObject);
+                    ObjectFlyingSpawnPoint.instance.AddToPool(gameObject);
                 }
             }
         }
@@ -80,9 +84,16 @@ public class ObjectFlying : MonoBehaviour
     {
         yield return new WaitForSeconds(objController.ObjectFlyingSO.timeToDespawn);
 
-        Destroy(gameObject);
+        ObjectFlyingSpawnPoint.instance.AddToPool(gameObject);
     }
 
+
+    private void OnDisable()
+    {
+        canFly = true;
+        despawnTimer = 0;
+        despawnTriggered = false;
+    }
 
 
 

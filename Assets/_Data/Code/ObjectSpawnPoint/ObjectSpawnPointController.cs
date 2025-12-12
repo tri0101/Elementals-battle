@@ -5,6 +5,10 @@ public class ObjectSpawnPointController : MonoBehaviour
     [SerializeField] private Animator animator;
     public Animator Animator => animator;
 
+    ObjectSpawnPointEvent ospe;
+
+    public ObjectSpawnPointEvent ObjectSpawnPointEvent => ospe;
+
 
     [SerializeField] private ObjectSpawnPointSO objSO;
     public ObjectSpawnPointSO ObjectSpawnPointSO => objSO;
@@ -12,6 +16,8 @@ public class ObjectSpawnPointController : MonoBehaviour
     {
         
         animator = transform.GetChild(0).GetComponent<Animator>();
+        ospe = transform.GetChild(0).GetComponent<ObjectSpawnPointEvent>();
+           
 
     }
 }

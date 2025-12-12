@@ -28,7 +28,7 @@ public class ObjectFlyingAttack : MonoBehaviour
 
     void Attack()
     {
-        if (transform.name != "Arrow(Clone)")
+        if (transform.name != "Arrow")
         {
             objController.Animator.SetTrigger("attack");
         }
