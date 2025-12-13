@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 public class ObjectFlyingAttack : MonoBehaviour
 {
     ObjectFlyingController objController;
@@ -34,7 +35,15 @@ public class ObjectFlyingAttack : MonoBehaviour
         }
    
         objController.ObjectFlying.CanFly = false;
-        Destroy(gameObject,objController.ObjectFlyingSO.timeToDespawnAttack);
+        
+        ObjectFlyingSpawnPoint.instance.AddToPoolTimer(gameObject, ObjController.ObjectFlyingSO.timeToDespawnAttack);
+        
+    }
+
+
+    private void OnDisable()
+    {
+        hasAttacked = false;
     }
 
 }

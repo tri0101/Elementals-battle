@@ -38,4 +38,9 @@ public class CheckingObjectFlying : MonoBehaviour
 
     }
 
+
+    private void OnDisable()
+    {
+        isTouchPlayer = false;
+    }
 }

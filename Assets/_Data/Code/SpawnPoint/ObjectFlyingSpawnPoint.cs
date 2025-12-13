@@ -1,17 +1,18 @@
 ﻿
-using UnityEngine;
-using System.Collections.Generic;
-using UnityEditorInternal;
-using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEngine.UIElements;
 using NUnit.Framework.Interfaces;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditorInternal;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 public class ObjectFlyingSpawnPoint : MonoBehaviour
 {
     [SerializeField] private List<GameObject> spawnPoints;
     [SerializeField] private List<GameObject> poolObject;
     private Transform holder;
-    public static ObjectFlyingSpawnPoint instance;  
+    public static ObjectFlyingSpawnPoint instance;
     private void Awake()
     {
         instance = this;
@@ -30,11 +31,11 @@ public class ObjectFlyingSpawnPoint : MonoBehaviour
     {
         foreach (Transform chill in transform.GetChild(0))
         {
-            if(chill.name == nameObject)
+            if (chill.name == nameObject)
             {
                 return chill.gameObject;
             }
-            
+
         }
         return null;
     }
@@ -69,7 +70,7 @@ public class ObjectFlyingSpawnPoint : MonoBehaviour
 
         //Tính giá trị cuối cùng của obj khi spawn ra với y default 
         Vector3 finalSpawnPoint = new Vector3(0, 0, 0);
-        if(playerSpawnPos.parent.localScale.x  > 0)
+        if (playerSpawnPos.parent.localScale.x > 0)
         {
             finalSpawnPoint = playerSpawnPos.position + new Vector3(spawnPoint.x, 0, 0);
         }
@@ -91,5 +92,13 @@ public class ObjectFlyingSpawnPoint : MonoBehaviour
         poolObject.Add(obj);
         obj.SetActive(false);
     }
-
+    public void AddToPoolTimer(GameObject obj, float timer)
+    {
+        StartCoroutine(AddToPoolCoroutine(obj, timer));
+    }
+    private IEnumerator AddToPoolCoroutine(GameObject obj, float timer)
+    {
+        yield return new WaitForSeconds(timer);
+        AddToPool(obj);
+    }
 }
