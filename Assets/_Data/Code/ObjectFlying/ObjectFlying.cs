@@ -4,9 +4,15 @@ using System.Collections;
 public class ObjectFlying : MonoBehaviour
 {
     ObjectFlyingController objController;
-    private float despawnTimer;
-    private float timeToDespawn;
-    private bool despawnTriggered = false;
+    [SerializeField]  private float despawnTimer;
+    [SerializeField ] private float timeToDespawn;
+    [SerializeField] private bool despawnTriggered = false;
+    [SerializeField] private bool hasbeenToPool = false;
+    public bool HasBeenToPool
+    {
+        get => hasbeenToPool;
+        set => hasbeenToPool = value;
+    }
     public ObjectFlyingController ObjController => objController;
     [Header("Speed")]
     public float speed;
@@ -28,8 +34,10 @@ public class ObjectFlying : MonoBehaviour
         objController = GetComponent<ObjectFlyingController>();
         speed = objController.ObjectFlyingSO.flySpeed;
         timeToDespawn = objController.ObjectFlyingSO.timeToDespawn;
-        SetDirection();
-        StartCoroutine(DespawnAfterTime());
+        //SetDirection();
+        //if (hasbeenToPool) return;
+        //StartCoroutine(DespawnAfterTime());
+        //hasbeenToPool = true;
     }
     private void OnEnable()
     {
@@ -47,8 +55,11 @@ public class ObjectFlying : MonoBehaviour
 
                 if (despawnTimer >= timeToDespawn)
                 {
+                    if (hasbeenToPool) return;
                     despawnTriggered = true;
+                    hasbeenToPool = true;
                     ObjectFlyingSpawnPoint.instance.AddToPool(gameObject);
+                    
                 }
             }
         }
@@ -65,7 +76,8 @@ public class ObjectFlying : MonoBehaviour
 
         if (isFlyingRight)
         {
-            moveDir = Vector3.right;
+            
+            moveDir = objController.ObjectFlyingSO.directionFly;
 
             Vector3 scale = transform.localScale;
             scale.x = Mathf.Abs(scale.x);
@@ -73,7 +85,8 @@ public class ObjectFlying : MonoBehaviour
         }
         else
         {
-            moveDir = Vector3.left;
+            Vector3 temp = objController.ObjectFlyingSO.directionFly;
+            moveDir = new Vector3(-temp.x, temp.y, temp.z);
 
             Vector3 scale = transform.localScale;
             scale.x = -Mathf.Abs(scale.x);
@@ -82,6 +95,7 @@ public class ObjectFlying : MonoBehaviour
     }
     private IEnumerator DespawnAfterTime()
     {
+
         yield return new WaitForSeconds(objController.ObjectFlyingSO.timeToDespawn);
 
         ObjectFlyingSpawnPoint.instance.AddToPool(gameObject);
@@ -93,6 +107,7 @@ public class ObjectFlying : MonoBehaviour
         canFly = true;
         despawnTimer = 0;
         despawnTriggered = false;
+        hasbeenToPool = false;
     }
 
 

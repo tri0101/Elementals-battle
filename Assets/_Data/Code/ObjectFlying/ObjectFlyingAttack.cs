@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 using TMPro;
+using System.Linq.Expressions;
 public class ObjectFlyingAttack : MonoBehaviour
 {
     ObjectFlyingController objController;
     public ObjectFlyingController ObjController => objController;
-    private bool hasAttacked = false;
+    [SerializeField] private bool hasAttacked = false;
 
     
     private void Start()
@@ -35,8 +36,9 @@ public class ObjectFlyingAttack : MonoBehaviour
         }
    
         objController.ObjectFlying.CanFly = false;
-        
+        if (objController.ObjectFlying.HasBeenToPool) return;
         ObjectFlyingSpawnPoint.instance.AddToPoolTimer(gameObject, ObjController.ObjectFlyingSO.timeToDespawnAttack);
+        objController.ObjectFlying.HasBeenToPool = true;
         
     }
 

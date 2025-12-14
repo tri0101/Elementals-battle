@@ -8,4 +8,5 @@ public class ObjectFlyingSO : ScriptableObject
     public float timeToDespawn;
     public float timeToDespawnAttack;
     public Vector3 spawnPosition;
+    public Vector3 directionFly;
 }
