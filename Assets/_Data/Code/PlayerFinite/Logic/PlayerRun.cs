@@ -18,7 +18,7 @@ public class PlayerRun : MonoBehaviour
     {
         playerControl.Rb.linearVelocity = new Vector2(playerControl.MoveX * CurrentSpeed, playerControl.Rb.linearVelocity.y);
 
-        playerControl.Animator.SetFloat("yVelocity", playerControl.Rb.linearVelocity.y);
+   
 
     }
     public void Flip()

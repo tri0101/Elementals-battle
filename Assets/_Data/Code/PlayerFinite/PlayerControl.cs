@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -14,14 +16,15 @@ public class PlayerControl : MonoBehaviour
 
     public float MoveX;
 
-    private bool isJumpPressed;
+    [SerializeField] private bool isJumpPressed;
 
     public bool IsJumpPressed
     {
         get => isJumpPressed;
         set => isJumpPressed = value;
     }
-    private string currentStringState;
+    [SerializeField] private string currentStringState;
+    public string CurrentStringState => currentStringState;
 
     [Header("Other Script")]
     PlayerCheckingGround playerCheckingGround;
@@ -55,14 +58,52 @@ public class PlayerControl : MonoBehaviour
     }
 
 
-    public void ChangeAnimationState(string newState)
+    public void ChangeAnimationState(string newState, float time = 0)
     {
-        if (currentStringState == newState) return;
-        animator.Play(newState);
+        if (time > 0) StartCoroutine(Wait());
+        else Validate();
 
-        currentStringState = newState;
+        IEnumerator Wait()
+        {
+            yield return new WaitForSeconds(time);
+            Validate();
+
+        }
+
+        void Validate()
+        {
+            if (currentStringState == newState) return;
+            animator.Play(newState);
+
+            currentStringState = newState;
+        }
+        
     }
 
+    public void ChangeAnimationStateLoop(string newState)
+    {
+        AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
+
+        
+        if (currentStringState == newState)
+        {
+            
+            if (info.normalizedTime < 1f)
+                return;
+
+            
+            animator.Play(newState, 0, 0f);
+            return;
+        }
+
+       
+        animator.Play(newState, 0, 0f);
+        currentStringState = newState;
+    }
+    public void CheckAnimation()
+    {
+
+    }
     void Update()
     {
 
@@ -75,9 +116,11 @@ public class PlayerControl : MonoBehaviour
             MoveX = 1;
 
         //======= Nhảy ==========
-        if (Input.GetKeyDown(KeyBiding.jumpKey))
+        if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
         }
     }
+
+   
 }

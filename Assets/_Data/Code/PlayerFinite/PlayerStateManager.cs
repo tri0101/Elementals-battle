@@ -17,9 +17,11 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerJumpState jumpState = new PlayerJumpState();
 
     //List các state
-    public string Player_Idle = "Idle";
-    public string Player_Run = "Run";
-    public string Player_Jump = "jump_rising";
+    public const string Player_Idle = "Idle";
+    public const string Player_Run = "Run";
+    public const string Player_Jump = "Jump Start";
+    public const string Player_Jump_Down = "Jump Down";
+    public const string Player_Jump_End = "Jump End";
 
 
     private void Awake()
@@ -54,5 +56,7 @@ public class PlayerStateManager : MonoBehaviour
         currentState = newState;
         currentState.EnterState(this);
     }
+
+   
 
 }

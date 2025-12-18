@@ -16,6 +16,7 @@ public class Attack : MonoBehaviour
         knockBack = attackInfo.knockBack;
         durationKnock = attackInfo.durationKnockBack;
         durationStopping = attackInfo.durationStopping;
+        durationStopping = attackInfo.durationStopping;
         myTag = transform.parent.parent.parent.tag;
         
     }

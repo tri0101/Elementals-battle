@@ -45,30 +45,21 @@ public class PlayerCheckingGround : MonoBehaviour
     }
     void FixedUpdate()
     {
-        isOnWall = touchingCol.Cast(checkWallDiretion, castFilter, wallHits, wallCheckDistance) > 0;
+        //isOnWall = touchingCol.Cast(checkWallDiretion, castFilter, wallHits, wallCheckDistance) > 0;
+        bool hitRight = touchingCol.Cast(
+           Vector2.right, castFilter, wallHits, wallCheckDistance) > 0;
 
+        bool hitLeft = touchingCol.Cast(
+            Vector2.left, castFilter, wallHits, wallCheckDistance) > 0;
+
+        isOnWall = hitRight || hitLeft;
         isGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayDistance) > 0;
 
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
         isOnPlayer = touchingCol.Cast(Vector2.down, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayDistance) > 0;
         isUnderPlayer = touchingCol.Cast(Vector2.up, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayUnderDistance) > 0;
         isXJumpPlayer = touchingCol.Cast(checkWallDiretion, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, checkXJump) > 0;
-        if (CompareTag("Player1") || CompareTag("Player2"))
-        {
-            playerControl.Animator.SetBool("isGrounded", isGrounded);
-            playerControl.Animator.SetBool("isOnWall", isOnWall);
-            playerControl.Animator.SetBool("isOnCeiling", isOnCeiling);
-        }
-        else
-        {
-            playerControl.Animator.SetBool("isGrounded", isGrounded);
-            playerControl.Animator.SetBool("isOnWall", isOnWall);
-            playerControl.Animator.SetBool("isOnCeiling", isOnCeiling);
-        }
-        //if (isGrounded)
-        //{
-        //    playerStateManager.PlayerEvent.ReturnDefaultGravityScale();
-        //}
+       
 
 
 

@@ -6,8 +6,8 @@ public class PlayerRunState : PlayerBaseState
    
     public override void EnterState(PlayerStateManager player)
     {
-        //player.PlayerControl.Animator.SetBool("isWalking", true);
-        player.PlayerControl.ChangeAnimationState(player.Player_Run);
+     
+        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Run);
      
     }
     public override void ExitState(PlayerStateManager player)
@@ -19,6 +19,7 @@ public class PlayerRunState : PlayerBaseState
         if(player.PlayerControl.IsJumpPressed && player.PlayerControl.PlayerCheckingGround.IsGrounded)
         {
             player.SwitchState(player.jumpState);
+            return;
         }
         if (player.PlayerControl.MoveX == 0)
             player.SwitchState(player.idleState);
