@@ -22,6 +22,10 @@ public class PlayerIdleState : PlayerBaseState
             player.SwitchState(player.jumpState);
             return;
         }
+        if (player.PlayerControl.IsAttackPressed)
+        {
+            player.SwitchState(player.attackState);
+        }
         if (player.PlayerControl.MoveX != 0)
         {
             player.SwitchState(player.runState);

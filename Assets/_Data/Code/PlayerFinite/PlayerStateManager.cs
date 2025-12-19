@@ -15,6 +15,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
     public PlayerJumpState jumpState = new PlayerJumpState();
+    public PlayerAttackState attackState = new PlayerAttackState();
 
     //List các state
     public const string Player_Idle = "Idle";
@@ -22,6 +23,9 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Jump = "Jump Start";
     public const string Player_Jump_Down = "Jump Down";
     public const string Player_Jump_End = "Jump End";
+    public const string Player_Attack_1 = "Attack_1";
+    public const string Player_Attack_2 = "Attack_2";
+    public const string Player_Attack_3 = "Attack_3";
 
 
     private void Awake()

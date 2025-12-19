@@ -23,6 +23,12 @@ public class PlayerControl : MonoBehaviour
         get => isJumpPressed;
         set => isJumpPressed = value;
     }
+    [SerializeField] private bool isAttackPressed;
+    public bool IsAttackPressed
+    {
+        get => isAttackPressed;
+        set => isAttackPressed = value;
+    }
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -37,6 +43,8 @@ public class PlayerControl : MonoBehaviour
     public PlayerRun PlayerRun => playerRun;
     PlayerJump playerJump;
     public PlayerJump PlayerJump => playerJump;
+    PlayerAttackk playerAttackk;
+    public PlayerAttackk PlayerAttackk => playerAttackk;
 
     [Header("ScriptableObject")]
     [SerializeField] private PlayerInfo playerInfo;
@@ -55,6 +63,7 @@ public class PlayerControl : MonoBehaviour
         playerStateManager = GetComponent<PlayerStateManager>();
         playerRun = GetComponent<PlayerRun>();
         playerJump = GetComponent<PlayerJump>();
+        playerAttackk = GetComponent<PlayerAttackk>();
     }
 
 
@@ -119,6 +128,10 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
+        }
+        if (Input.GetKeyDown(keyBiding.attackKey))
+        {
+            isAttackPressed = true;
         }
     }
 
