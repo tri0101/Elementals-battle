@@ -128,7 +128,7 @@ public class PlayerControl : MonoBehaviour
     }
     void Update()
     {
-
+        CheckName();
         //====== Di chuyển =========
         MoveX = 0;
 
@@ -137,16 +137,18 @@ public class PlayerControl : MonoBehaviour
         else if (Input.GetKey(KeyBiding.rightMove))
             MoveX = 1;
 
-       
+
         isBlockPressed = Input.GetKey(keyBiding.blockKey);
-        
-        
+
+
+
 
         //Lần đánh 2 , 3
         if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.StartsWith("Attack"))
         {
             isAttackPressed = true;
         }
+
         if (currentStringState != "Idle" && currentStringState != "Run") return;
         //======= Nhảy ==========
         if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
@@ -166,5 +168,20 @@ public class PlayerControl : MonoBehaviour
         }
     }
 
-   
+    void SpriteName()
+    {
+        if (spriteRenderer.sprite == null) return;
+
+        Debug.Log("Current Sprite: " + spriteRenderer.sprite.name);
+    }
+    string lastStateName;
+
+    void CheckName()
+    {
+        if (currentStringState == lastStateName) return;
+
+        Debug.Log("State changed: " + currentStringState);
+        lastStateName = currentStringState;
+    }
+
 }

@@ -6,12 +6,13 @@ public class PlayerBlockState : PlayerBaseState
     public override void EnterState(PlayerStateManager player)
     {
         isEnding = false;
+        player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Block_Open);
     }
 
     public override void ExitState(PlayerStateManager player)
     {
-       
+        player.PlayerControl.IsBlockPressed = false;
     }
 
     public override void FixedUpdateState(PlayerStateManager player)
@@ -23,6 +24,7 @@ public class PlayerBlockState : PlayerBaseState
         if (!player.PlayerControl.IsBlockPressed && !isEnding)
         {
             isEnding = true;
+            player.PlayerControl.IsBlockPressed = false;
             player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Block_End);
         }
         if (!isEnding) return;
@@ -30,7 +32,7 @@ public class PlayerBlockState : PlayerBaseState
 
         AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
 
-        if (info.IsName(PlayerStateManager.Player_Block_End) && info.normalizedTime >= 1f)
+        if (info.IsName(PlayerStateManager.Player_Block_End) && info.normalizedTime >= 0.9f)
         {
       
 
