@@ -24,6 +24,17 @@ public class PlayerRunState : PlayerBaseState
         if (player.PlayerControl.IsAttackPressed)
         {
             player.SwitchState(player.attackState);
+            return;
+        }
+        if (player.PlayerControl.IsSkillPressed)
+        {
+            player.SwitchState(player.skillState);
+            return;
+        }
+        if (player.PlayerControl.IsBlockPressed)
+        {
+            player.SwitchState(player.blocKState);
+            return;
         }
         if (player.PlayerControl.MoveX == 0)
             player.SwitchState(player.idleState);

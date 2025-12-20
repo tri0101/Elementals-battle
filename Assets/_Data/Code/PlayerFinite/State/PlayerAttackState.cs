@@ -7,6 +7,7 @@ public class PlayerAttackState : PlayerBaseState
 
     public override void EnterState(PlayerStateManager player)
     {
+        player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.IsAttackPressed = false;
         player.PlayerControl.PlayerAttackk.CountAttack = 0;
         PlayAttack(player);

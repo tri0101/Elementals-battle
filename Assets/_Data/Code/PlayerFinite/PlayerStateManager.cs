@@ -16,6 +16,8 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerRunState runState = new PlayerRunState();
     public PlayerJumpState jumpState = new PlayerJumpState();
     public PlayerAttackState attackState = new PlayerAttackState();
+    public PlayerSkillState skillState = new PlayerSkillState();
+    public PlayerBlockState blocKState = new PlayerBlockState();
 
     //List các state
     public const string Player_Idle = "Idle";
@@ -26,6 +28,10 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Attack_1 = "Attack_1";
     public const string Player_Attack_2 = "Attack_2";
     public const string Player_Attack_3 = "Attack_3";
+    public const string Player_Skill = "Skill";
+    public const string Player_Block_Open = "Block_open";
+    public const string Player_Block = "Block";
+    public const string Player_Block_End = "Block_End";
 
 
     private void Awake()

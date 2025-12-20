@@ -29,6 +29,18 @@ public class PlayerControl : MonoBehaviour
         get => isAttackPressed;
         set => isAttackPressed = value;
     }
+    [SerializeField] private bool isSkillPressed;
+    public bool IsSkillPressed
+    {
+        get => isSkillPressed;
+        set => isSkillPressed = value;
+    }
+    [SerializeField] private bool isBlockPressed;
+    public bool IsBlockPressed
+    {
+        get => isBlockPressed;
+        set => isBlockPressed = value;
+    }
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -112,6 +124,7 @@ public class PlayerControl : MonoBehaviour
     public void CheckAnimation()
     {
 
+       
     }
     void Update()
     {
@@ -124,14 +137,32 @@ public class PlayerControl : MonoBehaviour
         else if (Input.GetKey(KeyBiding.rightMove))
             MoveX = 1;
 
+       
+        isBlockPressed = Input.GetKey(keyBiding.blockKey);
+        
+        
+
+        //Lần đánh 2 , 3
+        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.StartsWith("Attack"))
+        {
+            isAttackPressed = true;
+        }
+        if (currentStringState != "Idle" && currentStringState != "Run") return;
         //======= Nhảy ==========
         if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
         }
+        //Lần đánh 1
         if (Input.GetKeyDown(keyBiding.attackKey))
         {
             isAttackPressed = true;
+        }
+        
+
+        if (Input.GetKeyDown(keyBiding.skillKey))
+        {
+            isSkillPressed = true;
         }
     }
 

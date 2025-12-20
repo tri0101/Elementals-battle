@@ -14413,6 +14413,8 @@ MonoBehaviour:
   MoveX: 0
   isJumpPressed: 0
   isAttackPressed: 0
+  isSkillPressed: 0
+  isBlockPressed: 0
   currentStringState: 
   playerInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
   keyBiding: {fileID: 11400000, guid: b466065009f46314db9cf73142ecd917, type: 2}
@@ -15160,6 +15162,7 @@ GameObject:
   - component: {fileID: 2012491193}
   - component: {fileID: 2012491195}
   - component: {fileID: 2012491194}
+  - component: {fileID: 2012491196}
   m_Layer: 0
   m_Name: Normal
   m_TagString: Untagged
@@ -15261,6 +15264,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2012491196
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2012491192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lnA: {fileID: 11400000, guid: cdd97d04d44682a4681e5f38b3e6620c, type: 2}
 --- !u!1 &2020110205
 GameObject:
   m_ObjectHideFlags: 0
