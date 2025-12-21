@@ -24,6 +24,14 @@ public class PlayerIdleState : PlayerBaseState
     }
     public override void UpdateState(PlayerStateManager player)
     {
+
+
+        if (player.PlayerControl.PlayerTransformm.TransformToHuman)
+        {
+            player.SwitchState(player.transformState);
+            
+            return;
+        }
         if (player.PlayerControl.IsJumpPressed && player.PlayerControl.PlayerCheckingGround.IsGrounded)
         {
             player.SwitchState(player.jumpState);

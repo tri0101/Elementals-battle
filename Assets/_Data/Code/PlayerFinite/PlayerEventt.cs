@@ -73,5 +73,5 @@ public class PlayerEventt : MonoBehaviour
 
         playerControl.Rb.MovePosition(endPos);
     }
-
+    
 }

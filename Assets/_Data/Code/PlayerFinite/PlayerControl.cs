@@ -69,6 +69,8 @@ public class PlayerControl : MonoBehaviour
     public PlayerJump PlayerJump => playerJump;
     PlayerAttackk playerAttackk;
     public PlayerAttackk PlayerAttackk => playerAttackk;
+    PlayerTransformm playerTransformm;
+    public PlayerTransformm PlayerTransformm => playerTransformm;
 
     [Header("ScriptableObject")]
     [SerializeField] private PlayerInfo playerInfo;
@@ -88,6 +90,7 @@ public class PlayerControl : MonoBehaviour
         playerRun = GetComponent<PlayerRun>();
         playerJump = GetComponent<PlayerJump>();
         playerAttackk = GetComponent<PlayerAttackk>();
+        playerTransformm = GetComponent<PlayerTransformm>();
     }
 
 
@@ -148,7 +151,7 @@ public class PlayerControl : MonoBehaviour
 
         isBlockPressed = Input.GetKey(keyBiding.blockKey);
         //Lần đánh 2 , 3
-        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.StartsWith("Attack"))
+        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Attack"))
         {
             isAttackPressed = true;
         }

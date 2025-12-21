@@ -50,17 +50,37 @@ public class PlayerAttackState : PlayerBaseState
     void PlayAttack(PlayerStateManager player)
     {
         canCombo = false;
-        switch (player.PlayerControl.PlayerAttackk.CountAttack)
+
+        if (player.PlayerControl.HasBeenTransform)
         {
-            case 0:
-                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_1);
-                break;
-            case 1:
-                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_2);
-                break;
-            case 2:
-                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_3);
-                break;
+            switch (player.PlayerControl.PlayerAttackk.CountAttack)
+            {
+                case 0:
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Attack_1);
+                    break;
+                case 1:
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Attack_2);
+                    break;
+                case 2:
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Attack_3);
+                    break;
+            }
         }
+        else
+        {
+            switch (player.PlayerControl.PlayerAttackk.CountAttack)
+            {
+                case 0:
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_1);
+                    break;
+                case 1:
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_2);
+                    break;
+                case 2:
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_3);
+                    break;
+            }
+        }
+       
     }
 }
