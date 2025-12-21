@@ -41,6 +41,18 @@ public class PlayerControl : MonoBehaviour
         get => isBlockPressed;
         set => isBlockPressed = value;
     }
+    [SerializeField] private bool isTransformPressed;
+    public bool IsTransformPressed
+    {
+        get => isTransformPressed;
+        set => isTransformPressed = value;
+    }
+    [SerializeField] private bool hasBeenTransform;
+    public bool HasBeenTransform
+    {
+        get => hasBeenTransform;
+        set => hasBeenTransform = value;
+    }
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -121,11 +133,7 @@ public class PlayerControl : MonoBehaviour
         animator.Play(newState, 0, 0f);
         currentStringState = newState;
     }
-    public void CheckAnimation()
-    {
 
-       
-    }
     void Update()
     {
         CheckName();
@@ -139,10 +147,6 @@ public class PlayerControl : MonoBehaviour
 
 
         isBlockPressed = Input.GetKey(keyBiding.blockKey);
-
-
-
-
         //Lần đánh 2 , 3
         if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.StartsWith("Attack"))
         {
@@ -150,24 +154,35 @@ public class PlayerControl : MonoBehaviour
         }
 
         if (currentStringState != "Idle" && currentStringState != "Run") return;
+
+
         //======= Nhảy ==========
         if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
+        }
+
+        if (Input.GetKeyDown(keyBiding.transformKey))
+        {
+            isTransformPressed = true;
+
         }
         //Lần đánh 1
         if (Input.GetKeyDown(keyBiding.attackKey))
         {
             isAttackPressed = true;
         }
-        
+
 
         if (Input.GetKeyDown(keyBiding.skillKey))
         {
             isSkillPressed = true;
         }
-    }
 
+    }
+    
+
+    //TEst thôi
     void SpriteName()
     {
         if (spriteRenderer.sprite == null) return;

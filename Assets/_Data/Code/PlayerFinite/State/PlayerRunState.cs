@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerRunState : PlayerBaseState
 {
@@ -6,8 +7,16 @@ public class PlayerRunState : PlayerBaseState
    
     public override void EnterState(PlayerStateManager player)
     {
-     
-        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Run);
+        if (player.PlayerControl.HasBeenTransform)
+        {
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Run);
+
+        }
+        else
+        {
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Run);
+        }
+        
      
     }
     public override void ExitState(PlayerStateManager player)
@@ -35,6 +44,10 @@ public class PlayerRunState : PlayerBaseState
         {
             player.SwitchState(player.blocKState);
             return;
+        }
+        if (player.PlayerControl.IsTransformPressed)
+        {
+            player.SwitchState(player.transformState);
         }
         if (player.PlayerControl.MoveX == 0)
             player.SwitchState(player.idleState);

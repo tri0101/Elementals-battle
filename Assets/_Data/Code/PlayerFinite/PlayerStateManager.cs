@@ -18,8 +18,9 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerAttackState attackState = new PlayerAttackState();
     public PlayerSkillState skillState = new PlayerSkillState();
     public PlayerBlockState blocKState = new PlayerBlockState();
+    public PlayerTransformState transformState = new PlayerTransformState();
 
-    //List các state
+    //List các state normal
     public const string Player_Idle = "Idle";
     public const string Player_Run = "Run";
     public const string Player_Jump = "Jump Start";
@@ -32,7 +33,21 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Block_Open = "Block_open";
     public const string Player_Block = "Block";
     public const string Player_Block_End = "Block_End";
-
+    public const string Player_Transform = "Transform";
+    //List các state transform
+    public const string Player_T_Idle = "T_Idle";
+    public const string Player_T_Run = "T_Run";
+    //public const string Player_T_Jump = "Jump Start";
+    //public const string Player_Jump_Down = "Jump Down";
+    //public const string Player_Jump_End = "Jump End";
+    //public const string Player_Attack_1 = "Attack_1";
+    //public const string Player_Attack_2 = "Attack_2";
+    //public const string Player_Attack_3 = "Attack_3";
+    //public const string Player_Skill = "Skill";
+    //public const string Player_Block_Open = "Block_open";
+    //public const string Player_Block = "Block";
+    //public const string Player_Block_End = "Block_End";
+    //public const string Player_Transform = "Transform";
 
     private void Awake()
     {
