@@ -8,7 +8,16 @@ public class PlayerJumpState : PlayerBaseState
     {
         hasLeftGround = false;
         Debug.Log("da goi jump");
-        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump);
+
+        if (player.PlayerControl.HasBeenTransform)
+        {
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump);
+        }
+        else
+        {
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump);
+        }
+            
         player.PlayerControl.PlayerJump.Jump();
 
         player.PlayerControl.IsJumpPressed = false;
@@ -27,12 +36,28 @@ public class PlayerJumpState : PlayerBaseState
 
         if (player.PlayerControl.PlayerJump.CheckVelociyY() && hasLeftGround)
         {
-            player.PlayerControl.ChangeAnimationStateLoop(PlayerStateManager.Player_Jump_Down);
+            if (player.PlayerControl.HasBeenTransform)
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump_Down);
+            }
+            else
+            {
+                player.PlayerControl.ChangeAnimationStateLoop(PlayerStateManager.Player_Jump_Down);
+            }
+            
             player.PlayerControl.PlayerJump.SetGravity(7f);
         }
         if (player.PlayerControl.PlayerCheckingGround.IsGrounded && hasLeftGround)
         {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump_End);
+            if (player.PlayerControl.HasBeenTransform)
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump_End);
+            }
+            else
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump_End);
+            }
+               
             hasLeftGround = false;
         }
 
@@ -40,7 +65,7 @@ public class PlayerJumpState : PlayerBaseState
 
         AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
 
-        if (info.IsName(PlayerStateManager.Player_Jump_End) && info.normalizedTime >= 1f)
+        if (((info.IsName(PlayerStateManager.Player_Jump_End)|| info.IsName(PlayerStateManager.Player_T_Jump_End)) && info.normalizedTime >= 1f))
         {
             player.PlayerControl.PlayerJump.SetGravity(1f);
 

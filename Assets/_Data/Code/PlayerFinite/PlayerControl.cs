@@ -153,7 +153,7 @@ public class PlayerControl : MonoBehaviour
             isAttackPressed = true;
         }
 
-        if (currentStringState != "Idle" && currentStringState != "Run") return;
+        if (!currentStringState.Contains("Idle") && !currentStringState.Contains("Run")) return;
 
 
         //======= Nhảy ==========

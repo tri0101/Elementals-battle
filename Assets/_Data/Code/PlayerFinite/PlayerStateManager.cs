@@ -37,9 +37,9 @@ public class PlayerStateManager : MonoBehaviour
     //List các state transform
     public const string Player_T_Idle = "T_Idle";
     public const string Player_T_Run = "T_Run";
-    //public const string Player_T_Jump = "Jump Start";
-    //public const string Player_Jump_Down = "Jump Down";
-    //public const string Player_Jump_End = "Jump End";
+    public const string Player_T_Jump = "T_Jump_Start";
+    public const string Player_T_Jump_Down = "T_Jump_Down";
+    public const string Player_T_Jump_End = "T_Jump_End";
     //public const string Player_Attack_1 = "Attack_1";
     //public const string Player_Attack_2 = "Attack_2";
     //public const string Player_Attack_3 = "Attack_3";
