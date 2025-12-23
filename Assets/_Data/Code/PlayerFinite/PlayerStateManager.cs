@@ -45,9 +45,9 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_T_Attack_3 = "T_Attack_3";
     public const string Player_Transform_To_Human = "TransformToHuman";
     //public const string Player_Skill = "Skill";
-    //public const string Player_Block_Open = "Block_open";
-    //public const string Player_Block = "Block";
-    //public const string Player_Block_End = "Block_End";
+    public const string Player_T_Block_Open = "T_Block_Open";
+    public const string Player_T_Block = "T_Block";
+    public const string Player_T_Block_End = "T_Block_End";
     //public const string Player_Transform = "Transform";
 
     private void Awake()

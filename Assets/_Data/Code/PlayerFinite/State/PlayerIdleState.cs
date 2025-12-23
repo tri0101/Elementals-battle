@@ -5,6 +5,7 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void EnterState(PlayerStateManager player)
     {
+        player.PlayerControl.CanBlock = true;
         if (player.PlayerControl.HasBeenTransform)
         {
             player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Idle);

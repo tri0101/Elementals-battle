@@ -42,8 +42,10 @@ public class PlayerJump : MonoBehaviour
     {
         playerControl.Rb.gravityScale = amount;
     }
-    public void MyFixedUpdate()
+    public void MyFixedUpdate(float moveX)
     {
-        playerControl.Rb.linearVelocity = new Vector2(playerControl.MoveX * airWalkSpeed, playerControl.Rb.linearVelocity.y);
+        playerControl.Rb.linearVelocity = new Vector2(moveX * airWalkSpeed, playerControl.Rb.linearVelocity.y);
     }
+
+    
 }

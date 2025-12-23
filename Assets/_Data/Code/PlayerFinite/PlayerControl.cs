@@ -41,6 +41,14 @@ public class PlayerControl : MonoBehaviour
         get => isBlockPressed;
         set => isBlockPressed = value;
     }
+    [SerializeField] private bool canBlock;
+    public bool CanBlock
+    {
+        get => canBlock;
+        set => canBlock = value;
+    }
+
+    
     [SerializeField] private bool isTransformPressed;
     public bool IsTransformPressed
     {
@@ -149,7 +157,13 @@ public class PlayerControl : MonoBehaviour
             MoveX = 1;
 
 
-        isBlockPressed = Input.GetKey(keyBiding.blockKey);
+        //isBlockPressed = Input.GetKey(keyBiding.blockKey);
+
+
+        if (currentStringState.Contains("Block") && Input.GetKeyUp(keyBiding.blockKey))
+        {
+            isBlockPressed = false;
+        }
         //Lần đánh 2 , 3
         if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Attack"))
         {
@@ -158,13 +172,17 @@ public class PlayerControl : MonoBehaviour
 
         if (!currentStringState.Contains("Idle") && !currentStringState.Contains("Run")) return;
 
-
+       
         //======= Nhảy ==========
         if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
         }
-
+        if (Input.GetKeyDown(KeyBiding.blockKey) && canBlock)
+        {
+            isBlockPressed = true;
+            canBlock = false;
+        }
         if (Input.GetKeyDown(keyBiding.transformKey))
         {
             isTransformPressed = true;

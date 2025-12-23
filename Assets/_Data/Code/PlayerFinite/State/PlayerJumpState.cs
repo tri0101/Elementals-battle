@@ -4,6 +4,7 @@ public class PlayerJumpState : PlayerBaseState
 {
    
     [SerializeField] private bool hasLeftGround;
+    [SerializeField] private bool hasLanded;
     public override void EnterState(PlayerStateManager player)
     {
         hasLeftGround = false;
@@ -49,6 +50,8 @@ public class PlayerJumpState : PlayerBaseState
         }
         if (player.PlayerControl.PlayerCheckingGround.IsGrounded && hasLeftGround)
         {
+            hasLanded = true;
+
             if (player.PlayerControl.HasBeenTransform)
             {
                 player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump_End);
@@ -65,10 +68,11 @@ public class PlayerJumpState : PlayerBaseState
 
         AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
 
-        if (((info.IsName(PlayerStateManager.Player_Jump_End)|| info.IsName(PlayerStateManager.Player_T_Jump_End)) && info.normalizedTime >= 1f))
+        if (((info.IsName(PlayerStateManager.Player_Jump_End)|| info.IsName(PlayerStateManager.Player_T_Jump_End)) && info.normalizedTime >= 0.9f))
         {
+            
             player.PlayerControl.PlayerJump.SetGravity(1f);
-
+            hasLanded = false;
            player.SwitchState(player.idleState);
         }
 
@@ -76,7 +80,15 @@ public class PlayerJumpState : PlayerBaseState
     }
     public override void FixedUpdateState(PlayerStateManager player)
     {
-        player.PlayerControl.PlayerJump.MyFixedUpdate();
+        if (hasLanded)
+        {
+            player.PlayerControl.PlayerJump.MyFixedUpdate(0);
+        }
+        else
+        {
+            player.PlayerControl.PlayerJump.MyFixedUpdate(player.PlayerControl.MoveX);
+        }
+            
     }
 
     
