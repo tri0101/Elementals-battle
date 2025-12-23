@@ -64,11 +64,10 @@ public class PlayerJumpState : PlayerBaseState
             hasLeftGround = false;
         }
 
-        Animator anim = player.PlayerControl.Animator;
+        
 
-        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
-
-        if (((info.IsName(PlayerStateManager.Player_Jump_End)|| info.IsName(PlayerStateManager.Player_T_Jump_End)) && info.normalizedTime >= 0.9f))
+        
+        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Jump_End, 0.9f, 1) || (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Jump_End, 0.9f,1 ))))
         {
             
             player.PlayerControl.PlayerJump.SetGravity(1f);

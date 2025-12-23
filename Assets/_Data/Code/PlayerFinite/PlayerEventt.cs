@@ -73,5 +73,39 @@ public class PlayerEventt : MonoBehaviour
 
         playerControl.Rb.MovePosition(endPos);
     }
-    
+
+
+
+
+
+    //========Spawn ra ranged attack Object ===================
+    public void SpawnRangedAttack(string nameObject)
+    {
+        string tag;
+        if (transform.parent.tag == "Player1")
+        {
+            tag = "RangedAttackPlayer1";
+        }
+        else
+        {
+            tag = "RangedAttackPlayer2";
+        }
+
+        ObjectFlyingSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform.parent, tag);
+    }
+    public void SpawnObject(string nameObject)
+    {
+        string tag;
+        if (transform.parent.tag == "Player1")
+        {
+            tag = "RangedAttackPlayer1";
+        }
+        else
+        {
+            tag = "RangedAttackPlayer2";
+        }
+
+        ObjectSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform, tag);
+    }
+
 }

@@ -61,6 +61,12 @@ public class PlayerControl : MonoBehaviour
         get => hasBeenTransform;
         set => hasBeenTransform = value;
     }
+    [SerializeField] private bool isRangedAttackPressed;
+    public bool IsRangedAttackPressed
+    {
+        get => isRangedAttackPressed;
+        set => isRangedAttackPressed = value;
+    }
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -183,10 +189,14 @@ public class PlayerControl : MonoBehaviour
             isBlockPressed = true;
             canBlock = false;
         }
-        if (Input.GetKeyDown(keyBiding.transformKey))
+        if (Input.GetKeyDown(keyBiding.transformKey) && !hasBeenTransform)
         {
             isTransformPressed = true;
 
+        }
+        if (Input.GetKeyDown(KeyBiding.rangedAttackKey))
+        {
+            isRangedAttackPressed = true;
         }
         //Lần đánh 1
         if (Input.GetKeyDown(keyBiding.attackKey))
@@ -202,6 +212,22 @@ public class PlayerControl : MonoBehaviour
 
     }
     
+    // index = 1 : so sánh lớn hơn duration , index = 0 : ngược lại
+    public bool CheckCurrentAnimation(string stateCheck, float duration, int index)
+    {
+        Animator anim = animator;
+
+        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
+        if(index == 1)
+        {
+            return ((info.IsName(stateCheck) && info.normalizedTime >= duration));
+        }
+        else
+        {
+            return ((info.IsName(stateCheck) && info.normalizedTime <= duration));
+        }
+     
+    }
 
     //TEst thôi
     void SpriteName()

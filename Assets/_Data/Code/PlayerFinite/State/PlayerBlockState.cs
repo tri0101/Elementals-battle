@@ -31,17 +31,12 @@ public class PlayerBlockState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-        Animator anim = player.PlayerControl.Animator;
-
-        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
-
-        if ((info.IsName(PlayerStateManager.Player_Block_Open) || info.IsName(PlayerStateManager.Player_T_Block_Open)) && info.normalizedTime <= 1f)
+      
+        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Block_Open, 1f, 0) || (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Block_Open, 1, 0))))
         {
 
-            
             return;
         }
-
         if (player.PlayerControl.PlayerTransformm.TransformToHuman)
         {
             isEnding = true;
@@ -65,11 +60,9 @@ public class PlayerBlockState : PlayerBaseState
                 
         }
         if (!isEnding) return;
-        //Animator anim = player.PlayerControl.Animator;
-
-        //AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
-
-        if ((info.IsName(PlayerStateManager.Player_Block_End) || info.IsName(PlayerStateManager.Player_T_Block_End)) && info.normalizedTime >= 0.9f)
+        
+        
+        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Block_End, 0.9f, 1) || (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Block_End, 0.9f, 1))))
         {
 
             

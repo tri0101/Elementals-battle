@@ -37,13 +37,9 @@ public class PlayerTransformState : PlayerBaseState
     public override void UpdateState(PlayerStateManager player)
     {
 
-        Animator anim = player.PlayerControl.Animator;
-
-        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
-
-        if ((info.IsName(PlayerStateManager.Player_Transform) || info.IsName(PlayerStateManager.Player_Transform_To_Human)) && info.normalizedTime >= 0.9f)
+       
+        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Transform, 0.9f, 1) || (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Transform_To_Human, 0.9f, 1))))
         {
-
 
             player.SwitchState(player.idleState);
         }

@@ -1,33 +1,31 @@
 using UnityEngine;
 
-public class PlayerSkillState : PlayerBaseState
+public class PlayerRangedAttackState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player)
     {
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
-        player.PlayerControl.IsSkillPressed = false;
-        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Skill);
+        player.PlayerControl.IsAttackPressed = false;
+        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
+
     }
 
     public override void ExitState(PlayerStateManager player)
     {
-        
+       
     }
 
     public override void FixedUpdateState(PlayerStateManager player)
     {
-       
+        
     }
 
     public override void UpdateState(PlayerStateManager player)
     {
-       
-        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Skill, 0.9f, 1)))
+        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Ranged_Attack, 0.9f, 1)))
         {
 
-           
             player.SwitchState(player.idleState);
         }
-
     }
 }

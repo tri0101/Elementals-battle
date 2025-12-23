@@ -41,6 +41,11 @@ public class PlayerRunState : PlayerBaseState
             player.SwitchState(player.attackState);
             return;
         }
+        if (player.PlayerControl.IsRangedAttackPressed)
+        {
+            player.SwitchState(player.rangedAttackState);
+            return;
+        }
         if (player.PlayerControl.IsSkillPressed)
         {
             player.SwitchState(player.skillState);

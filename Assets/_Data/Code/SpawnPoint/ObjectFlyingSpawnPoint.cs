@@ -3,6 +3,7 @@ using NUnit.Framework.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -79,7 +80,7 @@ public class ObjectFlyingSpawnPoint : MonoBehaviour
             finalSpawnPoint = playerSpawnPos.position + new Vector3(-spawnPoint.x, 0, 0);
 
         }
-        finalSpawnPoint.y = spawnPoint.y;
+        finalSpawnPoint.y = playerSpawnPos.position.y + spawnPoint.y;
         tmpSpawwn.transform.position = finalSpawnPoint;
         //Tính giá trị scale 
         tmpSpawwn.transform.localScale = new Vector3(playerSpawnPos.parent.localScale.x > 0 ? 1 : -1, 1, 1);
