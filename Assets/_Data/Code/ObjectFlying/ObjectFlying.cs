@@ -29,7 +29,7 @@ public class ObjectFlying : MonoBehaviour
 
     private Vector3 moveDir;
 
-    private void Start()
+    private void Awake()
     {
         objController = GetComponent<ObjectFlyingController>();
         speed = objController.ObjectFlyingSO.flySpeed;

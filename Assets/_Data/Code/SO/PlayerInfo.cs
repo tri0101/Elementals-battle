@@ -9,4 +9,8 @@ public class PlayerInfo : ScriptableObject
     public float airWalkSpeed;
     public float dashPower;
     public float dashDuration;
+
+    [Header("Duration Attack")]
+    public float durationA1;
+    public float durationA2;
 }

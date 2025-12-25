@@ -5,7 +5,7 @@ public class PlayerRangedAttackState : PlayerBaseState
     public override void EnterState(PlayerStateManager player)
     {
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
-        player.PlayerControl.IsAttackPressed = false;
+        player.PlayerControl.IsRangedAttackPressed = false;
         player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
 
     }

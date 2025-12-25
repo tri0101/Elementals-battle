@@ -91,7 +91,7 @@ public class PlayerEventt : MonoBehaviour
             tag = "RangedAttackPlayer2";
         }
 
-        ObjectFlyingSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform.parent, tag);
+        ObjectFlyingSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform, tag);
     }
     public void SpawnObject(string nameObject)
     {

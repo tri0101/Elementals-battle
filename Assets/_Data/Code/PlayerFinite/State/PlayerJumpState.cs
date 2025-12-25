@@ -5,6 +5,7 @@ public class PlayerJumpState : PlayerBaseState
    
     [SerializeField] private bool hasLeftGround;
     [SerializeField] private bool hasLanded;
+    [SerializeField] private bool isAttacking;
     public override void EnterState(PlayerStateManager player)
     {
         hasLeftGround = false;
@@ -29,6 +30,15 @@ public class PlayerJumpState : PlayerBaseState
     }
     public override void UpdateState(PlayerStateManager player)
     {
+
+        if (player.PlayerControl.IsAttackPressed)
+        {
+            isAttacking = true;
+            player.PlayerControl.IsAttackPressed = false;
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Air_Attack);
+            return;
+        }
+        //if (isAttacking) return;
         if (!player.PlayerControl.PlayerCheckingGround.IsGrounded)
         {
             hasLeftGround = true;

@@ -175,7 +175,11 @@ public class PlayerControl : MonoBehaviour
         {
             isAttackPressed = true;
         }
-
+        //Air attack
+        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Jump"))
+        {
+            isAttackPressed = true;
+        }
         if (!currentStringState.Contains("Idle") && !currentStringState.Contains("Run")) return;
 
        
@@ -194,7 +198,7 @@ public class PlayerControl : MonoBehaviour
             isTransformPressed = true;
 
         }
-        if (Input.GetKeyDown(KeyBiding.rangedAttackKey))
+        if (Input.GetKeyDown(KeyBiding.rangedAttackKey) && !hasBeenTransform)
         {
             isRangedAttackPressed = true;
         }
@@ -228,7 +232,14 @@ public class PlayerControl : MonoBehaviour
         }
      
     }
+    public bool CheckCurrentAnimationName(string nameAnim)
+    {
 
+        Animator anim = animator;
+
+        AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
+        return (info.IsName(nameAnim));
+    }
     //TEst thôi
     void SpriteName()
     {
