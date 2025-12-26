@@ -1,3 +1,4 @@
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerJumpState : PlayerBaseState
@@ -9,6 +10,7 @@ public class PlayerJumpState : PlayerBaseState
     public override void EnterState(PlayerStateManager player)
     {
         hasLeftGround = false;
+        isAttacking = false;
         Debug.Log("da goi jump");
 
         if (player.PlayerControl.HasBeenTransform)
@@ -28,6 +30,7 @@ public class PlayerJumpState : PlayerBaseState
     {
         
     }
+
     public override void UpdateState(PlayerStateManager player)
     {
 
@@ -35,10 +38,41 @@ public class PlayerJumpState : PlayerBaseState
         {
             isAttacking = true;
             player.PlayerControl.IsAttackPressed = false;
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Air_Attack);
+            if (player.PlayerControl.HasBeenTransform)
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Air_Attack);
+            }
+            else
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Air_Attack);
+            }
+                
             return;
         }
-        //if (isAttacking) return;
+        if (isAttacking)
+        {
+            if (!player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Air_Attack, 0.95f, 1) &&
+                !player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Air_Attack,0.95f,1))
+            {
+                return;
+            }
+            isAttacking = false;
+        }
+        if (player.PlayerControl.HasBeenTransform)
+        {
+            if (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Jump, 0.95f, 1))
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump_Rising);
+            }
+        }
+        else
+        {
+            if (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Jump, 0.95f, 1))
+            {
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump_ring);
+            }
+        }
+        
         if (!player.PlayerControl.PlayerCheckingGround.IsGrounded)
         {
             hasLeftGround = true;
@@ -99,6 +133,6 @@ public class PlayerJumpState : PlayerBaseState
         }
             
     }
-
+   
     
 }

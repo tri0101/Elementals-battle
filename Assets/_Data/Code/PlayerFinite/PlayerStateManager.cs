@@ -26,6 +26,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Idle = "Idle";
     public const string Player_Run = "Run";
     public const string Player_Jump = "Jump Start";
+    public const string Player_Jump_ring = "Jump_rising";
     public const string Player_Jump_Down = "Jump Down";
     public const string Player_Jump_End = "Jump End";
     public const string Player_Attack_1 = "Attack_1";
@@ -41,12 +42,13 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_T_Idle = "T_Idle";
     public const string Player_T_Run = "T_Run";
     public const string Player_T_Jump = "T_Jump_Start";
+    public const string Player_T_Jump_Rising = "T_Jump_rising";
     public const string Player_T_Jump_Down = "T_Jump_Down";
     public const string Player_T_Jump_End = "T_Jump_End";
     public const string Player_T_Attack_1 = "T_Attack_1";
     public const string Player_T_Attack_2 = "T_Attack_2";
     public const string Player_T_Attack_3 = "T_Attack_3";
-    public const string Player_T_Air_Attack = "T_air_Attack";
+    public const string Player_T_Air_Attack = "T_Air_attack";
     public const string Player_Transform_To_Human = "TransformToHuman";
     public const string Player_Ranged_Attack = "Ranged_Attack";
     //public const string Player_Skill = "Skill";

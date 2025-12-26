@@ -15,11 +15,23 @@ public class ObjectFlyingAttack : MonoBehaviour
     }
     private void Update()
     {
-        if (objController.CheckingObjectFlying.IsTouchPlayer && !hasAttacked)
+        if(transform.name == "Air_Arrow")
         {
-            hasAttacked = true;
-            StartCoroutine(DelayAttack(objController.ObjectFlyingSO.delayAttack));
+            if (objController.CheckingObjectFlying.IsTouchGround && !hasAttacked)
+            {
+                hasAttacked = true;
+                StartCoroutine(DelayAttack(objController.ObjectFlyingSO.delayAttack));
+            }
         }
+        else
+        {
+            if (objController.CheckingObjectFlying.IsTouchPlayer && !hasAttacked)
+            {
+                hasAttacked = true;
+                StartCoroutine(DelayAttack(objController.ObjectFlyingSO.delayAttack));
+            }
+        }
+        
     }
 
     IEnumerator DelayAttack(float delay)

@@ -357,7 +357,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchPlayer: 0
+  isTouchGround: 0
   playerCheckDistance: 0.2
+  rayGroundDistance: 0.1
   castFilter:
     useTriggers: 0
     useLayerMask: 1
@@ -1767,7 +1769,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2253911629886400664, guid: f6586548baf567b4aa52fe0e348ec356, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: f6586548baf567b4aa52fe0e348ec356, type: 3}
       propertyPath: m_LocalScale.x
@@ -10211,7 +10213,7 @@ Transform:
   m_GameObject: {fileID: 952690491}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.31, y: -7.73, z: 0}
+  m_LocalPosition: {x: 0.31, y: -7.25, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -10244,7 +10246,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchPlayer: 0
+  isTouchGround: 0
   playerCheckDistance: 0.2
+  rayGroundDistance: 0.1
   castFilter:
     useTriggers: 0
     useLayerMask: 1
@@ -10387,7 +10391,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchPlayer: 0
+  isTouchGround: 0
   playerCheckDistance: 0.2
+  rayGroundDistance: 0.1
   castFilter:
     useTriggers: 0
     useLayerMask: 1
@@ -12326,7 +12332,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isTouchPlayer: 0
+  isTouchGround: 0
   playerCheckDistance: 0.2
+  rayGroundDistance: 0.1
   castFilter:
     useTriggers: 0
     useLayerMask: 1
