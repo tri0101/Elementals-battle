@@ -21,6 +21,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerSkillState skillState = new PlayerSkillState();
     public PlayerBlockState blocKState = new PlayerBlockState();
     public PlayerTransformState transformState = new PlayerTransformState();
+    public PlayerRollState rollState = new PlayerRollState();
 
     //List các state normal
     public const string Player_Idle = "Idle";
@@ -38,6 +39,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Block = "Block";
     public const string Player_Block_End = "Block_End";
     public const string Player_Transform = "Transform";
+    public const string Player_Roll = "Roll";
     //List các state transform
     public const string Player_T_Idle = "T_Idle";
     public const string Player_T_Run = "T_Run";

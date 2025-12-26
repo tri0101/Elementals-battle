@@ -67,6 +67,12 @@ public class PlayerControl : MonoBehaviour
         get => isRangedAttackPressed;
         set => isRangedAttackPressed = value;
     }
+    [SerializeField] private bool isRollPressed;
+    public bool IsRollPressed
+    {
+        get => isRollPressed;
+        set => isRollPressed = value;
+    }
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -85,6 +91,8 @@ public class PlayerControl : MonoBehaviour
     public PlayerAttackk PlayerAttackk => playerAttackk;
     PlayerTransformm playerTransformm;
     public PlayerTransformm PlayerTransformm => playerTransformm;
+    PlayerRoll playerRoll;
+    public PlayerRoll PlayerRoll => playerRoll;
 
     [Header("ScriptableObject")]
     [SerializeField] private PlayerInfo playerInfo;
@@ -105,6 +113,7 @@ public class PlayerControl : MonoBehaviour
         playerJump = GetComponent<PlayerJump>();
         playerAttackk = GetComponent<PlayerAttackk>();
         playerTransformm = GetComponent<PlayerTransformm>();
+        playerRoll = GetComponent<PlayerRoll>();    
     }
 
 
@@ -196,6 +205,11 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetKeyDown(keyBiding.transformKey) && !hasBeenTransform)
         {
             isTransformPressed = true;
+
+        }
+        if (Input.GetKeyDown(keyBiding.dashKey) && !hasBeenTransform)
+        {
+            isRollPressed = true;
 
         }
         if (Input.GetKeyDown(KeyBiding.rangedAttackKey) && !hasBeenTransform)

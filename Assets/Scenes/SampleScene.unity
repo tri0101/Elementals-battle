@@ -8072,7 +8072,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2253911629886400664, guid: 35b2d0054ad2ea84a8c42ec40a05efc0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 35b2d0054ad2ea84a8c42ec40a05efc0, type: 3}
       propertyPath: m_LocalScale.x
@@ -14860,6 +14860,7 @@ GameObject:
   - component: {fileID: 1764104757}
   - component: {fileID: 1764104756}
   - component: {fileID: 1764104755}
+  - component: {fileID: 1764104764}
   m_Layer: 0
   m_Name: Leaf_Ranger_finite
   m_TagString: Player1
@@ -14943,8 +14944,9 @@ MonoBehaviour:
   isTransformPressed: 0
   hasBeenTransform: 0
   isRangedAttackPressed: 0
+  isRollPressed: 0
   currentStringState: 
-  playerInfo: {fileID: 11400000, guid: 8a72172777ca0c0468cefba32f6e5cbb, type: 2}
+  playerInfo: {fileID: 11400000, guid: e640e981ec2f56d4883b4327194f0172, type: 2}
   keyBiding: {fileID: 11400000, guid: c7e6b4ffeab37bc42bed7e5e306b8f21, type: 2}
 --- !u!114 &1764104760
 MonoBehaviour:
@@ -15044,6 +15046,18 @@ Transform:
   - {fileID: 1942888936}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1764104764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764104754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd3f9d285d5dfe148b8da30403979c96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1795783235
 GameObject:
   m_ObjectHideFlags: 0
@@ -20833,7 +20847,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2253911629886400664, guid: 02dd404f38c4e244c806e4ecfdc3b8c2, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 02dd404f38c4e244c806e4ecfdc3b8c2, type: 3}
       propertyPath: m_LocalScale.x
@@ -21120,6 +21134,7 @@ GameObject:
   - component: {fileID: 1918425596}
   - component: {fileID: 1918425597}
   - component: {fileID: 1918425598}
+  - component: {fileID: 1918425599}
   m_Layer: 0
   m_Name: Crystal_Mauler_finite
   m_TagString: Player2
@@ -21263,6 +21278,7 @@ MonoBehaviour:
   isTransformPressed: 0
   hasBeenTransform: 0
   isRangedAttackPressed: 0
+  isRollPressed: 0
   currentStringState: 
   playerInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
   keyBiding: {fileID: 11400000, guid: b466065009f46314db9cf73142ecd917, type: 2}
@@ -21302,6 +21318,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a51b32d176b5b9489b69d1ddf11628d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1918425599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918425589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd3f9d285d5dfe148b8da30403979c96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1922831797

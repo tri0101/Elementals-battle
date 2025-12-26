@@ -74,8 +74,8 @@ public class PlayerMovement : MonoBehaviour
         moveSpeed = pc.PlayerInfo.moveSpeed;
         jumpForce = pc.PlayerInfo.jumpForce;
         airWalkSpeed = pc.PlayerInfo.airWalkSpeed;
-        dashPower = pc.PlayerInfo.dashPower;
-        dashDuration = pc.PlayerInfo.dashDuration;
+        dashPower = pc.PlayerInfo.rollPower;
+        dashDuration = pc.PlayerInfo.rollDuration;
     }
 
     public float CurrentSpeed

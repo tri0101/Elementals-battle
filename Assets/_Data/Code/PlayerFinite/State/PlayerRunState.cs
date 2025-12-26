@@ -25,6 +25,12 @@ public class PlayerRunState : PlayerBaseState
     }
     public override void UpdateState(PlayerStateManager player)
     {
+
+
+        if (player.PlayerControl.IsRollPressed)
+        {
+            player.SwitchState(player.rollState);
+        }
         if (player.PlayerControl.PlayerTransformm.TransformToHuman)
         {
             player.SwitchState(player.transformState);

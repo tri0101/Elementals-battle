@@ -7,8 +7,8 @@ public class PlayerInfo : ScriptableObject
     public float moveSpeed;
     public float jumpForce;
     public float airWalkSpeed;
-    public float dashPower;
-    public float dashDuration;
+    public float rollPower;
+    public float rollDuration;
 
     [Header("Duration Attack")]
     public float durationA1;
