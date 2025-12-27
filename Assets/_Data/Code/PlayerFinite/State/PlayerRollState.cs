@@ -5,6 +5,7 @@ public class PlayerRollState : PlayerBaseState
     public override void EnterState(PlayerStateManager player)
     {
         player.PlayerControl.IsRollPressed = false;
+        player.PlayerControl.ChangeLayerAtReceive("RollLayer");
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Roll);
         player.PlayerControl.PlayerRoll.StartRoll();
@@ -27,7 +28,7 @@ public class PlayerRollState : PlayerBaseState
         if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Roll, 0.95f, 1)))
         {
 
-            
+            player.PlayerControl.ReturnFixedLayer();
             player.SwitchState(player.idleState);
         }
     }

@@ -11,9 +11,15 @@ public class PlayerControl : MonoBehaviour
     public Animator Animator => animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
     public SpriteRenderer SpriteRenderer => spriteRenderer;
+
+    [SerializeField] private string fixedLayer;
+    public string FixedLayer => fixedLayer; 
     [SerializeField] private Transform normalT;
     public Transform NormalT => normalT;
-
+  
+    [SerializeField] private Transform receiveT;
+    public Transform ReceiveT => receiveT;
+  
     public float MoveX;
 
     [SerializeField] private bool isJumpPressed;
@@ -103,6 +109,8 @@ public class PlayerControl : MonoBehaviour
     private void Awake()
     {
         normalT = transform.Find("Normal");
+        receiveT = normalT.Find("ColliderReceive");
+        fixedLayer = LayerMask.LayerToName(receiveT.gameObject.layer);
         animator = normalT.GetComponent<Animator>();
         spriteRenderer = normalT.GetComponent<SpriteRenderer>();
 
@@ -115,7 +123,7 @@ public class PlayerControl : MonoBehaviour
         playerTransformm = GetComponent<PlayerTransformm>();
         playerRoll = GetComponent<PlayerRoll>();    
     }
-
+  
 
     public void ChangeAnimationState(string newState, float time = 0)
     {
@@ -253,6 +261,19 @@ public class PlayerControl : MonoBehaviour
 
         AnimatorStateInfo info = anim.GetCurrentAnimatorStateInfo(0);
         return (info.IsName(nameAnim));
+    }
+
+
+
+    //Đổi sang các layer khác
+    public void ChangeLayerAtReceive(string layerName )
+    {
+        receiveT.gameObject.layer = LayerMask.NameToLayer(layerName);
+    }
+    //trả về layer mặc định
+    public void ReturnFixedLayer()
+    {
+        receiveT.gameObject.layer = LayerMask.NameToLayer(fixedLayer);
     }
     //TEst thôi
     void SpriteName()
