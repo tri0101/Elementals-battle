@@ -75,4 +75,8 @@ public class PlayerRunState : PlayerBaseState
     {
         player.PlayerControl.PlayerRun.Move();
     }
+    public override void LateUpdateState(PlayerStateManager player)
+    {
+
+    }
 }

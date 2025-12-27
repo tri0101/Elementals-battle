@@ -83,4 +83,8 @@ public class PlayerAttackState : PlayerBaseState
         }
        
     }
+    public override void LateUpdateState(PlayerStateManager player)
+    {
+
+    }
 }

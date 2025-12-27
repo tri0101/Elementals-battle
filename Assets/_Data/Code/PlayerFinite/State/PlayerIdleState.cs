@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class PlayerIdleState : PlayerBaseState
 {
@@ -76,6 +77,8 @@ public class PlayerIdleState : PlayerBaseState
 
     }
 
-    
-
+    public override void LateUpdateState(PlayerStateManager player)
+    {
+        player.PlayerControl.PlayerIdle.AutoFlip();
+    }
 }

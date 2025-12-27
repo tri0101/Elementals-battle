@@ -77,6 +77,10 @@ public class PlayerStateManager : MonoBehaviour
     {
         currentState.FixedUpdateState(this);
     }
+    private void LateUpdate()
+    {
+        currentState.LateUpdateState(this);
+    }
     //public void SwitchState(PlayerBaseState state)
     //{
     //    currentState = state;

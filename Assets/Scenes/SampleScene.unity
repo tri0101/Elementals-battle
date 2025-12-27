@@ -14861,6 +14861,7 @@ GameObject:
   - component: {fileID: 1764104756}
   - component: {fileID: 1764104755}
   - component: {fileID: 1764104764}
+  - component: {fileID: 1764104765}
   m_Layer: 0
   m_Name: Leaf_Ranger_finite
   m_TagString: Player1
@@ -14934,7 +14935,9 @@ MonoBehaviour:
   rb: {fileID: 0}
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  fixedLayer: 
   normalT: {fileID: 0}
+  receiveT: {fileID: 0}
   MoveX: 0
   isJumpPressed: 0
   isAttackPressed: 0
@@ -14948,6 +14951,7 @@ MonoBehaviour:
   currentStringState: 
   playerInfo: {fileID: 11400000, guid: e640e981ec2f56d4883b4327194f0172, type: 2}
   keyBiding: {fileID: 11400000, guid: c7e6b4ffeab37bc42bed7e5e306b8f21, type: 2}
+  enemy: {fileID: 0}
 --- !u!114 &1764104760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14974,7 +14978,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   groundLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   rayDistance: 0.1
   rayUnderDistance: 0.5
   wallCheckDistance: 0.2
@@ -14982,23 +14986,25 @@ MonoBehaviour:
   ceilingDistance: 3.9
   castFilter:
     useTriggers: 0
-    useLayerMask: 0
+    useLayerMask: 1
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
     useOutsideNormalAngle: 0
     layerMask:
       serializedVersion: 2
-      m_Bits: 0
+      m_Bits: 64
     minDepth: 0
     maxDepth: 0
     minNormalAngle: 0
     maxNormalAngle: 0
   playerLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 776
   isGrounded: 0
   isOnWall: 0
+  isWallLeft: 0
+  isWallRight: 0
   isOnCeiling: 0
   isOnPlayer: 0
   isUnderPlayer: 0
@@ -15056,6 +15062,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd3f9d285d5dfe148b8da30403979c96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1764104765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1764104754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7ea60330ecf1e1488f0c7e62506ca69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1795783235
@@ -21135,6 +21153,7 @@ GameObject:
   - component: {fileID: 1918425597}
   - component: {fileID: 1918425598}
   - component: {fileID: 1918425599}
+  - component: {fileID: 1918425600}
   m_Layer: 0
   m_Name: Crystal_Mauler_finite
   m_TagString: Player2
@@ -21236,6 +21255,8 @@ MonoBehaviour:
     m_Bits: 776
   isGrounded: 0
   isOnWall: 0
+  isWallLeft: 0
+  isWallRight: 0
   isOnCeiling: 0
   isOnPlayer: 0
   isUnderPlayer: 0
@@ -21268,7 +21289,9 @@ MonoBehaviour:
   rb: {fileID: 0}
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
+  fixedLayer: 
   normalT: {fileID: 0}
+  receiveT: {fileID: 0}
   MoveX: 0
   isJumpPressed: 0
   isAttackPressed: 0
@@ -21282,6 +21305,7 @@ MonoBehaviour:
   currentStringState: 
   playerInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
   keyBiding: {fileID: 11400000, guid: b466065009f46314db9cf73142ecd917, type: 2}
+  enemy: {fileID: 0}
 --- !u!114 &1918425596
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21330,6 +21354,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cd3f9d285d5dfe148b8da30403979c96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1918425600
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1918425589}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7ea60330ecf1e1488f0c7e62506ca69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1922831797

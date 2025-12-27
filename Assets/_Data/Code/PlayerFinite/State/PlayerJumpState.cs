@@ -34,6 +34,7 @@ public class PlayerJumpState : PlayerBaseState
     public override void UpdateState(PlayerStateManager player)
     {
 
+        
         if (player.PlayerControl.IsAttackPressed)
         {
             isAttacking = true;
@@ -123,6 +124,7 @@ public class PlayerJumpState : PlayerBaseState
     }
     public override void FixedUpdateState(PlayerStateManager player)
     {
+       
         if (hasLanded)
         {
             player.PlayerControl.PlayerJump.MyFixedUpdate(0);
@@ -131,8 +133,11 @@ public class PlayerJumpState : PlayerBaseState
         {
             player.PlayerControl.PlayerJump.MyFixedUpdate(player.PlayerControl.MoveX);
         }
-            
+        player.PlayerControl.PlayerJump.CheckPlayer();
     }
-   
-    
+
+    public override void LateUpdateState(PlayerStateManager player)
+    {
+
+    }
 }

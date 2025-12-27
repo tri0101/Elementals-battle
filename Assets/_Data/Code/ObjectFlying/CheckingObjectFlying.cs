@@ -26,14 +26,15 @@ public class CheckingObjectFlying : MonoBehaviour
         objController = GetComponent<ObjectFlyingController>();
         if (transform.tag == "RangedAttackPlayer1")
         {
-            castFilter.layerMask = LayerMask.GetMask("Player2");
+            castFilter.layerMask = LayerMask.GetMask("Player2", "Ground");
             //transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("RangedPlayer1");
         }
         else if (transform.tag == "RangedAttackPlayer2")
         {
-            castFilter.layerMask = LayerMask.GetMask("Player1");
+            castFilter.layerMask = LayerMask.GetMask("Player1", "Ground");
             //transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("RangedPlayer2");
         }
+       
     }
     void FixedUpdate()
     {

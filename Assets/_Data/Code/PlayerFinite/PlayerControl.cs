@@ -99,6 +99,8 @@ public class PlayerControl : MonoBehaviour
     public PlayerTransformm PlayerTransformm => playerTransformm;
     PlayerRoll playerRoll;
     public PlayerRoll PlayerRoll => playerRoll;
+    PlayerIdle playerIdle;
+    public PlayerIdle PlayerIdle => playerIdle;
 
     [Header("ScriptableObject")]
     [SerializeField] private PlayerInfo playerInfo;
@@ -106,6 +108,12 @@ public class PlayerControl : MonoBehaviour
     [Header("KeyBiding")]
     [SerializeField] KeyBinding keyBiding;
     public KeyBinding KeyBiding => keyBiding;
+
+
+    [Header("Enemy")]
+    [SerializeField] private Transform enemy;
+    public Transform Enemy => enemy;
+
     private void Awake()
     {
         normalT = transform.Find("Normal");
@@ -122,6 +130,10 @@ public class PlayerControl : MonoBehaviour
         playerAttackk = GetComponent<PlayerAttackk>();
         playerTransformm = GetComponent<PlayerTransformm>();
         playerRoll = GetComponent<PlayerRoll>();    
+        playerIdle = GetComponent<PlayerIdle>();
+        string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
+        GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
+        enemy = enemyObj.transform;
     }
   
 
@@ -275,6 +287,39 @@ public class PlayerControl : MonoBehaviour
     {
         receiveT.gameObject.layer = LayerMask.NameToLayer(fixedLayer);
     }
+
+    public void CheckUnder()
+    {
+        if (currentStringState.Contains("Roll")) return;
+        if (playerCheckingGround.IsUnderPlayer)
+        {
+            Vector3 pos = transform.position;
+            if (playerCheckingGround.IsWallLeft)
+            {
+                pos.x += 1.5f;
+                
+            }
+            else if(playerCheckingGround.IsWallRight) 
+            {
+                pos.x -= 1.5f;
+            }
+                
+            else if (transform.localScale.x > 0)
+            {
+                pos.x -= 1.5f;
+            }
+            else
+            {
+                pos.x += 1.5f;
+            }
+            transform.position = pos;
+        }
+    }
+    private void FixedUpdate()
+    {
+        CheckUnder();
+    }
+
     //TEst thôi
     void SpriteName()
     {

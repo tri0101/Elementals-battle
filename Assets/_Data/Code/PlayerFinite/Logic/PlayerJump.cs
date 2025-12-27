@@ -1,5 +1,6 @@
+﻿using Unity.VisualScripting;
 using UnityEngine;
-
+using System.Collections;
 public class PlayerJump : MonoBehaviour
 {
     PlayerControl playerControl;
@@ -27,7 +28,17 @@ public class PlayerJump : MonoBehaviour
     }
     public void Jump()
     {
-        playerControl.Rb.linearVelocity = new Vector2(playerControl.Rb.linearVelocity.x, jumpForce);
+        if (playerControl.PlayerCheckingGround.IsXJumpPlayer)
+        {
+            playerControl.Rb.linearVelocity = new Vector2(0, jumpForce);
+            //StartCoroutine(ResetCanMove());
+            
+        }
+        else
+        {
+            playerControl.Rb.linearVelocity = new Vector2(playerControl.Rb.linearVelocity.x, jumpForce);
+        }
+            
 
     }
 
@@ -42,10 +53,32 @@ public class PlayerJump : MonoBehaviour
     {
         playerControl.Rb.gravityScale = amount;
     }
+    //public void MyFixedUpdate(float moveX)
+    //{
+    //    playerControl.Rb.linearVelocity = new Vector2(moveX * airWalkSpeed, playerControl.Rb.linearVelocity.y);
+    //}
     public void MyFixedUpdate(float moveX)
     {
-        playerControl.Rb.linearVelocity = new Vector2(moveX * airWalkSpeed, playerControl.Rb.linearVelocity.y);
+        Vector2 currentVel = playerControl.Rb.linearVelocity;
+        currentVel.x = moveX * airWalkSpeed;
+        playerControl.Rb.linearVelocity = currentVel;
     }
-
-    
+    public void CheckPlayer()
+    {
+        if (playerControl.PlayerCheckingGround.IsOnPlayer && playerControl.Rb.linearVelocity.y < 0)
+        {
+            // Tạo hiệu ứng trượt xuống người khác
+            Vector2 vel = playerControl.Rb.linearVelocity;
+            vel.y = -50f; // tốc độ rơi trượt
+            
+            playerControl.Rb.linearVelocity = vel;
+        }
+        
+    }
+    private IEnumerator ResetCanMove()
+    {
+        
+        yield return new WaitForSeconds(0.35f);
+        
+    }
 }

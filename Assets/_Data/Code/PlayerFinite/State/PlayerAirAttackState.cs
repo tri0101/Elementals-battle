@@ -22,5 +22,8 @@ public class PlayerAirAttackState : PlayerBaseState
     {
     }
 
+    public override void LateUpdateState(PlayerStateManager player)
+    {
 
+    }
 }

@@ -29,6 +29,10 @@ public class PlayerCheckingGround : MonoBehaviour
     public bool IsGrounded => isGrounded;
     [SerializeField] private bool isOnWall = false;
     public bool IsOnWall => isOnWall;
+    [SerializeField] private bool isWallLeft = false;
+    public bool IsWallLeft => isWallLeft;
+    [SerializeField] private bool isWallRight = false;
+    public bool IsWallRight => isWallRight;
     [SerializeField] private bool isOnCeiling = false;
     public bool IsOnCeiling => isOnCeiling;
     [SerializeField] private bool isOnPlayer = false;
@@ -46,13 +50,13 @@ public class PlayerCheckingGround : MonoBehaviour
     void FixedUpdate()
     {
         //isOnWall = touchingCol.Cast(checkWallDiretion, castFilter, wallHits, wallCheckDistance) > 0;
-        bool hitRight = touchingCol.Cast(
+        isWallRight = touchingCol.Cast(
            Vector2.right, castFilter, wallHits, wallCheckDistance) > 0;
 
-        bool hitLeft = touchingCol.Cast(
+        isWallLeft = touchingCol.Cast(
             Vector2.left, castFilter, wallHits, wallCheckDistance) > 0;
 
-        isOnWall = hitRight || hitLeft;
+        isOnWall = isWallRight || isWallLeft;
         isGrounded = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayDistance) > 0;
 
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;

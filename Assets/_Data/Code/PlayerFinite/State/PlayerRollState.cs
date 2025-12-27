@@ -32,4 +32,8 @@ public class PlayerRollState : PlayerBaseState
             player.SwitchState(player.idleState);
         }
     }
+    public override void LateUpdateState(PlayerStateManager player)
+    {
+
+    }
 }

@@ -69,6 +69,9 @@ public class PlayerBlockState : PlayerBaseState
             player.SwitchState(player.idleState);
         }
     }
+    public override void LateUpdateState(PlayerStateManager player)
+    {
 
-  
+    }
+
 }

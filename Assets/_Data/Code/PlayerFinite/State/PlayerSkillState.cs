@@ -30,4 +30,8 @@ public class PlayerSkillState : PlayerBaseState
         }
 
     }
+    public override void LateUpdateState(PlayerStateManager player)
+    {
+
+    }
 }
