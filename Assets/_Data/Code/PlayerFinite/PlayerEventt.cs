@@ -108,4 +108,31 @@ public class PlayerEventt : MonoBehaviour
         ObjectSpawnPoint.instance.SpawnObjectAtPosition(nameObject, transform, tag);
     }
 
+
+    //======Stop Anim khi bi tan cong=============
+    //public void IsStopAnim()
+    //{
+       
+
+    //    if (pc.PlayerReceiveDamage.IsStopAnim)
+    //    {
+    //        StartCoroutine(PauseAnimCoroutine(pc.PlayerReceiveDamage.DurationFinalAttack));
+    //    }
+    //}
+
+    //private IEnumerator PauseAnimCoroutine(float duration)
+    //{
+    //    pc.Animator.speed = 0f;
+    //    yield return new WaitForSeconds(duration);
+    //    if (pc.StatusEffect == StatusEffect.Frozen)
+    //    {
+    //        pc.Animator.speed = 0.5f;
+
+    //    }
+    //    else
+    //    {
+    //        pc.Animator.speed = 1f;
+    //    }
+
+    //}
 }

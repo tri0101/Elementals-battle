@@ -74,22 +74,22 @@ public class Attack : MonoBehaviour
         // =========================
         //       Player bị đánh
         // =========================
-        var player = other.GetComponent<PlayerReceiveDamage>();
+        var player = other.GetComponent<PlayerReceiveDamagee>();
         if (player != null)
         {
-            if (player.IsImmortal) return;
+            //if (player.IsImmortal) return;
 
             player.ReceiveDamage(attackDamage);
 
-            if (transform.name.Contains("Attack_Final"))
-                player.CallIsFinal();
+            //if (transform.name.Contains("Attack_Final"))
+            //    player.CallIsFinal();
 
-            if (attackInfo.statusEffect != StatusEffect.Normal)
-                player.ApplyStatus(attackInfo.statusEffect);
-            else
-                player.CallStopAnim(durationStopping);
+            //if (attackInfo.statusEffect != StatusEffect.Normal)
+            //    player.ApplyStatus(attackInfo.statusEffect);
+            //else
+            //    player.CallStopAnim(durationStopping);
 
-            player.CallKnockBack(knockBack, durationKnock);
+            //player.CallKnockBack(knockBack, durationKnock);
 
         }
     }

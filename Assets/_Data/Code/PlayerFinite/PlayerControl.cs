@@ -107,6 +107,8 @@ public class PlayerControl : MonoBehaviour
     public PlayerRoll PlayerRoll => playerRoll;
     PlayerIdle playerIdle;
     public PlayerIdle PlayerIdle => playerIdle;
+    PlayerReceiveDamagee playerReceiveDamagee;
+    public PlayerReceiveDamagee PlayerReceiveDamagee => playerReceiveDamagee;
 
     [Header("ScriptableObject")]
     [SerializeField] private PlayerInfo playerInfo;
@@ -137,6 +139,7 @@ public class PlayerControl : MonoBehaviour
         playerTransformm = GetComponent<PlayerTransformm>();
         playerRoll = GetComponent<PlayerRoll>();    
         playerIdle = GetComponent<PlayerIdle>();
+        playerReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<PlayerReceiveDamagee>();
         string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
         GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
         enemy = enemyObj.transform;
@@ -199,7 +202,10 @@ public class PlayerControl : MonoBehaviour
 
 
         //isBlockPressed = Input.GetKey(keyBiding.blockKey);
-
+        if (playerReceiveDamagee.IsHit)
+        {
+            playerStateManager.SwitchState(playerStateManager.takeHitState);
+        }
 
         if (currentStringState.Contains("Block") && Input.GetKeyUp(keyBiding.blockKey))
         {
