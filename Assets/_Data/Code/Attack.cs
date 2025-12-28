@@ -16,7 +16,7 @@ public class Attack : MonoBehaviour
         knockBack = attackInfo.knockBack;
         durationKnock = attackInfo.durationKnockBack;
         durationStopping = attackInfo.durationStopping;
-        durationStopping = attackInfo.durationStopping;
+
         myTag = transform.parent.parent.parent.tag;
         
     }
@@ -87,9 +87,9 @@ public class Attack : MonoBehaviour
             //if (attackInfo.statusEffect != StatusEffect.Normal)
             //    player.ApplyStatus(attackInfo.statusEffect);
             //else
-            //    player.CallStopAnim(durationStopping);
+            player.CallStopAnim(durationStopping);
 
-            //player.CallKnockBack(knockBack, durationKnock);
+            player.CallKnockBack(knockBack, durationKnock);
 
         }
     }

@@ -5,8 +5,14 @@ public class AttackInfo : ScriptableObject
 {
     public float damageSend;
     public Vector3 knockBack;
+
+   
     public float durationKnockBack;
+
+    //Don attack se stop anim cua doi thu bao nhieu giay
     public float durationStopping;
+
+
     public float speed;
     public StatusEffect statusEffect;
 }

@@ -110,29 +110,24 @@ public class PlayerEventt : MonoBehaviour
 
 
     //======Stop Anim khi bi tan cong=============
-    //public void IsStopAnim()
-    //{
+    public void IsStopAnim()
+    {
+
+
+         StartCoroutine(PauseAnimCoroutine(playerControl.PlayerReceiveDamagee.DurationFinalAttack));
+        
+    }
+    public void CallStopAnimFinalAttack()
+    {
+        StartCoroutine(PauseAnimCoroutine(0.3f));
+    }
+    private IEnumerator PauseAnimCoroutine(float duration)
+    {
+        playerControl.Animator.speed = 0f;
+        yield return new WaitForSeconds(duration);
+        
+        playerControl.Animator.speed = 1f;
        
 
-    //    if (pc.PlayerReceiveDamage.IsStopAnim)
-    //    {
-    //        StartCoroutine(PauseAnimCoroutine(pc.PlayerReceiveDamage.DurationFinalAttack));
-    //    }
-    //}
-
-    //private IEnumerator PauseAnimCoroutine(float duration)
-    //{
-    //    pc.Animator.speed = 0f;
-    //    yield return new WaitForSeconds(duration);
-    //    if (pc.StatusEffect == StatusEffect.Frozen)
-    //    {
-    //        pc.Animator.speed = 0.5f;
-
-    //    }
-    //    else
-    //    {
-    //        pc.Animator.speed = 1f;
-    //    }
-
-    //}
+    }
 }

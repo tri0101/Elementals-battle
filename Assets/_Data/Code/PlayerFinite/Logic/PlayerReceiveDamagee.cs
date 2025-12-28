@@ -9,10 +9,21 @@ public class PlayerReceiveDamagee : MonoBehaviour
 
     [Header("Attribute")]
     [SerializeField] private float health;
+    
+    [SerializeField] private float durationFinalAttack;
 
+    public float DurationFinalAttack
+    {
+        get => durationFinalAttack; set => durationFinalAttack = value;
+    }
 
     [Header("Flag")]
     [SerializeField] private bool isHit;
+    [SerializeField] private bool isStopAnim = false;
+    public bool IsStopAnim
+    {
+        get => isStopAnim; set => isStopAnim = value;
+    }
     public bool IsHit
     {
         get => isHit;
@@ -43,5 +54,15 @@ public class PlayerReceiveDamagee : MonoBehaviour
         }
 
     }
-   
+    public void CallStopAnim(float duration)
+    {
+        isStopAnim = true;
+        DurationFinalAttack = duration;
+    }
+    public void CallKnockBack(Vector3 knockPosition, float duration)
+    {
+       
+        
+        playerControl.PlayerEventt.CallSlideToPosition(transform.parent.parent.localPosition, knockPosition, duration);
+    }
 }
