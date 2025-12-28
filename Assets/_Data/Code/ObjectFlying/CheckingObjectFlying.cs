@@ -18,7 +18,8 @@ public class CheckingObjectFlying : MonoBehaviour
     public float playerCheckDistance = 0.2f;
     public float rayGroundDistance = 0.1f;
     public ContactFilter2D castFilter;
-  
+    public ContactFilter2D playerFilter;
+    
     private Vector2 checkWallDiretion => gameObject.transform.localScale.x > 0 ? Vector2.right : Vector2.left;
     private void Awake()
     {
@@ -26,19 +27,21 @@ public class CheckingObjectFlying : MonoBehaviour
         objController = GetComponent<ObjectFlyingController>();
         if (transform.tag == "RangedAttackPlayer1")
         {
-            castFilter.layerMask = LayerMask.GetMask("Player2", "Ground");
+            castFilter.layerMask = LayerMask.GetMask("Ground");
+            playerFilter.layerMask = LayerMask.GetMask("Player2");
             //transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("RangedPlayer1");
         }
         else if (transform.tag == "RangedAttackPlayer2")
         {
-            castFilter.layerMask = LayerMask.GetMask("Player1", "Ground");
+            castFilter.layerMask = LayerMask.GetMask("Ground");
+            playerFilter.layerMask = LayerMask.GetMask("Player1");
             //transform.GetChild(0).gameObject.layer = LayerMask.NameToLayer("RangedPlayer2");
         }
        
     }
     void FixedUpdate()
     {
-        isTouchPlayer = touchingCol.Cast(checkWallDiretion, castFilter, playerHits, playerCheckDistance) > 0;
+        isTouchPlayer = touchingCol.Cast(checkWallDiretion, playerFilter, playerHits, playerCheckDistance) > 0;
         isTouchGround = touchingCol.Cast(Vector2.down, castFilter, groundHits, rayGroundDistance) > 0;
 
     }
@@ -47,5 +50,6 @@ public class CheckingObjectFlying : MonoBehaviour
     private void OnDisable()
     {
         isTouchPlayer = false;
+        isTouchGround = false;
     }
 }

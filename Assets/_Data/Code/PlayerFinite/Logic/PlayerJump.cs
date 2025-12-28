@@ -6,18 +6,29 @@ public class PlayerJump : MonoBehaviour
     PlayerControl playerControl;
     public PlayerControl PlayerControlPlayer => playerControl;
     [SerializeField] float jumpForce;
+
+    [SerializeField] bool canMoveWhenJump = true;
+    
     [SerializeField] float airWalkSpeed
     {
         get
         {
-            if (!playerControl.PlayerCheckingGround.IsOnWall)
+            if (canMoveWhenJump)
             {
-                return playerControl.PlayerInfo.airWalkSpeed;
+                if (!playerControl.PlayerCheckingGround.IsOnWall )
+                {
+                    return playerControl.PlayerInfo.airWalkSpeed;
+                }
+                else
+                {
+                    return 0;
+                }
             }
             else
             {
                 return 0;
             }
+            
         }
     }
     private void Awake()
@@ -28,16 +39,9 @@ public class PlayerJump : MonoBehaviour
     }
     public void Jump()
     {
-        if (playerControl.PlayerCheckingGround.IsXJumpPlayer)
-        {
-            playerControl.Rb.linearVelocity = new Vector2(0, jumpForce);
-            //StartCoroutine(ResetCanMove());
-            
-        }
-        else
-        {
-            playerControl.Rb.linearVelocity = new Vector2(playerControl.Rb.linearVelocity.x, jumpForce);
-        }
+       
+        playerControl.Rb.linearVelocity = new Vector2(playerControl.Rb.linearVelocity.x, jumpForce);
+        
             
 
     }
@@ -57,8 +61,18 @@ public class PlayerJump : MonoBehaviour
     //{
     //    playerControl.Rb.linearVelocity = new Vector2(moveX * airWalkSpeed, playerControl.Rb.linearVelocity.y);
     //}
+
+    private void Update()
+    {
+        if (playerControl.PlayerCheckingGround.IsXJumpPlayer)
+        {
+            canMoveWhenJump = false;
+            StartCoroutine(ResetCanMove());
+        }
+    }
     public void MyFixedUpdate(float moveX)
     {
+        
         Vector2 currentVel = playerControl.Rb.linearVelocity;
         currentVel.x = moveX * airWalkSpeed;
         playerControl.Rb.linearVelocity = currentVel;
@@ -78,7 +92,7 @@ public class PlayerJump : MonoBehaviour
     private IEnumerator ResetCanMove()
     {
         
-        yield return new WaitForSeconds(0.35f);
-        
+        yield return new WaitForSeconds(0.2f);
+        canMoveWhenJump = true;
     }
 }

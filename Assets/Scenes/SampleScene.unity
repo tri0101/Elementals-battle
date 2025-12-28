@@ -374,6 +374,20 @@ MonoBehaviour:
     maxDepth: 0
     minNormalAngle: 0
     maxNormalAngle: 0
+  playerFilter:
+    useTriggers: 0
+    useLayerMask: 0
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
 --- !u!114 &71815325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10263,6 +10277,20 @@ MonoBehaviour:
     maxDepth: 0
     minNormalAngle: 0
     maxNormalAngle: 0
+  playerFilter:
+    useTriggers: 0
+    useLayerMask: 1
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
 --- !u!114 &952690495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10397,6 +10425,20 @@ MonoBehaviour:
   castFilter:
     useTriggers: 0
     useLayerMask: 1
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
+  playerFilter:
+    useTriggers: 0
+    useLayerMask: 0
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
@@ -12338,6 +12380,20 @@ MonoBehaviour:
   castFilter:
     useTriggers: 0
     useLayerMask: 1
+    useDepth: 0
+    useOutsideDepth: 0
+    useNormalAngle: 0
+    useOutsideNormalAngle: 0
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 0
+    minDepth: 0
+    maxDepth: 0
+    minNormalAngle: 0
+    maxNormalAngle: 0
+  playerFilter:
+    useTriggers: 0
+    useLayerMask: 0
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
@@ -14907,6 +14963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpForce: 0
+  canMoveWhenJump: 1
 --- !u!114 &1764104758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14941,6 +14998,7 @@ MonoBehaviour:
   MoveX: 0
   isJumpPressed: 0
   isAttackPressed: 0
+  hasAttackedWhenJump: 0
   isSkillPressed: 0
   isBlockPressed: 0
   canBlock: 0
@@ -14980,9 +15038,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 0.1
-  rayUnderDistance: 0.5
+  rayUnderDistance: 0.2
   wallCheckDistance: 0.2
-  checkXJump: 3
+  checkXJump: 0.5
   ceilingDistance: 3.9
   castFilter:
     useTriggers: 0
@@ -21232,9 +21290,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 0.1
-  rayUnderDistance: 0.5
+  rayUnderDistance: 0.2
   wallCheckDistance: 0.2
-  checkXJump: 3
+  checkXJump: 0.5
   ceilingDistance: 3.9
   castFilter:
     useTriggers: 0
@@ -21295,6 +21353,7 @@ MonoBehaviour:
   MoveX: 0
   isJumpPressed: 0
   isAttackPressed: 0
+  hasAttackedWhenJump: 0
   isSkillPressed: 0
   isBlockPressed: 0
   canBlock: 0
@@ -21319,6 +21378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   jumpForce: 0
+  canMoveWhenJump: 1
 --- !u!114 &1918425597
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -35,6 +35,12 @@ public class PlayerControl : MonoBehaviour
         get => isAttackPressed;
         set => isAttackPressed = value;
     }
+    [SerializeField] private bool hasAttackedWhenJump;
+    public bool HasAttackedWhenJump
+    {
+        get => hasAttackedWhenJump;
+        set => hasAttackedWhenJump = value;
+    }
     [SerializeField] private bool isSkillPressed;
     public bool IsSkillPressed
     {
@@ -200,12 +206,12 @@ public class PlayerControl : MonoBehaviour
             isBlockPressed = false;
         }
         //Lần đánh 2 , 3
-        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Attack"))
+        if (Input.GetKeyDown(keyBiding.attackKey) && !hasAttackedWhenJump && currentStringState.Contains("Attack"))
         {
             isAttackPressed = true;
         }
         //Air attack
-        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Jump"))
+        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
         {
             isAttackPressed = true;
         }

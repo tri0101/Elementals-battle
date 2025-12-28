@@ -8,7 +8,7 @@ public class PlayerCheckingGround : MonoBehaviour
     public float rayDistance = 0.1f;
     public float rayUnderDistance = 0.5f;
     public float wallCheckDistance = 0.2f;
-    public float checkXJump = 3f;
+    public float checkXJump = 0.5f;
     public float ceilingDistance = 3.9f;
     CapsuleCollider2D touchingCol;
     public CapsuleCollider2D TouchingCol => touchingCol;

@@ -6,11 +6,13 @@ public class PlayerJumpState : PlayerBaseState
    
     [SerializeField] private bool hasLeftGround;
     [SerializeField] private bool hasLanded;
+
     [SerializeField] private bool isAttacking;
     public override void EnterState(PlayerStateManager player)
     {
         hasLeftGround = false;
         isAttacking = false;
+       
         Debug.Log("da goi jump");
 
         if (player.PlayerControl.HasBeenTransform)
@@ -28,16 +30,17 @@ public class PlayerJumpState : PlayerBaseState
     }
     public override void ExitState(PlayerStateManager player)
     {
-        
+        player.PlayerControl.HasAttackedWhenJump = false;
     }
 
     public override void UpdateState(PlayerStateManager player)
     {
 
         
-        if (player.PlayerControl.IsAttackPressed)
+        if (player.PlayerControl.IsAttackPressed && !player.PlayerControl.HasAttackedWhenJump)
         {
             isAttacking = true;
+            player.PlayerControl.HasAttackedWhenJump = true;
             player.PlayerControl.IsAttackPressed = false;
             if (player.PlayerControl.HasBeenTransform)
             {
