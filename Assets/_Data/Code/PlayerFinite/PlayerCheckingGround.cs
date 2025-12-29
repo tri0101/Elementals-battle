@@ -6,7 +6,7 @@ public class PlayerCheckingGround : MonoBehaviour
     [Header("Ground Check Settings")]
     public LayerMask groundLayer;
     public float rayDistance = 0.1f;
-    public float rayUnderDistance = 0.5f;
+    public float rayUnderDistance = 3f;
     public float wallCheckDistance = 0.2f;
     public float checkXJump = 0.5f;
     public float ceilingDistance = 3.9f;
@@ -46,6 +46,14 @@ public class PlayerCheckingGround : MonoBehaviour
         playerControl = GetComponent<PlayerControl>();
 
         touchingCol = transform.GetChild(0).Find("ColliderReceive").GetComponent<CapsuleCollider2D>();
+        if(transform.tag == "Player1")
+        {
+            playerLayer = LayerMask.GetMask("Player2");
+        }
+        else
+        {
+            playerLayer = LayerMask.GetMask("Player1");
+        }
     }
     void FixedUpdate()
     {
@@ -61,11 +69,20 @@ public class PlayerCheckingGround : MonoBehaviour
 
         isOnCeiling = touchingCol.Cast(Vector2.up, castFilter, ceilingHits, ceilingDistance) > 0;
         isOnPlayer = touchingCol.Cast(Vector2.down, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayDistance) > 0;
-        isUnderPlayer = touchingCol.Cast(Vector2.up, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayUnderDistance) > 0;
+        //isUnderPlayer = touchingCol.Cast(Vector2.up, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, rayUnderDistance) > 0;
         isXJumpPlayer = touchingCol.Cast(checkWallDiretion, new ContactFilter2D { layerMask = playerLayer, useLayerMask = true }, playerHits, checkXJump) > 0;
-       
 
 
+        Vector2 origin = touchingCol.bounds.center;
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            origin,
+            Vector2.up,
+            rayUnderDistance,
+            playerLayer
+        );
+
+        isUnderPlayer = hit.collider != null;
 
     }
 }

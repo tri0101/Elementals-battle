@@ -74,7 +74,7 @@ public class PlayerIdleState : PlayerBaseState
     }
     public override void FixedUpdateState(PlayerStateManager player)
     {
-
+        player.PlayerControl.Rb.linearVelocity = new Vector2(player.PlayerControl.MoveX, player.PlayerControl.Rb.linearVelocity.y);
     }
 
     public override void LateUpdateState(PlayerStateManager player)

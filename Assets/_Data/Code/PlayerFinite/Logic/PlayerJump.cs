@@ -39,8 +39,15 @@ public class PlayerJump : MonoBehaviour
     }
     public void Jump()
     {
-       
-        playerControl.Rb.linearVelocity = new Vector2(playerControl.Rb.linearVelocity.x, jumpForce);
+        if (!playerControl.PlayerCheckingGround.IsXJumpPlayer)
+        {
+            playerControl.Rb.linearVelocity = new Vector2(playerControl.Rb.linearVelocity.x, jumpForce);
+        }
+        else
+        {
+            playerControl.Rb.linearVelocity = new Vector2(0, jumpForce);
+
+        }
         
             
 
@@ -72,7 +79,8 @@ public class PlayerJump : MonoBehaviour
     }
     public void MyFixedUpdate(float moveX)
     {
-        
+        if (playerControl.PlayerCheckingGround.IsXJumpPlayer)
+            return; // ❗ không cho set X velocity
         Vector2 currentVel = playerControl.Rb.linearVelocity;
         currentVel.x = moveX * airWalkSpeed;
         playerControl.Rb.linearVelocity = currentVel;

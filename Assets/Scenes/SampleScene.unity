@@ -204,6 +204,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControl: {fileID: 0}
   health: 0
+  durationFinalAttack: 0
+  isHit: 0
+  isStopAnim: 0
 --- !u!1 &57340363
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,6 +323,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControl: {fileID: 0}
   health: 0
+  durationFinalAttack: 0
+  isHit: 0
+  isStopAnim: 0
 --- !u!1 &71815321
 GameObject:
   m_ObjectHideFlags: 0
@@ -15068,7 +15074,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 0.1
-  rayUnderDistance: 0.2
+  rayUnderDistance: 3
   wallCheckDistance: 0.2
   checkXJump: 0.5
   ceilingDistance: 3.9
@@ -15088,7 +15094,7 @@ MonoBehaviour:
     maxNormalAngle: 0
   playerLayer:
     serializedVersion: 2
-    m_Bits: 776
+    m_Bits: 520
   isGrounded: 0
   isOnWall: 0
   isWallLeft: 0
@@ -21320,7 +21326,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 0.1
-  rayUnderDistance: 0.2
+  rayUnderDistance: 3
   wallCheckDistance: 0.2
   checkXJump: 0.5
   ceilingDistance: 3.9
@@ -21340,7 +21346,7 @@ MonoBehaviour:
     maxNormalAngle: 0
   playerLayer:
     serializedVersion: 2
-    m_Bits: 776
+    m_Bits: 264
   isGrounded: 0
   isOnWall: 0
   isWallLeft: 0
