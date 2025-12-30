@@ -6,6 +6,7 @@ public class PlayerTakeHitState : PlayerBaseState
     {
         player.PlayerControl.PlayerReceiveDamagee.IsHit = false;
         player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Take_Hit);
+        player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
     }
 
     public override void ExitState(PlayerStateManager player)
@@ -27,7 +28,15 @@ public class PlayerTakeHitState : PlayerBaseState
     {
         if (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Take_Hit, 0.95f,1))
         {
-            player.SwitchState(player.idleState);
+            if (player.PlayerControl.WasInAirBeforeHit)
+            {
+                player.SwitchState(player.jumpState);
+            }
+            else
+            {
+                player.SwitchState(player.idleState);
+            }
+                
         }
     }
 }

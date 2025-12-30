@@ -26,8 +26,18 @@ public class PlayerAttackState : PlayerBaseState
     public override void UpdateState(PlayerStateManager player)
     {
         AnimatorStateInfo info = player.PlayerControl.Animator.GetCurrentAnimatorStateInfo(0);
-
-        if (info.normalizedTime >= 0.8f)
+        float duration = 0f;
+        switch (player.PlayerControl.PlayerAttackk.CountAttack)
+        {
+            case 0:
+                duration = player.PlayerControl.PlayerInfo.durationA1;
+                break;
+            case 1:
+                duration = player.PlayerControl.PlayerInfo.durationA2;
+                break;
+            
+        }
+        if (info.normalizedTime >= duration)
             canCombo = true;
         if (canCombo && player.PlayerControl.IsAttackPressed)
         {

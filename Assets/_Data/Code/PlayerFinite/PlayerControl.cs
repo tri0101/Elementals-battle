@@ -85,6 +85,8 @@ public class PlayerControl : MonoBehaviour
         get => isRollPressed;
         set => isRollPressed = value;
     }
+    public bool WasInAirBeforeHit;
+    public bool WasFallingBeforeHit;
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -207,6 +209,11 @@ public class PlayerControl : MonoBehaviour
         //isBlockPressed = Input.GetKey(keyBiding.blockKey);
         if (playerReceiveDamagee.IsHit)
         {
+            WasInAirBeforeHit = !playerCheckingGround.IsGrounded;
+            WasFallingBeforeHit = rb.linearVelocity.y <= 0;
+
+          
+
             playerStateManager.SwitchState(playerStateManager.takeHitState);
             return;
         }

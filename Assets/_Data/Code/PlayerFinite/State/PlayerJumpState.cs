@@ -1,4 +1,4 @@
-using UnityEditor.Experimental.GraphView;
+﻿using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class PlayerJumpState : PlayerBaseState
@@ -8,26 +8,56 @@ public class PlayerJumpState : PlayerBaseState
     [SerializeField] private bool hasLanded;
 
     [SerializeField] private bool isAttacking;
+    //public override void EnterState(PlayerStateManager player)
+    //{
+    //    hasLeftGround = false;
+    //    isAttacking = false;
+
+    //    Debug.Log("da goi jump");
+
+    //    if (player.PlayerControl.HasBeenTransform)
+    //    {
+    //        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump);
+    //    }
+    //    else
+    //    {
+    //        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump);
+    //    }
+
+    //    player.PlayerControl.PlayerJump.Jump();
+
+    //    player.PlayerControl.IsJumpPressed = false;
+    //}
     public override void EnterState(PlayerStateManager player)
     {
-        hasLeftGround = false;
+        hasLeftGround = !player.PlayerControl.PlayerCheckingGround.IsGrounded;
         isAttacking = false;
-       
-        Debug.Log("da goi jump");
 
-        if (player.PlayerControl.HasBeenTransform)
+        // Nếu từ TakeHit quay lại mà đang trên không → KHÔNG Jump lại
+        if (!hasLeftGround)
         {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump);
+            if (player.PlayerControl.HasBeenTransform)
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump);
+            else
+                player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump);
+
+            player.PlayerControl.PlayerJump.Jump();
         }
         else
         {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Jump);
+            // Resume đúng phase
+            if (player.PlayerControl.WasFallingBeforeHit)
+            {
+                if (player.PlayerControl.HasBeenTransform)
+                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Jump_Down);
+                else
+                    player.PlayerControl.ChangeAnimationStateLoop(PlayerStateManager.Player_Jump_Down);
+            }
         }
-            
-        player.PlayerControl.PlayerJump.Jump();
 
         player.PlayerControl.IsJumpPressed = false;
     }
+
     public override void ExitState(PlayerStateManager player)
     {
         player.PlayerControl.HasAttackedWhenJump = false;

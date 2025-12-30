@@ -6,7 +6,7 @@ public class PlayerCheckingGround : MonoBehaviour
     [Header("Ground Check Settings")]
     public LayerMask groundLayer;
     public float rayDistance = 0.1f;
-    public float rayUnderDistance = 3f;
+    public float rayUnderDistance = 2.5f;
     public float wallCheckDistance = 0.2f;
     public float checkXJump = 0.5f;
     public float ceilingDistance = 3.9f;

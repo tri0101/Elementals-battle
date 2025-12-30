@@ -412,7 +412,7 @@ MonoBehaviour:
     maxNormalAngle: 0
   playerFilter:
     useTriggers: 0
-    useLayerMask: 0
+    useLayerMask: 1
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
@@ -8122,7 +8122,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -2253911629886400664, guid: 35b2d0054ad2ea84a8c42ec40a05efc0, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 35b2d0054ad2ea84a8c42ec40a05efc0, type: 3}
       propertyPath: m_LocalScale.x
@@ -9315,7 +9315,7 @@ GameObject:
   - component: {fileID: 656594474}
   - component: {fileID: 656594473}
   - component: {fileID: 656594472}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10474,7 +10474,7 @@ MonoBehaviour:
     maxNormalAngle: 0
   playerFilter:
     useTriggers: 0
-    useLayerMask: 0
+    useLayerMask: 1
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
@@ -12429,7 +12429,7 @@ MonoBehaviour:
     maxNormalAngle: 0
   playerFilter:
     useTriggers: 0
-    useLayerMask: 0
+    useLayerMask: 1
     useDepth: 0
     useOutsideDepth: 0
     useNormalAngle: 0
@@ -12645,7 +12645,7 @@ GameObject:
   - component: {fileID: 1425944827}
   - component: {fileID: 1425944826}
   - component: {fileID: 1425944825}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15042,6 +15042,8 @@ MonoBehaviour:
   hasBeenTransform: 0
   isRangedAttackPressed: 0
   isRollPressed: 0
+  WasInAirBeforeHit: 0
+  WasFallingBeforeHit: 0
   currentStringState: 
   playerInfo: {fileID: 11400000, guid: e640e981ec2f56d4883b4327194f0172, type: 2}
   keyBiding: {fileID: 11400000, guid: c7e6b4ffeab37bc42bed7e5e306b8f21, type: 2}
@@ -15074,7 +15076,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 0.1
-  rayUnderDistance: 3
+  rayUnderDistance: 2.5
   wallCheckDistance: 0.2
   checkXJump: 0.5
   ceilingDistance: 3.9
@@ -21326,7 +21328,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   rayDistance: 0.1
-  rayUnderDistance: 3
+  rayUnderDistance: 2.5
   wallCheckDistance: 0.2
   checkXJump: 0.5
   ceilingDistance: 3.9
@@ -21397,6 +21399,8 @@ MonoBehaviour:
   hasBeenTransform: 0
   isRangedAttackPressed: 0
   isRollPressed: 0
+  WasInAirBeforeHit: 0
+  WasFallingBeforeHit: 0
   currentStringState: 
   playerInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
   keyBiding: {fileID: 11400000, guid: b466065009f46314db9cf73142ecd917, type: 2}
