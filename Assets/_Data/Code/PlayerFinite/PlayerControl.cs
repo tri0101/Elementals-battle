@@ -149,7 +149,7 @@ public class PlayerControl : MonoBehaviour
         GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
         enemy = enemyObj.transform;
     }
-  
+
 
     public void ChangeAnimationState(string newState, float time = 0)
     {
@@ -170,7 +170,32 @@ public class PlayerControl : MonoBehaviour
 
             currentStringState = newState;
         }
-        
+
+    }
+
+    //cho take hit
+    public void ChangeAnimationAnyState(string newState, float time = 0)
+    {
+        if (time > 0) StartCoroutine(Wait());
+        else Validate();
+
+        IEnumerator Wait()
+        {
+            yield return new WaitForSeconds(time);
+            Validate();
+
+        }
+
+        void Validate()
+        {
+           
+           
+            animator.Play(newState,0,0f);
+            animator.speed = 1f;
+
+            currentStringState = newState;
+        }
+
     }
 
     public void ChangeAnimationStateLoop(string newState)
@@ -207,16 +232,28 @@ public class PlayerControl : MonoBehaviour
 
 
         //isBlockPressed = Input.GetKey(keyBiding.blockKey);
+
+        //Check bị đánh lần đầu
         if (playerReceiveDamagee.IsHit)
         {
+            
             WasInAirBeforeHit = !playerCheckingGround.IsGrounded;
             WasFallingBeforeHit = rb.linearVelocity.y <= 0;
 
-          
+            
+            playerReceiveDamagee.IsHit = false;
 
-            playerStateManager.SwitchState(playerStateManager.takeHitState);
+
+
+
+            playerStateManager.SwitchAnyState(playerStateManager.takeHitState);
+
+
+
+
             return;
         }
+       
 
         if (currentStringState.Contains("Block") && Input.GetKeyUp(keyBiding.blockKey))
         {

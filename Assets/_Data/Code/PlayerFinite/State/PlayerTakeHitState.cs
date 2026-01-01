@@ -1,11 +1,13 @@
+﻿using TMPro;
 using UnityEngine;
 
 public class PlayerTakeHitState : PlayerBaseState
 {
     public override void EnterState(PlayerStateManager player)
     {
-        player.PlayerControl.PlayerReceiveDamagee.IsHit = false;
-        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Take_Hit);
+       
+        
+        player.PlayerControl.ChangeAnimationAnyState(PlayerStateManager.Player_Take_Hit);
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
     }
 
@@ -26,17 +28,24 @@ public class PlayerTakeHitState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-        if (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Take_Hit, 0.95f,1))
+       
+        if (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Take_Hit, 0.99f, 1))
         {
+
+            
             if (player.PlayerControl.WasInAirBeforeHit)
             {
                 player.SwitchState(player.jumpState);
             }
             else
             {
+                Debug.Log("ve idle");
                 player.SwitchState(player.idleState);
             }
-                
+
         }
+      
+
+
     }
 }

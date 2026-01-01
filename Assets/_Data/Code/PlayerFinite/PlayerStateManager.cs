@@ -55,7 +55,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_T_Air_Attack = "T_Air_attack";
     public const string Player_Transform_To_Human = "TransformToHuman";
     public const string Player_Ranged_Attack = "Ranged_Attack";
-    //public const string Player_Skill = "Skill";
+    public const string Player_T_Skill = "T_Skill";
     public const string Player_T_Block_Open = "T_Block_Open";
     public const string Player_T_Block = "T_Block";
     public const string Player_T_Block_End = "T_Block_End";
@@ -92,6 +92,16 @@ public class PlayerStateManager : MonoBehaviour
     public void SwitchState(PlayerBaseState newState)
     {
         if (currentState == newState) return;
+
+        currentState.ExitState(this);
+        currentState = newState;
+        currentState.EnterState(this);
+    }
+
+   
+    public void SwitchAnyState(PlayerBaseState newState)
+    {
+        
 
         currentState.ExitState(this);
         currentState = newState;

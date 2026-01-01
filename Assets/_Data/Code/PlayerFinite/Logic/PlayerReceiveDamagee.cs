@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerReceiveDamagee : MonoBehaviour
 {
@@ -37,6 +37,7 @@ public class PlayerReceiveDamagee : MonoBehaviour
 
     }
 
+
     public void ReceiveDamage(float damage)
     {
         
@@ -44,7 +45,8 @@ public class PlayerReceiveDamagee : MonoBehaviour
         
         health -= damage;
 
-
+       
+       
         isHit = true;
         if (health <= 0)
         {
@@ -56,7 +58,8 @@ public class PlayerReceiveDamagee : MonoBehaviour
     }
     public void CallStopAnim(float duration)
     {
-        isStopAnim = true;
+        //isStopAnim = true;
+        //stop anim trong vong duration
         DurationFinalAttack = duration;
     }
     public void CallKnockBack(Vector3 knockPosition, float duration)
