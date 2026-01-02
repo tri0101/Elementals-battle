@@ -6,6 +6,7 @@ public class PlayerSkillState : PlayerBaseState
     {
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.IsSkillPressed = false;
+       
         if (player.PlayerControl.HasBeenTransform)
         {
             player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Skill);
@@ -33,7 +34,7 @@ public class PlayerSkillState : PlayerBaseState
         if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Skill, 0.9f, 1)|| (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Skill, 0.9f, 1))))
         {
 
-           
+            player.PlayerControl.PlayerSkilll.ResetMana();
             player.SwitchState(player.idleState);
         }
 

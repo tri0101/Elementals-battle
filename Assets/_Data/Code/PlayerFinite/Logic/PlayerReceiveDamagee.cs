@@ -9,6 +9,26 @@ public class PlayerReceiveDamagee : MonoBehaviour
 
     [Header("Attribute")]
     [SerializeField] private float health;
+    public float Health
+    {
+        get => health; set => health = value;
+    }
+    [SerializeField] private float maxHealth;
+    public float MaxHealth
+    {
+        get => maxHealth; set => maxHealth = value;
+    }
+    
+    [SerializeField] private float mana;
+    public float Mana
+    {
+        get => mana; set => mana = value;
+    }
+    [SerializeField] private float maxMana;
+    public float MaxMana
+    {
+        get => maxMana; set => maxMana = value;
+    }
     
     [SerializeField] private float durationFinalAttack;
 
@@ -32,8 +52,13 @@ public class PlayerReceiveDamagee : MonoBehaviour
     private void Awake()
     {
         playerControl = transform.parent.parent.GetComponent<PlayerControl>();
-        health = playerControl.PlayerInfo.health;
 
+       
+        maxHealth = playerControl.PlayerInfo.health;
+        maxMana = 15f;
+        mana = 0f;
+        health = maxHealth;
+        playerControl.RefreshObservers();
 
     }
 
@@ -45,7 +70,7 @@ public class PlayerReceiveDamagee : MonoBehaviour
         
         health -= damage;
 
-       
+        mana += 2;
        
         isHit = true;
         if (health <= 0)
@@ -54,7 +79,7 @@ public class PlayerReceiveDamagee : MonoBehaviour
           
 
         }
-
+        playerControl.RefreshObservers();
     }
     public void CallStopAnim(float duration)
     {
@@ -67,5 +92,13 @@ public class PlayerReceiveDamagee : MonoBehaviour
        
         
         playerControl.PlayerEventt.CallSlideToPosition(transform.parent.parent.localPosition, knockPosition, duration);
+    }
+    public float GetHealthPercent()
+    {
+        return (float)health / maxHealth;
+    }
+    public float GetManaPercent()
+    {
+        return (float)mana / maxMana;
     }
 }

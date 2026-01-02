@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class PlayerControl : MonoBehaviour
+public class PlayerControl : Subject
 {
     [Header("Attribute")]
     [SerializeField] private Rigidbody2D rb;
@@ -109,6 +109,8 @@ public class PlayerControl : MonoBehaviour
     public PlayerRoll PlayerRoll => playerRoll;
     PlayerIdle playerIdle;
     public PlayerIdle PlayerIdle => playerIdle;
+    PlayerSkilll playerSkilll;
+    public PlayerSkilll PlayerSkilll => playerSkilll;
     PlayerReceiveDamagee playerReceiveDamagee;
     public PlayerReceiveDamagee PlayerReceiveDamagee => playerReceiveDamagee;
     PlayerEventt playerEventt;
@@ -143,6 +145,7 @@ public class PlayerControl : MonoBehaviour
         playerTransformm = GetComponent<PlayerTransformm>();
         playerRoll = GetComponent<PlayerRoll>();    
         playerIdle = GetComponent<PlayerIdle>();
+        playerSkilll = GetComponent<PlayerSkilll>();
         playerReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<PlayerReceiveDamagee>();
         playerEventt = transform.GetChild(0).GetComponent<PlayerEventt>();
         string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
@@ -303,7 +306,7 @@ public class PlayerControl : MonoBehaviour
         }
 
 
-        if (Input.GetKeyDown(keyBiding.skillKey))
+        if (Input.GetKeyDown(keyBiding.skillKey) && playerReceiveDamagee.GetManaPercent() >= 1) 
         {
             isSkillPressed = true;
         }
@@ -380,6 +383,10 @@ public class PlayerControl : MonoBehaviour
         CheckUnder();
     }
 
+    public void RefreshObservers()
+    {
+        NotifyObservers();
+    }
     //TEst thôi
     void SpriteName()
     {
