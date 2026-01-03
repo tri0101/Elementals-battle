@@ -40,9 +40,15 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
     [Header("Flag")]
     [SerializeField] private bool isHit;
     [SerializeField] private bool isStopAnim = false;
+    [SerializeField] private bool isDead = false;
     public bool IsStopAnim
     {
         get => isStopAnim; set => isStopAnim = value;
+    }
+   
+    public bool IsDead
+    {
+        get => isDead; set => isDead = value;
     }
     public bool IsHit
     {
@@ -55,7 +61,7 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
 
        
         maxHealth = playerControl.PlayerInfo.health;
-        maxMana = maxHealth;
+        maxMana = maxHealth * 2;
         mana = 0f;
         health = maxHealth;
         playerControl.RefreshObservers();
@@ -65,17 +71,21 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
 
     public void ReceiveDamage(float damage)
     {
-        
+        if (isDead) return;
 
         
         health -= damage;
 
         mana += damage * 1.5f;
-       
+        if(mana >= 1000f)
+        {
+            mana = 1000f;
+        }
         isHit = true;
         if (health <= 0)
         {
             health = 0;
+            isDead = true;
           
 
         }
@@ -85,6 +95,10 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
     public void AddManaWhenAttack(float damage)
     {
         mana += damage * 2;
+        if(mana >= 1000)
+        {
+            mana = 1000f;
+        }
         playerControl.RefreshObservers();
     }
     public void CallStopAnim(float duration)

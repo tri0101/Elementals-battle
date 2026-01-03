@@ -28,7 +28,11 @@ public class PlayerTakeHitState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-       
+        if (player.PlayerControl.PlayerReceiveDamagee.IsDead)
+        {
+            player.SwitchState(player.deathState);
+            return;
+        }
         if (player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Take_Hit, 0.99f, 1))
         {
 

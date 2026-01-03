@@ -41,11 +41,13 @@ public class PlayerTransformState : PlayerBaseState
         if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Transform, 0.9f, 1)))
         {
             player.PlayerControl.HasBeenTransform = true;
+            player.PlayerControl.PlayerTransformm.ResetMana();
             player.SwitchState(player.idleState);
         }
         else if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Transform_To_Human, 0.9f, 1)))
         {
             player.PlayerControl.HasBeenTransform = false;
+           
             player.SwitchState(player.idleState);
         }
     }

@@ -225,6 +225,7 @@ public class PlayerControl : Subject
     void Update()
     {
         CheckName();
+        //if (PlayerReceiveDamagee.IsDead) return;
         //====== Di chuyển =========
         MoveX = 0;
 
@@ -235,7 +236,7 @@ public class PlayerControl : Subject
 
 
         //isBlockPressed = Input.GetKey(keyBiding.blockKey);
-
+        
         //Check bị đánh lần đầu
         if (playerReceiveDamagee.IsHit)
         {
@@ -285,7 +286,7 @@ public class PlayerControl : Subject
             isBlockPressed = true;
             canBlock = false;
         }
-        if (Input.GetKeyDown(keyBiding.transformKey) && !hasBeenTransform)
+        if (Input.GetKeyDown(keyBiding.transformKey) && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
         {
             isTransformPressed = true;
 
@@ -295,7 +296,7 @@ public class PlayerControl : Subject
             isRollPressed = true;
 
         }
-        if (Input.GetKeyDown(KeyBiding.rangedAttackKey) && !hasBeenTransform)
+        if (Input.GetKeyDown(KeyBiding.rangedAttackKey) && !hasBeenTransform )
         {
             isRangedAttackPressed = true;
         }
@@ -306,7 +307,7 @@ public class PlayerControl : Subject
         }
 
 
-        if (Input.GetKeyDown(keyBiding.skillKey) && playerReceiveDamagee.GetManaPercent() >= 1) 
+        if (Input.GetKeyDown(keyBiding.skillKey) && playerReceiveDamagee.Mana >= 500f) 
         {
             isSkillPressed = true;
         }
@@ -353,6 +354,7 @@ public class PlayerControl : Subject
 
     public void CheckUnder()
     {
+        if (playerReceiveDamagee.IsDead) return;
         if (currentStringState.Contains("Roll")) return;
         if (playerCheckingGround.IsUnderPlayer)
         {

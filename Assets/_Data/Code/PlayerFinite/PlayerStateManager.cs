@@ -23,6 +23,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerTransformState transformState = new PlayerTransformState();
     public PlayerRollState rollState = new PlayerRollState();
     public PlayerTakeHitState takeHitState = new PlayerTakeHitState();
+    public PlayerDeathState deathState = new PlayerDeathState();
 
     //List các state normal
     public const string Player_Idle = "Idle";
@@ -42,6 +43,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Transform = "Transform";
     public const string Player_Roll = "Roll";
     public const string Player_Take_Hit = "Take_hit";
+    public const string Player_Dead = "death";
     //List các state transform
     public const string Player_T_Idle = "T_Idle";
     public const string Player_T_Run = "T_Run";

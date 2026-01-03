@@ -35,5 +35,9 @@ public class PlayerTransformm : MonoBehaviour
             }
         }
     }
-
+    public void ResetMana()
+    {
+        playerControl.PlayerReceiveDamagee.Mana -= 1000f ;
+        playerControl.RefreshObservers();
+    }
 }

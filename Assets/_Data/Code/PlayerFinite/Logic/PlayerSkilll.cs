@@ -13,7 +13,7 @@ public class PlayerSkilll : MonoBehaviour
 
     public void ResetMana()
     {
-        playerControl.PlayerReceiveDamagee.Mana = 0f;
+        playerControl.PlayerReceiveDamagee.Mana -= 500f ;
         playerControl.RefreshObservers();
     }
 }
