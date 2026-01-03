@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 
-public class Attack : MonoBehaviour
+public class Attack : Subject
 {
     [SerializeField] private AttackInfo attackInfo;
-    float attackDamage;
+    private float attackDamage;
+    public float AttackDamage => attackDamage;
     Vector3 knockBack;
     float durationKnock;
     float durationStopping;
@@ -90,7 +91,7 @@ public class Attack : MonoBehaviour
             player.CallStopAnim(durationStopping);
 
             player.CallKnockBack(knockBack, durationKnock);
-
+            NotifyObservers(this);
         }
     }
 

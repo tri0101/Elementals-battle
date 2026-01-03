@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerReceiveDamagee : MonoBehaviour
+public class PlayerReceiveDamagee : MonoBehaviour, IObserver
 {
 
     [SerializeField] PlayerControl playerControl;
@@ -55,7 +55,7 @@ public class PlayerReceiveDamagee : MonoBehaviour
 
        
         maxHealth = playerControl.PlayerInfo.health;
-        maxMana = 15f;
+        maxMana = maxHealth;
         mana = 0f;
         health = maxHealth;
         playerControl.RefreshObservers();
@@ -70,7 +70,7 @@ public class PlayerReceiveDamagee : MonoBehaviour
         
         health -= damage;
 
-        mana += 2;
+        mana += damage * 1.5f;
        
         isHit = true;
         if (health <= 0)
@@ -79,6 +79,12 @@ public class PlayerReceiveDamagee : MonoBehaviour
           
 
         }
+        playerControl.RefreshObservers();
+    }
+
+    public void AddManaWhenAttack(float damage)
+    {
+        mana += damage * 2;
         playerControl.RefreshObservers();
     }
     public void CallStopAnim(float duration)
@@ -100,5 +106,9 @@ public class PlayerReceiveDamagee : MonoBehaviour
     public float GetManaPercent()
     {
         return (float)mana / maxMana;
+    }
+    public void OnNotify()
+    {
+
     }
 }
