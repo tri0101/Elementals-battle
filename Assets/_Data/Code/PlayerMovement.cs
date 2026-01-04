@@ -145,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
             }
             Jump();
         }
-        if (Input.GetKeyDown(pc.KeyBiding.dashKey) )
+        if (Input.GetKeyDown(pc.KeyBiding.rollKey) )
         {
             StartDash();
         }

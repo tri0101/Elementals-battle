@@ -115,6 +115,8 @@ public class PlayerControl : Subject
     public PlayerReceiveDamagee PlayerReceiveDamagee => playerReceiveDamagee;
     PlayerEventt playerEventt;
     public PlayerEventt PlayerEventt => playerEventt;
+    PlayerInput playerInput;
+    public PlayerInput PlayerInput => playerInput;
 
     [Header("ScriptableObject")]
     [SerializeField] private PlayerInfo playerInfo;
@@ -148,6 +150,7 @@ public class PlayerControl : Subject
         playerSkilll = GetComponent<PlayerSkilll>();
         playerReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<PlayerReceiveDamagee>();
         playerEventt = transform.GetChild(0).GetComponent<PlayerEventt>();
+        playerInput = GetComponent<PlayerInput>();
         string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
         GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
         enemy = enemyObj.transform;
@@ -230,9 +233,9 @@ public class PlayerControl : Subject
         MoveX = 0;
 
     
-        if (Input.GetKey(KeyBiding.leftMove) && !currentStringState.Contains("Block"))
+        if ((playerInput.isLeftMove || playerInput.isLeftMovePC) && !currentStringState.Contains("Block"))
             MoveX = -1;
-        else if (Input.GetKey(KeyBiding.rightMove)&& !currentStringState.Contains("Block"))
+        else if ((playerInput.isRightMove || playerInput.isRightMovePC) && !currentStringState.Contains("Block"))
             MoveX = 1;
 
 
@@ -260,17 +263,18 @@ public class PlayerControl : Subject
         }
        
 
-        if (currentStringState.Contains("Block") && Input.GetKeyUp(keyBiding.blockKey))
+        if (currentStringState.Contains("Block") && ((playerInput.isBlockInputUp || playerInput.isBlockInputUpPC)))
         {
             isBlockPressed = false;
         }
         //Lần đánh 2 , 3
-        if (Input.GetKeyDown(keyBiding.attackKey) && !hasAttackedWhenJump && currentStringState.Contains("Attack"))
+        if (playerInput.isAttackInput && !hasAttackedWhenJump && currentStringState.Contains("Attack"))
         {
             isAttackPressed = true;
+           
         }
         //Air attack
-        if (Input.GetKeyDown(keyBiding.attackKey) && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
+        if (playerInput.isAttackInput && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
         {
             isAttackPressed = true;
         }
@@ -278,37 +282,37 @@ public class PlayerControl : Subject
 
        
         //======= Nhảy ==========
-        if (Input.GetKeyDown(KeyBiding.jumpKey) && !currentStringState.StartsWith("Jump"))
+        if (playerInput.isJumpInput && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
         }
-        if (Input.GetKeyDown(KeyBiding.blockKey) && canBlock)
+        if ((playerInput.isBlockInputDown || playerInput.isBlockInputDownPC) && canBlock)
         {
             isBlockPressed = true;
             canBlock = false;
         }
-        if (Input.GetKeyDown(keyBiding.transformKey) && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
+        if (playerInput.isTransformInput && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
         {
             isTransformPressed = true;
 
         }
-        if (Input.GetKeyDown(keyBiding.dashKey) && !hasBeenTransform)
+        if (playerInput.isRollInput && !hasBeenTransform)
         {
             isRollPressed = true;
 
         }
-        if (Input.GetKeyDown(KeyBiding.rangedAttackKey) && !hasBeenTransform )
+        if (playerInput.isRangedAttackInput && !hasBeenTransform )
         {
             isRangedAttackPressed = true;
         }
         //Lần đánh 1
-        if (Input.GetKeyDown(keyBiding.attackKey))
+        if (playerInput.isAttackInput)
         {
             isAttackPressed = true;
         }
 
 
-        if (Input.GetKeyDown(keyBiding.skillKey) && playerReceiveDamagee.Mana >= 500f) 
+        if (playerInput.isSkillInput && playerReceiveDamagee.Mana >= 500f) 
         {
             isSkillPressed = true;
         }
@@ -389,6 +393,10 @@ public class PlayerControl : Subject
     public void RefreshObservers()
     {
         NotifyObservers();
+    }
+    public void RefreshObserversThis()
+    {
+        NotifyObservers(this);
     }
     public void AutoFlip()
     {
