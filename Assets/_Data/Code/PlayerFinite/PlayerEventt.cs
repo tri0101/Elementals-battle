@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using NUnit.Framework.Interfaces;
 
 public class PlayerEventt : MonoBehaviour
 {
@@ -35,14 +36,19 @@ public class PlayerEventt : MonoBehaviour
     //==================================
     public Vector3 ReturnEndPos(Vector3 startPos, Vector3 targetMove)
     {
-
-        if (transform.parent.localScale.x > 0)
+        float finalX = targetMove.x;
+        if (playerControl.CurrentStringState == "Block" || playerControl.CurrentStringState == "T_Block")
         {
-            return startPos + new Vector3(targetMove.x, 0, 0);
+            finalX *= 0.5f;
+        }
+            if (transform.parent.localScale.x > 0)
+        {
+            
+            return startPos + new Vector3(finalX, 0, 0);
         }
         else
         {
-            return startPos + new Vector3(-targetMove.x, 0, 0);
+            return startPos + new Vector3(-finalX, 0, 0);
         }
     }
 

@@ -229,9 +229,10 @@ public class PlayerControl : Subject
         //====== Di chuyển =========
         MoveX = 0;
 
-        if (Input.GetKey(KeyBiding.leftMove))
+    
+        if (Input.GetKey(KeyBiding.leftMove) && !currentStringState.Contains("Block"))
             MoveX = -1;
-        else if (Input.GetKey(KeyBiding.rightMove))
+        else if (Input.GetKey(KeyBiding.rightMove)&& !currentStringState.Contains("Block"))
             MoveX = 1;
 
 

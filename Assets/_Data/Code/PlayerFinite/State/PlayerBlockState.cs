@@ -27,7 +27,9 @@ public class PlayerBlockState : PlayerBaseState
 
     public override void FixedUpdateState(PlayerStateManager player)
     {
+        player.PlayerControl.Rb.linearVelocity = new Vector2(player.PlayerControl.MoveX, player.PlayerControl.Rb.linearVelocity.y);
     }
+
 
     public override void UpdateState(PlayerStateManager player)
     {
