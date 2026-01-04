@@ -6,7 +6,7 @@ public class PlayerTransformm : MonoBehaviour
     public PlayerControl PlayerControlPlayer => playerControl;
 
     float timer;
-    float timerTarget = 7f;
+    float timerTarget = 5000000f;
 
 
     private bool transformToHuman;
@@ -35,6 +35,9 @@ public class PlayerTransformm : MonoBehaviour
             }
         }
     }
+    
+
+    
     public void ResetMana()
     {
         playerControl.PlayerReceiveDamagee.Mana -= 1000f ;

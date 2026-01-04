@@ -62,7 +62,9 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
        
         maxHealth = playerControl.PlayerInfo.health;
         maxMana = maxHealth * 2;
-        mana = 0f;
+
+        mana = 1000000f;
+        //mana = 0f;
         health = maxHealth;
         playerControl.RefreshObservers();
 
@@ -71,16 +73,24 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
 
     public void ReceiveDamage(float damage)
     {
-        if (isDead) return;
+        
 
+        if (isDead) return;
+        if(playerControl.CurrentStringState == "Block" || playerControl.CurrentStringState == "T_Block")
+        {
+            mana += damage ;
+            playerControl.RefreshObservers();
+            return;
+        }
         
         health -= damage;
 
         mana += damage * 1.5f;
-        if(mana >= 1000f)
-        {
-            mana = 1000f;
-        }
+
+        //if(mana >= 1000f)
+        //{
+        //    mana = 1000f;
+        //}
         isHit = true;
         if (health <= 0)
         {

@@ -79,6 +79,6 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void LateUpdateState(PlayerStateManager player)
     {
-        player.PlayerControl.PlayerIdle.AutoFlip();
+        player.PlayerControl.AutoFlip();
     }
 }

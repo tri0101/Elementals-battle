@@ -389,6 +389,21 @@ public class PlayerControl : Subject
     {
         NotifyObservers();
     }
+    public void AutoFlip()
+    {
+
+        if (MoveX != 0) return;
+        float baseScaleX = Mathf.Abs(transform.localScale.x);
+        if (transform.localPosition.x > Enemy.transform.localPosition.x)
+        {
+            transform.localScale = new Vector3(-baseScaleX, transform.localScale.y, transform.localScale.z);
+        }
+        else
+        {
+
+            transform.localScale = new Vector3(baseScaleX, transform.localScale.y, transform.localScale.z);
+        }
+    }
     //TEst thôi
     void SpriteName()
     {

@@ -61,6 +61,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_T_Block_Open = "T_Block_Open";
     public const string Player_T_Block = "T_Block";
     public const string Player_T_Block_End = "T_Block_End";
+    public const string Player_T_Take_Hit = "T_Take_hit";
     //public const string Player_Transform = "Transform";
 
     private void Awake()

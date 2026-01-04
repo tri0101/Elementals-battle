@@ -71,7 +71,7 @@ public class PlayerBlockState : PlayerBaseState
     }
     public override void LateUpdateState(PlayerStateManager player)
     {
-
+        player.PlayerControl.AutoFlip();
     }
 
 }

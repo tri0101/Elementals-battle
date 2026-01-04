@@ -11,19 +11,19 @@ public class PlayerIdle : MonoBehaviour
     }
 
 
-    public void AutoFlip()
-    {
+    //public void AutoFlip()
+    //{
         
-        if (playerControl.MoveX != 0) return;
-        float baseScaleX = Mathf.Abs(transform.localScale.x);
-        if (transform.localPosition.x > playerControl.Enemy.transform.localPosition.x)
-        {
-            transform.localScale = new Vector3(-baseScaleX, transform.localScale.y, transform.localScale.z);
-        }
-        else
-        {
+    //    if (playerControl.MoveX != 0) return;
+    //    float baseScaleX = Mathf.Abs(transform.localScale.x);
+    //    if (transform.localPosition.x > playerControl.Enemy.transform.localPosition.x)
+    //    {
+    //        transform.localScale = new Vector3(-baseScaleX, transform.localScale.y, transform.localScale.z);
+    //    }
+    //    else
+    //    {
 
-            transform.localScale = new Vector3(baseScaleX, transform.localScale.y, transform.localScale.z);
-        }
-    }
+    //        transform.localScale = new Vector3(baseScaleX, transform.localScale.y, transform.localScale.z);
+    //    }
+    //}
 }
