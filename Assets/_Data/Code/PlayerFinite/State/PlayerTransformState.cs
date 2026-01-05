@@ -16,10 +16,10 @@ public class PlayerTransformState : PlayerBaseState
 
         }
         player.PlayerControl.IsTransformPressed = false;
-        
 
-        
-        
+
+
+        player.PlayerControl.RefreshObservers(PlayerControl.TransformObserver);
         player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Transform);
         
     }

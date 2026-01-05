@@ -2418,18 +2418,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 649383585}
-        m_TargetAssemblyTypeName: UIButton, Assembly-CSharp
-        m_MethodName: OnClickDown
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &261128121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2836,18 +2824,6 @@ MonoBehaviour:
       - m_Target: {fileID: 402897947}
         m_TargetAssemblyTypeName: PlayerInput, Assembly-CSharp
         m_MethodName: OnSKillButtonDown
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1915113365}
-        m_TargetAssemblyTypeName: UIButton, Assembly-CSharp
-        m_MethodName: OnClickDown
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18093,8 +18069,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControl: {fileID: 402897941}
   fillImage: {fileID: 1722703632}
-  button: {fileID: 261128120}
+  button: {fileID: 0}
   textMeshProUGUI: {fileID: 250870809}
+  buttonName: 
 --- !u!1 &656594470
 GameObject:
   m_ObjectHideFlags: 0
@@ -18388,6 +18365,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 692898921}
+  - component: {fileID: 692898922}
   m_Layer: 5
   m_Name: Transform
   m_TagString: Untagged
@@ -18415,6 +18393,23 @@ RectTransform:
   m_AnchoredPosition: {x: 127, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &692898922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 692898920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd3faa008b268784da12dfd569e0b37b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerControl: {fileID: 402897941}
+  fillImage: {fileID: 725562376}
+  button: {fileID: 781266367}
+  textMeshProUGUI: {fileID: 747123242}
+  buttonName: 
 --- !u!1 &709027227
 GameObject:
   m_ObjectHideFlags: 0
@@ -34857,6 +34852,7 @@ MonoBehaviour:
   fillImage: {fileID: 2036471486}
   button: {fileID: 295831569}
   textMeshProUGUI: {fileID: 629879894}
+  buttonName: 
 --- !u!1 &1918425589
 GameObject:
   m_ObjectHideFlags: 0

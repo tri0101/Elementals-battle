@@ -130,6 +130,12 @@ public class PlayerControl : Subject
     [SerializeField] private Transform enemy;
     public Transform Enemy => enemy;
 
+
+
+    public const string SkillObserver = "Skill";
+    public const string RangedAttackObserver = "RangedAttack";
+    public const string TransformObserver = "Transform";
+   
     private void Awake()
     {
         normalT = transform.Find("Normal");
@@ -312,7 +318,7 @@ public class PlayerControl : Subject
         }
 
 
-        if (playerInput.isSkillInput && playerReceiveDamagee.Mana >= 500f) 
+        if (playerInput.isSkillInput ) 
         {
             isSkillPressed = true;
         }
@@ -394,9 +400,10 @@ public class PlayerControl : Subject
     {
         NotifyObservers();
     }
-    public void RefreshObserversThis()
+   
+    public void RefreshObservers(object data1)
     {
-        NotifyObservers(this);
+        NotifyObservers(data1);
     }
     public void AutoFlip()
     {
