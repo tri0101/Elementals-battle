@@ -57,6 +57,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_T_Air_Attack = "T_Air_attack";
     public const string Player_Transform_To_Human = "TransformToHuman";
     public const string Player_Ranged_Attack = "Ranged_Attack";
+    public const string Player_T_Ranged_Attack = "T_Ranged_Attack";
     public const string Player_T_Skill = "T_Skill";
     public const string Player_T_Block_Open = "T_Block_Open";
     public const string Player_T_Block = "T_Block";

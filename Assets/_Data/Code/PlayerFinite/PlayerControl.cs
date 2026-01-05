@@ -230,9 +230,103 @@ public class PlayerControl : Subject
         animator.Play(newState, 0, 0f);
         currentStringState = newState;
     }
+    void OnlyCrystalMauler()
+    {
+        CheckName();
+        //if (PlayerReceiveDamagee.IsDead) return;
+        //====== Di chuyển =========
+        MoveX = 0;
+
+
+        if ((playerInput.isLeftMove || playerInput.isLeftMovePC) && !currentStringState.Contains("Block"))
+            MoveX = -1;
+        else if ((playerInput.isRightMove || playerInput.isRightMovePC) && !currentStringState.Contains("Block"))
+            MoveX = 1;
+
+
+        //isBlockPressed = Input.GetKey(keyBiding.blockKey);
+
+        //Check bị đánh lần đầu
+        if (playerReceiveDamagee.IsHit)
+        {
+
+            WasInAirBeforeHit = !playerCheckingGround.IsGrounded;
+            WasFallingBeforeHit = rb.linearVelocity.y <= 0;
+
+
+            playerReceiveDamagee.IsHit = false;
+
+
+
+
+            playerStateManager.SwitchAnyState(playerStateManager.takeHitState);
+
+
+
+
+            return;
+        }
+
+
+        if (currentStringState.Contains("Block") && ((playerInput.isBlockInputUp || playerInput.isBlockInputUpPC)))
+        {
+            isBlockPressed = false;
+        }
+        //Lần đánh 2 , 3
+        if (playerInput.isAttackInput && !hasAttackedWhenJump && currentStringState.Contains("Attack"))
+        {
+            isAttackPressed = true;
+
+        }
+        //Air attack
+        if (playerInput.isAttackInput && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
+        {
+            isAttackPressed = true;
+        }
+        if (!currentStringState.Contains("Idle") && !currentStringState.Contains("Run")) return;
+
+
+        //======= Nhảy ==========
+        if ((Input.GetKeyDown(keyBiding.jumpKey)) && !currentStringState.StartsWith("Jump"))
+        {
+            IsJumpPressed = true;
+        }
+        if ((playerInput.isBlockInputDown || playerInput.isBlockInputDownPC) && canBlock)
+        {
+            isBlockPressed = true;
+            canBlock = false;
+        }
+        if (playerInput.isTransformInput && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
+        {
+            isTransformPressed = true;
+
+        }
+        if (playerInput.isRollInput && !hasBeenTransform)
+        {
+            isRollPressed = true;
+
+        }
+        if (playerInput.isRangedAttackInput && !hasBeenTransform)
+        {
+            isRangedAttackPressed = true;
+        }
+        //Lần đánh 1
+        if (playerInput.isAttackInput)
+        {
+            isAttackPressed = true;
+        }
+
+
+        if (playerInput.isSkillInput)
+        {
+            isSkillPressed = true;
+        }
+    }
 
     void Update()
     {
+        
+        
         CheckName();
         //if (PlayerReceiveDamagee.IsDead) return;
         //====== Di chuyển =========
@@ -269,18 +363,18 @@ public class PlayerControl : Subject
         }
        
 
-        if (currentStringState.Contains("Block") && ((playerInput.isBlockInputUp || playerInput.isBlockInputUpPC)))
+        if (currentStringState.Contains("Block") && (playerInput.isBlockInputUp || Input.GetKeyDown(keyBiding.blockKey)))
         {
             isBlockPressed = false;
         }
         //Lần đánh 2 , 3
-        if (playerInput.isAttackInput && !hasAttackedWhenJump && currentStringState.Contains("Attack"))
+        if (((playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey)) && !hasAttackedWhenJump && currentStringState.Contains("Attack")))
         {
             isAttackPressed = true;
            
         }
         //Air attack
-        if (playerInput.isAttackInput && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
+        if ((playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey)) && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
         {
             isAttackPressed = true;
         }
@@ -288,37 +382,46 @@ public class PlayerControl : Subject
 
        
         //======= Nhảy ==========
-        if (playerInput.isJumpInput && !currentStringState.StartsWith("Jump"))
+        if ((playerInput.isJumpInput || Input.GetKeyDown(keyBiding.jumpKey)) && !currentStringState.StartsWith("Jump"))
         {
             IsJumpPressed = true;
         }
-        if ((playerInput.isBlockInputDown || playerInput.isBlockInputDownPC) && canBlock)
+        if ((playerInput.isBlockInputDown || Input.GetKeyDown(keyBiding.blockKey)) && canBlock)
         {
             isBlockPressed = true;
             canBlock = false;
         }
-        if (playerInput.isTransformInput && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
+        if ((playerInput.isTransformInput || Input.GetKeyDown(keyBiding.transformKey)) && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
         {
             isTransformPressed = true;
 
         }
-        if (playerInput.isRollInput && !hasBeenTransform)
+        if ((playerInput.isRollInput || Input.GetKeyDown(keyBiding.rollKey)) && !hasBeenTransform)
         {
             isRollPressed = true;
 
         }
-        if (playerInput.isRangedAttackInput && !hasBeenTransform )
+        if ((playerInput.isRangedAttackInput || Input.GetKeyDown(keyBiding.rangedAttackKey)) )
         {
-            isRangedAttackPressed = true;
+            if(transform.name == "Fire_Knight_finite")
+            {
+                isRangedAttackPressed = true;
+            }
+            else if (!hasBeenTransform)
+            {
+                
+                isRangedAttackPressed = true;
+            }
+                
         }
         //Lần đánh 1
-        if (playerInput.isAttackInput)
+        if (playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey))
         {
             isAttackPressed = true;
         }
 
 
-        if (playerInput.isSkillInput ) 
+        if (playerInput.isSkillInput ||  Input.GetKeyDown(keyBiding.skillKey)) 
         {
             isSkillPressed = true;
         }

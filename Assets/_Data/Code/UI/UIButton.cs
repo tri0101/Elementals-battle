@@ -48,16 +48,19 @@ public class UIButton : MonoBehaviour,IObserver
         {
             string stringObserver = tuple.Item1;
             float duration = tuple.Item2;
+            
+            
             Debug.Log( duration);
             if (stringObserver == buttonName)
             {
                 
+                
                 StartCoroutine(ResetTime(duration));
             }
         }
-        else if(data is string value)
+        else if (data is string value)
         {
-            if(value == PlayerControl.TransformObserver)
+            if (value == buttonName)
             {
                 button.interactable = false;
             }

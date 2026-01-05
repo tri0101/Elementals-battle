@@ -9,15 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c4600be9f5771f48a969c5b3c158181, type: 3}
-  m_Name: 2_SS
+  m_Script: {fileID: 11500000, guid: d545f2c192d13c6498867615e5c24aba, type: 3}
+  m_Name: Fire
   m_EditorClassIdentifier: 
-  leftMove: 276
-  rightMove: 275
-  blockKey: 273
-  jumpKey: 258
-  attackKey: 257
-  rangedAttackKey: 262
-  rollKey: 259
-  skillKey: 261
-  transformKey: 260
+  flySpeed: 50
+  delayAttack: 0.1
+  timeToDespawn: 0.5
+  timeToDespawnAttack: 1
+  spawnPosition: {x: 4.25, y: 0.38, z: 0}
+  directionFly: {x: 1, y: 0, z: 0}

@@ -9,15 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c4600be9f5771f48a969c5b3c158181, type: 3}
-  m_Name: 2_SS
+  m_Script: {fileID: 11500000, guid: d518b53757c8c3f4799e058d426cc826, type: 3}
+  m_Name: T_Skill
   m_EditorClassIdentifier: 
-  leftMove: 276
-  rightMove: 275
-  blockKey: 273
-  jumpKey: 258
-  attackKey: 257
-  rangedAttackKey: 262
-  rollKey: 259
-  skillKey: 261
-  transformKey: 260
+  damageSend: 30
+  knockBack: {x: -12, y: 0, z: 0}
+  durationKnockBack: 0.5
+  durationStopping: 0.5
+  speed: 0
+  statusEffect: 0

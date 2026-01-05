@@ -16,4 +16,8 @@ public class PlayerInfo : ScriptableObject
     [Header("Duration SKill")]
     public float durationSkill;
     public float durationRangedAttack;
+    [Header("Duration Transform SKill")]
+    public float durationTransformSkill1;
+    public float durationTransformSkill2;
+    public float durationTransformSkill3;
 }

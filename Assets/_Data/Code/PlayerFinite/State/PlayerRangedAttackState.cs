@@ -7,7 +7,15 @@ public class PlayerRangedAttackState : PlayerBaseState
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.IsRangedAttackPressed = false;
         player.PlayerControl.RefreshObservers((PlayerControl.RangedAttackObserver, player.PlayerControl.PlayerInfo.durationRangedAttack));
-        player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
+        if (player.PlayerControl.HasBeenTransform)
+        {
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Ranged_Attack);
+        }
+        else
+        {
+            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
+        }
+           
 
     }
 
@@ -23,7 +31,7 @@ public class PlayerRangedAttackState : PlayerBaseState
 
     public override void UpdateState(PlayerStateManager player)
     {
-        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Ranged_Attack, 0.9f, 1)))
+        if ((player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_Ranged_Attack, 0.9f, 1)) || player.PlayerControl.CheckCurrentAnimation(PlayerStateManager.Player_T_Ranged_Attack, 0.9f, 1))
         {
 
             player.SwitchState(player.idleState);
