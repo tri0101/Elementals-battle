@@ -6,6 +6,7 @@ public class PlayerRangedAttackState : PlayerBaseState
     {
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.IsRangedAttackPressed = false;
+        player.PlayerControl.RefreshObserversThis();
         player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
 
     }
