@@ -116,7 +116,9 @@ public class PlayerControl : Subject
     PlayerIdle playerIdle;
     public PlayerIdle PlayerIdle => playerIdle;
     PlayerSkilll playerSkilll;
-    public PlayerSkilll PlayerSkilll => playerSkilll;
+    public PlayerSkilll PlayerSkill => playerSkilll;
+    PlayerSkillOne playerSkillOne;
+    public PlayerSkillOne PlayerSkillOne => playerSkillOne;
     PlayerReceiveDamagee playerReceiveDamagee;
     public PlayerReceiveDamagee PlayerReceiveDamagee => playerReceiveDamagee;
     PlayerEventt playerEventt;
@@ -161,6 +163,7 @@ public class PlayerControl : Subject
         playerRoll = GetComponent<PlayerRoll>();    
         playerIdle = GetComponent<PlayerIdle>();
         playerSkilll = GetComponent<PlayerSkilll>();
+        playerSkillOne = GetComponent<PlayerSkillOne>();
         playerReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<PlayerReceiveDamagee>();
         playerEventt = transform.GetChild(0).GetComponent<PlayerEventt>();
         playerInput = GetComponent<PlayerInput>();
