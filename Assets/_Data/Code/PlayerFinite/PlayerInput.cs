@@ -17,6 +17,7 @@ public class PlayerInput : MonoBehaviour
     public bool isRollInput;
     public bool isJumpInput;
     public bool isSkillInput;
+    public bool isSkillOneInput;
     public bool isTransformInput;
     public bool isRangedAttackInput;
     public bool isBlockInputDown;
@@ -58,6 +59,10 @@ public class PlayerInput : MonoBehaviour
     {
         isSkillInput = true;
     }
+    public void OnSKillOneButtonDown()
+    {
+        isSkillOneInput = true;
+    }
     public void OnTransformButtonDown()
     {
         isTransformInput = true;
@@ -96,6 +101,7 @@ public class PlayerInput : MonoBehaviour
         isRollInput = false;
         isJumpInput = false;
         isSkillInput = false;
+        isSkillOneInput = false;
         isTransformInput = false;
         isRangedAttackInput = false;
         isBlockInputDown = false;

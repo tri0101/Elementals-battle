@@ -19,6 +19,7 @@ public class PlayerStateManager : MonoBehaviour
     public PlayerRangedAttackState rangedAttackState = new PlayerRangedAttackState();
     public PlayerAirAttackState airAttackState = new PlayerAirAttackState();
     public PlayerSkillState skillState = new PlayerSkillState();
+    public PlayerSkillOneState skillOneState = new PlayerSkillOneState();
     public PlayerBlockState blocKState = new PlayerBlockState();
     public PlayerTransformState transformState = new PlayerTransformState();
     public PlayerRollState rollState = new PlayerRollState();
@@ -37,6 +38,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Attack_3 = "Attack_3";
     public const string Player_Air_Attack = "air_Attack";
     public const string Player_Skill = "Skill";
+    public const string Player_Skill_One = "Skill_1";
     public const string Player_Block_Open = "Block_open";
     public const string Player_Block = "Block";
     public const string Player_Block_End = "Block_End";
@@ -59,6 +61,7 @@ public class PlayerStateManager : MonoBehaviour
     public const string Player_Ranged_Attack = "Ranged_Attack";
     public const string Player_T_Ranged_Attack = "T_Ranged_Attack";
     public const string Player_T_Skill = "T_Skill";
+    public const string Player_T_Skill_One = "T_Skill_1";
     public const string Player_T_Block_Open = "T_Block_Open";
     public const string Player_T_Block = "T_Block";
     public const string Player_T_Block_End = "T_Block_End";

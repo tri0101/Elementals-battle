@@ -57,6 +57,11 @@ public class PlayerRunState : PlayerBaseState
             player.SwitchState(player.skillState);
             return;
         }
+        if (player.PlayerControl.IsSkillOnePressed)
+        {
+            player.SwitchState(player.skillOneState);
+            return;
+        }
         if (player.PlayerControl.IsBlockPressed)
         {
             player.SwitchState(player.blocKState);

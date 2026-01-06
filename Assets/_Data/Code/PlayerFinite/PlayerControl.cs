@@ -47,6 +47,12 @@ public class PlayerControl : Subject
         get => isSkillPressed;
         set => isSkillPressed = value;
     }
+    [SerializeField] private bool isSkillOnePressed;
+    public bool IsSkillOnePressed
+    {
+        get => isSkillOnePressed;
+        set => isSkillOnePressed = value;
+    }
     [SerializeField] private bool isBlockPressed;
     public bool IsBlockPressed
     {
@@ -133,6 +139,7 @@ public class PlayerControl : Subject
 
 
     public const string SkillObserver = "Skill";
+    public const string SkillOneObserver = "Skill_1";
     public const string RangedAttackObserver = "RangedAttack";
     public const string TransformObserver = "Transform";
    
@@ -424,6 +431,11 @@ public class PlayerControl : Subject
         if (playerInput.isSkillInput ||  Input.GetKeyDown(keyBiding.skillKey)) 
         {
             isSkillPressed = true;
+        }
+
+        if (playerInput.isSkillOneInput) 
+        {
+            isSkillOnePressed = true;
         }
 
     }
