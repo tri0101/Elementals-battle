@@ -5,6 +5,8 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.Composites;
 using UnityEngine.UI;
 
@@ -17,13 +19,24 @@ public class UIButton : MonoBehaviour,IObserver
     string defaultName;
     [SerializeField] string buttonName;
     float duration;
+    private EventTrigger eventTrigger;
+
+
+    void Awake()
+    {
+        playerControl = transform.parent.parent.GetComponent<PlayerControl>();
+        fillImage = transform.GetChild(0).GetComponent<Image>();
+        button = fillImage.transform.GetChild(0).GetComponent<Button>();
+        textMeshProUGUI = button.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+    }
     private void Start()
     {
         playerControl.AddObserver(this);
         defaultName = textMeshProUGUI.text;
         buttonName = transform.name;
-        button = transform.GetChild(0).GetChild(0).GetComponent<Button>();
-        if(buttonName == "Transform")
+        Addlistener();
+        if (buttonName == "Transform")
         {
             button.interactable = false;
         }
@@ -98,7 +111,84 @@ public class UIButton : MonoBehaviour,IObserver
         
 
     }
-
+    void Addlistener()
+    {
+        if(buttonName == "Transform")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnTransformButtonDown);
+        }
+        else if (buttonName == "Jump")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnJumpButtonDown);
+        }
+        else if (buttonName == "NormalAttack")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnAttackButtonDown);
+        }
+        else if (buttonName == "Roll")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnRollButtonDown);
+        }
+        else if (buttonName == "RangedAttack")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnRangedAttackButtonDown);
+        }
+        else if (buttonName == "Skill_1")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnSKillOneButtonDown);
+        }
+        else if (buttonName == "Skill")
+        {
+            button.onClick.AddListener(playerControl.PlayerInput.OnSKillButtonDown);
+        }
+        else 
+        {
+            eventTrigger = button.gameObject.GetComponent<EventTrigger>();
+            if (eventTrigger == null)
+                eventTrigger = button.gameObject.AddComponent<EventTrigger>();
+            AddEvent(EventTriggerType.PointerDown, OnPointerDown);
+            AddEvent(EventTriggerType.PointerUp, OnPointerUp);
+        }
+       
+    }
+    void AddEvent(EventTriggerType type, UnityAction<BaseEventData> action)
+    {
+        EventTrigger.Entry entry = new EventTrigger.Entry();
+        entry.eventID = type;
+        entry.callback.AddListener(action);
+        eventTrigger.triggers.Add(entry);
+    }
+    void OnPointerDown(BaseEventData data)
+    {
+        if(buttonName == "MoveLeft")
+        {
+            playerControl.PlayerInput.OnMoveLeftDown();
+        }
+        else if(buttonName == "MoveRight")
+        {
+            playerControl.PlayerInput.OnMoveRightDown();
+        }
+        else if(buttonName == "Block")
+        {
+            playerControl.PlayerInput.OnBlockDown();
+        }
+        
+    }
+    void OnPointerUp(BaseEventData data)
+    {
+        if (buttonName == "MoveLeft")
+        {
+            playerControl.PlayerInput.OnMoveLeftUp();
+        }
+        else if (buttonName == "MoveRight")
+        {
+            playerControl.PlayerInput.OnMoveRightUp();
+        }
+        else if (buttonName == "Block")
+        {
+            playerControl.PlayerInput.OnBlockUp();
+        }
+    }
     private void SetAlpha(float alpha)
     {
         if (fillImage == null) return;

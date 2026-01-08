@@ -9,6 +9,13 @@ public class UI_ManaBar : MonoBehaviour, IObserver
     [SerializeField] Image fillTImage;
     const float FIRST_BAR_MAX = 500f;
  
+
+    void Awake()
+    {
+        playerControl = transform.parent.parent.GetComponent<PlayerControl>();
+        fillSImage = transform.Find("FillSBar").GetComponent<Image>();
+        fillTImage = transform.Find("FillTBar").GetComponent<Image>();
+    }
     private void Start()
     {
         playerControl.AddObserver(this);

@@ -7,6 +7,12 @@ public class UI_HealthBar : MonoBehaviour, IObserver
     [SerializeField] PlayerControl playerControl;
     [SerializeField] Image fillImage;
 
+
+    void Awake()
+    {
+        playerControl = transform.parent.parent.GetComponent<PlayerControl>();
+        fillImage = transform.Find("FillBar").GetComponent<Image>();
+    }
     private void Start()
     {
         playerControl.AddObserver(this);
