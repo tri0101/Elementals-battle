@@ -3,6 +3,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Player/AttackInfo")]
 public class AttackInfo : ScriptableObject
 {
+
+    public DamageType damageType;
+
     public float damageSend;
     public Vector3 knockBack;
 
@@ -15,4 +18,5 @@ public class AttackInfo : ScriptableObject
 
     public float speed;
     public StatusEffect statusEffect;
+   
 }

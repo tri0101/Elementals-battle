@@ -3,7 +3,9 @@
 public class Attack : Subject
 {
     [SerializeField] private AttackInfo attackInfo;
-    private float attackDamage;
+    public AttackInfo AttackInfo => attackInfo;
+    [SerializeField] private PlayerControl playerControl;
+    [SerializeField] private float attackDamage;
     public float AttackDamage => attackDamage;
     Vector3 knockBack;
     float durationKnock;
@@ -13,15 +15,16 @@ public class Attack : Subject
     
     private void Awake()
     {
-        attackDamage = attackInfo.damageSend;
+        
         knockBack = attackInfo.knockBack;
         durationKnock = attackInfo.durationKnockBack;
         durationStopping = attackInfo.durationStopping;
 
         myTag = transform.parent.parent.parent.tag;
-        
+        playerControl = transform.parent.parent.parent.GetComponent<PlayerControl>();
+        SetDamage();
     }
-
+    
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag != "ReceiveField") return;
@@ -80,7 +83,7 @@ public class Attack : Subject
         {
             //if (player.IsImmortal) return;
 
-            player.ReceiveDamage(attackDamage);
+            player.ReceiveDamage(this ,playerControl);
 
             //if (transform.name.Contains("Attack_Final"))
             //    player.CallIsFinal();
@@ -95,5 +98,16 @@ public class Attack : Subject
         }
     }
 
+    void SetDamage()
+    {
+        if(attackInfo.damageType == DamageType.Physical)
+        {
+            attackDamage = attackInfo.damageSend + playerControl.PlayerInfo.physicalDamage;
+        }
+        else if (attackInfo.damageType == DamageType.Magical)
+        {
+            attackDamage = attackInfo.damageSend + playerControl.PlayerInfo.magicalDamage ;
+        }
 
+    }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Net.Mail;
+using UnityEngine;
 
 public class PlayerReceiveDamagee : MonoBehaviour, IObserver
 {
@@ -28,6 +29,16 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
     public float MaxMana
     {
         get => maxMana; set => maxMana = value;
+    }
+    [SerializeField] private float physicalArmor;
+    public float PhysicalArmor
+    {
+        get => physicalArmor; set => physicalArmor = value;
+    }
+    [SerializeField] private float magicalArmor;
+    public float MagicalArmor
+    {
+        get => magicalArmor; set => magicalArmor = value;
     }
     
     [SerializeField] private float durationFinalAttack;
@@ -62,7 +73,8 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
        
         maxHealth = playerControl.PlayerInfo.health;
         maxMana = maxHealth * 2;
-
+        physicalArmor = playerControl.PlayerInfo.physicalArmor;
+        magicalArmor = playerControl.PlayerInfo.magicArmor;
         mana = 1000000f;
         //mana = 0f;
         health = maxHealth;
@@ -71,21 +83,23 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
     }
 
 
-    public void ReceiveDamage(float damage)
+    public void ReceiveDamage(Attack attack,PlayerControl otherPlayerControl)
     {
+        
         
 
         if (isDead) return;
-        if(playerControl.CurrentStringState == "Block" || playerControl.CurrentStringState == "T_Block")
+        float finalDamage = CalculateDamage(attack, otherPlayerControl);
+        if (playerControl.CurrentStringState == "Block" || playerControl.CurrentStringState == "T_Block")
         {
-            mana += damage ;
+            mana += finalDamage;
             playerControl.RefreshObservers();
             return;
         }
         
-        health -= damage;
+        health -= finalDamage;
 
-        mana += damage * 1.5f;
+        mana += finalDamage * 1.5f;
 
         //if(mana >= 1000f)
         //{
@@ -135,4 +149,47 @@ public class PlayerReceiveDamagee : MonoBehaviour, IObserver
     {
 
     }
+
+   
+    float CalculateDamage(Attack attack, PlayerControl otherPlayerControl)
+        {
+            switch (attack.AttackInfo.damageType)
+            {
+                case DamageType.Physical:
+
+                {
+                    float damage = attack.AttackDamage;
+
+                    bool isCritical = Random.value < otherPlayerControl.PlayerInfo.criticalRate;
+
+                    if (isCritical)
+                    {
+                        damage += damage * (otherPlayerControl.PlayerInfo.criticalDamageRate /100);
+                        damage *= 2;
+                    }
+
+                    return damage * 100 / (100 + physicalArmor); }
+
+                case DamageType.Magical:
+                {
+                    float damage = attack.AttackDamage;
+
+                    bool isCritical = Random.value < otherPlayerControl.PlayerInfo.criticalRate;
+
+                    if (isCritical)
+                    {
+                        damage += damage * (otherPlayerControl.PlayerInfo.criticalDamageRate / 100);
+                        damage *= 2;
+                    }
+                    return damage * 100 / (100 + magicalArmor); }
+                
+                case DamageType.True:
+                { return attack.AttackDamage; }
+            }
+
+            return attack.AttackDamage;
+        }
+    
+
+
 }

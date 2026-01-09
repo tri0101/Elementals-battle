@@ -12,12 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5778393a6ad6a424fa917611adfe4062, type: 3}
   m_Name: Light_Valkyrie
   m_EditorClassIdentifier: 
+  physicalDamage: 10
+  magicalDamage: 10
   health: 500
   moveSpeed: 10
   jumpForce: 10
   airWalkSpeed: 7
   rollPower: 20
   rollDuration: 0.45
+  magicArmor: 25
+  physicalArmor: 25
+  criticalRate: 100
+  criticalDamageRate: 50
+  skill_one_CDR: 0
+  skill_two_CDR: 0
+  skill_three_CDR: 0
   durationA1: 0.96
   durationA2: 0.8
   durationSkillOne: 4
