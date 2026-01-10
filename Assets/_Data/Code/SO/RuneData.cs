@@ -3,8 +3,8 @@ using UnityEngine;
 
 public enum RuneStat
 {
-    PhysicalDamage,
-    MagicalDamage,
+    PhysicalDmg,
+    MagicalDmg,
     HP,
     PhysicalArmor,
     MagicalArmor,
