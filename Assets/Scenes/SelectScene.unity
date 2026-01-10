@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 56113452}
   - component: {fileID: 56113451}
   m_Layer: 5
-  m_Name: Button
+  m_Name: ButtonLoad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2237,6 +2237,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selectedHero: {fileID: 0}
+  selectedRunes: []
 --- !u!4 &1666707673
 Transform:
   m_ObjectHideFlags: 0
@@ -2642,6 +2643,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1760920224}
   m_CullTransparentMesh: 1
+--- !u!1 &1794807241
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1794807243}
+  - component: {fileID: 1794807242}
+  m_Layer: 0
+  m_Name: PlayerInventory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1794807242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794807241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e434830bce38854f9fdb1fb2c47313a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownedRunes: []
+--- !u!4 &1794807243
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1794807241}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1035.7443, y: 545.8747, z: -5.342206}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1944026456
 GameObject:
   m_ObjectHideFlags: 0
@@ -2877,3 +2923,4 @@ SceneRoots:
   - {fileID: 1745834803}
   - {fileID: 720631910}
   - {fileID: 1666707673}
+  - {fileID: 1794807243}
