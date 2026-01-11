@@ -4,33 +4,53 @@ using TMPro;
 
 public class UIRuneItem : MonoBehaviour
 {
+    [Header("UI")]
     public Image icon;
     public Button buttonParent;
-    
+    public TextMeshProUGUI countText;
+    public TextMeshProUGUI statTextPrefab;
+
+    [Header("Refs")]
     public UI_RunePage runePage;
-    public TextMeshProUGUI statTextPrefab; // prefab TMP
+    public GameObject UIStat;
 
-    [SerializeField] private RuneData runeData;
+    private RuneStack stack;
+    private int usedCount = 0; // số rune đang dùng trong page
 
-    public void Setup(RuneData data)
+    // ================= SETUP =================
+    public void Setup(RuneStack runeStack)
     {
-        runeData = data;
+        stack = runeStack;
+        usedCount = 0;
 
-        // set icon
-        icon.sprite = data.icon;
+        icon.sprite = stack.rune.icon;
+        UpdateCountText();
 
-        // clear stat cũ (nếu reuse prefab)
+        ClearStats();
+        BuildStats();
+    }
+
+    void UpdateCountText()
+    {
+        int available = stack.count - usedCount;
+        countText.text = "x" + available;
+
+        buttonParent.interactable = available > 0;
+    }
+
+    void ClearStats()
+    {
         for (int i = buttonParent.transform.childCount - 1; i >= 0; i--)
         {
             Transform child = buttonParent.transform.GetChild(i);
             if (child.GetComponent<TextMeshProUGUI>() != null)
-            {
                 Destroy(child.gameObject);
-            }
         }
+    }
 
-        // tạo text cho từng stat
-        foreach (var statValue in runeData.stats)
+    void BuildStats()
+    {
+        foreach (var statValue in stack.rune.stats)
         {
             TextMeshProUGUI statText =
                 Instantiate(statTextPrefab, buttonParent.transform);
@@ -39,25 +59,27 @@ public class UIRuneItem : MonoBehaviour
                 ? $"+{statValue.value}%"
                 : $"+{statValue.value}";
 
-            string statName = statValue.stat.ToString();
-
-            statText.text = $"{valueText} {statName}";
+            statText.text = $"{valueText} {statValue.stat}";
             statText.enabled = true;
         }
     }
-
-
     private void Start()
     {
         buttonParent.onClick.AddListener(OnClick);
     }
-
+    // ================= CLICK =================
     void OnClick()
     {
-        bool added = runePage.TryAddRune(runeData);
-        if (added)
+        if (runePage.TryAddRune(stack.rune, this))
         {
-            Destroy(gameObject); // ❗ XÓA RUNE KHỎI BAG
+            usedCount++;
+            UpdateCountText();
         }
+    }
+    // ================= SLOT CALLBACK =================
+    public void OnRuneRemovedFromPage()
+    {
+        usedCount--;
+        UpdateCountText();
     }
 }

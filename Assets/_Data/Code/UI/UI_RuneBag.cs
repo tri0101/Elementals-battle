@@ -2,34 +2,42 @@
 
 public class UI_RuneBag : MonoBehaviour
 {
-    public Transform contentParent;      // Grid / Vertical Layout Group
-    public GameObject runeItemPrefab;    // UI_RuneItem
-
+    public Transform contentParent;
+    public GameObject runeItemPrefab;
 
     private void Awake()
     {
-        contentParent = transform;
+        if (contentParent == null)
+            contentParent = transform;
     }
-    void OnEnable()
+
+    private void OnEnable()
     {
         Refresh();
     }
 
     public void Refresh()
     {
-        // Xóa UI cũ
+        // clear UI
         foreach (Transform child in contentParent)
         {
             Destroy(child.gameObject);
         }
 
-        // Spawn UI theo inventory
-        foreach (var rune in PlayerInventory.Instance.ownedRunes)
+        // build lại từ inventory
+        foreach (var stack in PlayerInventory.Instance.ownedRunes)
         {
             GameObject go = Instantiate(runeItemPrefab, contentParent);
             UIRuneItem ui = go.GetComponent<UIRuneItem>();
+            ui.Setup(stack); 
             ui.gameObject.SetActive(true);
-            ui.Setup(rune);
         }
+    }
+
+    
+    public void AddRune(RuneData rune)
+    {
+        PlayerInventory.Instance.AddRune(rune, 1);
+        Refresh(); 
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 public class UI_RunePage : MonoBehaviour
 {
     public List<UI_RuneSlot> slots = new List<UI_RuneSlot>();
-
+    public UI_StatPanel uiStat;
     private void Awake()
     {
         slots.Clear();
@@ -22,16 +22,40 @@ public class UI_RunePage : MonoBehaviour
         Debug.Log("Total Rune Slots: " + slots.Count);
     }
 
-    public bool TryAddRune(RuneData rune)
+    public bool TryAddRune(RuneData rune, UIRuneItem source)
     {
         foreach (var slot in slots)
         {
             if (slot.IsEmpty)
             {
-                slot.SetRune(rune);
+                slot.SetRune(rune, source);
                 return true;
             }
         }
         return false;
     }
+    private void Update()
+    {
+        uiStat.UpdateStats(CalculateTotalStats());
+    }
+    public Dictionary<RuneStat, float> CalculateTotalStats()
+    {
+        Dictionary<RuneStat, float> totalStats = new();
+
+        foreach (var slot in slots)
+        {
+            if (slot.currentRune == null) continue;
+
+            foreach (var statValue in slot.currentRune.stats)
+            {
+                if (!totalStats.ContainsKey(statValue.stat))
+                    totalStats[statValue.stat] = 0;
+
+                totalStats[statValue.stat] += statValue.value;
+            }
+        }
+
+        return totalStats;
+    }
+
 }
