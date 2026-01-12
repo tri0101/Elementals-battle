@@ -8,19 +8,9 @@ public class UI_RunePage : MonoBehaviour
     private void Awake()
     {
         slots.Clear();
-
-        // Lấy toàn bộ UI_RuneSlot là con của RunePage
-        foreach (Transform child in transform)
-        {
-            UI_RuneSlot slot = child.GetComponent<UI_RuneSlot>();
-            if (slot != null)
-            {
-                slots.Add(slot);
-            }
-        }
-
-        Debug.Log("Total Rune Slots: " + slots.Count);
+        slots.AddRange(GetComponentsInChildren<UI_RuneSlot>(true));
     }
+
 
     public bool TryAddRune(RuneData rune, UIRuneItem source)
     {

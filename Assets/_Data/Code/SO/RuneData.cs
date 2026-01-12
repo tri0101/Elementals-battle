@@ -8,7 +8,11 @@ public enum RuneStat
     HP,
     PhysicalArmor,
     MagicalArmor,
-    
+    CriticalRate,
+    CriticalDamageRate,
+    CDR,
+
+
 }
 
 [CreateAssetMenu(menuName = "Rune/RuneData")]

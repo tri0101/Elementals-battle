@@ -45,9 +45,12 @@ public class UI_StatPanel : MonoBehaviour
         {
             RuneStat.PhysicalDmg => "Physical Dmg",
             RuneStat.MagicalDmg => "Magical Dmg",
-            RuneStat.HP => "Máu",
+            RuneStat.HP => "Health",
             RuneStat.PhysicalArmor => "Physical Arm",
             RuneStat.MagicalArmor => "Magical Arm",
+            RuneStat.CriticalDamageRate => "Crit Dmg Rate",
+            RuneStat.CriticalRate => "Crit Rate",
+            RuneStat.CDR => "CDR",
             _ => stat.ToString()
         };
     }
