@@ -6,15 +6,10 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void EnterState(PlayerStateManager player)
     {
-        player.PlayerControl.CanBlock = true;
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Idle);
-        }
-        else
-        {
-            player.PlayerControl.ChangeAnimationState((PlayerStateManager.Player_Idle));
-        }
+        
+       
+        player.PlayerControl.ChangeAnimationState((PlayerStateManager.Player_Idle));
+        
            
 
         //Để nhân vật ko bị trượt
@@ -27,21 +22,7 @@ public class PlayerIdleState : PlayerBaseState
     public override void UpdateState(PlayerStateManager player)
     {
 
-        if (player.PlayerControl.IsRollPressed)
-        {
-            player.SwitchState(player.rollState);
-        }
-        if (player.PlayerControl.PlayerTransformm.TransformToHuman)
-        {
-            player.SwitchState(player.transformState);
-            
-            return;
-        }
-        if (player.PlayerControl.IsJumpPressed && player.PlayerControl.PlayerCheckingGround.IsGrounded)
-        {
-            player.SwitchState(player.jumpState);
-            return;
-        }
+     
         if (player.PlayerControl.IsAttackPressed)
         {
             player.SwitchState(player.attackState);
@@ -57,20 +38,7 @@ public class PlayerIdleState : PlayerBaseState
             player.SwitchState(player.skillState);
             return;
         }
-        if (player.PlayerControl.IsSkillOnePressed)
-        {
-            player.SwitchState(player.skillOneState);
-            return;
-        }
-        if (player.PlayerControl.IsBlockPressed)
-        {
-            player.SwitchState(player.blocKState);
-            return;
-        }
-        if (player.PlayerControl.IsTransformPressed)
-        {
-            player.SwitchState(player.transformState);
-        }
+        
         if (player.PlayerControl.MoveX != 0)
         {
             player.SwitchState(player.runState);
@@ -84,6 +52,6 @@ public class PlayerIdleState : PlayerBaseState
 
     public override void LateUpdateState(PlayerStateManager player)
     {
-        player.PlayerControl.AutoFlip();
+        
     }
 }

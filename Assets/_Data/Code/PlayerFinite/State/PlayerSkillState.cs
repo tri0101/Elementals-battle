@@ -7,23 +7,23 @@ public class PlayerSkillState : PlayerBaseState
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.IsSkillPressed = false;
 
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.RefreshObservers((PlayerControl.SkillObserver, player.PlayerControl.PlayerInfo.durationTransformSkill3));
-        }
-        else
-        {
-            player.PlayerControl.RefreshObservers((PlayerControl.SkillObserver, player.PlayerControl.PlayerInfo.durationSkill));
-        }
+        //if (player.PlayerControl.HasBeenTransform)
+        //{
+        //    player.PlayerControl.RefreshObservers((PlayerControl.SkillObserver, player.PlayerControl.PlayerInfo.durationTransformSkill3));
+        //}
+        //else
+        //{
+        //    player.PlayerControl.RefreshObservers((PlayerControl.SkillObserver, player.PlayerControl.PlayerInfo.durationSkill));
+        //}
         
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Skill);
-        }
-        else
-        {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Skill);
-        }
+        //if (player.PlayerControl.HasBeenTransform)
+        //{
+        //    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Skill);
+        //}
+        //else
+        //{
+        //    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Skill);
+        //}
            
     }
 

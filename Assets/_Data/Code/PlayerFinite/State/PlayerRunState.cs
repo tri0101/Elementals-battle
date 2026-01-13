@@ -7,15 +7,9 @@ public class PlayerRunState : PlayerBaseState
    
     public override void EnterState(PlayerStateManager player)
     {
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Run);
-
-        }
-        else
-        {
+       
             player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Run);
-        }
+        
         
      
     }
@@ -27,21 +21,7 @@ public class PlayerRunState : PlayerBaseState
     {
 
 
-        if (player.PlayerControl.IsRollPressed)
-        {
-            player.SwitchState(player.rollState);
-        }
-        if (player.PlayerControl.PlayerTransformm.TransformToHuman)
-        {
-            player.SwitchState(player.transformState);
-
-            return;
-        }
-        if (player.PlayerControl.IsJumpPressed && player.PlayerControl.PlayerCheckingGround.IsGrounded)
-        {
-            player.SwitchState(player.jumpState);
-            return;
-        }
+        
         if (player.PlayerControl.IsAttackPressed)
         {
             player.SwitchState(player.attackState);
@@ -57,20 +37,12 @@ public class PlayerRunState : PlayerBaseState
             player.SwitchState(player.skillState);
             return;
         }
-        if (player.PlayerControl.IsSkillOnePressed)
-        {
-            player.SwitchState(player.skillOneState);
-            return;
-        }
-        if (player.PlayerControl.IsBlockPressed)
-        {
-            player.SwitchState(player.blocKState);
-            return;
-        }
-        if (player.PlayerControl.IsTransformPressed)
-        {
-            player.SwitchState(player.transformState);
-        }
+        //if (player.PlayerControl.IsSkillOnePressed)
+        //{
+        //    player.SwitchState(player.skillOneState);
+        //    return;
+        //}
+       
         if (player.PlayerControl.MoveX == 0)
             player.SwitchState(player.idleState);
 

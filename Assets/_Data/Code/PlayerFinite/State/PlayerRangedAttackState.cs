@@ -7,23 +7,23 @@ public class PlayerRangedAttackState : PlayerBaseState
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
         player.PlayerControl.IsRangedAttackPressed = false;
 
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.RefreshObservers((PlayerControl.RangedAttackObserver, player.PlayerControl.PlayerInfo.durationTransformSkill2));
-        }
-        else
-        {
-            player.PlayerControl.RefreshObservers((PlayerControl.RangedAttackObserver, player.PlayerControl.PlayerInfo.durationRangedAttack));
-        }
+        //if (player.PlayerControl.HasBeenTransform)
+        //{
+        //    player.PlayerControl.RefreshObservers((PlayerControl.RangedAttackObserver, player.PlayerControl.PlayerInfo.durationTransformSkill2));
+        //}
+        //else
+        //{
+        //    player.PlayerControl.RefreshObservers((PlayerControl.RangedAttackObserver, player.PlayerControl.PlayerInfo.durationRangedAttack));
+        //}
 
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Ranged_Attack);
-        }
-        else
-        {
-            player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
-        }
+        //if (player.PlayerControl.HasBeenTransform)
+        //{
+        //    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Ranged_Attack);
+        //}
+        //else
+        //{
+        //    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Ranged_Attack);
+        //}
            
 
     }

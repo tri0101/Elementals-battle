@@ -6,14 +6,9 @@ public class PlayerTakeHitState : PlayerBaseState
     public override void EnterState(PlayerStateManager player)
     {
 
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            player.PlayerControl.ChangeAnimationAnyState(PlayerStateManager.Player_T_Take_Hit);
-        }
-        else
-        {
+        
             player.PlayerControl.ChangeAnimationAnyState(PlayerStateManager.Player_Take_Hit);
-        }
+        
             
         player.PlayerControl.Rb.linearVelocity = new Vector2(0, player.PlayerControl.Rb.linearVelocity.y);
     }
@@ -44,15 +39,10 @@ public class PlayerTakeHitState : PlayerBaseState
         {
 
             
-            if (player.PlayerControl.WasInAirBeforeHit)
-            {
-                player.SwitchState(player.jumpState);
-            }
-            else
-            {
+            
                 Debug.Log("ve idle");
                 player.SwitchState(player.idleState);
-            }
+            
 
         }
       

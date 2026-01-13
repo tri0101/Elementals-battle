@@ -14,15 +14,13 @@ public class PlayerStateManager : MonoBehaviour
     PlayerBaseState currentState;
     public PlayerIdleState idleState = new PlayerIdleState();
     public PlayerRunState runState = new PlayerRunState();
-    public PlayerJumpState jumpState = new PlayerJumpState();
+
     public PlayerAttackState attackState = new PlayerAttackState();
     public PlayerRangedAttackState rangedAttackState = new PlayerRangedAttackState();
-    public PlayerAirAttackState airAttackState = new PlayerAirAttackState();
+  
     public PlayerSkillState skillState = new PlayerSkillState();
-    public PlayerSkillOneState skillOneState = new PlayerSkillOneState();
-    public PlayerBlockState blocKState = new PlayerBlockState();
-    public PlayerTransformState transformState = new PlayerTransformState();
-    public PlayerRollState rollState = new PlayerRollState();
+    //public PlayerSkillOneState skillOneState = new PlayerSkillOneState();
+   
     public PlayerTakeHitState takeHitState = new PlayerTakeHitState();
     public PlayerDeathState deathState = new PlayerDeathState();
 

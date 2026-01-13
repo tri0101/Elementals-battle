@@ -61,23 +61,7 @@ public class PlayerAttackState : PlayerBaseState
     {
         canCombo = false;
 
-        if (player.PlayerControl.HasBeenTransform)
-        {
-            switch (player.PlayerControl.PlayerAttackk.CountAttack)
-            {
-                case 0:
-                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Attack_1);
-                    break;
-                case 1:
-                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Attack_2);
-                    break;
-                case 2:
-                    player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_T_Attack_3);
-                    break;
-            }
-        }
-        else
-        {
+        
             switch (player.PlayerControl.PlayerAttackk.CountAttack)
             {
                 case 0:
@@ -90,7 +74,7 @@ public class PlayerAttackState : PlayerBaseState
                     player.PlayerControl.ChangeAnimationState(PlayerStateManager.Player_Attack_3);
                     break;
             }
-        }
+        
        
     }
     public override void LateUpdateState(PlayerStateManager player)

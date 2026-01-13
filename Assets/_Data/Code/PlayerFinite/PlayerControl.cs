@@ -22,24 +22,11 @@ public class PlayerControl : Subject
   
     public float MoveX;
 
-    [SerializeField] private bool isJumpPressed;
-
-    public bool IsJumpPressed
-    {
-        get => isJumpPressed;
-        set => isJumpPressed = value;
-    }
     [SerializeField] private bool isAttackPressed;
     public bool IsAttackPressed
     {
         get => isAttackPressed;
         set => isAttackPressed = value;
-    }
-    [SerializeField] private bool hasAttackedWhenJump;
-    public bool HasAttackedWhenJump
-    {
-        get => hasAttackedWhenJump;
-        set => hasAttackedWhenJump = value;
     }
     [SerializeField] private bool isSkillPressed;
     public bool IsSkillPressed
@@ -53,46 +40,14 @@ public class PlayerControl : Subject
         get => isSkillOnePressed;
         set => isSkillOnePressed = value;
     }
-    [SerializeField] private bool isBlockPressed;
-    public bool IsBlockPressed
-    {
-        get => isBlockPressed;
-        set => isBlockPressed = value;
-    }
-    [SerializeField] private bool canBlock;
-    public bool CanBlock
-    {
-        get => canBlock;
-        set => canBlock = value;
-    }
 
-    
-    [SerializeField] private bool isTransformPressed;
-    public bool IsTransformPressed
-    {
-        get => isTransformPressed;
-        set => isTransformPressed = value;
-    }
-    [SerializeField] private bool hasBeenTransform;
-    public bool HasBeenTransform
-    {
-        get => hasBeenTransform;
-        set => hasBeenTransform = value;
-    }
     [SerializeField] private bool isRangedAttackPressed;
     public bool IsRangedAttackPressed
     {
         get => isRangedAttackPressed;
         set => isRangedAttackPressed = value;
     }
-    [SerializeField] private bool isRollPressed;
-    public bool IsRollPressed
-    {
-        get => isRollPressed;
-        set => isRollPressed = value;
-    }
-    public bool WasInAirBeforeHit;
-    public bool WasFallingBeforeHit;
+
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
 
@@ -105,14 +60,10 @@ public class PlayerControl : Subject
 
     PlayerRun playerRun;
     public PlayerRun PlayerRun => playerRun;
-    PlayerJump playerJump;
-    public PlayerJump PlayerJump => playerJump;
+
     PlayerAttackk playerAttackk;
     public PlayerAttackk PlayerAttackk => playerAttackk;
-    PlayerTransformm playerTransformm;
-    public PlayerTransformm PlayerTransformm => playerTransformm;
-    PlayerRoll playerRoll;
-    public PlayerRoll PlayerRoll => playerRoll;
+   
     PlayerIdle playerIdle;
     public PlayerIdle PlayerIdle => playerIdle;
     PlayerSkilll playerSkilll;
@@ -157,10 +108,10 @@ public class PlayerControl : Subject
         playerCheckingGround = GetComponent<PlayerCheckingGround>();
         playerStateManager = GetComponent<PlayerStateManager>();
         playerRun = GetComponent<PlayerRun>();
-        playerJump = GetComponent<PlayerJump>();
+      
         playerAttackk = GetComponent<PlayerAttackk>();
-        playerTransformm = GetComponent<PlayerTransformm>();
-        playerRoll = GetComponent<PlayerRoll>();    
+
+   
         playerIdle = GetComponent<PlayerIdle>();
         playerSkilll = GetComponent<PlayerSkilll>();
         playerSkillOne = GetComponent<PlayerSkillOne>();
@@ -240,98 +191,8 @@ public class PlayerControl : Subject
         animator.Play(newState, 0, 0f);
         currentStringState = newState;
     }
-    void OnlyCrystalMauler()
-    {
-        CheckName();
-        //if (PlayerReceiveDamagee.IsDead) return;
-        //====== Di chuyển =========
-        MoveX = 0;
-
-
-        if ((playerInput.isLeftMove || playerInput.isLeftMovePC) && !currentStringState.Contains("Block"))
-            MoveX = -1;
-        else if ((playerInput.isRightMove || playerInput.isRightMovePC) && !currentStringState.Contains("Block"))
-            MoveX = 1;
-
-
-        //isBlockPressed = Input.GetKey(keyBiding.blockKey);
-
-        //Check bị đánh lần đầu
-        if (playerReceiveDamagee.IsHit)
-        {
-
-            WasInAirBeforeHit = !playerCheckingGround.IsGrounded;
-            WasFallingBeforeHit = rb.linearVelocity.y <= 0;
-
-
-            playerReceiveDamagee.IsHit = false;
-
-
-
-
-            playerStateManager.SwitchAnyState(playerStateManager.takeHitState);
-
-
-
-
-            return;
-        }
-
-
-        if (currentStringState.Contains("Block") && ((playerInput.isBlockInputUp || playerInput.isBlockInputUpPC)))
-        {
-            isBlockPressed = false;
-        }
-        //Lần đánh 2 , 3
-        if (playerInput.isAttackInput && !hasAttackedWhenJump && currentStringState.Contains("Attack"))
-        {
-            isAttackPressed = true;
-
-        }
-        //Air attack
-        if (playerInput.isAttackInput && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
-        {
-            isAttackPressed = true;
-        }
-        if (!currentStringState.Contains("Idle") && !currentStringState.Contains("Run")) return;
-
-
-        //======= Nhảy ==========
-        if ((Input.GetKeyDown(keyBiding.jumpKey)) && !currentStringState.StartsWith("Jump"))
-        {
-            IsJumpPressed = true;
-        }
-        if ((playerInput.isBlockInputDown || playerInput.isBlockInputDownPC) && canBlock)
-        {
-            isBlockPressed = true;
-            canBlock = false;
-        }
-        if (playerInput.isTransformInput && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
-        {
-            isTransformPressed = true;
-
-        }
-        if (playerInput.isRollInput && !hasBeenTransform)
-        {
-            isRollPressed = true;
-
-        }
-        if (playerInput.isRangedAttackInput && !hasBeenTransform)
-        {
-            isRangedAttackPressed = true;
-        }
-        //Lần đánh 1
-        if (playerInput.isAttackInput)
-        {
-            isAttackPressed = true;
-        }
-
-
-        if (playerInput.isSkillInput)
-        {
-            isSkillPressed = true;
-        }
-    }
+   
+    
 
     void Update()
     {
@@ -355,8 +216,7 @@ public class PlayerControl : Subject
         if (playerReceiveDamagee.IsHit)
         {
             
-            WasInAirBeforeHit = !playerCheckingGround.IsGrounded;
-            WasFallingBeforeHit = rb.linearVelocity.y <= 0;
+            
 
             
             playerReceiveDamagee.IsHit = false;
@@ -373,18 +233,15 @@ public class PlayerControl : Subject
         }
        
 
-        if (currentStringState.Contains("Block") && (playerInput.isBlockInputUp || Input.GetKeyDown(keyBiding.blockKey)))
-        {
-            isBlockPressed = false;
-        }
+       
         //Lần đánh 2 , 3
-        if (((playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey)) && !hasAttackedWhenJump && currentStringState.Contains("Attack")))
+        if (((playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey)) &&   currentStringState.Contains("Attack")))
         {
             isAttackPressed = true;
            
         }
-        //Air attack
-        if ((playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey)) && currentStringState.Contains("Jump") && !hasAttackedWhenJump)
+       //Air attack
+        if ((playerInput.isAttackInput || Input.GetKeyDown(keyBiding.attackKey)) )
         {
             isAttackPressed = true;
         }
@@ -392,36 +249,18 @@ public class PlayerControl : Subject
 
        
         //======= Nhảy ==========
-        if ((playerInput.isJumpInput || Input.GetKeyDown(keyBiding.jumpKey)) && !currentStringState.StartsWith("Jump"))
-        {
-            IsJumpPressed = true;
-        }
-        if ((playerInput.isBlockInputDown || Input.GetKeyDown(keyBiding.blockKey)) && canBlock)
-        {
-            isBlockPressed = true;
-            canBlock = false;
-        }
-        if ((playerInput.isTransformInput || Input.GetKeyDown(keyBiding.transformKey)) && !hasBeenTransform && playerReceiveDamagee.Mana >= 1000f)
-        {
-            isTransformPressed = true;
-
-        }
-        if ((playerInput.isRollInput || Input.GetKeyDown(keyBiding.rollKey)) && !hasBeenTransform)
-        {
-            isRollPressed = true;
-
-        }
+      
         if ((playerInput.isRangedAttackInput || Input.GetKeyDown(keyBiding.rangedAttackKey)) )
         {
             if(transform.name == "Fire_Knight_finite")
             {
                 isRangedAttackPressed = true;
             }
-            else if (!hasBeenTransform)
-            {
+            //else if (!hasBeenTransform)
+            //{
                 
-                isRangedAttackPressed = true;
-            }
+            //    isRangedAttackPressed = true;
+            //}
                 
         }
         //Lần đánh 1
@@ -481,39 +320,8 @@ public class PlayerControl : Subject
         receiveT.gameObject.layer = LayerMask.NameToLayer(fixedLayer);
     }
 
-    public void CheckUnder()
-    {
-        if (playerReceiveDamagee.IsDead) return;
-        if (currentStringState.Contains("Roll")) return;
-        if (playerCheckingGround.IsUnderPlayer)
-        {
-            Vector3 pos = transform.position;
-            if (playerCheckingGround.IsWallLeft)
-            {
-                pos.x += 1.5f;
-                
-            }
-            else if(playerCheckingGround.IsWallRight) 
-            {
-                pos.x -= 1.5f;
-            }
-                
-            else if (transform.localScale.x > 0)
-            {
-                pos.x -= 1.5f;
-            }
-            else
-            {
-                pos.x += 1.5f;
-            }
-            transform.position = pos;
-        }
-    }
-    private void FixedUpdate()
-    {
-        CheckUnder();
-    }
-
+  
+  
     public void RefreshObservers()
     {
         NotifyObservers();
@@ -523,21 +331,21 @@ public class PlayerControl : Subject
     {
         NotifyObservers(data1);
     }
-    public void AutoFlip()
-    {
+    //public void AutoFlip()
+    //{
 
-        if (MoveX != 0) return;
-        float baseScaleX = Mathf.Abs(transform.localScale.x);
-        if (transform.localPosition.x > Enemy.transform.localPosition.x)
-        {
-            transform.localScale = new Vector3(-baseScaleX, transform.localScale.y, transform.localScale.z);
-        }
-        else
-        {
+    //    if (MoveX != 0) return;
+    //    float baseScaleX = Mathf.Abs(transform.localScale.x);
+    //    if (transform.localPosition.x > Enemy.transform.localPosition.x)
+    //    {
+    //        transform.localScale = new Vector3(-baseScaleX, transform.localScale.y, transform.localScale.z);
+    //    }
+    //    else
+    //    {
 
-            transform.localScale = new Vector3(baseScaleX, transform.localScale.y, transform.localScale.z);
-        }
-    }
+    //        transform.localScale = new Vector3(baseScaleX, transform.localScale.y, transform.localScale.z);
+    //    }
+    //}
     //TEst thôi
     void SpriteName()
     {

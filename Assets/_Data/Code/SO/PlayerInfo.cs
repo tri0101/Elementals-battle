@@ -24,6 +24,8 @@ public class PlayerInfo : ScriptableObject
     public float skill_one_CDR;
     public float skill_two_CDR;
     public float skill_three_CDR;
+    [Header("Speed")]
+    public float speed;
 
 
 
