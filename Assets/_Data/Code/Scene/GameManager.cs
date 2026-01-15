@@ -30,4 +30,19 @@ public class GameManager : MonoBehaviour
 
         SceneManager.LoadScene("SampleScene");
     }
+
+
+    public void LoadAdditiveScene(string sceneName)
+    {
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+
+    }
+    public void UnloadAdditiveScene(string sceneName)
+    {
+        SceneManager.UnloadSceneAsync(sceneName);
+    }
+
+
+  
+
 }
