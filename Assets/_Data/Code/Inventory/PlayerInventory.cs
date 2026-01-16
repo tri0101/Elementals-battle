@@ -8,9 +8,9 @@ public class RuneStack
     public int count;
 }
 
-public class PlayerInventory : MonoBehaviour
+public class heroInventory : MonoBehaviour
 {
-    public static PlayerInventory Instance;
+    public static heroInventory Instance;
 
     public List<RuneStack> ownedRunes = new List<RuneStack>();
 

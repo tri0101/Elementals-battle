@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class CameraFollowPlayer : MonoBehaviour
+public class CameraFollowhero : MonoBehaviour
 {
     [Header("Target to follow")]
-    public Transform player1;
-    public Transform player2;
+    public Transform hero1;
+    public Transform hero2;
 
     [Header("Camera settings")]
     public float smoothSpeed = 5f;
@@ -24,8 +24,8 @@ public class CameraFollowPlayer : MonoBehaviour
 
     private void Awake()
     {
-        player1 = GameObject.FindGameObjectWithTag("Player1")?.transform;
-        player2 = GameObject.FindGameObjectWithTag("Player2")?.transform;
+        hero1 = GameObject.FindGameObjectWithTag("hero1")?.transform;
+        hero2 = GameObject.FindGameObjectWithTag("hero2")?.transform;
 
         pixelCam = GetComponent<PixelPerfectCamera>();
         if (pixelCam == null)
@@ -38,12 +38,12 @@ public class CameraFollowPlayer : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (player1 == null || player2 == null || pixelCam == null) return;
+        if (hero1 == null || hero2 == null || pixelCam == null) return;
 
         // ==========================
         // 1. CAMERA FOLLOW TRỤC X
         // ==========================
-        float centerX = (player1.position.x + player2.position.x) / 2f;
+        float centerX = (hero1.position.x + hero2.position.x) / 2f;
         centerX = Mathf.Clamp(centerX, minMaxX.x, minMaxX.y);
 
         Vector3 targetPos = new Vector3(centerX, fixedY, transform.position.z);
@@ -52,7 +52,7 @@ public class CameraFollowPlayer : MonoBehaviour
         // ==========================
         // 2. ZOOM MƯỢT THEO KHOẢNG CÁCH
         // ==========================
-        float distance = Mathf.Abs(player1.position.x - player2.position.x);
+        float distance = Mathf.Abs(hero1.position.x - hero2.position.x);
 
         if (distance <= defaultDistance)
         {

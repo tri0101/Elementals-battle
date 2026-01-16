@@ -55,7 +55,7 @@ public class ObjectFlyingSpawnPoint : MonoBehaviour
         return tmpSpawwn;
     }
 
-    public void SpawnObjectAtPosition(string objName, Transform playerSpawnPos, string playerSpawnTag)
+    public void SpawnObjectAtPosition(string objName, Transform heroSpawnPos, string heroSpawnTag)
     {
         GameObject objSpawn = BrowseList(objName);
         if (objSpawn == null)
@@ -66,24 +66,24 @@ public class ObjectFlyingSpawnPoint : MonoBehaviour
         ObjectFlyingController obc = objSpawn.GetComponent<ObjectFlyingController>();
         Vector3 spawnPoint = obc.ObjectFlyingSO.spawnPosition;
         GameObject tmpSpawwn = GetObjectFromPool(objSpawn);
-        tmpSpawwn.tag = playerSpawnTag;
-        tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(playerSpawnTag);
+        tmpSpawwn.tag = heroSpawnTag;
+        tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(heroSpawnTag);
 
         //Tính giá trị cuối cùng của obj khi spawn ra với y default 
         Vector3 finalSpawnPoint = new Vector3(0, 0, 0);
-        if (playerSpawnPos.parent.localScale.x > 0)
+        if (heroSpawnPos.parent.localScale.x > 0)
         {
-            finalSpawnPoint = playerSpawnPos.position + new Vector3(spawnPoint.x, 0, 0);
+            finalSpawnPoint = heroSpawnPos.position + new Vector3(spawnPoint.x, 0, 0);
         }
         else
         {
-            finalSpawnPoint = playerSpawnPos.position + new Vector3(-spawnPoint.x, 0, 0);
+            finalSpawnPoint = heroSpawnPos.position + new Vector3(-spawnPoint.x, 0, 0);
 
         }
-        finalSpawnPoint.y = playerSpawnPos.position.y + spawnPoint.y;
+        finalSpawnPoint.y = heroSpawnPos.position.y + spawnPoint.y;
         tmpSpawwn.transform.position = finalSpawnPoint;
         //Tính giá trị scale 
-        tmpSpawwn.transform.localScale = new Vector3(playerSpawnPos.parent.localScale.x > 0 ? 1 : -1, 1, 1);
+        tmpSpawwn.transform.localScale = new Vector3(heroSpawnPos.parent.localScale.x > 0 ? 1 : -1, 1, 1);
 
         tmpSpawwn.SetActive(true);
         tmpSpawwn.transform.SetParent(holder);

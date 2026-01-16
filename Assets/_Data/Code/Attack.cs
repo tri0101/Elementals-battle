@@ -4,7 +4,7 @@ public class Attack : Subject
 {
     [SerializeField] private AttackInfo attackInfo;
     public AttackInfo AttackInfo => attackInfo;
-    [SerializeField] private PlayerControl playerControl;
+    [SerializeField] private HeroControl heroControl;
     [SerializeField] private float attackDamage;
     public float AttackDamage => attackDamage;
     Vector3 knockBack;
@@ -21,8 +21,8 @@ public class Attack : Subject
         durationStopping = attackInfo.durationStopping;
 
         myTag = transform.parent.parent.parent.tag;
-        playerControl = transform.parent.parent.parent.GetComponent<PlayerControl>();
-        SetDamage();
+        heroControl = transform.parent.parent.parent.GetComponent<HeroControl>();
+        //SetDamage();
     }
     
     private void OnTriggerEnter2D(Collider2D other)
@@ -32,7 +32,7 @@ public class Attack : Subject
         // Tag của kẻ bị đánh
         string targetTag = other.transform.parent.parent.tag;
 
-        // 1. Bỏ qua nếu không phải Player hoặc Enemy
+        // 1. Bỏ qua nếu không phải hero hoặc Enemy
         if (!targetTag.StartsWith("Player") && targetTag != "Enemy")
             return;
 
@@ -40,7 +40,7 @@ public class Attack : Subject
         // myTag = tag của nguồn tấn công (chính bạn)
         // rangedTag = nếu là đạn bắn ra
 
-        string rangedTag = transform.parent.parent.tag; // ví dụ: RangedAttackPlayer1 hoặc RangedAttackPlayer2
+        string rangedTag = transform.parent.parent.tag; // ví dụ: RangedAttackhero1 hoặc RangedAttackhero2
 
         bool isRangedFromP1 = rangedTag == "RangedAttackPlayer1";
         bool isRangedFromP2 = rangedTag == "RangedAttackPlayer2";
@@ -51,10 +51,10 @@ public class Attack : Subject
         bool targetIsP1 = targetTag == "Player1";
         bool targetIsP2 = targetTag == "Player2";
 
-        // Không cho Player1 đánh Player1
+        // Không cho hero1 đánh hero1
         if (attackerIsP1 && targetIsP1) return;
 
-        // Không cho Player2 đánh Player2
+        // Không cho hero2 đánh hero2
         if (attackerIsP2 && targetIsP2) return;
 
 
@@ -63,12 +63,12 @@ public class Attack : Subject
         // =========================
         if (targetTag == "Enemy")
         {
-            var enemy = other.GetComponent<EnemyReceiveDamage>();
-            if (enemy != null)
-            {
-                enemy.ReceiveDamage(attackDamage);
-                enemy.CallKnockBack(knockBack);
-            }
+            ////var enemy = other.GetComponent<EnemyReceiveDamage>();
+            //if (enemy != null)
+            //{
+            //    enemy.ReceiveDamage(attackDamage);
+            //    enemy.CallKnockBack(knockBack);
+            //}
 
           
             return;
@@ -76,38 +76,34 @@ public class Attack : Subject
 
 
         // =========================
-        //       Player bị đánh
+        //       hero bị đánh
         // =========================
-        var player = other.GetComponent<PlayerReceiveDamagee>();
-        if (player != null)
+        var hero = other.GetComponent<HeroReceiveDamagee>();
+        if (hero != null)
         {
-            //if (player.IsImmortal) return;
+            //if (hero.IsImmortal) return;
 
-            player.ReceiveDamage(this ,playerControl);
+            hero.ReceiveDamage(this ,heroControl);
 
             //if (transform.name.Contains("Attack_Final"))
-            //    player.CallIsFinal();
+            //    hero.CallIsFinal();
 
             //if (attackInfo.statusEffect != StatusEffect.Normal)
-            //    player.ApplyStatus(attackInfo.statusEffect);
+            //    hero.ApplyStatus(attackInfo.statusEffect);
             //else
-            player.CallStopAnim(durationStopping);
+            hero.CallStopAnim(durationStopping);
 
-            player.CallKnockBack(knockBack, durationKnock);
+            hero.CallKnockBack(knockBack, durationKnock);
             NotifyObservers(this);
         }
     }
 
     void SetDamage()
     {
-        if(attackInfo.damageType == DamageType.Physical)
-        {
-            attackDamage = attackInfo.damageSend + playerControl.PlayerInfo.physicalDamage;
-        }
-        else if (attackInfo.damageType == DamageType.Magical)
-        {
-            attackDamage = attackInfo.damageSend + playerControl.PlayerInfo.magicalDamage ;
-        }
+       
+            attackDamage = attackInfo.damageSend + heroControl.HeroInfo.damage;
+        
+       
 
     }
 }

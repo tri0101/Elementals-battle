@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-[CreateAssetMenu(menuName = "Player/HeroData")]
+[CreateAssetMenu(menuName = "hero/HeroData")]
 public class HeroData : ScriptableObject
 {
     public string heroName;

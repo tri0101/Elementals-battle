@@ -52,7 +52,7 @@ public class ObjectSpawnPoint : MonoBehaviour
         tmpSpawwn.name = gameObject.name;
         return tmpSpawwn;
     }
-    public void SpawnObjectAtPosition(string objName, Transform playerSpawnPos, string playerSpawnTag)
+    public void SpawnObjectAtPosition(string objName, Transform heroSpawnPos, string heroSpawnTag)
     {
         GameObject objSpawn = BrowseList(objName);
         if(objSpawn == null)
@@ -63,18 +63,18 @@ public class ObjectSpawnPoint : MonoBehaviour
         ObjectSpawnPointController obc = objSpawn.GetComponent<ObjectSpawnPointController>();
         Vector3 spawnPoint = obc.ObjectSpawnPointSO.spawnPosition;
         GameObject tmpSpawwn = GetObjectFromPool(objSpawn);
-        tmpSpawwn.tag = playerSpawnTag;
-        tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(playerSpawnTag);
+        tmpSpawwn.tag = heroSpawnTag;
+        tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(heroSpawnTag);
 
         //Tính giá tr? cu?i cùng c?a obj khi spawn ra v?i y default 
         Vector3 finalSpawnPoint = new Vector3(0, 0, 0);
-        if (playerSpawnPos.parent.localScale.x > 0)
+        if (heroSpawnPos.parent.localScale.x > 0)
         {
-            finalSpawnPoint = playerSpawnPos.position + new Vector3(spawnPoint.x, 0, 0);
+            finalSpawnPoint = heroSpawnPos.position + new Vector3(spawnPoint.x, 0, 0);
         }
         else
         {
-            finalSpawnPoint = playerSpawnPos.position + new Vector3(-spawnPoint.x, 0, 0);
+            finalSpawnPoint = heroSpawnPos.position + new Vector3(-spawnPoint.x, 0, 0);
 
         }
         finalSpawnPoint.y = spawnPoint.y;

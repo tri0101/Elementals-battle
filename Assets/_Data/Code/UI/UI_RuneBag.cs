@@ -25,7 +25,7 @@ public class UI_RuneBag : MonoBehaviour
         }
 
         // build lại từ inventory
-        foreach (var stack in PlayerInventory.Instance.ownedRunes)
+        foreach (var stack in heroInventory.Instance.ownedRunes)
         {
             GameObject go = Instantiate(runeItemPrefab, contentParent);
             UIRuneItem ui = go.GetComponent<UIRuneItem>();
@@ -37,7 +37,7 @@ public class UI_RuneBag : MonoBehaviour
     
     public void AddRune(RuneData rune)
     {
-        PlayerInventory.Instance.AddRune(rune, 1);
+        heroInventory.Instance.AddRune(rune, 1);
         Refresh(); 
     }
 }

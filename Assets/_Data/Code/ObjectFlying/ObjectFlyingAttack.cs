@@ -25,7 +25,7 @@ public class ObjectFlyingAttack : MonoBehaviour
         }
         else
         {
-            if (objController.CheckingObjectFlying.IsTouchPlayer && !hasAttacked)
+            if (objController.CheckingObjectFlying.IsTouchhero && !hasAttacked)
             {
                 hasAttacked = true;
                 StartCoroutine(DelayAttack(objController.ObjectFlyingSO.delayAttack));

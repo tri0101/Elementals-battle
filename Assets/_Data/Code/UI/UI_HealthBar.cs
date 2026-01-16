@@ -4,28 +4,28 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 public class UI_HealthBar : MonoBehaviour, IObserver
 {
-    [SerializeField] PlayerControl playerControl;
+    [SerializeField] HeroControl heroControl;
     [SerializeField] Image fillImage;
 
 
     void Awake()
     {
-        playerControl = transform.parent.parent.GetComponent<PlayerControl>();
+        heroControl = transform.parent.parent.GetComponent<HeroControl>();
         fillImage = transform.Find("FillBar").GetComponent<Image>();
     }
     private void Start()
     {
-        playerControl.AddObserver(this);
+        heroControl.AddObserver(this);
         OnNotify();
     }
 
     private void OnDestroy()
     {
-        playerControl.RemoveObbserver(this);
+        heroControl.RemoveObbserver(this);
     }
 
     public void OnNotify()
     {
-        fillImage.fillAmount = playerControl.PlayerReceiveDamagee.GetHealthPercent();
+        fillImage.fillAmount = heroControl.HeroReceiveDamagee.GetHealthPercent();
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 public class UI_ManaBar : MonoBehaviour, IObserver
 {
-    [SerializeField] PlayerControl playerControl;
+    [SerializeField] HeroControl heroControl;
     [SerializeField] Image fillSImage;
     [SerializeField] Image fillTImage;
     const float FIRST_BAR_MAX = 500f;
@@ -12,25 +12,25 @@ public class UI_ManaBar : MonoBehaviour, IObserver
 
     void Awake()
     {
-        playerControl = transform.parent.parent.GetComponent<PlayerControl>();
+        heroControl = transform.parent.parent.GetComponent<HeroControl>();
         fillSImage = transform.Find("FillSBar").GetComponent<Image>();
         fillTImage = transform.Find("FillTBar").GetComponent<Image>();
     }
     private void Start()
     {
-        playerControl.AddObserver(this);
+        heroControl.AddObserver(this);
         OnNotify();
     }
 
     private void OnDestroy()
     {
-        playerControl.RemoveObbserver(this);
+        heroControl.RemoveObbserver(this);
     }
 
     public void OnNotify()
     {
-        float mana = playerControl.PlayerReceiveDamagee.Mana;
-        //fillSImage.fillAmount = playerControl.PlayerReceiveDamagee.GetManaPercent();
+        float mana = heroControl.HeroReceiveDamagee.Mana;
+        //fillSImage.fillAmount = heroControl.heroReceiveDamagee.GetManaPercent();
         float manaS = Mathf.Clamp(mana, 0, FIRST_BAR_MAX);
         fillSImage.fillAmount = manaS / FIRST_BAR_MAX;
 

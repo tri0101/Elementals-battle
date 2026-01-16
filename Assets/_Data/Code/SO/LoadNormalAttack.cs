@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
-[CreateAssetMenu(menuName = "Player/Normal Attack")]
+[CreateAssetMenu(menuName = "hero/Normal Attack")]
 public class LoadNormalAttack : ScriptableObject
 {
     public int numberOfAttack;
