@@ -1,86 +1,34 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class RuneStack
+public class PlayerInventory : MonoBehaviour
 {
-    public RuneData rune;
-    public int count;
-}
+    public static PlayerInventory Instance;
 
-public class heroInventory : MonoBehaviour
-{
-    public static heroInventory Instance;
-
-    public List<RuneStack> ownedRunes = new List<RuneStack>();
+    public List<HeroInstance> heroes = new();
 
     private void Awake()
     {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
         Instance = this;
-        DontDestroyOnLoad(gameObject);
     }
 
-    // ================= CORE =================
-
-    public bool HasRune(RuneData rune)
+    public void AddHero(int heroId)
     {
-        return GetRuneStack(rune) != null;
-    }
+        HeroInstance hero = heroes.Find(h => h.heroId == heroId);
 
-    public int GetRuneCount(RuneData rune)
-    {
-        RuneStack stack = GetRuneStack(rune);
-        return stack != null ? stack.count : 0;
-    }
-
-    public void AddRune(RuneData rune, int amount = 1)
-    {
-        RuneStack stack = GetRuneStack(rune);
-
-        if (stack != null)
+        if (hero == null)
         {
-            stack.count += amount;
+            heroes.Add(new HeroInstance
+            {
+                heroId = heroId,
+                level = 1,
+                star = 1,
+                shard = 0
+            });
         }
         else
         {
-            ownedRunes.Add(new RuneStack
-            {
-                rune = rune,
-                count = amount
-            });
+            hero.shard += 10; // ví dụ trùng → + shard
         }
-    }
-
-    public bool RemoveRune(RuneData rune, int amount = 1)
-    {
-        RuneStack stack = GetRuneStack(rune);
-        if (stack == null) return false;
-
-        stack.count -= amount;
-
-        if (stack.count <= 0)
-        {
-            ownedRunes.Remove(stack);
-        }
-
-        return true;
-    }
-
-    // ================= HELPER =================
-
-    private RuneStack GetRuneStack(RuneData rune)
-    {
-        foreach (var stack in ownedRunes)
-        {
-            if (stack.rune == rune)
-                return stack;
-        }
-        return null;
     }
 }

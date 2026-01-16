@@ -9,10 +9,7 @@ public class HeroInfo : ScriptableObject
 
     [Header("Attribute Gereral")]
     public float damage;
-
-
     public float health;
-
 
     [Header("Attribute Defent")]
     public float armor;
@@ -20,17 +17,16 @@ public class HeroInfo : ScriptableObject
     public float criticalRate; // tỉ lệ chí mạng
     public float criticalDamageRate; // sát thương chí mạng
 
-
     [Header("Speed")]
     public float speed;
-
-
-
 
     [Header("Duration Attack")]
     public float durationA1;
     public float durationA2;
 
+    [Header("UI")]
+    public Sprite iconFace;
 
-  
+
+
 }
