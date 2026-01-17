@@ -1,6 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+public enum GachaResultType
+{
+    Hero,
+    Shard
+}
 
+public struct GachaResult
+{
+    public int heroId;
+    public GachaResultType type;
+}
 public class PlayerInventory : MonoBehaviour
 {
     public static PlayerInventory Instance;
@@ -12,7 +22,7 @@ public class PlayerInventory : MonoBehaviour
         Instance = this;
     }
 
-    public void AddHero(int heroId)
+    public GachaResult AddHero(int heroId)
     {
         HeroInstance hero = heroes.Find(h => h.heroId == heroId);
 
@@ -25,10 +35,23 @@ public class PlayerInventory : MonoBehaviour
                 star = 1,
                 shard = 0
             });
+
+            return new GachaResult
+            {
+                heroId = heroId,
+                type = GachaResultType.Hero
+            };
         }
         else
         {
-            hero.shard += 10; // ví dụ trùng → + shard
+            hero.shard += 10;
+
+            return new GachaResult
+            {
+                heroId = heroId,
+                type = GachaResultType.Shard
+            };
         }
     }
+
 }

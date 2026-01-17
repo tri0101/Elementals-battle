@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+
 public class GachaManager : MonoBehaviour
 {
     public static GachaManager Instance { get; private set; }
@@ -21,16 +22,8 @@ public class GachaManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         runtime = new GachaBannerRuntime(banner);
     }
-    public void OnClickRoll()
-    {
-        int x = Roll();
-    }
-    public void OnClickRollTen()
-    {
-        List<int> heroIds = RollTen();
-        
-    }
-    public int Roll()
+
+    public GachaResult Roll()
     {
         pullCount++;
 
@@ -47,23 +40,22 @@ public class GachaManager : MonoBehaviour
             heroId = runtime.RollHero(tier);
         }
 
-        // 👉 ADD VÀO INVENTORY Ở ĐÂY
-        PlayerInventory.Instance.AddHero(heroId);
-
-        return heroId;
+        return PlayerInventory.Instance.AddHero(heroId);
     }
-    public List<int> RollTen()
+
+    public List<GachaResult> RollTen()
     {
-        List<int> results = new List<int>();
+        List<GachaResult> results = new List<GachaResult>();
 
         for (int i = 0; i < 10; i++)
         {
-            int heroId = Roll(); 
-            results.Add(heroId);
+            GachaResult result = Roll();
+            results.Add(result);
         }
 
         return results;
     }
+
 
     HeroTier RollTierNormal()
     {
