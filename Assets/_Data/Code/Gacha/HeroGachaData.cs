@@ -1,6 +1,9 @@
 public enum HeroTier
 {
-    D, C, B, S
+    D = 0,
+    C = 1,
+    B = 2,
+    S = 3
 }
 
 [System.Serializable]
