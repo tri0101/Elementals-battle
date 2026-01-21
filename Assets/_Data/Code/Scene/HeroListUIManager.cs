@@ -5,15 +5,16 @@ using UnityEngine.UI;
 
 public class HeroListUIManager : MonoBehaviour
 {
-    public Button backButton;
+    //public Button backButton;
+    //[SerializeField] private Transform listHeroPanel;
 
-    void Awake()
-    {
-        backButton.onClick.AddListener(OnClickBack);
-    }
+    //void Awake()
+    //{
+    //    backButton.onClick.AddListener(OnClickBack);
+    //}
 
-    public void OnClickBack()
-    {
-        GameManager.Instance.UnloadAdditiveScene("HeroManagerScene");
-    }
+    ////public void OnClickBack()
+    ////{
+    ////    GameManager.Instance.UnloadAdditiveScene("HeroManagerScene");
+    ////}
 }

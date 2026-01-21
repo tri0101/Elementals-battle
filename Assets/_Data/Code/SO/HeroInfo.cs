@@ -6,7 +6,7 @@ public class HeroInfo : ScriptableObject
 
     [Header("ID")]
     public int ID;
-
+    public string Name;
     [Header("Attribute Gereral")]
     public float damage;
     public float health;

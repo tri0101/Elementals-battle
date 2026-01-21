@@ -1,7 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+public enum SceneId
+{
+    MainScene = 0,
+    GachaSceneManager = 1,
+    HeroManagerScene= 2,
+    BattleScene = 3, 
+}
 
 public class GameManager : MonoBehaviour
 {
@@ -32,17 +38,17 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void LoadAdditiveScene(string sceneName)
+    public void LoadAdditiveScene(SceneId sceneLoad)
     {
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        SceneManager.LoadScene(sceneLoad.ToString(), LoadSceneMode.Additive);
 
     }
-    public void UnloadAdditiveScene(string sceneName)
+    public void UnLoadAdditiveScene(SceneId sceneLoad)
     {
-        SceneManager.UnloadSceneAsync(sceneName);
+        SceneManager.UnloadSceneAsync(sceneLoad.ToString());
     }
 
 
-  
+
 
 }

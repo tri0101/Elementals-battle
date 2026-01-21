@@ -8607,6 +8607,7 @@ GameObject:
   - component: {fileID: 1610449970}
   - component: {fileID: 1610449969}
   - component: {fileID: 1610449968}
+  - component: {fileID: 1610449971}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -8677,7 +8678,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1610449969}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1610449971}
+        m_TargetAssemblyTypeName: UI_ButtonLoadScene, Assembly-CSharp
+        m_MethodName: OnClickLoadAdditiveScene
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: GachaSceneManager
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1610449969
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8716,6 +8729,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1610449966}
   m_CullTransparentMesh: 1
+--- !u!114 &1610449971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1610449966}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f8c91deba3ac5245872f47e9e188b7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1637173805
 GameObject:
   m_ObjectHideFlags: 0
@@ -9997,6 +10022,7 @@ GameObject:
   - component: {fileID: 1940910095}
   - component: {fileID: 1940910094}
   - component: {fileID: 1940910093}
+  - component: {fileID: 1940910096}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -10068,14 +10094,14 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1989804432}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: LoadAdditiveScene
-        m_Mode: 5
+      - m_Target: {fileID: 1940910096}
+        m_TargetAssemblyTypeName: UI_ButtonLoadScene, Assembly-CSharp
+        m_MethodName: OnClickLoadAdditiveScene
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: HeroManagerScene
           m_BoolArgument: 0
@@ -10100,7 +10126,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 1192843865154028290, guid: 74fc89c8bbc02574884e378d9a305298, type: 3}
+  m_Sprite: {fileID: 7059393366267629080, guid: 5322782128b16ba4d8c2c68e01f9eab7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10118,6 +10144,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1940910091}
   m_CullTransparentMesh: 1
+--- !u!114 &1940910096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1940910091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f8c91deba3ac5245872f47e9e188b7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1977768692
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class GachaManager : MonoBehaviour
+public class GachaManager : MonoBehaviour, IGachaService
 {
-    public static GachaManager Instance { get; private set; }
+    public static IGachaService Instance { get; private set; }
     public GachaBanner banner;
     private GachaBannerRuntime runtime;
 

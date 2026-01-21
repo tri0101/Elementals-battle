@@ -20,6 +20,7 @@ public class PlayerInventory : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     public GachaResult AddHero(int heroId)
@@ -32,7 +33,8 @@ public class PlayerInventory : MonoBehaviour
             {
                 heroId = heroId,
                 level = 1,
-                star = 1,
+                star = 4,
+                rank = 1,
                 shard = 0
             });
 
@@ -52,6 +54,24 @@ public class PlayerInventory : MonoBehaviour
                 type = GachaResultType.Shard
             };
         }
+    }
+    public List<HeroViewData> GetHeroViewList(HeroDatabase db)
+    {
+        List<HeroViewData> list = new();
+
+        foreach (var hero in heroes)
+        {
+            HeroInfo info = db.GetHero(hero.heroId);
+            if (info == null) continue;
+
+            list.Add(new HeroViewData
+            {
+                info = info,
+                instance = hero
+            });
+        }
+
+        return list;
     }
 
 }
