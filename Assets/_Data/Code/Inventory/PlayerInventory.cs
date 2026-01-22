@@ -1,28 +1,31 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-public enum GachaResultType
-{
-    Hero,
-    Shard
-}
 
-public struct GachaResult
-{
-    public int heroId;
-    public GachaResultType type;
-}
 public class PlayerInventory : MonoBehaviour
 {
     public static PlayerInventory Instance;
 
     public List<HeroInstance> heroes = new();
-
+    public List<ItemInstance> items = new();
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
-
+    // ================= DEV TOOL =================
+    [ContextMenu("DEV / Give Test Items")]
+    public void GiveTestItems()
+    {
+        AddItem(51, 1000); // sách exp nhỏ
+        AddItem(52, 1000); // sách exp lớn
+        AddItem(50, 1000); // thuốc tăng rank
+    }
+    // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)
     {
         HeroInstance hero = heroes.Find(h => h.heroId == heroId);
@@ -46,7 +49,12 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            hero.shard += 10;
+            //hero.shard += 10;
+            AddItem(
+            itemId: heroId + 1000,           // shard id = hero id
+            
+            amount: 10
+        );
 
             return new GachaResult
             {
@@ -73,5 +81,30 @@ public class PlayerInventory : MonoBehaviour
 
         return list;
     }
+    public void AddItem(int itemId, int amount)
+    {
+        ItemInstance item = items.Find(i => i.itemId == itemId);
 
+        if (item == null)
+        {
+            items.Add(new ItemInstance
+            {
+                itemId = itemId,
+                quantity = amount
+            });
+        }
+        else
+        {
+            item.quantity += amount;
+        }
+    }
+    public bool ConsumeItem(int itemId, int amount)
+    {
+        var item = items.Find(i => i.itemId == itemId);
+        if (item == null || item.quantity < amount)
+            return false;
+
+        item.quantity -= amount;
+        return true;
+    }
 }

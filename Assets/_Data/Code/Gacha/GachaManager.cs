@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 public class GachaManager : MonoBehaviour, IGachaService
 {
-    public static IGachaService Instance { get; private set; }
+    public static GachaManager Instance { get; private set; }
+
     public GachaBanner banner;
     private GachaBannerRuntime runtime;
 
@@ -12,14 +13,15 @@ public class GachaManager : MonoBehaviour, IGachaService
 
     private void Awake()
     {
-        if (Instance != null)
+
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
+         if (runtime == null)
         runtime = new GachaBannerRuntime(banner);
     }
 

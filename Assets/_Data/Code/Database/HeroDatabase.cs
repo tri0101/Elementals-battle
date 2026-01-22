@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Hero/HeroDatabase")]
+[CreateAssetMenu(menuName = "DBS/HeroDatabase")]
 public class HeroDatabase : ScriptableObject
 {
     public List<HeroInfo> heroes;

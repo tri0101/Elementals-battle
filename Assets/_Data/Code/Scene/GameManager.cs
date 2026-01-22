@@ -17,12 +17,11 @@ public class GameManager : MonoBehaviour
     public List<RuneData> selectedRunes = new List<RuneData>();
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
