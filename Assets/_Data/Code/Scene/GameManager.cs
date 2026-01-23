@@ -6,7 +6,8 @@ public enum SceneId
     MainScene = 0,
     GachaSceneManager = 1,
     HeroManagerScene= 2,
-    BattleScene = 3, 
+    BattleScene = 3,
+    HeroUpgradeScene = 4,
 }
 
 public class GameManager : MonoBehaviour

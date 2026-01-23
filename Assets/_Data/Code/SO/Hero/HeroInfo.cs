@@ -7,6 +7,8 @@ public class HeroInfo : ScriptableObject
     [Header("ID")]
     public int ID;
     public string Name;
+    [Header("Role")]
+    public int role;
     [Header("Attribute Gereral")]
     public float damage;
     public float health;
@@ -27,6 +29,10 @@ public class HeroInfo : ScriptableObject
     [Header("UI")]
     public Sprite iconFace;
 
+    [Header("Power")]
+    public Sprite power;
 
+    [Header("HeroPreview")]
+    public GameObject HeroPreviewPrefabs;
 
 }

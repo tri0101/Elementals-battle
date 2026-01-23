@@ -1,18 +1,26 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
-public class UI_HeroItem : MonoBehaviour
+public class UI_HeroUpgradeItem : MonoBehaviour
 {
-    public Button buttonUpgrade;
     public Image icon;
+
+    [Header("Level")]
     public TextMeshProUGUI levelText;
-    public TextMeshProUGUI nameHero;
+
+    [Header("Star")]
     public Transform starRoot;
+
+    [Header("Rank")]
     public Transform rankRoot;
     public Image frameRank;
+
+    public Button button;
     private HorizontalLayoutGroup starLayout;
     private HeroViewData data;
+    private Action<HeroViewData> onClickCallback;
 
     private int blackRank = 1;
     private int greenRank = 5;
@@ -24,28 +32,27 @@ public class UI_HeroItem : MonoBehaviour
         if (starRoot != null)
             starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
     }
-    public void Setup(HeroViewData heroData)
+    public void Setup(
+        HeroViewData heroData,
+        Action<HeroViewData> onClick
+    )
     {
         data = heroData;
+        onClickCallback = onClick;
 
+        // ===== ICON =====
         icon.sprite = data.info.iconFace;
-        levelText.text = data.instance.level.ToString();
 
+        // ===== LEVEL =====
+        levelText.text = $"{data.instance.level}";
+
+        // ===== STAR + RANK =====
         UpdateStar(data.instance.star);
-        UpdateClass(data.instance.rank, data.info.Name);
+        UpdateRankVisual(data.instance.rank);
 
-        buttonUpgrade.onClick.RemoveAllListeners();
-        buttonUpgrade.onClick.AddListener(OnClickUpgrade);
-    }
-
-    void OnClickUpgrade()
-    {
-        // 1️⃣ Lưu hero đang chọn
-        HeroUpgradeContext.SelectedHero = data;
-
-        // 2️⃣ Load scene Upgrade
-        GameManager.Instance.LoadAdditiveScene(SceneId.HeroUpgradeScene); // = 4
-        GameManager.Instance.UnLoadAdditiveScene(SceneId.HeroManagerScene);
+        // ===== CLICK =====
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(OnClick);
     }
 
     void UpdateStar(int star)
@@ -69,31 +76,31 @@ public class UI_HeroItem : MonoBehaviour
     }
 
 
-    void UpdateClass(int rank, string heroName)
+    void UpdateRankVisual(int rank)
     {
         for (int i = 0; i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(false);
 
-        Color rankColor;
-        int plusValue;
-
         if (rank < greenRank)
         {
-            rankColor = blackColor;
             frameRank.color = blackColor;
-            plusValue = Mathf.Max(0, rank - blackRank);
+
+            int plus = rank - blackRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
         }
         else
         {
-            rankColor = greenColor;
             frameRank.color = greenColor;
-            plusValue = Mathf.Max(0, rank - greenRank);
+
+            int plus = rank - greenRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
         }
+    }
 
-        for (int i = 0; i < plusValue && i < rankRoot.childCount; i++)
-            rankRoot.GetChild(i).gameObject.SetActive(true);
-
-        nameHero.color = rankColor;
-        nameHero.text = plusValue > 0 ? $"{heroName} +{plusValue}" : heroName;
+    void OnClick()
+    {
+        onClickCallback?.Invoke(data);
     }
 }
