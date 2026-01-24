@@ -24,6 +24,9 @@ public class PlayerInventory : MonoBehaviour
         AddItem(51, 1000); 
         AddItem(52, 1000); 
         AddItem(50, 1000); 
+        AddItem(100, 1000); 
+        AddItem(101, 1000); 
+        AddItem(103, 1000); 
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)

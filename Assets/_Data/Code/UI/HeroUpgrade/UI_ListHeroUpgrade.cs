@@ -6,6 +6,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
     public Transform content;
     public GameObject heroUpgradeItemPrefab;
     public UI_HeroUpgradeHeader header;
+    public UI_ListRankSourceUpgrade rankSourceList;
 
     void OnEnable()
     {
@@ -41,6 +42,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
     {
         // Khi click hero → cập nhật panel chi tiết
         header.Setup(hero);
+        rankSourceList.Setup(hero);
     }
 
     void Clear()

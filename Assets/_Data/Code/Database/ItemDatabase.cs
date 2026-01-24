@@ -6,10 +6,10 @@ public class ItemDatabase : ScriptableObject
 {
     public List<ItemData> items;
     private Dictionary<int, ItemData> itemDict;
+
     public void Init()
     {
-        if (itemDict != null) return; 
-
+   
         itemDict = new Dictionary<int, ItemData>();
         foreach (var item in items)
             itemDict[item.id] = item;

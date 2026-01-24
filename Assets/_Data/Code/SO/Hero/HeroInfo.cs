@@ -1,6 +1,13 @@
 ﻿using UnityEngine;
-
+public enum RoleHero
+{
+    Tank = 0,
+    DPS = 1,
+    Support = 2,
+}
 [CreateAssetMenu(menuName ="hero/heroInfo")]
+
+
 public class HeroInfo : ScriptableObject
 {
 
@@ -8,7 +15,7 @@ public class HeroInfo : ScriptableObject
     public int ID;
     public string Name;
     [Header("Role")]
-    public int role;
+    public RoleHero role;
     [Header("Attribute Gereral")]
     public float damage;
     public float health;

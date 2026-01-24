@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RankRequirement
   m_EditorClassIdentifier: 
   rankRequirements:
-  - rank: 2
+  - rank: 1
     costs:
     - type: 1
       itemId: 100
@@ -27,5 +27,17 @@ MonoBehaviour:
     - type: 1
       itemId: 103
       amount: 1
-  - rank: 0
-    costs: []
+  - rank: 2
+    costs:
+    - type: 1
+      itemId: 100
+      amount: 10
+    - type: 1
+      itemId: 101
+      amount: 2
+    - type: 1
+      itemId: 102
+      amount: 2
+    - type: 1
+      itemId: 103
+      amount: 2
