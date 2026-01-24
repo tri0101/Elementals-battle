@@ -27,30 +27,34 @@ public class UI_HeroItem : MonoBehaviour
     public void Setup(HeroViewData heroData)
     {
         data = heroData;
-
+        // ===== ICON =====
         icon.sprite = data.info.iconFace;
+
+        // ===== LEVEL =====
         levelText.text = data.instance.level.ToString();
 
+        // ===== STAR + RANK =====
         UpdateStar(data.instance.star);
-        UpdateClass(data.instance.rank, data.info.Name);
+        UpdateRankVisual(data.instance.rank, data.info.Name);
 
+        // ===== CLICK =====
         buttonUpgrade.onClick.RemoveAllListeners();
         buttonUpgrade.onClick.AddListener(OnClickUpgrade);
     }
 
     void OnClickUpgrade()
     {
-        // 1️⃣ Lưu hero đang chọn
+        
         HeroUpgradeContext.SelectedHero = data;
 
-        // 2️⃣ Load scene Upgrade
+        
         GameManager.Instance.LoadAdditiveScene(SceneId.HeroUpgradeScene); // = 4
         GameManager.Instance.UnLoadAdditiveScene(SceneId.HeroManagerScene);
     }
 
     void UpdateStar(int star)
     {
-        // ===== chỉnh spacing theo số sao =====
+       
         if (starLayout != null)
         {
             if (star <= 4)
@@ -63,13 +67,13 @@ public class UI_HeroItem : MonoBehaviour
             );
         }
 
-        // ===== bật / tắt sao =====
+        
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }
 
 
-    void UpdateClass(int rank, string heroName)
+    void UpdateRankVisual(int rank, string heroName)
     {
         for (int i = 0; i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(false);

@@ -5,9 +5,19 @@ using UnityEngine;
 public class ItemDatabase : ScriptableObject
 {
     public List<ItemData> items;
+    private Dictionary<int, ItemData> itemDict;
+    public void Init()
+    {
+        if (itemDict != null) return; 
+
+        itemDict = new Dictionary<int, ItemData>();
+        foreach (var item in items)
+            itemDict[item.id] = item;
+    }
 
     public ItemData GetItem(int id)
     {
-        return items.Find(i => i.id == id);
+        if (itemDict == null) Init();
+        return itemDict.TryGetValue(id, out var item) ? item : null;
     }
 }

@@ -15,8 +15,7 @@ public class UI_ListHero : MonoBehaviour
     {
         Clear();
 
-        var heroes = PlayerInventory.Instance
-            .GetHeroViewList(heroDatabase);
+        var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
 
         foreach (var hero in heroes)
             CreateItem(hero);

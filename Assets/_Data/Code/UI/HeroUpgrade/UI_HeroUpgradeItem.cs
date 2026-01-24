@@ -57,7 +57,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
 
     void UpdateStar(int star)
     {
-        // ===== chỉnh spacing theo số sao =====
+        
         if (starLayout != null)
         {
             if (star <= 4)
@@ -70,7 +70,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
             );
         }
 
-        // ===== bật / tắt sao =====
+        
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }

@@ -19,8 +19,6 @@ public class HeroDatabase : ScriptableObject
     {
         if (heroDict == null) Init();
 
-        return heroDict.TryGetValue(id, out var hero)
-            ? hero
-            : null;
+        return heroDict.TryGetValue(id, out var hero) ? hero : null;
     }
 }

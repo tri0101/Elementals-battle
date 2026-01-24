@@ -11,7 +11,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
     {
         LoadHeroes();
 
-        // ⭐ nếu vào từ Inventory
+        // nếu vào từ Inventory
         if (HeroUpgradeContext.SelectedHero != null)
         {
             OnHeroSelected(HeroUpgradeContext.SelectedHero);

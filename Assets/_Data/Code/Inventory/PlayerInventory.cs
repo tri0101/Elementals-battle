@@ -21,9 +21,9 @@ public class PlayerInventory : MonoBehaviour
     [ContextMenu("DEV / Give Test Items")]
     public void GiveTestItems()
     {
-        AddItem(51, 1000); // sách exp nhỏ
-        AddItem(52, 1000); // sách exp lớn
-        AddItem(50, 1000); // thuốc tăng rank
+        AddItem(51, 1000); 
+        AddItem(52, 1000); 
+        AddItem(50, 1000); 
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)
@@ -49,10 +49,9 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            //hero.shard += 10;
+            hero.shard += 10;
             AddItem(
-            itemId: heroId + 1000,           // shard id = hero id
-            
+            itemId: heroId + 1000,           // shard id = hero id + 1000
             amount: 10
         );
 
