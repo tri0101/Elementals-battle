@@ -5,13 +5,14 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
 {
     [Header("UI")]
     public TextMeshProUGUI heroNameText;
+    public TextMeshProUGUI heroRoleText;
     public Transform heroPreviewPanel;
 
     GameObject currentPreview;
 
     public void Setup(HeroViewData data)
     {
-        // ===== NAME + COLOR =====
+        
         HeroRankHelper.GetRankVisual(
             data.instance.rank,
             data.info.Name,
@@ -21,14 +22,15 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
 
         heroNameText.text = displayName;
         heroNameText.color = color;
+        heroRoleText.text = data.info.role.ToString();
 
-        // ===== HERO PREVIEW =====
+
         SetupPreview(data.info.HeroPreviewPrefabs);
     }
 
     void SetupPreview(GameObject previewPrefab)
     {
-        // Clear cũ
+       
         if (currentPreview != null)
         {
             Destroy(currentPreview);
@@ -41,7 +43,7 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
             return;
         }
 
-        // Spawn làm con panel
+        
         currentPreview = Instantiate(previewPrefab, heroPreviewPanel);
 
         

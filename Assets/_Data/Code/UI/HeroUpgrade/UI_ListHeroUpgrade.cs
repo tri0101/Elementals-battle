@@ -41,8 +41,27 @@ public class UI_ListHeroUpgrade : MonoBehaviour
     void OnHeroSelected(HeroViewData hero)
     {
         // Khi click hero → cập nhật panel chi tiết
-        header.Setup(hero);
+        UpdateHeroHeader(hero);
         rankSourceList.Setup(hero);
+    }
+    public void UpdateHeroHeader(HeroViewData hero)
+    {
+        
+        header.Setup(hero);
+      
+    }
+
+    
+    public void Refresh()
+    {
+        
+        LoadHeroes();
+
+        
+        if (HeroUpgradeContext.SelectedHero != null)
+        {
+            OnHeroSelected(HeroUpgradeContext.SelectedHero);
+        }
     }
 
     void Clear()

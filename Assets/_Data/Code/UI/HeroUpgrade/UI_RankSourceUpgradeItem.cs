@@ -13,6 +13,7 @@ public class UI_RankSourceUpgradeItem : MonoBehaviour
     public GameObject backEmpty;
     Image imagePlus; // con của backEmpty
 
+
     Coroutine glowRoutine;
 
     void Awake()
@@ -65,10 +66,11 @@ public class UI_RankSourceUpgradeItem : MonoBehaviour
         icon.transform.localRotation = Quaternion.Euler(0, 0, rotZ);
     }
 
-    // ================= GLOW =================
+
 
     void StartGlow()
     {
+        if (!gameObject.activeInHierarchy) return;
         if (glowRoutine != null) return;
         glowRoutine = StartCoroutine(GlowGreen());
     }

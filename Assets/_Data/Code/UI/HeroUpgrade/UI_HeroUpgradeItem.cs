@@ -19,6 +19,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
 
     public Button button;
     private HorizontalLayoutGroup starLayout;
+    private HorizontalLayoutGroup rankLayout;
     private HeroViewData data;
     private Action<HeroViewData> onClickCallback;
 
@@ -31,6 +32,9 @@ public class UI_HeroUpgradeItem : MonoBehaviour
     {
         if (starRoot != null)
             starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
+
+        if (rankRoot != null)
+            rankLayout = rankRoot.GetComponent<HorizontalLayoutGroup>();
     }
     public void Setup(
         HeroViewData heroData,
@@ -57,7 +61,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
 
     void UpdateStar(int star)
     {
-        
+
         if (starLayout != null)
         {
             if (star <= 4)
@@ -70,7 +74,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
             );
         }
 
-        
+
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }
@@ -78,6 +82,9 @@ public class UI_HeroUpgradeItem : MonoBehaviour
 
     void UpdateRankVisual(int rank)
     {
+        if (rankRoot == null)
+            return;
+
         for (int i = 0; i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(false);
 
@@ -96,6 +103,23 @@ public class UI_HeroUpgradeItem : MonoBehaviour
             int plus = rank - greenRank;
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
+
+        if (rankLayout != null)
+        {
+            int activeCount = 0;
+            for (int i = 0; i < rankRoot.childCount; i++)
+                if (rankRoot.GetChild(i).gameObject.activeSelf)
+                    activeCount++;
+
+            if (activeCount == 2)
+                rankLayout.spacing = -200f;
+            else if (activeCount == 3)
+                rankLayout.spacing = -70f;
+            else
+                rankLayout.spacing = 0f;
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rankRoot as RectTransform);
         }
     }
 

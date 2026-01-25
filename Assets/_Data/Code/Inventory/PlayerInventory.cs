@@ -23,10 +23,14 @@ public class PlayerInventory : MonoBehaviour
     {
         AddItem(51, 1000); 
         AddItem(52, 1000); 
+        AddItem(55, 1000); 
+        AddItem(50, 1000); 
         AddItem(50, 1000); 
         AddItem(100, 1000); 
         AddItem(101, 1000); 
+        AddItem(102, 1000); 
         AddItem(103, 1000); 
+        AddItem(1, 500000); 
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)
@@ -39,6 +43,7 @@ public class PlayerInventory : MonoBehaviour
             {
                 heroId = heroId,
                 level = 1,
+                currentExp = 0,
                 star = 4,
                 rank = 1,
                 shard = 0

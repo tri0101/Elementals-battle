@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 using System.Collections;
 
 public class UI_FoodUpgradeItem : MonoBehaviour
@@ -12,36 +13,87 @@ public class UI_FoodUpgradeItem : MonoBehaviour
     Image imagePlus;
     Coroutine glowRoutine;
 
-    public void Setup(ItemData itemData, int amount)
+    private ItemData itemData;
+    private int currentAmount;
+    private Action<ItemData> onClickCallback;
+
+    public void Setup(ItemData itemData, int amount, Action<ItemData> onClick = null)
     {
-        icon.sprite = itemData.icon;
-        amountText.text = amount.ToString();
+        
+        EnsureReferences();
+
+        this.itemData = itemData;
+        this.currentAmount = amount;
+        this.onClickCallback = onClick;
+
+
+        //Hiển thị UI
+        if (icon != null)
+            icon.sprite = itemData.icon;
+        if (amountText != null)
+            amountText.text = amount.ToString();
 
         bool isEmpty = amount <= 0;
-        backEmpty.SetActive(isEmpty);
+        if (backEmpty != null)
+            backEmpty.SetActive(isEmpty);
 
         if (isEmpty)
         {
-
             StartGlow();
-            button.enabled = false;
+            if (button != null) button.enabled = false;
         }
         else
         {
             StopGlow();
-            button.enabled = true;
+            if (button != null) button.enabled = true;
         }
+
+        
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnClick);
+        }
+       
     }
 
     void Awake()
     {
-        // ImagePlus là con của BackEmpty
-        button = GetComponent<Button>();
-        imagePlus = backEmpty.transform.GetChild(0).GetComponent<Image>();
+        
+        button = GetComponent<Button>() ?? GetComponentInChildren<Button>();
+        if (backEmpty != null && backEmpty.transform.childCount > 0)
+            imagePlus = backEmpty.transform.GetChild(0).GetComponent<Image>();
+    }
+
+    void OnEnable()
+    {
+       
+        EnsureReferences();
+        if (backEmpty != null && backEmpty.activeSelf)
+            StartGlow();
+    }
+
+    void OnDisable()
+    {
+        
+        StopGlow();
+    }
+
+  
+    void EnsureReferences()
+    {
+        if (button == null)
+            button = GetComponent<Button>() ?? GetComponentInChildren<Button>();
+
+        if (imagePlus == null && backEmpty != null && backEmpty.transform.childCount > 0)
+            imagePlus = backEmpty.transform.GetChild(0).GetComponent<Image>();
     }
 
     void StartGlow()
     {
+        
+        if (!gameObject.activeInHierarchy) return;
+
         if (glowRoutine != null) return;
         glowRoutine = StartCoroutine(GlowGreen());
     }
@@ -60,7 +112,7 @@ public class UI_FoodUpgradeItem : MonoBehaviour
 
     IEnumerator GlowGreen()
     {
-        // Xanh lá sáng hơn
+    
         Color baseColor = new Color(0.2f, 1f, 0.4f);
 
         float t = 0f;
@@ -69,20 +121,36 @@ public class UI_FoodUpgradeItem : MonoBehaviour
 
         while (true)
         {
-            t += Time.deltaTime * 2.5f; // tăng tốc độ nhịp chút
+            
+            if (!gameObject.activeInHierarchy)
+            {
+                glowRoutine = null;
+                yield break;
+            }
+
+            t += Time.deltaTime * 2.5f; 
             float pulse = (Mathf.Sin(t) + 1f) / 2f; // 0 → 1
 
             float alpha = Mathf.Lerp(minAlpha, maxAlpha, pulse);
 
-            imagePlus.color = new Color(
-                baseColor.r,
-                baseColor.g,
-                baseColor.b,
-                alpha
-            );
+            if (imagePlus != null)
+            {
+                imagePlus.color = new Color(
+                    baseColor.r,
+                    baseColor.g,
+                    baseColor.b,
+                    alpha
+                );
+            }
 
             yield return null;
         }
+    }
+
+    void OnClick()
+    {
+        if (onClickCallback != null && itemData != null && currentAmount > 0)
+            onClickCallback.Invoke(itemData);
     }
 
 }
