@@ -38,7 +38,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
     }
     public void Setup(
         HeroViewData heroData,
-        Action<HeroViewData> onClick
+        Action<HeroViewData> onClick = null
     )
     {
         data = heroData;

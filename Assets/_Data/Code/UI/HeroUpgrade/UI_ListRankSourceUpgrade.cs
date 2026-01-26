@@ -1,28 +1,32 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+
+
 public class UI_ListRankSourceUpgrade : MonoBehaviour
 {
     [Header("Config")]
-    public HeroRankConfig rankConfig;
-    public ItemDatabase itemDatabase;
+    public HeroRankConfig rankConfig;        
+    public ItemDatabase itemDatabase;     
 
     [Header("UI")]
-    public Transform content;
-    public GameObject itemPrefab;
-    public TextMeshProUGUI amountTextCoin;
-    public Button upgradeButton;
-    public UI_ListHeroUpgrade uiHeroUpgrade;
-    HeroViewData currentHero;
+    public Transform content;               
+    public Transform contentForAnim;        
+    public Transform panelUpgradeSuccess;   
+    public GameObject itemPrefab;           
+    public TextMeshProUGUI amountTextCoin; 
+    public Button upgradeButton;            
+    public UI_ListHeroUpgrade uiHeroUpgrade; 
 
-    // ================= ENTRY =================
+    HeroViewData currentHero;             
 
     public void Setup(HeroViewData hero)
     {
         currentHero = hero;
 
-        // Wire upgrade button
+       
         if (upgradeButton != null)
         {
             upgradeButton.onClick.RemoveAllListeners();
@@ -34,46 +38,43 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
     void Build()
     {
-        Clear();
+        Clear(); 
         if (currentHero == null) return;
 
+        
         RankRequirement req = rankConfig.rankRequirements
             .Find(r => r.rank == currentHero.instance.rank);
 
         if (req == null)
         {
-            Debug.LogWarning($"No RankRequirement for rank {currentHero.instance.rank}");
+           
             if (amountTextCoin != null) amountTextCoin.text = "-";
             if (upgradeButton != null) upgradeButton.interactable = false;
             return;
         }
 
-        // ===== SLOT 1 : SOURCE CORE =====
         CreateSlot(100, GetRequiredAmount(req, 100));
 
-        // ===== SLOT 2 : MAIN ROLE (x2) =====
+        
         CreateSlotByRole(req, currentHero.info.role, true);
 
-        // ===== SLOT 3 & 4 : SECONDARY =====
+        
         CreateSlotByRole(req, currentHero.info.role, false);
 
-        // ===== COIN (itemId == 1) =====
-        // If RankRequirement has an entry for itemId == 1, display owned/required coin
         ItemCost coinCost = req.costs.Find(c => c.itemId == 1);
         int requiredCoin = coinCost != null ? coinCost.amount : 0;
         int ownedCoin = GetOwned(1);
         if (amountTextCoin != null)
             amountTextCoin.text = $"{requiredCoin}";
 
-        // Enable/disable upgrade button if all requirements (4 items + coin) are met
+        
         var compiled = CompileRequirements(req, currentHero.info.role);
         bool can = CanUpgrade(compiled);
         if (upgradeButton != null)
             upgradeButton.interactable = can;
     }
 
-    // ================= SLOT =================
-
+  
     void CreateSlot(int itemId, int required)
     {
         ItemData itemData = itemDatabase.GetItem(itemId);
@@ -82,8 +83,27 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         int owned = GetOwned(itemId);
 
         var go = Instantiate(itemPrefab, content);
-        go.GetComponent<UI_RankSourceUpgradeItem>()
-          .Setup(itemData, owned, required);
+        var uiItem = go.GetComponent<UI_RankSourceUpgradeItem>();
+        uiItem.Setup(itemData, owned, required);
+
+        
+        // rank 1-4 => đen, rank 5-8 => xanh
+        if (uiItem != null && uiItem.icon != null && currentHero != null && currentHero.instance != null)
+        {
+            int rank = currentHero.instance.rank;
+            if (rank >= 1 && rank <= 4)
+            {
+                uiItem.GetComponent<Image>().color = Color.black;
+            }
+            else if (rank >= 5 && rank <= 8)
+            {
+                uiItem.GetComponent<Image>().color = new Color(73f / 255f, 1f, 115f / 255f);
+            }
+            else
+            {
+                uiItem.GetComponent<Image>().color = Color.white;
+            }
+        }
     }
 
     void CreateSlotByRole(RankRequirement req, RoleHero role, bool main)
@@ -108,8 +128,6 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         }
     }
 
-    // ================= DATA =================
-
     int GetRequiredAmount(RankRequirement req, int itemId)
     {
         ItemCost cost = req.costs.Find(c => c.itemId == itemId);
@@ -124,13 +142,13 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         return item != null ? item.quantity : 0;
     }
 
+
     void Clear()
     {
         foreach (Transform c in content)
             Destroy(c.gameObject);
     }
 
-    // ================= ROLE MAP =================
 
     List<string> GetMainKeys(RoleHero role)
     {
@@ -150,6 +168,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         }
     }
 
+
     List<string> GetSecondaryKeys(RoleHero role)
     {
         switch (role)
@@ -168,30 +187,30 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         }
     }
 
-    // ================= UI-side requirement compilation (UI chịu trách nhiệm hiển thị) =================
+ 
 
-    // Tạo danh sách ItemCost thực tế (bao gồm coin itemId == 1) theo RankRequirement và role
+    
     List<ItemCost> CompileRequirements(RankRequirement req, RoleHero role)
     {
         var list = new List<ItemCost>();
         if (req == null) return list;
 
-        // slot 1 core
+        
         AddOrAccumulate(list, 100, GetRequiredAmount(req, 100));
 
-        // main x2
         CompileRoleSlotsToList(list, req, role, true);
 
-        // secondary x1
+        
         CompileRoleSlotsToList(list, req, role, false);
 
-        // coin explicit
+        
         ItemCost coin = req.costs.Find(c => c.itemId == 1);
         if (coin != null) AddOrAccumulate(list, 1, coin.amount);
 
         return list;
     }
 
+  
     void CompileRoleSlotsToList(List<ItemCost> outList, RankRequirement req, RoleHero role, bool main)
     {
         List<string> keys = main ? GetMainKeys(role) : GetSecondaryKeys(role);
@@ -219,6 +238,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         else list.Add(new ItemCost { itemId = itemId, amount = amount });
     }
 
+
     bool CanUpgrade(List<ItemCost> compiled)
     {
         if (compiled == null || compiled.Count == 0) return false;
@@ -229,8 +249,6 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         }
         return true;
     }
-
-    // ================= UPGRADE =================
 
     void OnUpgradeClicked()
     {
@@ -243,19 +261,204 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
         var compiled = CompileRequirements(req, currentHero.info.role);
 
-        // call service to perform consumption + rank increment
+        
+        HeroInstance prevSnapshot = new HeroInstance
+        {
+            heroId = currentHero.instance.heroId,
+            level = currentHero.instance.level,
+            currentExp = currentHero.instance.currentExp,
+            star = currentHero.instance.star,
+            rank = currentHero.instance.rank,
+            shard = currentHero.instance.shard
+        };
+
+        
+        int prevPower = -1;
+        var growth = uiHeroUpgrade != null && uiHeroUpgrade.header != null ? uiHeroUpgrade.header.growthConfig : null;
+        if (growth != null)
+        {
+            var prevStat = HeroStatCalculator.Calculate(currentHero.info, prevSnapshot, growth);
+            prevPower = Mathf.RoundToInt(prevStat.power);
+        }
+
+        
+        GameObject prevClone = null;
+        if (uiHeroUpgrade != null && uiHeroUpgrade.content != null)
+        {
+            foreach (Transform ch in uiHeroUpgrade.content)
+            {
+                var comp = ch.GetComponent<UI_HeroUpgradeItem>();
+                if (comp == null || comp.icon == null) continue;
+                
+                if (comp.icon.sprite == currentHero.info.iconFace)
+                {
+                    prevClone = Instantiate(ch.gameObject);
+                    var btn = prevClone.GetComponent<Button>();
+                    if (btn != null)
+                        btn.enabled = false;
+                    prevClone.SetActive(false);
+                    break;
+                }
+            }
+        }
+
+        
+        StartCoroutine(AnimateItemsThenUpgrade(req, compiled, prevSnapshot, prevPower, prevClone));
+    }
+
+    IEnumerator AnimateItemsThenUpgrade(RankRequirement req, List<ItemCost> compiled, HeroInstance prevSnapshot, int prevPower, GameObject prevUIClone)
+    {
+        // Danh sách các gameobject đang animate để sau đó destroy
+        List<GameObject> animatedGameObjects = new List<GameObject>();
+
+        if (contentForAnim != null && content != null)
+        {
+            // Lấy tối đa 4 child đầu tiên của content
+            List<Transform> items = new List<Transform>();
+            foreach (Transform c in content)
+            {
+                items.Add(c);
+                if (items.Count >= 4) break;
+            }
+
+            if (items.Count > 0)
+            {
+                // Reparent giữ world position để không nhảy vị trí trên màn hình
+                foreach (var t in items)
+                {
+                    if (t == null) continue;
+                    t.SetParent(contentForAnim, worldPositionStays: true);
+                    animatedGameObjects.Add(t.gameObject);
+                }
+
+                // Tính vị trí target ở world space dựa trên contentForAnim (RectTransform.TransformPoint)
+                RectTransform rtParent = contentForAnim as RectTransform;
+                Vector3 targetLocal = new Vector3(-225f, 50f, 0f); // vị trí đích trong local của contentForAnim
+                Vector3 targetWorld = rtParent != null ? rtParent.TransformPoint(targetLocal) : (Vector3)targetLocal;
+
+                float duration = 0.45f;
+                float elapsed = 0f;
+
+                Vector3[] starts = new Vector3[items.Count];
+                Vector3[] startScales = new Vector3[items.Count];
+                Vector3[] targetScales = new Vector3[items.Count];
+
+                for (int i = 0; i < items.Count; i++)
+                {
+                    starts[i] = items[i].position;
+                    startScales[i] = items[i].localScale;
+                    // target scale: x,y -> 0.5 (giữ z ban đầu hoặc 1 nếu z==0)
+                    float targetZ = startScales[i].z != 0f ? startScales[i].z : 1f;
+                    targetScales[i] = new Vector3(0.5f, 0.5f, targetZ);
+                }
+
+                // Animate vị trí + scale theo thời gian với easing SmoothStep
+                while (elapsed < duration)
+                {
+                    elapsed += Time.deltaTime;
+                    float t = Mathf.Clamp01(elapsed / duration);
+                    float eased = Mathf.SmoothStep(0f, 1f, t);
+
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        if (items[i] == null) continue;
+                        items[i].position = Vector3.Lerp(starts[i], targetWorld, eased);
+                        items[i].localScale = Vector3.Lerp(startScales[i], targetScales[i], eased);
+                    }
+
+                    yield return null;
+                }
+
+                // Đảm bảo vị trí + scale cuối cùng chính xác
+                for (int i = 0; i < items.Count; i++)
+                {
+                    if (items[i] == null) continue;
+                    items[i].position = targetWorld;
+                    items[i].localScale = targetScales[i];
+                }
+
+                // Pause ngắn để cảm nhận animation
+                yield return new WaitForSeconds(0.08f);
+
+                // Ẩn và destroy các object animate để tránh duplicate visuals
+                foreach (var go in animatedGameObjects)
+                {
+                    if (go == null) continue;
+                    go.SetActive(false);
+                    Destroy(go);
+                }
+
+                // Delay 1 frame để cập nhật hierarchy UI
+                yield return null;
+            }
+        }
+
+        // Sau animation: gọi service để thực hiện consume items và tăng rank
         bool ok = HeroUpgradeService.Instance.UpgradeRank(currentHero.instance, compiled);
         if (!ok)
         {
             Debug.Log("Upgrade failed or not enough materials.");
-            Build(); // refresh display defensively
-            return;
+            Build(); // rebuild UI để phản ánh trạng thái (defensive)
+            // cleanup prev clone nếu có
+            if (prevUIClone != null) Destroy(prevUIClone);
+            yield break;
         }
 
-        // Upgrade successful: update UI
-        Build();
+        // Tính power mới sau khi nâng (dùng growthConfig từ header nếu có)
+        int newPower = -1;
+        var growth2 = uiHeroUpgrade != null && uiHeroUpgrade.header != null ? uiHeroUpgrade.header.growthConfig : null;
+        if (growth2 != null)
+        {
+            var newStat = HeroStatCalculator.Calculate(currentHero.info, currentHero.instance, growth2);
+            newPower = Mathf.RoundToInt(newStat.power);
+        }
 
-        // Notify list and header to refresh so UI_HeroUpgradeItem and list reflect new rank/visuals
+        // Rebuild UI & refresh list/header để có element UI mới phản ánh rank mới
+        Build();
+        if (uiHeroUpgrade != null)
+            uiHeroUpgrade.Refresh();
+
+        // Capture visual "after" bằng cách clone lại UI_HeroUpgradeItem tương ứng (sau khi refresh)
+        GameObject afterClone = null;
+        if (uiHeroUpgrade != null && uiHeroUpgrade.content != null)
+        {
+            foreach (Transform ch in uiHeroUpgrade.content)
+            {
+                var comp = ch.GetComponent<UI_HeroUpgradeItem>();
+                if (comp == null || comp.icon == null) continue;
+                if (comp.icon.sprite == currentHero.info.iconFace)
+                {
+                    afterClone = Instantiate(uiHeroUpgrade.heroUpgradeItemPrefab);
+                    afterClone.GetComponent<UI_HeroUpgradeItem>()
+                        .Setup(currentHero);
+                    var btn = afterClone.GetComponent<Button>();
+                    if (btn != null)
+                        btn.enabled = false;
+                    afterClone.SetActive(true);
+                    break;
+                }
+            }
+        }
+
+        // Hiển thị panel success: gọi ShowSucces của UI_HeroUpSuccess, nội bộ hàm đó sẽ clear children cũ
+        if (panelUpgradeSuccess != null)
+        {
+            var successUI = panelUpgradeSuccess.GetComponent<UI_HeroUpSuccess>();
+            if (successUI != null)
+            {
+                successUI.ShowSucces(prevUIClone, afterClone, prevPower, newPower);
+            }
+            else
+            {
+                panelUpgradeSuccess.gameObject.SetActive(true);
+            }
+        }
+
+        // Hủy cleanup các clone tạm (ShowSucces đã instantiate lại nội dung hiển thị nếu cần)
+        if (prevUIClone != null) Destroy(prevUIClone);
+        if (afterClone != null) Destroy(afterClone);
+
+        
         if (uiHeroUpgrade != null)
             uiHeroUpgrade.Refresh();
     }

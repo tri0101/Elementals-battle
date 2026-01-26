@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInventory : MonoBehaviour
+public class PlayerInventory :  Subject
 {
     public static PlayerInventory Instance;
-
     public List<HeroInstance> heroes = new();
     public List<ItemInstance> items = new();
     private void Awake()
@@ -16,6 +15,16 @@ public class PlayerInventory : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+    public void NotifyCurrentResource()
+    {
+        foreach (var item in items)
+        {
+            if (item.itemId == 1 || item.itemId == 2)
+            {
+                NotifyObservers((item.itemId, item.quantity));
+            }
+        }
     }
     // ================= DEV TOOL =================
     [ContextMenu("DEV / Give Test Items")]
@@ -33,7 +42,8 @@ public class PlayerInventory : MonoBehaviour
         AddItem(104, 1000); 
         AddItem(105, 1000); 
         AddItem(106, 1000); 
-        AddItem(1, 500000); 
+        AddItem(1, 5000000); 
+        AddItem(2, 25000); 
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)
@@ -97,15 +107,21 @@ public class PlayerInventory : MonoBehaviour
 
         if (item == null)
         {
-            items.Add(new ItemInstance
+            item = new ItemInstance
             {
                 itemId = itemId,
                 quantity = amount
-            });
+            };
+            items.Add(item);
         }
         else
         {
             item.quantity += amount;
+        }
+
+        if (itemId == 1 || itemId == 2)
+        {
+            NotifyObservers((itemId, item.quantity));
         }
     }
     public bool ConsumeItem(int itemId, int amount)
@@ -115,6 +131,10 @@ public class PlayerInventory : MonoBehaviour
             return false;
 
         item.quantity -= amount;
+        if (itemId == 1 || itemId == 2)
+        {
+            NotifyObservers((itemId, item.quantity));
+        }
         return true;
     }
 }
