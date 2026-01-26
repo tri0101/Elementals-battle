@@ -19,15 +19,18 @@ public static class HeroStatCalculator
         if (instance.rank < growth.rankBonus.Length)
             totalBonus += growth.rankBonus[instance.rank];
 
-        // Final stats
-        float damage = info.damage * (1 + totalBonus);
-        float health = info.health * (1 + totalBonus);
-        float armor = info.armor * (1 + totalBonus);
+        // Role scale
+        var roleScale = RoleScaleTable.Get(info.role);
+
+      
+        float damage = info.damage * roleScale.damage * (1 + totalBonus);
+        float health = info.health * roleScale.health * (1 + totalBonus);
+        float armor = info.armor * roleScale.armor * (1 + totalBonus);
         float critRate = info.criticalRate;
         float critDamage = info.criticalDamageRate;
-        float speed = info.speed * (1 + totalBonus);
+        float speed = info.speed * roleScale.speed * (1 + totalBonus);
 
-        // Power calculation
+       
         float power =
             damage * 1.0f +
             health * 0.2f +

@@ -4,15 +4,24 @@ using UnityEngine;
 public class UI_HeroUpgradeHeader : MonoBehaviour
 {
     [Header("UI")]
+    [SerializeField] int currentHeroId;
     public TextMeshProUGUI heroNameText;
     public TextMeshProUGUI heroRoleText;
+    public TextMeshProUGUI heroPower;
+    public TextMeshProUGUI heroDamage;
+    public TextMeshProUGUI heroArmor;
+    public TextMeshProUGUI heroHealth;
     public Transform heroPreviewPanel;
+
+    [Header("Data")]
+    public HeroGrowthConfig growthConfig; // assign in inspector
 
     GameObject currentPreview;
 
     public void Setup(HeroViewData data)
     {
-        
+        if (data == null) return;
+
         HeroRankHelper.GetRankVisual(
             data.instance.rank,
             data.info.Name,
@@ -20,17 +29,51 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
             out Color color
         );
 
+        if (data.info.ID != currentHeroId)
+        {
+            SetupPreview(data.info.HeroPreviewPrefabs);
+        }
+        currentHeroId = data.info.ID;
+
+      
         heroNameText.text = displayName;
         heroNameText.color = color;
         heroRoleText.text = data.info.role.ToString();
 
+        if (growthConfig != null)
+        {
+            var stat = HeroStatCalculator.Calculate(
+                data.info,
+                data.instance,
+                growthConfig
+            );
 
-        SetupPreview(data.info.HeroPreviewPrefabs);
+            if (heroPower != null)
+                heroPower.text = Mathf.RoundToInt(stat.power).ToString();
+
+            if (heroHealth != null)
+                heroHealth.text = Mathf.RoundToInt(stat.health).ToString();
+
+            if (heroDamage != null)
+                heroDamage.text = Mathf.RoundToInt(stat.damage).ToString();
+
+            if (heroArmor != null)
+                heroArmor.text = Mathf.RoundToInt(stat.armor).ToString();
+        }
+        else
+        {
+           
+            if (heroPower != null) heroPower.text = "-";
+            if (heroHealth != null) heroHealth.text = "-";
+            if (heroDamage != null) heroDamage.text = "-";
+            if (heroArmor != null) heroArmor.text = "-";
+
+           
+        }
     }
 
     void SetupPreview(GameObject previewPrefab)
     {
-       
         if (currentPreview != null)
         {
             Destroy(currentPreview);
@@ -43,9 +86,6 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
             return;
         }
 
-        
         currentPreview = Instantiate(previewPrefab, heroPreviewPanel);
-
-        
     }
 }

@@ -150,11 +150,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1884986259}
+  - {fileID: 2128093261}
   - {fileID: 192474735}
   - {fileID: 1641337556}
   - {fileID: 731447123}
   - {fileID: 1776758948}
-  - {fileID: 2128093261}
   m_Father: {fileID: 2046309894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5013,7 +5013,7 @@ GameObject:
   - component: {fileID: 490453457}
   - component: {fileID: 490453456}
   m_Layer: 5
-  m_Name: Power (1)
+  m_Name: Damage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9115,7 +9115,7 @@ GameObject:
   - component: {fileID: 1046089610}
   - component: {fileID: 1046089609}
   m_Layer: 5
-  m_Name: Power (2)
+  m_Name: Armor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14645,7 +14645,7 @@ GameObject:
   - component: {fileID: 1661034471}
   - component: {fileID: 1661034470}
   m_Layer: 5
-  m_Name: Power (3)
+  m_Name: HP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15891,7 +15891,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -0.000030517578}
+  m_AnchoredPosition: {x: 0, y: 0.000030517578}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1857461000
@@ -18227,9 +18227,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcff73b58373e1841a3a626b51ac0d8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentHeroId: 0
   heroNameText: {fileID: 1991201504}
   heroRoleText: {fileID: 340150424}
+  heroPower: {fileID: 583507965}
+  heroDamage: {fileID: 502552294}
+  heroArmor: {fileID: 869407725}
+  heroHealth: {fileID: 668920742}
   heroPreviewPanel: {fileID: 1211539376}
+  growthConfig: {fileID: 11400000, guid: b60d27722f477f64caf6d071614a7f55, type: 2}
 --- !u!1 &2129388164
 GameObject:
   m_ObjectHideFlags: 0
@@ -18999,6 +19005,22 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5980600542787414218, guid: a45ec28c29e41ea459351fe404ca1e11, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7411799050019363433, guid: a45ec28c29e41ea459351fe404ca1e11, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7411799050019363433, guid: a45ec28c29e41ea459351fe404ca1e11, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7411799050019363433, guid: a45ec28c29e41ea459351fe404ca1e11, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7411799050019363433, guid: a45ec28c29e41ea459351fe404ca1e11, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

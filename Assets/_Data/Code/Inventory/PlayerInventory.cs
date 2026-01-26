@@ -30,6 +30,9 @@ public class PlayerInventory : MonoBehaviour
         AddItem(101, 1000); 
         AddItem(102, 1000); 
         AddItem(103, 1000); 
+        AddItem(104, 1000); 
+        AddItem(105, 1000); 
+        AddItem(106, 1000); 
         AddItem(1, 500000); 
     }
     // ================= INVENTORY =================
