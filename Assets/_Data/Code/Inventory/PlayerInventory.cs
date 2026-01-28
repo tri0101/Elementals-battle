@@ -73,6 +73,7 @@ public class PlayerInventory :  Subject
             hero.shard += 10;
             AddItem(
             itemId: heroId + 1000,           // shard id = hero id + 1000
+            
             amount: 10
         );
 

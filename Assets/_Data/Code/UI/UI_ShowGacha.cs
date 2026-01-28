@@ -14,7 +14,7 @@ public class UI_ShowGacha : MonoBehaviour
     public bool panelIsActive;
     private GridLayoutGroup grid;
 
-    private bool isShowing = false; // 🔴 trạng thái đang show
+    private bool isShowing = false; 
     public bool IsShowing => isShowing;
 
     /* ================= BUTTON ================= */
@@ -51,7 +51,7 @@ public class UI_ShowGacha : MonoBehaviour
         StartCoroutine(RollTen());
     }
 
-    /* ================= ROLL ================= */
+
 
     IEnumerator RollOne()
     {
@@ -86,7 +86,7 @@ public class UI_ShowGacha : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    /* ================= UI ================= */
+
 
     IEnumerator ShowResult(GachaResult result)
     {
@@ -110,7 +110,7 @@ public class UI_ShowGacha : MonoBehaviour
         yield return RevealWithLight(icon, light, hero.iconFace);
     }
 
-    /* ================= EFFECT ================= */
+ 
 
     IEnumerator RevealWithLight(Image icon, Image light, Sprite sprite)
     {
@@ -145,7 +145,6 @@ public class UI_ShowGacha : MonoBehaviour
     }
     private void Update()
     {
-        // Panel đang mở và KHÔNG trong quá trình show card
         if (panelIsActive && !isShowing)
         {
             if (Input.GetMouseButtonDown(0))

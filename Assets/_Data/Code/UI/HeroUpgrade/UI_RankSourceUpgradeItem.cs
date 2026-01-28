@@ -54,7 +54,7 @@ public class UI_RankSourceUpgradeItem : MonoBehaviour
         else if (item.name.Contains("Sword"))
         {
             scale = new Vector3(0.5f, 1.25f, 1f);
-            rotZ = -50f;
+            rotZ = -45f;
         }
         else if (item.name.Contains("Shield") || item.name.Contains("Star"))
         {

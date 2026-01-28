@@ -31,7 +31,7 @@ public class UI_ShowResource : MonoBehaviour, IObserver
     public void OnNotify() { }
     public void OnNotify(object data)
     {
-        // lọc đúng tuple<int,int>
+       
         if (data is ValueTuple<int, int> tuple)
         {
             int itemId = tuple.Item1;

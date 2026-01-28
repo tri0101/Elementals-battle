@@ -8,25 +8,27 @@ using TMPro;
 public class UI_ListRankSourceUpgrade : MonoBehaviour
 {
     [Header("Config")]
-    public HeroRankConfig rankConfig;        
-    public ItemDatabase itemDatabase;     
+    public HeroRankConfig rankConfig;
+    public ItemDatabase itemDatabase;
 
     [Header("UI")]
-    public Transform content;               
-    public Transform contentForAnim;        
-    public Transform panelUpgradeSuccess;   
-    public GameObject itemPrefab;           
-    public TextMeshProUGUI amountTextCoin; 
-    public Button upgradeButton;            
-    public UI_ListHeroUpgrade uiHeroUpgrade; 
+    public Transform content;
+    public Transform contentForAnim;
+    public Transform panelUpgradeSuccess;
+    public GameObject itemPrefab;
+    public TextMeshProUGUI amountTextCoin;
+    public Button upgradeButton;
+    public UI_ListHeroUpgrade uiHeroUpgrade;
 
-    HeroViewData currentHero;             
+    HeroViewData currentHero;
+
+    bool isProcessing = false;
 
     public void Setup(HeroViewData hero)
     {
         currentHero = hero;
 
-       
+
         if (upgradeButton != null)
         {
             upgradeButton.onClick.RemoveAllListeners();
@@ -38,16 +40,16 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
     void Build()
     {
-        Clear(); 
+        Clear();
         if (currentHero == null) return;
 
-        
+
         RankRequirement req = rankConfig.rankRequirements
             .Find(r => r.rank == currentHero.instance.rank);
 
         if (req == null)
         {
-           
+
             if (amountTextCoin != null) amountTextCoin.text = "-";
             if (upgradeButton != null) upgradeButton.interactable = false;
             return;
@@ -55,10 +57,10 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
         CreateSlot(100, GetRequiredAmount(req, 100));
 
-        
+
         CreateSlotByRole(req, currentHero.info.role, true);
 
-        
+
         CreateSlotByRole(req, currentHero.info.role, false);
 
         ItemCost coinCost = req.costs.Find(c => c.itemId == 1);
@@ -67,14 +69,14 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         if (amountTextCoin != null)
             amountTextCoin.text = $"{requiredCoin}";
 
-        
+
         var compiled = CompileRequirements(req, currentHero.info.role);
         bool can = CanUpgrade(compiled);
         if (upgradeButton != null)
-            upgradeButton.interactable = can;
+            upgradeButton.interactable = can && !isProcessing;
     }
 
-  
+
     void CreateSlot(int itemId, int required)
     {
         ItemData itemData = itemDatabase.GetItem(itemId);
@@ -86,7 +88,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         var uiItem = go.GetComponent<UI_RankSourceUpgradeItem>();
         uiItem.Setup(itemData, owned, required);
 
-        
+
         // rank 1-4 => đen, rank 5-8 => xanh
         if (uiItem != null && uiItem.icon != null && currentHero != null && currentHero.instance != null)
         {
@@ -187,30 +189,30 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         }
     }
 
- 
 
-    
+
+
     List<ItemCost> CompileRequirements(RankRequirement req, RoleHero role)
     {
         var list = new List<ItemCost>();
         if (req == null) return list;
 
-        
+
         AddOrAccumulate(list, 100, GetRequiredAmount(req, 100));
 
         CompileRoleSlotsToList(list, req, role, true);
 
-        
+
         CompileRoleSlotsToList(list, req, role, false);
 
-        
+
         ItemCost coin = req.costs.Find(c => c.itemId == 1);
         if (coin != null) AddOrAccumulate(list, 1, coin.amount);
 
         return list;
     }
 
-  
+
     void CompileRoleSlotsToList(List<ItemCost> outList, RankRequirement req, RoleHero role, bool main)
     {
         List<string> keys = main ? GetMainKeys(role) : GetSecondaryKeys(role);
@@ -252,6 +254,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
     void OnUpgradeClicked()
     {
+        if (isProcessing) return; 
         if (currentHero == null) return;
 
         RankRequirement req = rankConfig.rankRequirements
@@ -261,7 +264,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
         var compiled = CompileRequirements(req, currentHero.info.role);
 
-        
+
         HeroInstance prevSnapshot = new HeroInstance
         {
             heroId = currentHero.instance.heroId,
@@ -272,7 +275,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
             shard = currentHero.instance.shard
         };
 
-        
+
         int prevPower = -1;
         var growth = uiHeroUpgrade != null && uiHeroUpgrade.header != null ? uiHeroUpgrade.header.growthConfig : null;
         if (growth != null)
@@ -281,7 +284,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
             prevPower = Mathf.RoundToInt(prevStat.power);
         }
 
-        
+
         GameObject prevClone = null;
         if (uiHeroUpgrade != null && uiHeroUpgrade.content != null)
         {
@@ -289,7 +292,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
             {
                 var comp = ch.GetComponent<UI_HeroUpgradeItem>();
                 if (comp == null || comp.icon == null) continue;
-                
+
                 if (comp.icon.sprite == currentHero.info.iconFace)
                 {
                     prevClone = Instantiate(ch.gameObject);
@@ -302,7 +305,10 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
             }
         }
 
-        
+        isProcessing = true;
+        if (upgradeButton != null) upgradeButton.interactable = false;
+
+
         StartCoroutine(AnimateItemsThenUpgrade(req, compiled, prevSnapshot, prevPower, prevClone));
     }
 
@@ -401,6 +407,13 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
             Build(); // rebuild UI để phản ánh trạng thái (defensive)
             // cleanup prev clone nếu có
             if (prevUIClone != null) Destroy(prevUIClone);
+            isProcessing = false;
+            if (upgradeButton != null)
+            {
+                var compiledReq = rankConfig.rankRequirements.Find(r => r.rank == currentHero.instance.rank);
+                var compList = compiledReq != null ? CompileRequirements(compiledReq, currentHero.info.role) : null;
+                upgradeButton.interactable = compList != null && CanUpgrade(compList);
+            }
             yield break;
         }
 
@@ -458,8 +471,17 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         if (prevUIClone != null) Destroy(prevUIClone);
         if (afterClone != null) Destroy(afterClone);
 
-        
+
         if (uiHeroUpgrade != null)
             uiHeroUpgrade.Refresh();
+
+       
+        isProcessing = false;
+        if (upgradeButton != null)
+        {
+            var compiledReq = rankConfig.rankRequirements.Find(r => r.rank == currentHero.instance.rank);
+            var compList = compiledReq != null ? CompileRequirements(compiledReq, currentHero.info.role) : null;
+            upgradeButton.interactable = compList != null && CanUpgrade(compList);
+        }
     }
 }
