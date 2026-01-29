@@ -9,7 +9,7 @@ public enum SceneId
     BattleScene = 3,
     HeroUpgradeScene = 4,
     InventoryScene = 5,
-    OverviewHeroScene = 6,
+    MapScene = 6,
     HeroSelectScene = 7,
 }
 
