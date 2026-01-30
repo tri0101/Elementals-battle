@@ -10,11 +10,12 @@ public class UI_StageLoad : MonoBehaviour
     public GameObject imageLock;
     public Transform starRoot;
     public Button button;
-
+    public UI_PanelDetailStage detailPanel;
     void Awake()
     {
         if (button == null)
             button = GetComponent<Button>();
+        button.onClick.AddListener(OnClick);
     }
 
     public void Refresh()
@@ -59,9 +60,10 @@ public class UI_StageLoad : MonoBehaviour
         return result != null ? result.star : 0;
     }
 
+  
+
     public void OnClick()
     {
-        Debug.Log($"Load stage {stageId}");
-        
+        detailPanel.OnLoadUI(stageId);
     }
 }

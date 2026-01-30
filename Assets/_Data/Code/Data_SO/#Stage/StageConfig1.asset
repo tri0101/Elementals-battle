@@ -10,19 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3446855f4b1fe7644a9d47c020838a86, type: 3}
-  m_Name: StageConfig
+  m_Name: StageConfig1
   m_EditorClassIdentifier: 
-  chapter: 1
-  stage: 1
+  stageID: 1
+  staminaCost: 7
   enemies:
   - heroId: 1
-    level: 1
-    star: 4
+    rank: 4
+    star: 7
+    level: 5
     hpRate: 1
     atkRate: 1
   dropItems:
-  - itemId: 1
-    minAmount: 10000
-    maxAmount: 10000
+  - itemId: 100
+    minAmount: 1
+    maxAmount: 5
+    dropRate: 1
+  - itemId: 101
+    minAmount: 1
+    maxAmount: 2
     dropRate: 1
   powerRecommend: 0
