@@ -170,7 +170,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
     // Animate giá trị fillAmount và cập nhật text exp trong khi animate
     IEnumerator AnimateFillAndText(float from, float to, int levelForText, int needForText, int displayExp, int needForDisplay)
     {
-        float duration = 0.35f;
+        float duration = 0.1f;
         float elapsed = 0f;
         SetFillInstant(from);
         while (elapsed < duration)

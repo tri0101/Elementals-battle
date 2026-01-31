@@ -1,84 +1,56 @@
-using System;
 using UnityEngine;
 
 public static class FormationManager
 {
     const string FormationKey = "player_formation_v1";
 
-    public static void SaveFormation(FormationData formation)
-    {
-        if (formation == null) return;
-        try
-        {
-            string json = JsonUtility.ToJson(formation);
-            PlayerPrefs.SetString(FormationKey, json);
-            PlayerPrefs.Save();
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"FormationManager.SaveFormation failed: {e}");
-        }
-    }
-
     public static FormationData LoadFormation()
     {
         if (!PlayerPrefs.HasKey(FormationKey))
             return new FormationData();
 
-        try
-        {
-            string json = PlayerPrefs.GetString(FormationKey);
-            var data = JsonUtility.FromJson<FormationData>(json);
-            if (data == null || data.slots == null || data.slots.Count != 6)
-                return new FormationData();
-            return data;
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"FormationManager.LoadFormation failed: {e}");
-            return new FormationData();
-        }
+        string json = PlayerPrefs.GetString(FormationKey);
+        return JsonUtility.FromJson<FormationData>(json);
     }
 
-    public static int GetHeroAtSlot(FormationData formation, int slotIndex)
+    public static void SaveFormation(FormationData formation)
     {
-        if (formation == null) formation = LoadFormation();
-        var s = formation.GetSlot(slotIndex);
-        return s != null ? s.heroId : 0;
+        string json = JsonUtility.ToJson(formation);
+        PlayerPrefs.SetString(FormationKey, json);
     }
-    
-    public static bool AssignHeroToSlot(FormationData formation, int slotIndex, int heroId)
+
+    public static int GetHeroAtSlot(FormationData formation, int slot)
     {
-        if (formation == null) formation = LoadFormation();
+        return formation.GetHero(slot);
+    }
 
-        if (heroId <= 0)
+    public static bool AssignHeroToSlot(FormationData formation, int slot, int heroId)
+    {
+        // Không cho trùng hero
+        foreach (var kv in formation.slots)
         {
-            formation.SetHero(slotIndex, 0);
-            SaveFormation(formation);
-            return true;
-        }
-
-        foreach (var s in formation.slots)
-        {
-            if (s == null) continue;
-            if (s.slot != slotIndex && s.heroId == heroId)
+            if (kv.Value == heroId)
                 return false;
         }
 
-        formation.SetHero(slotIndex, heroId);
+        formation.SetHero(slot, heroId);
         SaveFormation(formation);
         return true;
     }
 
-    public static void RemoveHero(FormationData formation, int slotIndex)
+    public static int FindFirstEmptySlot(FormationData formation, int maxSlot = 6)
     {
-        if (formation == null) formation = LoadFormation();
-        formation.RemoveHero(slotIndex);
-        SaveFormation(formation);
+        for (int i = 1; i <= maxSlot; i++)
+        {
+            if (formation.GetHero(i) <= 0)
+                return i;
+        }
+        return -1; // full
     }
 
-    public static void ClearFormation()
+    public static void RemoveHero(FormationData formation, int slot)
     {
-        SaveFormation(new FormationData());
+        formation.RemoveHero(slot);
+        SaveFormation(formation);
     }
 }

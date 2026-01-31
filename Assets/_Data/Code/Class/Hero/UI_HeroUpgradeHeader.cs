@@ -1,5 +1,7 @@
 ﻿using TMPro;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_HeroUpgradeHeader : MonoBehaviour
 {
@@ -14,7 +16,12 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
     public Transform heroPreviewPanel;
 
     [Header("Data")]
-    public HeroGrowthConfig growthConfig; // assign in inspector
+    public HeroGrowthConfig growthConfig; 
+    public HeroLevelConfig levelConfig; 
+    [Header("Level Bar")]
+    public TextMeshProUGUI currentLevelText;
+    public TextMeshProUGUI currentLevelExpBarText;
+    public Image expFillImage;
 
     GameObject currentPreview;
 
@@ -70,6 +77,13 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
 
            
         }
+        float currentExp = data.instance.currentExp;
+        float needExp = levelConfig.expPerLevel[data.instance.level - 1];
+        currentLevelExpBarText.text = $"{currentExp} / {needExp}";
+        currentLevelText.text = $"Lv. {data.instance.level}";
+        expFillImage.fillAmount = needExp > 0 ? (float)currentExp / needExp : 0f;
+
+
     }
 
     void SetupPreview(GameObject previewPrefab)
@@ -88,4 +102,6 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
 
         currentPreview = Instantiate(previewPrefab, heroPreviewPanel);
     }
+
+  
 }

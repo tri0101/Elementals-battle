@@ -1,78 +1,90 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class UI_FormationManager : MonoBehaviour
 {
-    public UI_FormationSlot[] slots = new UI_FormationSlot[6];
-    public HeroDatabase heroDatabase;
+    public Transform slotRoot;
+    const int MAX_SLOT = 6;
 
-    FormationData formation;
 
-    void OnEnable()
+    private int?[] formationHeroIds = new int?[MAX_SLOT];
+
+    public bool IsHeroInFormation(HeroInfo hero)
     {
-        formation = FormationManager.LoadFormation();
-        RefreshAllSlots();
+        if (hero == null) return false;
 
-      
-        TryApplyPendingSelection();
+        for (int i = 0; i < MAX_SLOT; i++)
+            if (formationHeroIds[i] == hero.ID)
+                return true;
+
+        return false;
     }
 
-    void Update()
+    public bool TryAddHero(UI_HeroChooseItem heroItem)
     {
-        
-        if (FormationContext.SelectedHero != null && FormationContext.SelectedSlotIndex > 0)
+        if (heroItem == null || heroItem.IsInFormation)
+            return false;
+
+        int heroId = heroItem.Data.instance.heroId;
+
+
+        if (IsHeroInFormation(heroItem.Data.info))
+            return false;
+
+        for (int i = 0; i < MAX_SLOT; i++)
         {
-            TryApplyPendingSelection();
+            if (formationHeroIds[i] == null)
+            {
+                Transform slot = slotRoot.Find($"Slot{i + 1}");
+                if (slot == null) continue;
+
+                formationHeroIds[i] = heroId;
+                PlaceHero(heroItem, slot);
+                return true;
+            }
         }
+
+        Debug.Log("Formation full");
+        return false;
     }
 
-    void RefreshAllSlots()
+    public void RemoveHero(UI_HeroChooseItem heroItem, Transform inventoryContent)
     {
-        if (formation == null) formation = FormationManager.LoadFormation();
+        if (heroItem == null) return;
 
-        for (int i = 0; i < slots.Length; i++)
-        {
-            int heroId = FormationManager.GetHeroAtSlot(formation, i + 1);
-            if (slots[i] != null)
-                slots[i].SetupSlot(heroId, heroDatabase);
-        }
+        int heroId = heroItem.Data.instance.heroId;
+
+        for (int i = 0; i < MAX_SLOT; i++)
+            if (formationHeroIds[i] == heroId)
+                formationHeroIds[i] = null;
+
+        heroItem.transform.SetParent(inventoryContent, false);
+        ResetRect(heroItem.GetComponent<RectTransform>());
+        heroItem.SetInFormation(false);
     }
 
-    void TryApplyPendingSelection()
+  
+    void PlaceHero(UI_HeroChooseItem hero, Transform slot)
     {
-        if (FormationContext.SelectedHero == null || FormationContext.SelectedSlotIndex < 1 || FormationContext.SelectedSlotIndex > 6)
-            return;
-
-        int slot = FormationContext.SelectedSlotIndex;
-        var hv = FormationContext.SelectedHero;
-        if (hv == null)
-        {
-            FormationContext.Clear();
-            return;
-        }
-
-      
-        bool ok = FormationManager.AssignHeroToSlot(formation, slot, hv.instance.heroId);
-        if (!ok)
-        {
-            Debug.LogWarning("Hero already placed in other slot. Remove first or choose another hero.");
-           
-        }
-        else
-        {
-            
-            formation = FormationManager.LoadFormation();
-            RefreshAllSlots();
-        }
-
-        FormationContext.Clear();
+        hero.transform.SetParent(slot, false);
+        StretchToParent(hero.GetComponent<RectTransform>());
+        hero.SetInFormation(true);
     }
 
-    
-    public void RemoveHeroFromSlot(int slotIndex)
+    void StretchToParent(RectTransform rt)
     {
-        formation = FormationManager.LoadFormation();
-        formation.RemoveHero(slotIndex);
-        FormationManager.SaveFormation(formation);
-        RefreshAllSlots();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        rt.localScale = Vector3.one;
+        rt.localRotation = Quaternion.identity;
+    }
+
+    void ResetRect(RectTransform rt)
+    {
+        rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+        rt.anchoredPosition = Vector2.zero;
+        rt.localScale = Vector3.one;
+        rt.localRotation = Quaternion.identity;
     }
 }

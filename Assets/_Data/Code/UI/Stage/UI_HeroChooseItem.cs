@@ -1,86 +1,93 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_HeroSelect : MonoBehaviour
+public class UI_HeroChooseItem : MonoBehaviour
 {
-    public Button buttonSelect;
+    public Button buttonChoose;
     public Image icon;
     public TextMeshProUGUI levelText;
-    public TextMeshProUGUI nameHero;
     public Transform starRoot;
     public Transform rankRoot;
     public Image frameRank;
-    private HorizontalLayoutGroup starLayout;
+    public HeroViewData Data => data;
     private HeroViewData data;
+    private UI_FormationManager formationManager;
+    private UI_PanelChooseHero panelChooseHero;
+
+    private HorizontalLayoutGroup starLayout;
+
+    public bool IsInFormation { get; private set; }
 
     private int blackRank = 1;
     private int greenRank = 5;
 
     private Color blackColor = Color.black;
     private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
+
     void Awake()
     {
         if (starRoot != null)
             starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
+
+        buttonChoose.onClick.RemoveAllListeners();
+        buttonChoose.onClick.AddListener(OnClickHero);
     }
-    public void Setup(HeroViewData heroData)
+
+    public void Setup(
+        HeroViewData heroData,
+        UI_FormationManager fm,
+        UI_PanelChooseHero panel
+    )
     {
         data = heroData;
-        // ===== ICON =====
-        icon.sprite = data.info.iconFace;
+        formationManager = fm;
+        panelChooseHero = panel;
 
-        // ===== LEVEL =====
+        icon.sprite = data.info.iconFace;
         levelText.text = data.instance.level.ToString();
 
-        // ===== STAR + RANK =====
         UpdateStar(data.instance.star);
-        UpdateRankVisual(data.instance.rank, data.info.Name);
+        UpdateRankVisual(data.instance.rank);
 
-        // ===== CLICK =====
-        buttonSelect.onClick.RemoveAllListeners();
-        buttonSelect.onClick.AddListener(OnClickSelect);
+        IsInFormation = false;
     }
 
-    void OnClickSelect()
+    void OnClickHero()
     {
-        
-        if (FormationContext.SelectedSlotIndex > 0)
+        if (!IsInFormation)
         {
-            FormationContext.SelectedHero = data;
-
-            //GameManager.Instance.UnLoadAdditiveScene(SceneId.HeroSelectScene);
-
-            return;
+            bool ok = formationManager.TryAddHero(this);
+            if (!ok)
+                Debug.Log("Không thể add hero");
         }
-
-        
-        HeroUpgradeContext.SelectedHero = data;
-        GameManager.Instance.LoadAdditiveScene(SceneId.MainScene);
-   
+        else
+        {
+            formationManager.RemoveHero(this, panelChooseHero.InventoryContent);
+        }
     }
+
+    public void SetInFormation(bool value)
+    {
+        IsInFormation = value;
+    }
+
+
     void UpdateStar(int star)
     {
-
         if (starLayout != null)
         {
-            if (star <= 4)
-                starLayout.spacing = -70f;
-            else
-                starLayout.spacing = -25f;
-
+            starLayout.spacing = star <= 4 ? -70f : -25f;
             LayoutRebuilder.ForceRebuildLayoutImmediate(
                 starRoot as RectTransform
             );
         }
 
-
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }
 
-
-    void UpdateRankVisual(int rank, string heroName)
+    void UpdateRankVisual(int rank)
     {
         for (int i = 0; i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(false);
@@ -103,8 +110,5 @@ public class UI_HeroSelect : MonoBehaviour
 
         for (int i = 0; i < plusValue && i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(true);
-
-        nameHero.color = rankColor;
-        nameHero.text = plusValue > 0 ? $"{heroName} +{plusValue}" : heroName;
     }
 }

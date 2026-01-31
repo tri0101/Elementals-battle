@@ -15,13 +15,15 @@ public class UI_PanelDetailStage : MonoBehaviour
     public GameObject itemPrefabShard;
     public GameObject enemyPrefab;
     public GameObject stage;
-    public GameObject panelChooseHero;
     public GameObject backEmpty;
     public Button buttonBack;
     public Button buttonNext;
-
     public TextMeshProUGUI staminaCost;
+
+    [Header("Script")]
+    public UI_PanelChooseHero panelChooseHero;
     StageConfig currentStage;
+    public int currentStageId;
 
 
     public void Awake()
@@ -32,6 +34,7 @@ public class UI_PanelDetailStage : MonoBehaviour
     }
     public void OnLoadUI(int stageId)
     {
+        currentStageId = stageId;
         gameObject.SetActive(true);
         stage.SetActive(false);
         backEmpty.SetActive(true);
@@ -120,7 +123,14 @@ public class UI_PanelDetailStage : MonoBehaviour
     void OnClickNext()
     {
         gameObject.SetActive(false);
-        panelChooseHero.SetActive(true);
-        
+        panelChooseHero.gameObject.SetActive(true);
+        panelChooseHero.SetStageInt(currentStageId);
+
+
     }
+    public void SetStageInt(int stageId)
+    {
+        currentStageId = stageId;
+    }
+
 }
