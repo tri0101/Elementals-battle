@@ -14,13 +14,27 @@ public class UI_PanelDetailStage : MonoBehaviour
     public GameObject itemPrefab;
     public GameObject itemPrefabShard;
     public GameObject enemyPrefab;
+    public GameObject stage;
+    public GameObject panelChooseHero;
+    public GameObject backEmpty;
+    public Button buttonBack;
+    public Button buttonNext;
+
     public TextMeshProUGUI staminaCost;
     StageConfig currentStage;
 
+
+    public void Awake()
+    {
+        buttonBack.onClick.AddListener(OnClickBack);
+
+        buttonNext.onClick.AddListener(OnClickNext);
+    }
     public void OnLoadUI(int stageId)
     {
         gameObject.SetActive(true);
-
+        stage.SetActive(false);
+        backEmpty.SetActive(true);
         currentStage = stageDatabase.GetStage(stageId);
         if (currentStage == null)
         {
@@ -97,5 +111,16 @@ public class UI_PanelDetailStage : MonoBehaviour
         for (int i = contentEnemy.childCount - 1; i >= 0; i--)
             Destroy(contentEnemy.GetChild(i).gameObject);
     }
-    
+    void OnClickBack()
+    {
+        gameObject.SetActive(false);
+        stage.SetActive(true);
+        backEmpty.SetActive(false);
+    }
+    void OnClickNext()
+    {
+        gameObject.SetActive(false);
+        panelChooseHero.SetActive(true);
+        
+    }
 }
