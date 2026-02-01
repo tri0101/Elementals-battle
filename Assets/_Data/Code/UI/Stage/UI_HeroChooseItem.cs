@@ -1,9 +1,12 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class UI_HeroChooseItem : MonoBehaviour
+public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+
     public Button buttonChoose;
     public Image icon;
     public TextMeshProUGUI levelText;
@@ -18,6 +21,8 @@ public class UI_HeroChooseItem : MonoBehaviour
     private HorizontalLayoutGroup starLayout;
 
     public bool IsInFormation { get; private set; }
+    public Transform originalParent;
+    public CanvasGroup canvasGroup;
 
     private int blackRank = 1;
     private int greenRank = 5;
@@ -29,7 +34,7 @@ public class UI_HeroChooseItem : MonoBehaviour
     {
         if (starRoot != null)
             starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
-
+        canvasGroup = GetComponent<CanvasGroup>();
         buttonChoose.onClick.RemoveAllListeners();
         buttonChoose.onClick.AddListener(OnClickHero);
     }
@@ -110,5 +115,65 @@ public class UI_HeroChooseItem : MonoBehaviour
 
         for (int i = 0; i < plusValue && i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(true);
+    }
+
+
+  
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (!IsInFormation) return;
+
+        originalParent = transform.parent;
+        transform.SetParent(transform.root);
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (!IsInFormation) return;
+
+        transform.position = eventData.position;
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (!IsInFormation) return;
+
+        canvasGroup.blocksRaycasts = true;
+
+
+        var raycastResults = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, raycastResults);
+
+        foreach (var result in raycastResults)
+        {
+            if (result.gameObject.name.StartsWith("Slot"))
+            {
+                Transform targetSlot = result.gameObject.transform;
+
+
+                if (targetSlot != originalParent)
+                {
+
+                    var existingHero = targetSlot.GetComponentInChildren<UI_HeroChooseItem>();
+                    if (existingHero != null)
+                    {
+
+                        formationManager.SwapHeroes(this, existingHero);
+                    }
+                    else
+                    {
+
+                        formationManager.MoveHeroToSlot(this, targetSlot);
+                    }
+                    return;
+                }
+            }
+        }
+
+
+
+        formationManager.PlaceHero(this, originalParent);
+
     }
 }
