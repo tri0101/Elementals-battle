@@ -15,8 +15,9 @@ public class UI_FormationManager : MonoBehaviour
     private const int MAX_SLOT = 6;
     private int[] formationHeroIds;
 
-    //Khóa 
+ 
     private bool isBusy = false;
+    public bool IsBusy => isBusy;
 
     void Awake()
     {
@@ -33,6 +34,18 @@ public class UI_FormationManager : MonoBehaviour
         FormationManager.Save(formationHeroIds);
     }
 
+    private bool BeginOp()
+    {
+        if (isBusy) return false;
+        isBusy = true;
+        return true;
+    }
+
+    private void EndOp()
+    {
+        isBusy = false;
+    }
+
     IEnumerator RebuildNextFrame()
     {
         yield return null;
@@ -41,60 +54,145 @@ public class UI_FormationManager : MonoBehaviour
 
     public bool IsHeroInFormation(int heroId)
     {
-        for (int i = 0; i < MAX_SLOT; i++)
+        for (int i = 1; i <= MAX_SLOT; i++)
             if (formationHeroIds[i] == heroId) return true;
         return false;
     }
 
     public bool TryAddHero(UI_HeroChooseItem heroItem)
     {
-        if (isBusy) return false;
         if (heroItem == null || heroItem.IsInFormation) return false;
+        if (!BeginOp()) return false;
 
-        isBusy = true;
-
-        int heroId = heroItem.Data.instance.heroId;
-
-        for (int i = 0; i < MAX_SLOT; i++)
+        try
         {
-            if (formationHeroIds[i] == -1)
+            int heroId = heroItem.Data.instance.heroId;
+
+            for (int i = 1; i <= MAX_SLOT; i++)
             {
-                Transform slot = slotRoot.Find($"Slot{i + 1}");
+                if (formationHeroIds[i] != -1) continue;
+
+                Transform slot = slotRoot.Find($"Slot{i}");
                 if (slot == null)
                 {
-                    Debug.LogError($"Slot{i + 1} NULL");
-                    isBusy = false;
+                    Debug.LogError($"Slot{i} NULL");
                     return false;
                 }
 
                 formationHeroIds[i] = heroId;
                 PlaceHero(heroItem, slot);
+
                 FormationManager.Save(formationHeroIds);
                 panelChooseHero.RefreshPower();
-
-                isBusy = false;
+                // inventory item vừa bị lấy đi -> refresh list ở cuối frame cho an toàn
+                StartCoroutine(RefreshInventoryNextFrame());
                 return true;
             }
-        }
 
-        isBusy = false;
-        return false;
+            return false;
+        }
+        finally
+        {
+            EndOp();
+        }
     }
 
     public void RemoveHero(UI_HeroChooseItem heroItem, Transform inventory)
     {
-        if (heroItem == null) return;
-        int heroId = heroItem.Data.instance.heroId;
+        if (heroItem == null || inventory == null) return;
+        if (!BeginOp()) return;
 
-        for (int i = 0; i < MAX_SLOT; i++)
-            if (formationHeroIds[i] == heroId) formationHeroIds[i] = -1;
+        try
+        {
+            int heroId = heroItem.Data.instance.heroId;
 
-        heroItem.transform.SetParent(inventory, false);
-        ResetRect(heroItem.GetComponent<RectTransform>());
-        heroItem.SetInFormation(false);
-        FormationManager.Save(formationHeroIds);
-        panelChooseHero.RefreshPower();
-        panelChooseHero.LoadHeroes();
+            for (int i = 1; i <= MAX_SLOT; i++)
+                if (formationHeroIds[i] == heroId) formationHeroIds[i] = -1;
+
+            heroItem.transform.SetParent(inventory, false);
+            ResetRect(heroItem.GetComponent<RectTransform>());
+            heroItem.SetInFormation(false);
+
+            FormationManager.Save(formationHeroIds);
+            panelChooseHero.RefreshPower();
+           
+            StartCoroutine(RefreshInventoryNextFrame());
+        }
+        finally
+        {
+            EndOp();
+        }
+    }
+
+    public void SwapHeroes(UI_HeroChooseItem heroA, UI_HeroChooseItem heroB)
+    {
+        if (heroA == null || heroB == null) return;
+        if (!BeginOp()) return;
+
+        try
+        {
+            int indexA = GetHeroIndexInFormation(heroA.Data.instance.heroId);
+            int indexB = GetHeroIndexInFormation(heroB.Data.instance.heroId);
+            if (indexA == -1 || indexB == -1) return;
+
+            int temp = formationHeroIds[indexA];
+            formationHeroIds[indexA] = formationHeroIds[indexB];
+            formationHeroIds[indexB] = temp;
+
+            Transform slotA = slotRoot.Find($"Slot{indexA}");
+            Transform slotB = slotRoot.Find($"Slot{indexB}");
+            if (slotA == null || slotB == null) return;
+
+            PlaceHero(heroA, slotB);
+            PlaceHero(heroB, slotA);
+
+            FormationManager.Save(formationHeroIds);
+            panelChooseHero.RefreshPower();
+        }
+        finally
+        {
+            EndOp();
+        }
+    }
+
+    public void MoveHeroToSlot(UI_HeroChooseItem heroItem, Transform targetSlot)
+    {
+        if (heroItem == null || targetSlot == null) return;
+        if (!BeginOp()) return;
+
+        try
+        {
+            int heroId = heroItem.Data.instance.heroId;
+            int currentIndex = GetHeroIndexInFormation(heroId);
+            //int targetIndex = GetSlotIndex(targetSlot);
+            int targetIndex = targetSlot.name[^1] - '0';
+
+            if (currentIndex == -1 || targetIndex == -1) return;
+            if (currentIndex == targetIndex) return;
+
+
+            if (formationHeroIds[targetIndex] != -1) return;
+
+            formationHeroIds[currentIndex] = -1;
+            formationHeroIds[targetIndex] = heroId;
+
+            PlaceHero(heroItem, targetSlot);
+
+            FormationManager.Save(formationHeroIds);
+            panelChooseHero.RefreshPower();
+        }
+        finally
+        {
+            EndOp();
+        }
+    }
+
+    private IEnumerator RefreshInventoryNextFrame()
+    {
+        
+        yield return null;
+        if (panelChooseHero != null)
+            panelChooseHero.LoadHeroes();
     }
 
     void RebuildFormationUI()
@@ -102,18 +200,17 @@ public class UI_FormationManager : MonoBehaviour
         if (slotRoot == null || heroItemPrefab == null) return;
 
         foreach (Transform slot in slotRoot)
+        {
             foreach (Transform child in slot)
             {
                 if (child.name.StartsWith("Hero"))
-                {
                     Destroy(child.gameObject);
-                }
-               
             }
+        }
 
         var allHeroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
 
-        for (int i = 0; i < MAX_SLOT; i++)
+        for (int i = 1; i <= MAX_SLOT; i++)
         {
             int savedId = formationHeroIds[i];
             if (savedId == -1) continue;
@@ -121,7 +218,7 @@ public class UI_FormationManager : MonoBehaviour
             HeroViewData heroData = allHeroes.Find(h => h.instance.heroId == savedId);
             if (heroData == null) continue;
 
-            Transform slot = slotRoot.Find($"Slot{i + 1}");
+            Transform slot = slotRoot.Find($"Slot{i}");
             if (slot == null) continue;
 
             GameObject go = Instantiate(heroItemPrefab, slot);
@@ -144,7 +241,6 @@ public class UI_FormationManager : MonoBehaviour
         Stretch(hero.GetComponent<RectTransform>());
         hero.SetInFormation(true);
     }
- 
 
     void Stretch(RectTransform rt)
     {
@@ -153,7 +249,6 @@ public class UI_FormationManager : MonoBehaviour
         rt.offsetMin = rt.offsetMax = Vector2.zero;
         rt.localScale = Vector3.one;
         rt.localRotation = Quaternion.identity;
-        
     }
 
     public void ResetRect(RectTransform rt)
@@ -163,127 +258,52 @@ public class UI_FormationManager : MonoBehaviour
         rt.localScale = Vector3.one;
         rt.localRotation = Quaternion.identity;
     }
-    public void SwapHeroes(UI_HeroChooseItem heroA, UI_HeroChooseItem heroB)
-    {
-        if (heroA == null || heroB == null) return;
-
-        int indexA = GetHeroIndexInFormation(heroA.Data.instance.heroId);
-        int indexB = GetHeroIndexInFormation(heroB.Data.instance.heroId);
-
-        if (indexA == -1 || indexB == -1) return;
-
-       
-        int temp = formationHeroIds[indexA];
-        formationHeroIds[indexA] = formationHeroIds[indexB];
-        formationHeroIds[indexB] = temp;
-
-     
-        Transform slotA = slotRoot.Find($"Slot{indexA + 1}");
-        Transform slotB = slotRoot.Find($"Slot{indexB + 1}");
-
-        heroA.transform.SetParent(slotB, false);
-        heroB.transform.SetParent(slotA, false);
-
-        PlaceHero(heroA, slotB);
-        PlaceHero(heroB, slotA);
-
-
-        FormationManager.Save(formationHeroIds);
-        panelChooseHero.RefreshPower();
-    }
 
     private int GetHeroIndexInFormation(int heroId)
     {
-        for (int i = 0; i < formationHeroIds.Length; i++)
-        {
+        for (int i = 1; i <= formationHeroIds.Length; i++)
             if (formationHeroIds[i] == heroId) return i;
-        }
         return -1;
     }
+
     private int GetSlotIndex(Transform slot)
     {
         for (int i = 0; i < slotRoot.childCount; i++)
-        {
-            if (slotRoot.GetChild(i) == slot)
-                return i;
-        }
+            if (slotRoot.GetChild(i) == slot) return i;
         return -1;
     }
-    public void MoveHeroToSlot(UI_HeroChooseItem heroItem, Transform targetSlot)
-    {
-        if (heroItem == null || targetSlot == null) return;
 
-        int heroId = heroItem.Data.instance.heroId;
-
-        
-        int currentIndex = GetHeroIndexInFormation(heroId);
-        int targetIndex = GetSlotIndex(targetSlot);
-
-        if (currentIndex == -1 || targetIndex == -1) return;
-
-        
-        formationHeroIds[currentIndex] = -1; 
-        formationHeroIds[targetIndex] = heroId; 
-
-        
-        heroItem.transform.SetParent(targetSlot, false);
-        PlaceHero(heroItem, targetSlot);
-
-        FormationManager.Save(formationHeroIds);
-        panelChooseHero.RefreshPower();
-    }
-
-
-
-
-    //test tạm
+    // test
     void Update()
     {
-        // Kiểm tra nếu phím Space được nhấn
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            // Gọi hàm CheckFormationStatus
             var slotDetails = CheckFormationStatus();
-
-            // Debug thông tin
             foreach (var detail in slotDetails)
-            {
                 Debug.Log(detail);
-            }
         }
     }
+
     public List<string> CheckFormationStatus()
     {
         List<string> slotDetails = new List<string>();
-
-        // Lấy danh sách tất cả hero từ HeroDatabase
         var allHeroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
 
-        for (int i = 0; i < MAX_SLOT; i++)
+        for (int i = 1; i <= MAX_SLOT; i++)
         {
             if (formationHeroIds[i] == -1)
             {
-                // Slot trống
-                slotDetails.Add($"Slot {i + 1}: Empty");
+                slotDetails.Add($"Slot {i}: Empty");
             }
             else
             {
-                // Tìm hero trong slot
                 int heroId = formationHeroIds[i];
                 HeroViewData heroData = allHeroes.Find(h => h.instance.heroId == heroId);
-                if (heroData != null)
-                {
-                    slotDetails.Add($"Slot {i + 1}: {heroData.info.name}");
-                }
-                else
-                {
-                    slotDetails.Add($"Slot {i + 1}: Unknown Hero");
-                }
+                if (heroData != null) slotDetails.Add($"Slot {i}: {heroData.info.name}");
+                else slotDetails.Add($"Slot {i}: Unknown Hero");
             }
         }
 
         return slotDetails;
     }
-
-      
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Linq; 
+using System.Linq;
 
 public class UI_PanelChooseHero : MonoBehaviour
 {
@@ -22,13 +22,12 @@ public class UI_PanelChooseHero : MonoBehaviour
     public Button buttonTank;
     public Button buttonSupport;
 
-    private RoleHero? currentFilter = null; 
+    private RoleHero? currentFilter = null;
 
     void Awake()
     {
         buttonBack.onClick.AddListener(OnClickBack);
         buttonNext.onClick.AddListener(OnClickNext);
-
 
         buttonAll.onClick.AddListener(() => OnClickFilter(null));
         buttonDPS.onClick.AddListener(() => OnClickFilter(RoleHero.DPS));
@@ -39,12 +38,14 @@ public class UI_PanelChooseHero : MonoBehaviour
     void OnEnable()
     {
         LoadHeroes();
-        RefreshPower(); 
+        RefreshPower();
     }
+
     void OnDisable()
     {
         currentFilter = null;
     }
+
     void OnClickFilter(RoleHero? role)
     {
         currentFilter = role;
@@ -53,16 +54,18 @@ public class UI_PanelChooseHero : MonoBehaviour
 
     public void LoadHeroes()
     {
+        
+        if (formationManager != null && formationManager.IsBusy)
+            return;
+
         Clear();
         var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
 
         foreach (var hero in heroes)
         {
-            
-            if (formationManager.IsHeroInFormation(hero.instance.heroId))
+            if (formationManager != null && formationManager.IsHeroInFormation(hero.instance.heroId))
                 continue;
 
-           
             if (currentFilter.HasValue && hero.info.role != currentFilter.Value)
                 continue;
 
@@ -70,7 +73,6 @@ public class UI_PanelChooseHero : MonoBehaviour
         }
     }
 
-   
     public void RefreshPower()
     {
         float totalPower = 0f;
@@ -82,11 +84,9 @@ public class UI_PanelChooseHero : MonoBehaviour
         {
             if (id == -1) continue;
 
-            
             var heroData = allHeroes.Find(h => h.instance.heroId == id);
             if (heroData != null)
             {
-                
                 var stat = HeroStatCalculator.Calculate(heroData.info, heroData.instance, growthConfig);
                 totalPower += stat.power;
             }
@@ -116,7 +116,13 @@ public class UI_PanelChooseHero : MonoBehaviour
         panelDetailStage.SetStageInt(currentStageId);
     }
 
-    void OnClickNext() => gameObject.SetActive(false);
+    void OnClickNext()
+    {
+        gameObject.SetActive(false);
+        GameManager.Instance.LoadAdditiveScene(SceneId.BattleScene);
+        GameManager.Instance.UnLoadAdditiveScene(SceneId.MapScene);
+
+    }
 
     public void SetStageInt(int stageId) => currentStageId = stageId;
 }

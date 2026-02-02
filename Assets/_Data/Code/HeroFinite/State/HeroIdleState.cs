@@ -6,11 +6,8 @@ public class HeroIdleState : HeroBaseState
 
     public override void EnterState(HeroStateManager hero)
     {
-        
-       
+
         hero.HeroControl.ChangeAnimationState((HeroStateManager.hero_Idle));
-        
-           
 
         
     }

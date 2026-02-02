@@ -99,9 +99,9 @@ public class HeroControl : Subject
         heroReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<HeroReceiveDamagee>();
         heroEventt = transform.GetChild(0).GetComponent<HeroEventt>();
         
-        string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
-        GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
-        enemy = enemyObj.transform;
+        //string targetTag = CompareTag("Player1") ? "Player2" : "Player1";
+        //GameObject enemyObj = GameObject.FindGameObjectWithTag(targetTag);
+        //enemy = enemyObj.transform;
     }
 
 

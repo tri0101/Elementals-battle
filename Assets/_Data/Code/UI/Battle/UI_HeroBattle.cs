@@ -1,19 +1,27 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
-public class UI_HeroItem : MonoBehaviour
+public class UI_HeroBattle : MonoBehaviour
 {
-    public Button buttonUpgrade;
     public Image icon;
-    public TextMeshProUGUI levelText;
-    public TextMeshProUGUI nameHero;
+
+    [Header("Role")]
+    public TextMeshProUGUI roleText;
+
+    [Header("Star")]
     public Transform starRoot;
+
+    [Header("Rank")]
     public Transform rankRoot;
     public Image frameRank;
+
+    public Button button;
     private HorizontalLayoutGroup starLayout;
     private HorizontalLayoutGroup rankLayout;
     private HeroViewData data;
+    private Action<HeroViewData> onClickCallback;
 
     private int blackRank = 1;
     private int greenRank = 5;
@@ -24,81 +32,65 @@ public class UI_HeroItem : MonoBehaviour
     {
         if (starRoot != null)
             starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
+
         if (rankRoot != null)
             rankLayout = rankRoot.GetComponent<HorizontalLayoutGroup>();
     }
-    public void Setup(HeroViewData heroData)
+    public void Setup(
+        HeroViewData heroData,
+        Action<HeroViewData> onClick = null
+    )
     {
         data = heroData;
+        onClickCallback = onClick;
+
         // ===== ICON =====
         icon.sprite = data.info.iconFace;
 
-        // ===== LEVEL =====
-        levelText.text = data.instance.level.ToString();
+        // ===== ROLE =====
+        roleText.text = $"{data.info.role}";
 
         // ===== STAR + RANK =====
         UpdateStar(data.instance.star);
-        UpdateRankVisual(data.instance.rank, data.info.Name);
+        UpdateRankVisual(data.instance.rank);
 
         // ===== CLICK =====
-        buttonUpgrade.onClick.RemoveAllListeners();
-        buttonUpgrade.onClick.AddListener(OnClickUpgrade);
-    }
-
-    void OnClickUpgrade()
-    {
-        
-        HeroUpgradeContext.SelectedHero = data;
-
-        
-        GameManager.Instance.LoadAdditiveScene(SceneId.HeroUpgradeScene); // = 4
-        GameManager.Instance.UnLoadAdditiveScene(SceneId.HeroManagerScene);
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(OnClick);
     }
 
     void UpdateStar(int star)
-    {
-       
-        if (starLayout != null)
-        {
-            if (star <= 4)
-                starLayout.spacing = -70f;
-            else
-                starLayout.spacing = -25f;
-
-            LayoutRebuilder.ForceRebuildLayoutImmediate(
-                starRoot as RectTransform
-            );
-        }
-
-        
+    { 
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }
 
 
-    void UpdateRankVisual(int rank, string heroName)
+    void UpdateRankVisual(int rank)
     {
+        if (rankRoot == null)
+            return;
+
         for (int i = 0; i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(false);
 
-        Color rankColor;
-        int plusValue;
-
         if (rank < greenRank)
         {
-            rankColor = blackColor;
             frameRank.color = blackColor;
-            plusValue = Mathf.Max(0, rank - blackRank);
+
+            int plus = rank - blackRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
         }
         else
         {
-            rankColor = greenColor;
             frameRank.color = greenColor;
-            plusValue = Mathf.Max(0, rank - greenRank);
+
+            int plus = rank - greenRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-        
-        for (int i = 0; i < plusValue && i < rankRoot.childCount; i++)
-            rankRoot.GetChild(i).gameObject.SetActive(true);
+
         if (rankLayout != null)
         {
             int activeCount = 0;
@@ -115,7 +107,10 @@ public class UI_HeroItem : MonoBehaviour
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(rankRoot as RectTransform);
         }
-        nameHero.color = rankColor;
-        nameHero.text = plusValue > 0 ? $"{heroName} +{plusValue}" : heroName;
+    }
+
+    void OnClick()
+    {
+        onClickCallback?.Invoke(data);
     }
 }
