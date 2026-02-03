@@ -4,7 +4,7 @@ public class HeroRun : MonoBehaviour
 {
     HeroControl heroControl;
     public HeroControl heroControlhero => heroControl;
-    [SerializeField] float CurrentSpeed = 5f;
+    float CurrentSpeed = 50f;
 
     private void Awake()
     {

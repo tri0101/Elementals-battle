@@ -35,8 +35,11 @@ public class HeroControl : Subject
         get => isSkillPressed;
         set => isSkillPressed = value;
     }
+    [SerializeField] private Vector3 battleTarget;
+    public Vector3 BattleTarget => battleTarget;
 
-   
+    [SerializeField] private bool needMoveToBattle;
+    public bool NeedMoveToBattle => needMoveToBattle;
 
     [SerializeField] private string currentStringState;
     public string CurrentStringState => currentStringState;
@@ -79,6 +82,9 @@ public class HeroControl : Subject
    
     private void Awake()
     {
+
+
+
         normalT = transform.Find("Normal");
         receiveT = normalT.Find("ColliderReceive");
         fixedLayer = LayerMask.LayerToName(receiveT.gameObject.layer);
@@ -260,5 +266,16 @@ public class HeroControl : Subject
         Debug.Log("State changed: " + currentStringState);
         lastStateName = currentStringState;
     }
-
+    //khi vào trận , dc gọi từ battle manager
+    public void SetBattleTarget(Vector3 pos)
+    {
+        battleTarget = pos;
+        needMoveToBattle = true;
+    }
+    // hàm đã đến đích , gọi từ heroRunState
+    public void SetArrivedBattle()
+    {
+        needMoveToBattle = false;
+        
+    }
 }

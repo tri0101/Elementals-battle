@@ -17,7 +17,7 @@ public class HeroIdleState : HeroBaseState
     }
     public override void UpdateState(HeroStateManager hero)
     {
-
+        
      
         if (hero.HeroControl.IsAttackPressed)
         {

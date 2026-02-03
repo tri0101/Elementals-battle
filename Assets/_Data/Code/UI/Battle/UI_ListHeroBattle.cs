@@ -16,7 +16,7 @@ public class UI_ListHeroBattle : MonoBehaviour
     {
         Clear();
 
-        // Build dictionary heroId -> HeroViewData để lookup nhanh
+        
         var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
         var heroById = new Dictionary<int, HeroViewData>();
         foreach (var h in heroes)
@@ -25,10 +25,10 @@ public class UI_ListHeroBattle : MonoBehaviour
             heroById[h.instance.heroId] = h;
         }
 
-        // Load formation, dùng index 1..6 (bỏ 0)
+        
         int[] ids = FormationManager.Load();
 
-        // defensive: nếu mảng ngắn hơn 7 thì cũng không crash
+        
         int maxIndex = Mathf.Min(6, ids.Length - 1);
         for (int slotIndex = 1; slotIndex <= maxIndex; slotIndex++)
         {
@@ -41,22 +41,21 @@ public class UI_ListHeroBattle : MonoBehaviour
                 continue;
             }
 
-            // Tạo UI item
+            
             var go = Instantiate(heroBattlePrefab, content);
             go.name = $"HeroBattle_Slot{slotIndex}_Hero{heroId}";
 
             go.GetComponent<UI_HeroBattle>()
               .Setup(heroData, OnHeroSelected);
 
-            // Slot 1..6 phải hiển thị từ phải -> trái:
-            // thêm xong đẩy về đầu để đảo trật tự hiển thị
+            
             go.transform.SetAsFirstSibling();
         }
     }
 
     void OnHeroSelected(HeroViewData hero)
     {
-        // TODO: xử lý chọn hero nếu cần
+        
     }
 
     void Clear()

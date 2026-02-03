@@ -42,4 +42,7 @@ public class HeroInfo : ScriptableObject
     [Header("HeroPreview")]
     public GameObject HeroPreviewPrefabs;
 
+    [Header("HeroPrefab")]
+    public GameObject HeroPrefab;
+
 }

@@ -17,6 +17,15 @@ public class HeroRunState : HeroBaseState
     public override void UpdateState(HeroStateManager hero)
     {
 
+        if (Vector3.Distance(
+            hero.transform.position,
+            hero.HeroControl.BattleTarget) < 0.05f)
+        {
+            
+            hero.HeroControl.SetArrivedBattle();
+            hero.SwitchState(hero.idleState);
+            return;
+        }
         if (hero.HeroControl.IsAttackPressed)
         {
             hero.SwitchState(hero.attackState);
@@ -29,13 +38,17 @@ public class HeroRunState : HeroBaseState
             return;
         }
      
-        if (hero.HeroControl.MoveX == 0)
-            hero.SwitchState(hero.idleState);
+
  
     }
     public override void FixedUpdateState(HeroStateManager hero)
     {
-        hero.HeroControl.HeroRun.Move();
+        
+        if (hero.HeroControl.NeedMoveToBattle)
+        {
+            hero.HeroControl.HeroRun.MoveTo(hero.HeroControl.BattleTarget);
+        }
+        
     }
     public override void LateUpdateState(HeroStateManager hero)
     {

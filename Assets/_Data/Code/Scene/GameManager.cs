@@ -10,7 +10,8 @@ public enum SceneId
     HeroUpgradeScene = 4,
     InventoryScene = 5,
     MapScene = 6,
-   
+    PersistentScene = 7,
+
 }
 
 public class GameManager : MonoBehaviour
@@ -28,6 +29,7 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        LoadAdditiveScene(SceneId.MainScene);
     }
     public void OnClickLoad()
     {

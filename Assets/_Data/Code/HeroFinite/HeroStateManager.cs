@@ -43,7 +43,8 @@ public class HeroStateManager : MonoBehaviour
 
     private void Start()
     {
-        currentState = idleState;
+        //currentState = idleState;
+        currentState = runState;
         currentState.EnterState(this);
     }
     private void Update()
