@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -7,21 +6,27 @@ public class BattleManager : MonoBehaviour
     [Header("Refs")]
     public HeroDatabase heroDatabase;
 
+    [Header("Stage")]
+    public StageConfig stageConfig;
+
     [Header("Formation (scene setup)")]
     public BattleFormation formation;
 
-    [Header("Move")]
-    [Min(0.01f)]
-    private float moveSpeed = 35f;
-
     private readonly List<GameObject> spawnedHeroes = new List<GameObject>();
+    private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
+
+    void Awake()
+    {
+        
+        stageConfig = StageContext.selectedStage;
+    }
 
     void Start()
     {
-        LoadFormationToBattleScene();
+        LoadWave(1);
     }
 
-    public void LoadFormationToBattleScene()
+    public void LoadWave(int wave)
     {
         ClearSpawned();
 
@@ -37,12 +42,26 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        if (formation.listEnemyRoot == null)
+        {
+            Debug.LogError("[BattleManager] formation.listEnemyRoot is NULL (ListEnemy)");
+            return;
+        }
+
         if (heroDatabase == null)
         {
             Debug.LogError("[BattleManager] heroDatabase is NULL");
             return;
         }
 
+        heroDatabase.Init();
+
+        SpawnPlayerHeroes();
+        SpawnEnemiesForWave(wave);
+    }
+
+    private void SpawnPlayerHeroes()
+    {
         var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
         var heroById = new Dictionary<int, HeroViewData>();
         foreach (var h in heroes)
@@ -58,7 +77,6 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // dùng slot 1..6, bỏ slot 0
         int maxSlot = Mathf.Min(6, ids.Length - 1);
         for (int slotIndex = 1; slotIndex <= maxSlot; slotIndex++)
         {
@@ -82,39 +100,77 @@ public class BattleManager : MonoBehaviour
 
             if (startT == null || battleT == null)
             {
-                Debug.LogError($"[BattleManager] Missing start/battle transform for slot {slotIndex}.");
+                Debug.LogError($"[BattleManager] Missing hero start/battle transform for slot {slotIndex}.");
                 continue;
             }
 
             GameObject heroGo = Instantiate(heroData.info.HeroPrefab, formation.listHeroRoot);
             heroGo.name = $"Hero_{heroId}_Slot{slotIndex}";
             heroGo.transform.position = startT.position;
-            var heroControl = heroGo.GetComponent<HeroControl>();
-            heroControl.SetBattleTarget(battleT.position);
-            spawnedHeroes.Add(heroGo);
 
-            //StartCoroutine(MoveToBattlePos(heroGo.transform, battleT.position));
+            var heroControl = heroGo.GetComponent<HeroControl>();
+            if (heroControl != null)
+                heroControl.SetBattleTarget(battleT.position);
+
+            spawnedHeroes.Add(heroGo);
         }
     }
 
-    private IEnumerator MoveToBattlePos(Transform hero, Vector3 targetPos)
+    private void SpawnEnemiesForWave(int wave)
     {
-        if (hero == null) yield break;
-
-        // chạy tới khi đủ gần
-        while (hero != null && (hero.position - targetPos).sqrMagnitude > 0.01f)
+        if (stageConfig == null)
         {
-            hero.position = Vector3.MoveTowards(hero.position, targetPos, moveSpeed * Time.deltaTime);
-            yield return null;
+            Debug.LogWarning("[BattleManager] stageConfig is NULL. Skip spawning enemies.");
+            return;
         }
 
-        if (hero != null)
-            hero.position = targetPos;
+        if (stageConfig.enemySpawns == null || stageConfig.enemySpawns.Count == 0)
+        {
+            Debug.LogWarning("[BattleManager] stageConfig.enemySpawns empty. Skip spawning enemies.");
+            return;
+        }
 
-        // tạm thời: đứng yên tại battle pos
-        // nếu muốn: gọi animation idle trong HeroControl ở đây
-        // var hc = hero.GetComponent<HeroControl>();
-        // if (hc != null) hc.ChangeAnimationState("Idle");
+        for (int i = 0; i < stageConfig.enemySpawns.Count; i++)
+        {
+            var entry = stageConfig.enemySpawns[i];
+            if (entry == null) continue;
+            if (entry.wave != wave) continue;
+
+            int slotIndex = entry.slotIndex;
+            int enemyHeroId = entry.heroId;
+
+            Transform startT = formation.GetEnemyStart(slotIndex);
+            Transform battleT = formation.GetEnemyBattle(slotIndex);
+
+            if (startT == null || battleT == null)
+            {
+                Debug.LogError($"[BattleManager] Missing enemy start/battle transform for slot {slotIndex}.");
+                continue;
+            }
+
+            var enemyInfo = heroDatabase.GetHero(enemyHeroId);
+            if (enemyInfo == null || enemyInfo.HeroPrefab == null)
+            {
+                Debug.LogWarning($"[BattleManager] Enemy heroId={enemyHeroId} missing in HeroDatabase or missing HeroPrefab.");
+                continue;
+            }
+
+            GameObject enemyGo = Instantiate(enemyInfo.HeroPrefab, formation.listEnemyRoot);
+            enemyGo.name = $"Enemy_{enemyHeroId}_Slot{slotIndex}";
+            enemyGo.transform.position = startT.position;
+
+           
+            {
+                Vector3 s = enemyGo.transform.localScale;
+                enemyGo.transform.localScale = new Vector3(-Mathf.Abs(s.x), s.y, s.z);
+            }
+
+            var enemyControl = enemyGo.GetComponent<HeroControl>();
+            if (enemyControl != null)
+                enemyControl.SetBattleTarget(battleT.position);
+
+            spawnedEnemies.Add(enemyGo);
+        }
     }
 
     private void ClearSpawned()
@@ -122,7 +178,11 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < spawnedHeroes.Count; i++)
             if (spawnedHeroes[i] != null)
                 Destroy(spawnedHeroes[i]);
-
         spawnedHeroes.Clear();
+
+        for (int i = 0; i < spawnedEnemies.Count; i++)
+            if (spawnedEnemies[i] != null)
+                Destroy(spawnedEnemies[i]);
+        spawnedEnemies.Clear();
     }
 }

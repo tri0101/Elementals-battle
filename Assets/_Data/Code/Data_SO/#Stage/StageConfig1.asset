@@ -13,14 +13,35 @@ MonoBehaviour:
   m_Name: StageConfig1
   m_EditorClassIdentifier: 
   stageID: 1
+  waveStage: 3
   staminaCost: 7
   enemies:
-  - heroId: 1
-    rank: 4
-    star: 7
-    level: 5
+  - heroId: 500
+    rank: 1
+    star: 4
+    level: 1
     hpRate: 1
     atkRate: 1
+    isShow: 0
+  enemySpawns:
+  - wave: 1
+    slotIndex: 1
+    heroId: 500
+  - wave: 1
+    slotIndex: 3
+    heroId: 500
+  - wave: 1
+    slotIndex: 2
+    heroId: 500
+  - wave: 2
+    slotIndex: 2
+    heroId: 500
+  - wave: 2
+    slotIndex: 4
+    heroId: 500
+  - wave: 3
+    slotIndex: 1
+    heroId: 500
   dropItems:
   - itemId: 100
     minAmount: 1

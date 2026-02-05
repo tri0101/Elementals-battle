@@ -16,7 +16,9 @@ public class UI_HeroBattle : MonoBehaviour
     [Header("Rank")]
     public Transform rankRoot;
     public Image frameRank;
-
+    [Header("Bar")]
+    public Image hpBar;
+    public Image manaBar;
     public Button button;
     private HorizontalLayoutGroup starLayout;
     private HorizontalLayoutGroup rankLayout;
@@ -53,6 +55,10 @@ public class UI_HeroBattle : MonoBehaviour
         // ===== STAR + RANK =====
         UpdateStar(data.instance.star);
         UpdateRankVisual(data.instance.rank);
+
+        // ===== BAR ====
+        SetHpBar(1f);   
+        SetManaBar(0f); 
 
         // ===== CLICK =====
         button.onClick.RemoveAllListeners();
@@ -108,7 +114,17 @@ public class UI_HeroBattle : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(rankRoot as RectTransform);
         }
     }
+    public void SetHpBar(float normalized01)
+    {
+        if (hpBar == null) return;
+        hpBar.fillAmount = Mathf.Clamp01(normalized01);
+    }
 
+    public void SetManaBar(float normalized01)
+    {
+        if (manaBar == null) return;
+        manaBar.fillAmount = Mathf.Clamp01(normalized01);
+    }
     void OnClick()
     {
         onClickCallback?.Invoke(data);

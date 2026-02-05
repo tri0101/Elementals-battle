@@ -23,6 +23,7 @@ public class UI_PanelDetailStage : MonoBehaviour
     [Header("Script")]
     public UI_PanelChooseHero panelChooseHero;
     StageConfig currentStage;
+    public StageConfig CurrentStage => currentStage;
     public int currentStageId;
 
 

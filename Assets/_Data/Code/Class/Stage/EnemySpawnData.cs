@@ -6,5 +6,6 @@ public class EnemySpawnData
     public int star;        
     public int level;     
     public float hpRate;   
-    public float atkRate;   
+    public float atkRate;
+    public bool isShow;
 }
