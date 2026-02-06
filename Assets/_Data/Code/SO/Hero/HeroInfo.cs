@@ -16,6 +16,12 @@ public class HeroInfo : ScriptableObject
     public string Name;
     [Header("Role")]
     public RoleHero role;
+    [Header("Abilities")]
+    public AbilityInfo normalAttack;
+    public AbilityInfo skill;
+    [Range(0f, 1f)] public float skillChance = 0.33f;
+    public AbilityInfo ultimate;
+    public AbilityInfo passive;
     [Header("Attribute Gereral")]
     public float damage;
     public float health;

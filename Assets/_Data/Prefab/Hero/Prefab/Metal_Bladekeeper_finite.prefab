@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 201803767687998015}
   - component: {fileID: 4251353543853832994}
   - component: {fileID: 7040102089876981911}
+  - component: {fileID: -902225709339216956}
   m_Layer: 0
   m_Name: Metal_Bladekeeper_finite
   m_TagString: Player2
@@ -125,6 +126,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc66445998e4284f88af3f0fba34067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-902225709339216956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 73203229804554650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a7190dfd7e41346b202e3f660cb793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heroControl: {fileID: 0}
+  baseInfo: {fileID: 0}
+  heroInstance:
+    heroId: 0
+    level: 0
+    currentExp: 0
+    star: 0
+    rank: 0
+    shard: 0
+  finalStat:
+    damage: 0
+    health: 0
+    armor: 0
+    critRate: 0
+    critDamage: 0
+    speed: 0
+    power: 0
+  currentHealth: 0
+  currentMana: 0
 --- !u!1 &651352811967692270
 GameObject:
   m_ObjectHideFlags: 0

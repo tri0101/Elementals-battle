@@ -74,8 +74,8 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         maxHealth = heroControl.HeroInfo.health;
         maxMana = maxHealth * 2;
         physicalArmor = heroControl.HeroInfo.armor;
-        
-        mana = 1000000f;
+
+        mana = 0f;
         //mana = 0f;
         health = maxHealth;
         heroControl.RefreshObservers();

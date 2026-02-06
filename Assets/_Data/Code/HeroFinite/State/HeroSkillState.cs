@@ -5,7 +5,7 @@ public class HeroSkillState : HeroBaseState
     public override void EnterState(HeroStateManager hero)
     {
        
-        hero.HeroControl.IsSkillPressed = false;
+        hero.HeroControl.IsSkill = false;
 
         //if (hero.heroControl.HasBeenTransform)
         //{

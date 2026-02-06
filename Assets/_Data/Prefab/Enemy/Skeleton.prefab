@@ -190,6 +190,7 @@ GameObject:
   - component: {fileID: 1472522994446099986}
   - component: {fileID: 3633511918537806299}
   - component: {fileID: 6378897417970099475}
+  - component: {fileID: -7893008343401815923}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Player2
@@ -248,7 +249,7 @@ MonoBehaviour:
   battleTarget: {x: 0, y: 0, z: 0}
   needMoveToBattle: 0
   currentStringState: 
-  heroInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
+  heroInfo: {fileID: 11400000, guid: 25e6f9153b348e34cb5326f6b01b8f72, type: 2}
   enemy: {fileID: 0}
 --- !u!114 &6043500118271729141
 MonoBehaviour:
@@ -300,6 +301,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc66445998e4284f88af3f0fba34067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-7893008343401815923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4468050915083984655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a7190dfd7e41346b202e3f660cb793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heroControl: {fileID: 0}
+  baseInfo: {fileID: 0}
+  heroInstance:
+    heroId: 0
+    level: 0
+    currentExp: 0
+    star: 0
+    rank: 0
+    shard: 0
+  finalStat:
+    damage: 0
+    health: 0
+    armor: 0
+    critRate: 0
+    critDamage: 0
+    speed: 0
+    power: 0
+  currentHealth: 0
+  currentMana: 0
 --- !u!1 &6343236931758134587
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,8 +524,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.033243775, y: -0.09064344}
-  m_Size: {x: 0.23768136, y: 0.5034039}
+  m_Offset: {x: -0.033243775, y: 0.21770056}
+  m_Size: {x: 0.23768136, y: 0.48717567}
   m_Direction: 0
 --- !u!114 &7079365166330109937
 MonoBehaviour:

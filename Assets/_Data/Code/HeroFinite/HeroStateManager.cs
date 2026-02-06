@@ -28,8 +28,8 @@ public class HeroStateManager : MonoBehaviour
     public const string hero_Idle = "Idle";
     public const string hero_Run = "Run";
     public const string hero_Attack_1 = "Attack_1";
-    public const string hero_Attack_2 = "Attack_2";
-    public const string hero_Skill = "Skill";
+    public const string hero_Skill = "Attack_2";
+    public const string hero_Ultimate = "Skill";
     public const string hero_Take_Hit = "Take_hit";
     public const string hero_Dead = "death";
     //List các state transform

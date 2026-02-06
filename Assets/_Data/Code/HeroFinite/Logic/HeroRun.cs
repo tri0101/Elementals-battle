@@ -1,39 +1,87 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class HeroRun : MonoBehaviour
 {
     HeroControl heroControl;
-    public HeroControl heroControlhero => heroControl;
     float CurrentSpeed = 50f;
 
     private void Awake()
     {
         heroControl = GetComponent<HeroControl>();
     }
- 
-    public void Move()
-    {
-        Vector3 currentPos = transform.position;
 
-        Vector3 targetPos = currentPos + new Vector3(
-            heroControl.MoveX,
-            0f,
-            0f
-        );
-
-        transform.position = Vector3.MoveTowards(
-            currentPos,
-            targetPos,
-            CurrentSpeed * Time.deltaTime
-        );
-    }
     public void MoveTo(Vector3 targetPos)
     {
-        transform.position = Vector3.MoveTowards(
-            transform.position,
-            targetPos,
-            CurrentSpeed * Time.deltaTime
-        );
+        HandleFlipWhileMoving(targetPos);
+
+        Vector3 cur = transform.position;
+        Vector3 next = cur;
+
+        float step = CurrentSpeed * Time.deltaTime;
+
+        float yDiff = targetPos.y - cur.y;
+
+        // ---- PHASE 1: y chưa bằng, đi xéo nhưng X ngắn ----
+        if (Mathf.Abs(yDiff) > 0.01f)
+        {
+            // Y đi nhanh
+            next.y = Mathf.MoveTowards(
+                cur.y,
+                targetPos.y,
+                step
+            );
+
+            // X đi chậm (ví dụ 30% speed)
+            next.x = Mathf.MoveTowards(
+                cur.x,
+                targetPos.x,
+                step * 1f
+            );
+        }
+        // ---- PHASE 2: y đã bằng, X đi full ----
+        else
+        {
+            next.y = targetPos.y; // khóa lane
+
+            next.x = Mathf.MoveTowards(
+                cur.x,
+                targetPos.x,
+                step
+            );
+        }
+
+        transform.position = next;
     }
 
+    void HandleFlipWhileMoving(Vector3 targetPos)
+    {
+        float dirX = targetPos.x - transform.position.x;
+        if (Mathf.Abs(dirX) < 0.001f) return;
+        Vector3 scale = transform.localScale;
+        if (dirX > 0 && scale.x < 0)
+            scale.x *= -1;
+        else if (dirX < 0 && scale.x > 0)
+            scale.x *= -1;
+
+        transform.localScale = scale;
+    }
+
+  
+    public void FaceDefaultDirection()
+    {
+        Vector3 scale = transform.localScale;
+
+        if (heroControl.CompareTag("Hero"))
+        {
+            
+            scale.x = Mathf.Abs(scale.x);
+        }
+        else if (heroControl.CompareTag("Enemy"))
+        {
+           
+            scale.x = -Mathf.Abs(scale.x);
+        }
+
+        transform.localScale = scale;
+    }
 }

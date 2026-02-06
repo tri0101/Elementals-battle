@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class BattleManager : MonoBehaviour
@@ -12,12 +13,23 @@ public class BattleManager : MonoBehaviour
     [Header("Formation (scene setup)")]
     public BattleFormation formation;
 
+    [Header("Growth (for HeroStatCalculator)")]
+    public HeroGrowthConfig growthConfig;
+
     private readonly List<GameObject> spawnedHeroes = new List<GameObject>();
     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
 
+    public bool IsWaveReady { get; private set; }
+
+    [Header("Wave Ready Gate")]
+    [Tooltip("Seconds to wait after spawning all units before setting IsWaveReady = true.")]
+    [Min(0f)]
+    public float readyDelaySeconds = 3f;
+
+    private Coroutine readyRoutine;
+
     void Awake()
     {
-        
         stageConfig = StageContext.selectedStage;
     }
 
@@ -28,7 +40,18 @@ public class BattleManager : MonoBehaviour
 
     public void LoadWave(int wave)
     {
+        IsWaveReady = false;
+
+        if (readyRoutine != null)
+        {
+            StopCoroutine(readyRoutine);
+            readyRoutine = null;
+        }
+
         ClearSpawned();
+
+        if (BattlefieldRegistry.Instance != null)
+            BattlefieldRegistry.Instance.Clear();
 
         if (formation == null)
         {
@@ -54,10 +77,24 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
+        if (growthConfig == null)
+            Debug.LogWarning("[BattleManager] growthConfig is NULL. Units will fallback to HeroInfo base stats (no scaling).");
+
         heroDatabase.Init();
 
         SpawnPlayerHeroes();
         SpawnEnemiesForWave(wave);
+
+        readyRoutine = StartCoroutine(CoSetWaveReadyAfterDelay());
+    }
+
+    private IEnumerator CoSetWaveReadyAfterDelay()
+    {
+        if (readyDelaySeconds > 0f)
+            yield return new WaitForSeconds(readyDelaySeconds);
+
+        IsWaveReady = true;
+        readyRoutine = null;
     }
 
     private void SpawnPlayerHeroes()
@@ -107,6 +144,16 @@ public class BattleManager : MonoBehaviour
             GameObject heroGo = Instantiate(heroData.info.HeroPrefab, formation.listHeroRoot);
             heroGo.name = $"Hero_{heroId}_Slot{slotIndex}";
             heroGo.transform.position = startT.position;
+            heroGo.tag = "Hero";
+
+            if (BattlefieldRegistry.Instance != null)
+                BattlefieldRegistry.Instance.Register(heroGo.transform, slotIndex, "Hero");
+
+            var statRuntime = heroGo.GetComponent<HeroStatRuntime>();
+            if (statRuntime != null)
+                statRuntime.Init(heroData.info, heroData.instance, growthConfig);
+            else
+                Debug.LogWarning($"[BattleManager] {heroGo.name} missing HeroStatRuntime. Add it to the hero prefab.");
 
             var heroControl = heroGo.GetComponent<HeroControl>();
             if (heroControl != null)
@@ -128,6 +175,18 @@ public class BattleManager : MonoBehaviour
         {
             Debug.LogWarning("[BattleManager] stageConfig.enemySpawns empty. Skip spawning enemies.");
             return;
+        }
+
+        Dictionary<int, EnemySpawnData> enemyDataByHeroId = null;
+        if (stageConfig.enemies != null && stageConfig.enemies.Count > 0)
+        {
+            enemyDataByHeroId = new Dictionary<int, EnemySpawnData>(stageConfig.enemies.Count);
+            for (int i = 0; i < stageConfig.enemies.Count; i++)
+            {
+                var e = stageConfig.enemies[i];
+                if (e == null) continue;
+                enemyDataByHeroId[e.heroId] = e;
+            }
         }
 
         for (int i = 0; i < stageConfig.enemySpawns.Count; i++)
@@ -158,12 +217,35 @@ public class BattleManager : MonoBehaviour
             GameObject enemyGo = Instantiate(enemyInfo.HeroPrefab, formation.listEnemyRoot);
             enemyGo.name = $"Enemy_{enemyHeroId}_Slot{slotIndex}";
             enemyGo.transform.position = startT.position;
+            enemyGo.tag = "Enemy";
 
-           
+            if (BattlefieldRegistry.Instance != null)
+                BattlefieldRegistry.Instance.Register(enemyGo.transform, slotIndex, "Enemy");
+
             {
                 Vector3 s = enemyGo.transform.localScale;
                 enemyGo.transform.localScale = new Vector3(-Mathf.Abs(s.x), s.y, s.z);
             }
+
+            HeroInstance enemyInstance = null;
+            if (enemyDataByHeroId != null && enemyDataByHeroId.TryGetValue(enemyHeroId, out var enemyData) && enemyData != null)
+            {
+                enemyInstance = new HeroInstance
+                {
+                    heroId = enemyHeroId,
+                    level = enemyData.level,
+                    currentExp = 0,
+                    star = enemyData.star,
+                    rank = enemyData.rank,
+                    shard = 0
+                };
+            }
+
+            var statRuntime = enemyGo.GetComponent<HeroStatRuntime>();
+            if (statRuntime != null)
+                statRuntime.Init(enemyInfo, enemyInstance, growthConfig);
+            else
+                Debug.LogWarning($"[BattleManager] {enemyGo.name} missing HeroStatRuntime. Add it to the enemy prefab.");
 
             var enemyControl = enemyGo.GetComponent<HeroControl>();
             if (enemyControl != null)
@@ -178,11 +260,13 @@ public class BattleManager : MonoBehaviour
         for (int i = 0; i < spawnedHeroes.Count; i++)
             if (spawnedHeroes[i] != null)
                 Destroy(spawnedHeroes[i]);
+
         spawnedHeroes.Clear();
 
         for (int i = 0; i < spawnedEnemies.Count; i++)
             if (spawnedEnemies[i] != null)
                 Destroy(spawnedEnemies[i]);
+
         spawnedEnemies.Clear();
     }
 }

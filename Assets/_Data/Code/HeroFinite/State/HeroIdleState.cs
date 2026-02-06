@@ -19,13 +19,13 @@ public class HeroIdleState : HeroBaseState
     {
         
      
-        if (hero.HeroControl.IsAttackPressed)
+        if (hero.HeroControl.IsAttack && !hero.HeroControl.IsPrepare)
         {
-            hero.SwitchState(hero.attackState);
+            hero.SwitchState(hero.runState);
             return;
         }
         
-        if (hero.HeroControl.IsSkillPressed)
+        if (hero.HeroControl.IsSkill)
         {
             hero.SwitchState(hero.skillState);
             return;

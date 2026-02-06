@@ -28,7 +28,7 @@ public static class HeroStatCalculator
         float armor = info.armor * roleScale.armor * (1 + totalBonus);
         float critRate = info.criticalRate;
         float critDamage = info.criticalDamageRate;
-        float speed = info.speed * roleScale.speed * (1 + totalBonus);
+        float speed = info.speed * roleScale.speed;
 
        
         float power =

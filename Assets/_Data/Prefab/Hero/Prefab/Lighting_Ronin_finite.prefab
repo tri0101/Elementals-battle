@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8699333101949246934}
   - component: {fileID: 7545325683342669698}
   - component: {fileID: 5169287682640027406}
+  - component: {fileID: 4143419817882093155}
   m_Layer: 0
   m_Name: Lighting_Ronin_finite
   m_TagString: Player2
@@ -125,6 +126,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc66445998e4284f88af3f0fba34067, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4143419817882093155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300007097882719078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44a7190dfd7e41346b202e3f660cb793, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heroControl: {fileID: 0}
+  baseInfo: {fileID: 0}
+  heroInstance:
+    heroId: 0
+    level: 0
+    currentExp: 0
+    star: 0
+    rank: 0
+    shard: 0
+  finalStat:
+    damage: 0
+    health: 0
+    armor: 0
+    critRate: 0
+    critDamage: 0
+    speed: 0
+    power: 0
+  currentHealth: 0
+  currentMana: 0
 --- !u!1 &984062655749073311
 GameObject:
   m_ObjectHideFlags: 0
