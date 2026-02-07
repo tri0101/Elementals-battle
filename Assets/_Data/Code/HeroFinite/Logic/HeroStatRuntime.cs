@@ -24,7 +24,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public float CurrentMana { get => currentMana; set => currentMana = Mathf.Max(0f, value); }
 
     public float MaxHealth => finalStat != null ? finalStat.health : 0f;
-    public float MaxMana => MaxHealth * 2f;
+    public float MaxMana => 1000f;
 
     public float Damage => finalStat != null ? finalStat.damage : 0f;
     public float Armor => finalStat != null ? finalStat.armor : 0f;
@@ -74,5 +74,14 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         currentHealth = finalStat.health;
         currentMana = 0f;
+    }
+
+    public void GainMana(int value)
+    {
+        currentMana += value;
+
+        float mana01 = currentMana / (float)MaxMana;
+
+        heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
     }
 }

@@ -47,6 +47,12 @@ public class HeroControl : Subject
         get => isSkill;
         set => isSkill = value;
     }
+    [SerializeField] private bool isFinished;
+    public bool IsFinished
+    {
+        get => isFinished;
+        set => isFinished = value;
+    }
 
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
@@ -261,24 +267,7 @@ public class HeroControl : Subject
         currentStringState = newState;
     }
 
-    public float GetMoveX()
-    {
-        if (currentStringState != "Run")
-        {
-            return 0;
-        }
-        else
-        {
-            if (transform.localScale.x > 0)
-            {
-                return 1;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-    }
+ 
 
     public bool CheckCurrentAnimation(string stateCheck, float duration, int index)
     {
@@ -321,6 +310,10 @@ public class HeroControl : Subject
     public void RefreshObservers(object data1)
     {
         NotifyObservers(data1);
+    }
+    public void RefreshObservers(HeroNotifyType type, object data = null)
+    {
+        NotifyObservers(type, data);
     }
 
     public void SetBattleTarget(Vector3 pos)

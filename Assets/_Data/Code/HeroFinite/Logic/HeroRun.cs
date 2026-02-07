@@ -3,7 +3,7 @@
 public class HeroRun : MonoBehaviour
 {
     HeroControl heroControl;
-    float CurrentSpeed = 50f;
+    float CurrentSpeed = 100f;
 
     private void Awake()
     {

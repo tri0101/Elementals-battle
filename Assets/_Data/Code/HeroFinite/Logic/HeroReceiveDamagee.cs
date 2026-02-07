@@ -72,7 +72,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
 
        
         maxHealth = heroControl.HeroInfo.health;
-        maxMana = maxHealth * 2;
+        maxMana = 1000f;
         physicalArmor = heroControl.HeroInfo.armor;
 
         mana = 0f;
@@ -131,12 +131,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         //stop anim trong vong duration
         DurationFinalAttack = duration;
     }
-    public void CallKnockBack(Vector3 knockPosition, float duration)
-    {
-       
-        
-        heroControl.HeroEventt.CallSlideToPosition(transform.parent.parent.localPosition, knockPosition, duration);
-    }
+   
     public float GetHealthPercent()
     {
         return (float)health / maxHealth;

@@ -24,9 +24,9 @@ public abstract class Subject : MonoBehaviour
         foreach (var observer in _observers)
             observer.OnNotify(data);
     }
-    protected void NotifyObservers(object data1, object data2)
+    protected void NotifyObservers(HeroNotifyType type, object data = null)
     {
         foreach (var observer in _observers)
-            observer.OnNotify(data1,data2);
+            observer.OnNotify(type, data);
     }
 }

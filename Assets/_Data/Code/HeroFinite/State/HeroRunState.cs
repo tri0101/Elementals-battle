@@ -17,7 +17,7 @@ public class HeroRunState : HeroBaseState
        
         if (Vector3.Distance(
             hero.transform.position,
-            hero.HeroControl.BattleTarget) < 0.05f)
+            hero.HeroControl.BattleTarget) < 0.1f)
         {
             hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.HeroControl.SetArrivedBattle();
@@ -31,19 +31,14 @@ public class HeroRunState : HeroBaseState
             hero.HeroControl.enemyTarget[0].position.x
         );
 
-        if (hero.HeroControl.IsAttack && dx <= 4f)
+        if (hero.HeroControl.IsAttack && dx <= 5f)
         {
             hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.SwitchState(hero.attackState);
             return;
         }
 
-        //if (hero.HeroControl.IsAttack)
-        //{
-        //    hero.SwitchState(hero.attackState);
-        //    return;
-        //}
-
+   
         if (hero.HeroControl.IsSkill)
         {
             hero.SwitchState(hero.skillState);

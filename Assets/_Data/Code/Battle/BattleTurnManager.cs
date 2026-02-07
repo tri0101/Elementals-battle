@@ -38,12 +38,11 @@ public class BattleTurnManager : MonoBehaviour
         while (battleManager == null || !battleManager.IsWaveReady)
             yield return null;
 
-        // Decide start team once by TOTAL speed. This order stays for all turns.
         heroTeamStarts = DecideHeroTeamStarts();
 
         for (int turn = 1; turn <= maxTurns; turn++)
         {
-            //yield return CoUltimatePhase();
+           yield return new WaitForSeconds(2f);
             yield return CoNormalSkillPhase();
         }
     }
@@ -53,7 +52,7 @@ public class BattleTurnManager : MonoBehaviour
         float heroTotal = SumTeamSpeed(TeamHero);
         float enemyTotal = SumTeamSpeed(TeamEnemy);
 
-        bool heroStarts = heroTotal >= enemyTotal; // tie => Hero
+        bool heroStarts = heroTotal >= enemyTotal; 
         Debug.Log($"[BattleTurnManager] TeamSpeed: Hero={heroTotal:0.##} Enemy={enemyTotal:0.##}. HeroStarts={heroStarts}");
         return heroStarts;
     }
@@ -100,11 +99,13 @@ public class BattleTurnManager : MonoBehaviour
         if (heroTeamStarts)
         {
             yield return CoTeamNormalSkill(TeamHero);
+            yield return new WaitForSeconds(2f);
             yield return CoTeamNormalSkill(TeamEnemy);
         }
         else
         {
             yield return CoTeamNormalSkill(TeamEnemy);
+            yield return new WaitForSeconds(2f);
             yield return CoTeamNormalSkill(TeamHero);
         }
     }
@@ -146,12 +147,14 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
 
+            unit.IsFinished = false;
             if (ShouldUseSkill(unit))
                 unit.SetSkill();
             else
                 unit.SetAttack();
 
-            yield return WaitForActionFinished(unit, 2f);
+            //yield return WaitForActionFinished(unit, 1f);
+            yield return new WaitUntil(() => unit.IsFinished);
 
             if (delayBetweenActions > 0f)
                 yield return new WaitForSeconds(delayBetweenActions);

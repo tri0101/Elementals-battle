@@ -14,7 +14,7 @@ public class HeroAttackState : HeroBaseState
 
     public override void ExitState(HeroStateManager hero)
     {
-        
+       
     }
 
     public override void FixedUpdateState(HeroStateManager hero)
@@ -24,12 +24,13 @@ public class HeroAttackState : HeroBaseState
 
     public override void UpdateState(HeroStateManager hero)
     {
-        
 
-        if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Attack_1, 0.9f, 1)))
+        
+        if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Attack_1, 1f, 1)))
         {
 
             hero.HeroControl.GoBackBattleTarget();
+            
             hero.SwitchState(hero.runState);
         }
     }

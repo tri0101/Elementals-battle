@@ -13,6 +13,10 @@ public class BattleManager : MonoBehaviour
     [Header("Formation (scene setup)")]
     public BattleFormation formation;
 
+    [Header("Transform")]
+    public Transform backBottom;
+   
+    Dictionary<int, UI_HeroBattle> dictHeroBattle = new Dictionary<int, UI_HeroBattle>();
     [Header("Growth (for HeroStatCalculator)")]
     public HeroGrowthConfig growthConfig;
 
@@ -35,9 +39,21 @@ public class BattleManager : MonoBehaviour
 
     void Start()
     {
+        AddHeroBattle();
         LoadWave(1);
     }
-
+    void AddHeroBattle()
+    {
+        dictHeroBattle.Clear();
+   
+        foreach (Transform child in backBottom)
+        {
+            var ui = child.GetComponent<UI_HeroBattle>();
+            if (ui != null)
+                dictHeroBattle.Add(int.Parse(child.name), ui);
+        }
+        
+    }
     public void LoadWave(int wave)
     {
         IsWaveReady = false;
@@ -142,10 +158,10 @@ public class BattleManager : MonoBehaviour
             }
 
             GameObject heroGo = Instantiate(heroData.info.HeroPrefab, formation.listHeroRoot);
-            heroGo.name = $"Hero_{heroId}_Slot{slotIndex}";
+            heroGo.name = $"{slotIndex}";
             heroGo.transform.position = startT.position;
             heroGo.tag = "Hero";
-
+           
             if (BattlefieldRegistry.Instance != null)
                 BattlefieldRegistry.Instance.Register(heroGo.transform, slotIndex, "Hero");
 
@@ -156,6 +172,7 @@ public class BattleManager : MonoBehaviour
                 Debug.LogWarning($"[BattleManager] {heroGo.name} missing HeroStatRuntime. Add it to the hero prefab.");
 
             var heroControl = heroGo.GetComponent<HeroControl>();
+            dictHeroBattle[slotIndex].BindHeroControl(heroControl);
             if (heroControl != null)
                 heroControl.SetBattleTarget(battleT.position);
 

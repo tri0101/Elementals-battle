@@ -43,7 +43,7 @@ public class UI_ListHeroBattle : MonoBehaviour
 
             
             var go = Instantiate(heroBattlePrefab, content);
-            go.name = $"HeroBattle_Slot{slotIndex}_Hero{heroId}";
+            go.name = $"{slotIndex}";
 
             go.GetComponent<UI_HeroBattle>()
               .Setup(heroData, OnHeroSelected);
