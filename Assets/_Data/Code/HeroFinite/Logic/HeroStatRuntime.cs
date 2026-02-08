@@ -84,4 +84,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
     }
+    public void MinusMana(int value)
+    {
+        currentMana -= value;
+
+        float mana01 = currentMana / (float)MaxMana;
+
+        heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
+    }
 }

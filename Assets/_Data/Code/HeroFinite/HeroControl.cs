@@ -53,6 +53,12 @@ public class HeroControl : Subject
         get => isFinished;
         set => isFinished = value;
     }
+    [SerializeField] private bool canSkill;
+    public bool CanSkill
+    {
+        get => canSkill;
+        set => canSkill = value;
+    }
 
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
@@ -80,7 +86,9 @@ public class HeroControl : Subject
     public HeroIdle HeroIdle => heroIdle;
 
     HeroSkilll heroSkilll;
-    public HeroSkilll heroSkill => heroSkilll;
+    public HeroSkilll HeroSkill => heroSkilll;
+    HeroUltimate heroUltimate;
+    public HeroUltimate HeroUltimate => heroUltimate;
 
     HeroReceiveDamagee heroReceiveDamagee;
     public HeroReceiveDamagee HeroReceiveDamagee => heroReceiveDamagee;
@@ -94,64 +102,133 @@ public class HeroControl : Subject
 
     [Header("Enemy")]
     public List<Transform> enemyTarget = new List<Transform>();
-
+    public Vector3 distanceToTarget;
     public const string SkillObserver = "Skill";
 
-    // =============================
-    //  Turn manager synchronization
-    // =============================
     private bool actionInProgress;
     public bool ActionInProgress => actionInProgress;
-   
 
-    /// <summary>
-    /// Called by animation event at the end of Attack/Skill/Ultimate.
-    /// BattleTurnManager will wait until ActionInProgress becomes false.
-    /// </summary>
     public void NotifyActionFinished()
     {
         actionInProgress = false;
     }
 
-    // =============================
-    //  Requests from BattleTurnManager
-    // =============================
-
     public void SetAttack()
     {
         isAttack = true;
         actionInProgress = true;
-
-        // For now: ONLY handle normal attack targeting
-        BuildTargetsForNormalAttack();
+        BuildTargets();
+        distanceToTarget = GetAttackPosition(heroInfo.normalAttack);
+        
     }
 
     public void SetUltimate()
     {
         isUltimate = true;
         actionInProgress = true;
-        // TODO: BuildTargetsForUltimate()
+        BuildTargets();
+        distanceToTarget = GetAttackPosition(heroInfo.ultimate);
+        
     }
 
     public void SetSkill()
     {
         isSkill = true;
-        actionInProgress = true;
-        // TODO: BuildTargetsForSkill()
+        actionInProgress = true; 
+        BuildTargets();
+        distanceToTarget = GetAttackPosition(heroInfo.skill);
+        
     }
 
-    private void BuildTargetsForNormalAttack()
+    private void BuildTargets()
     {
         enemyTarget.Clear();
 
         if (BattlefieldRegistry.Instance == null)
             return;
 
-        // Determine which team is enemy
-        string enemyTag = CompareTag("Hero") ? "Enemy" : "Hero";
+        //if (heroInfo == null || heroInfo.normalAttack == null)
+        //{
+            
+        //    BuildTargetsForNormalAttack_NoneModeFallback();
+        //    return;
+        //}
+
+        AbilityInfo ability = heroInfo.normalAttack;
+        string enemyTeam = CompareTag("Hero") ? "Enemy" : "Hero";
+
+        switch (ability.targetingMode)
+        {
+            
+            case AbilityTargetingMode.None:
+                BuildTargetsNone();
+                break;
+
+            case AbilityTargetingMode.Row:
+                {
+                    int row = Random.Range(1, 4); 
+                    AddAliveEnemiesInRow(enemyTeam, row);
+                    break;
+                }
+
+            case AbilityTargetingMode.Column:
+                {
+                    
+                    int col = ability.column == ColumnTarget.Back ? 2 : 1;
+                    AddAliveEnemiesInColumn(enemyTeam, col);
+                    break;
+                }
+
+            case AbilityTargetingMode.AoeAllEnemies:
+                {
+                    AddAliveEnemiesAll(enemyTeam);
+                    break;
+                }
+
+            default:
+
+                BuildTargetsNone();
+                break;
+        }
+    }
+    public Vector3 GetAttackPosition(AbilityInfo ability)
+    {
+        Transform enemy = enemyTarget[0];
+        Vector3 result = transform.position;
+
+        switch (ability.positionAttack)
+        {
+            case PositionAttack.MiddlePosition:
+                // (0, 2.252, z giữ nguyên)
+                result = new Vector3(
+                    0f,
+                    2.252f,
+                    transform.position.z
+                );
+                break;
+
+            case PositionAttack.DistanceToTarget:
+                // đứng trước enemy 1 khoảng = distance
+                float dir = enemy.position.x > transform.position.x ? -1f : 1f;
+
+                result = enemy.position;
+                result.x += dir * ability.distance;
+                break;
+        }
+
+        return result;
+    }
+    private void BuildTargetsNone()
+    {
+        enemyTarget.Clear();
+
+        if (BattlefieldRegistry.Instance == null)
+            return;
+
+        string enemyTeam = CompareTag("Hero") ? "Enemy" : "Hero";
 
         // Prefer random in FRONT column (slots 1..3). If none alive, random in BACK column (slots 4..6).
-        var front = GetAliveEnemiesInColumn(enemyTag, 1);
+        var front = GetAliveEnemiesInColumn(enemyTeam, 1);
         Transform chosen = null;
 
         if (front.Count > 0)
@@ -160,7 +237,7 @@ public class HeroControl : Subject
         }
         else
         {
-            var back = GetAliveEnemiesInColumn(enemyTag, 2);
+            var back = GetAliveEnemiesInColumn(enemyTeam, 2);
             if (back.Count > 0)
                 chosen = back[Random.Range(0, back.Count)];
         }
@@ -169,11 +246,62 @@ public class HeroControl : Subject
             enemyTarget.Add(chosen);
     }
 
-    private static List<Transform> GetAliveEnemiesInColumn(string enemyTag, int columnIndex)
+    private void AddAliveEnemiesAll(string enemyTeam)
+    {
+        var roots = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
+        for (int i = 0; i < roots.Count; i++)
+        {
+            var root = roots[i];
+            if (root == null) continue;
+
+            var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+            if (recv != null && recv.IsDead) continue;
+
+            enemyTarget.Add(root);
+        }
+    }
+
+    private void AddAliveEnemiesInRow(string enemyTeam, int rowIndex1To3)
+    {
+        var roots = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
+        for (int i = 0; i < roots.Count; i++)
+        {
+            var root = roots[i];
+            if (root == null) continue;
+
+            if (!BattlefieldRegistry.Instance.TryGetSlotIndex(root, out int slot)) continue;
+            if (BattlefieldRegistry.SlotToRow(slot) != rowIndex1To3) continue;
+
+            var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+            if (recv != null && recv.IsDead) continue;
+
+            enemyTarget.Add(root);
+        }
+    }
+
+    private void AddAliveEnemiesInColumn(string enemyTeam, int columnIndex1To2)
+    {
+        var roots = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
+        for (int i = 0; i < roots.Count; i++)
+        {
+            var root = roots[i];
+            if (root == null) continue;
+
+            if (!BattlefieldRegistry.Instance.TryGetSlotIndex(root, out int slot)) continue;
+            if (BattlefieldRegistry.SlotToColumn(slot) != columnIndex1To2) continue;
+
+            var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+            if (recv != null && recv.IsDead) continue;
+
+            enemyTarget.Add(root);
+        }
+    }
+
+    private static List<Transform> GetAliveEnemiesInColumn(string enemyTeam, int columnIndex)
     {
         var result = new List<Transform>(6);
 
-        var roots = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTag);
+        var roots = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
         for (int i = 0; i < roots.Count; i++)
         {
             var root = roots[i];
@@ -207,6 +335,7 @@ public class HeroControl : Subject
 
         heroIdle = GetComponent<HeroIdle>();
         heroSkilll = GetComponent<HeroSkilll>();
+        heroUltimate = GetComponent<HeroUltimate>();
 
         heroReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<HeroReceiveDamagee>();
         heroEventt = transform.GetChild(0).GetComponent<HeroEventt>();
@@ -267,8 +396,6 @@ public class HeroControl : Subject
         currentStringState = newState;
     }
 
- 
-
     public bool CheckCurrentAnimation(string stateCheck, float duration, int index)
     {
         Animator anim = animator;
@@ -311,6 +438,7 @@ public class HeroControl : Subject
     {
         NotifyObservers(data1);
     }
+
     public void RefreshObservers(HeroNotifyType type, object data = null)
     {
         NotifyObservers(type, data);
@@ -326,6 +454,7 @@ public class HeroControl : Subject
     {
         needMoveToBattle = false;
     }
+
     public void GoBackBattleTarget()
     {
         needMoveToBattle = true;

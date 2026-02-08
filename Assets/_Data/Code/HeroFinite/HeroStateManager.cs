@@ -19,8 +19,8 @@ public class HeroStateManager : MonoBehaviour
 
   
     public HeroSkillState skillState = new HeroSkillState();
+    public HeroUltimateState ultimateState = new HeroUltimateState();
 
-   
     public HeroTakeHitState takeHitState = new HeroTakeHitState();
     public HeroDeathState deathState = new HeroDeathState();
 

@@ -19,7 +19,7 @@ public class HeroInfo : ScriptableObject
     [Header("Abilities")]
     public AbilityInfo normalAttack;
     public AbilityInfo skill;
-    [Range(0f, 1f)] public float skillChance = 0.33f;
+    [Range(0f, 1f)] public float skillChance = 1f;
     public AbilityInfo ultimate;
     public AbilityInfo passive;
     [Header("Attribute Gereral")]

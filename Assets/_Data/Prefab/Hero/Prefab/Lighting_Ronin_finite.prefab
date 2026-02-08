@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7545325683342669698}
   - component: {fileID: 5169287682640027406}
   - component: {fileID: 4143419817882093155}
+  - component: {fileID: 4890861008966250747}
   m_Layer: 0
   m_Name: Lighting_Ronin_finite
   m_TagString: Player2
@@ -69,13 +70,17 @@ MonoBehaviour:
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
   MoveX: 0
-  isAttackPressed: 0
-  isSkillPressed: 0
+  isPrepare: 0
+  isAttack: 0
+  isUltimate: 0
+  isSkill: 0
+  isFinished: 0
   battleTarget: {x: 0, y: 0, z: 0}
   needMoveToBattle: 0
   currentStringState: 
   heroInfo: {fileID: 11400000, guid: b98b625904fc7324a9db1db894bfa5d5, type: 2}
-  enemy: {fileID: 0}
+  enemyTarget: []
+  distanceToTarget: {x: 0, y: 0, z: 0}
 --- !u!114 &6451874892953675457
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,6 +162,18 @@ MonoBehaviour:
     power: 0
   currentHealth: 0
   currentMana: 0
+--- !u!114 &4890861008966250747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 300007097882719078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71516db8cd574984482211a603923d4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &984062655749073311
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,7 +553,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lnA: {fileID: 11400000, guid: cdd97d04d44682a4681e5f38b3e6620c, type: 2}
 --- !u!1 &4626341041916029623
 GameObject:
   m_ObjectHideFlags: 0

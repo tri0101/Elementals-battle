@@ -303,7 +303,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lnA: {fileID: 11400000, guid: b901c0ec9705cfe43bb4b7deeb837e9a, type: 2}
 --- !u!1 &3506804413016342932
 GameObject:
   m_ObjectHideFlags: 0
@@ -444,6 +443,7 @@ GameObject:
   - component: {fileID: 5635040185857418002}
   - component: {fileID: 3943875445386846159}
   - component: {fileID: -4808608076783435664}
+  - component: {fileID: -9054127923660059671}
   m_Layer: 0
   m_Name: Fire_Knight_finite
   m_TagString: Player1
@@ -497,13 +497,17 @@ MonoBehaviour:
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
   MoveX: 0
-  isAttackPressed: 0
-  isSkillPressed: 0
+  isPrepare: 0
+  isAttack: 0
+  isUltimate: 0
+  isSkill: 0
+  isFinished: 0
   battleTarget: {x: 0, y: 0, z: 0}
   needMoveToBattle: 0
   currentStringState: 
   heroInfo: {fileID: 11400000, guid: 939e9a5ba92e76f4e8416170783282f1, type: 2}
-  enemy: {fileID: 0}
+  enemyTarget: []
+  distanceToTarget: {x: 0, y: 0, z: 0}
 --- !u!114 &6002976877106571493
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,6 +589,18 @@ MonoBehaviour:
     power: 0
   currentHealth: 0
   currentMana: 0
+--- !u!114 &-9054127923660059671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3511882116884832477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71516db8cd574984482211a603923d4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4178112063422895371
 GameObject:
   m_ObjectHideFlags: 0

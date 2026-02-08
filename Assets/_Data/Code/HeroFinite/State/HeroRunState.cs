@@ -26,24 +26,32 @@ public class HeroRunState : HeroBaseState
         }
 
 
-                float dx = Mathf.Abs(
+        float dx = Mathf.Abs(
             hero.transform.position.x -
-            hero.HeroControl.enemyTarget[0].position.x
+            hero.HeroControl.distanceToTarget.x
         );
 
-        if (hero.HeroControl.IsAttack && dx <= 5f)
+        if (hero.HeroControl.IsAttack && dx <= 0.01f)
         {
             hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.SwitchState(hero.attackState);
             return;
         }
-
-   
-        if (hero.HeroControl.IsSkill)
+        if (hero.HeroControl.IsSkill && dx <= 0.01f)
         {
+            hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.SwitchState(hero.skillState);
             return;
         }
+        if (hero.HeroControl.IsUltimate && dx <= 0.01f)
+        {
+            hero.HeroControl.HeroRun.FaceDefaultDirection();
+            hero.SwitchState(hero.ultimateState);
+            return;
+        }
+
+   
+     
     }
 
     public override void FixedUpdateState(HeroStateManager hero)
@@ -51,12 +59,22 @@ public class HeroRunState : HeroBaseState
         if (hero.HeroControl.NeedMoveToBattle)
         {
             hero.HeroControl.HeroRun.MoveTo(
-                hero.HeroControl.BattleTarget);
+                hero.HeroControl.BattleTarget,100f);
         }
         else if (hero.HeroControl.IsAttack)
         {
             hero.HeroControl.HeroRun.MoveTo(
-                hero.HeroControl.enemyTarget[0].position);
+              hero.HeroControl.distanceToTarget, hero.HeroControl.HeroInfo.normalAttack.speedToEnemy);
+        }
+        else if (hero.HeroControl.IsSkill)
+        {
+            hero.HeroControl.HeroRun.MoveTo(
+                hero.HeroControl.distanceToTarget, hero.HeroControl.HeroInfo.skill.speedToEnemy);
+        }
+        else if (hero.HeroControl.IsUltimate)
+        {
+            hero.HeroControl.HeroRun.MoveTo(
+                hero.HeroControl.distanceToTarget, hero.HeroControl.HeroInfo.ultimate.speedToEnemy);
         }
       
     }

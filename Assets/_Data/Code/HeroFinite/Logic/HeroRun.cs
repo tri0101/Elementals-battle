@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using UnityEditor.ShaderGraph.Internal;
+using UnityEngine;
 
 public class HeroRun : MonoBehaviour
 {
@@ -10,13 +11,13 @@ public class HeroRun : MonoBehaviour
         heroControl = GetComponent<HeroControl>();
     }
 
-    public void MoveTo(Vector3 targetPos)
+    public void MoveTo(Vector3 targetPos, float speed)
     {
         HandleFlipWhileMoving(targetPos);
 
         Vector3 cur = transform.position;
         Vector3 next = cur;
-
+        CurrentSpeed = speed;
         float step = CurrentSpeed * Time.deltaTime;
 
         float yDiff = targetPos.y - cur.y;

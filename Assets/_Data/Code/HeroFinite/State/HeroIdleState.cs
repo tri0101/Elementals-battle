@@ -25,9 +25,14 @@ public class HeroIdleState : HeroBaseState
             return;
         }
         
-        if (hero.HeroControl.IsSkill)
+        if (hero.HeroControl.IsSkill && !hero.HeroControl.IsPrepare)
         {
-            hero.SwitchState(hero.skillState);
+            hero.SwitchState(hero.runState);
+            return;
+        }
+        if (hero.HeroControl.IsUltimate && !hero.HeroControl.IsPrepare)
+        {
+            hero.SwitchState(hero.runState);
             return;
         }
         

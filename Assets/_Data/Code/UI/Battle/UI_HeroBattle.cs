@@ -20,8 +20,9 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
     [Header("Hero Control")]
     public HeroControl heroControl;
 
-    [Header("Role")]
+    [Header("Text")]
     public TextMeshProUGUI roleText;
+    public TextMeshProUGUI skillText;
 
     [Header("Star")]
     public Transform starRoot;
@@ -61,7 +62,14 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
     private Coroutine hpRoutine;
     private Coroutine manaRoutine;
 
-    
+    // ===== Skill Text Blink =====
+    [Header("Skill Ready UI")]
+    [SerializeField] private Color skillColorA = Color.white;
+    [SerializeField] private Color skillColorB = new Color(1f, 0.85f, 0.1f); // yellow-ish
+    [SerializeField] private float skillBlinkSpeed = 2.5f;
+
+    private Coroutine skillBlinkRoutine;
+    private bool lastCanSkill;
 
     void Awake()
     {
@@ -70,16 +78,14 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
         if (rankRoot != null)
             rankLayout = rankRoot.GetComponent<HorizontalLayoutGroup>();
+
+        SetSkillReadyVisual(false, true);
     }
 
-    //void OnDestroy()
-    //{
-    //    if (heroControl != null)
-    //        heroControl.RemoveObserver(this);
-    //}
-
-   
-
+    private void OnDisable()
+    {
+        StopSkillBlink();
+    }
 
     public void Setup(
         HeroViewData heroData,
@@ -89,44 +95,43 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
         data = heroData;
         onClickCallback = onClick;
 
-        // ===== ICON =====
         if (icon != null)
             icon.sprite = data.info.iconFace;
 
-        // ===== ROLE =====
         if (roleText != null)
             roleText.text = $"{data.info.role}";
 
-        // ===== STAR + RANK =====
         UpdateStar(data.instance.star);
         UpdateRankVisual(data.instance.rank);
 
-        // ===== BAR (init = instant) =====
         SetHpBar(1f, true);
         SetManaBar(0f, true);
 
-        // ===== BUTTON =====
         if (button != null)
         {
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnClick);
             button.interactable = true;
         }
-    }
 
-    
+        // Skill UI reset until we bind a heroControl
+        lastCanSkill = false;
+        SetSkillReadyVisual(false, true);
+    }
 
     public void BindHeroControl(HeroControl hc)
     {
-        
-
         heroControl = hc;
 
         if (heroControl != null)
+        {
             heroControl.AddObserver(this);
+
+            lastCanSkill = heroControl.CanSkill;
+            SetSkillReadyVisual(lastCanSkill, true);
+        }
     }
 
-    
     public void OnNotify(HeroNotifyType type, object value)
     {
         switch (type)
@@ -151,8 +156,82 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
                     button.interactable = true;
                 break;
         }
+
+        // Also update skill ready indicator (since Notify happens frequently on HP/Mana changes)
+        UpdateSkillReadyState();
     }
 
+    private void Update()
+    {
+        // Fallback polling in case HeroControl doesn't push notifications when CanSkill changes.
+        UpdateSkillReadyState();
+    }
+
+    private void UpdateSkillReadyState()
+    {
+        if (heroControl == null)
+            return;
+
+        bool canSkill = heroControl.CanSkill;
+        if (canSkill == lastCanSkill)
+            return;
+
+        lastCanSkill = canSkill;
+        SetSkillReadyVisual(canSkill, false);
+    }
+
+    private void SetSkillReadyVisual(bool enabled, bool instant)
+    {
+        if (skillText == null)
+            return;
+
+        skillText.gameObject.SetActive(enabled);
+
+        if (!enabled)
+        {
+            StopSkillBlink();
+            skillText.color = skillColorA;
+            return;
+        }
+
+        if (instant)
+            skillText.color = skillColorB;
+
+        StartSkillBlink();
+    }
+
+    private void StartSkillBlink()
+    {
+        if (skillText == null)
+            return;
+
+        if (skillBlinkRoutine != null)
+            return;
+
+        skillBlinkRoutine = StartCoroutine(CoBlinkSkillText());
+    }
+
+    private void StopSkillBlink()
+    {
+        if (skillBlinkRoutine == null)
+            return;
+
+        StopCoroutine(skillBlinkRoutine);
+        skillBlinkRoutine = null;
+    }
+
+    private IEnumerator CoBlinkSkillText()
+    {
+        // Ping-pong between A and B
+        while (skillText != null && skillText.gameObject.activeInHierarchy)
+        {
+            float t = Mathf.PingPong(Time.time * skillBlinkSpeed, 1f);
+            skillText.color = Color.Lerp(skillColorA, skillColorB, t);
+            yield return null;
+        }
+
+        skillBlinkRoutine = null;
+    }
 
     public void SetHpBar(float target01, bool instant = false)
     {
@@ -230,7 +309,6 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
         onUpdate?.Invoke(to);
     }
 
-    
     void UpdateStar(int star)
     {
         if (starRoot == null) return;
@@ -278,8 +356,6 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
             LayoutRebuilder.ForceRebuildLayoutImmediate(rankRoot as RectTransform);
         }
     }
-
-    
 
     void OnClick()
     {

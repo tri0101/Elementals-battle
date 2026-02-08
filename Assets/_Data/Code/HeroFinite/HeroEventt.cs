@@ -18,9 +18,14 @@ public class HeroEventt : MonoBehaviour
         heroControl.IsFinished = true;
     }
  
-    public void SetGainMana()
+    public void SetGainManaNormal()
     {
-        heroControl.HeroStatRuntime.GainMana(100);
+        heroControl.HeroStatRuntime.GainMana(heroControl.HeroInfo.normalAttack.manaGain);
+    }
+ 
+    public void SetGainManaSkill()
+    {
+        heroControl.HeroStatRuntime.GainMana(heroControl.HeroInfo.skill.manaGain);
     }
  
 

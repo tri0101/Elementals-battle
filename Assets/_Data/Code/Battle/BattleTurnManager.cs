@@ -42,11 +42,57 @@ public class BattleTurnManager : MonoBehaviour
 
         for (int turn = 1; turn <= maxTurns; turn++)
         {
-           yield return new WaitForSeconds(2f);
+            SetCanSkill();
+            yield return new WaitForSeconds(2f);
+            yield return CoUltimatePhase();
             yield return CoNormalSkillPhase();
         }
     }
+    public void SetCanSkill()
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamHero, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            unit.CanSkill = false;
 
+
+        }
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamEnemy, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            unit.CanSkill = false;
+
+
+
+        }
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamHero, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+
+            
+            if (ShouldUseSkill(unit))
+                unit.CanSkill = true;
+
+            
+        }
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamEnemy, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            if (ShouldUseSkill(unit))
+                unit.CanSkill = true;
+
+
+
+        }
+    }
     private bool DecideHeroTeamStarts()
     {
         float heroTotal = SumTeamSpeed(TeamHero);
@@ -85,11 +131,13 @@ public class BattleTurnManager : MonoBehaviour
         if (heroTeamStarts)
         {
             yield return CoTeamUltimate(TeamHero);
+            yield return new WaitForSeconds(2f);
             yield return CoTeamUltimate(TeamEnemy);
         }
         else
         {
             yield return CoTeamUltimate(TeamEnemy);
+            yield return new WaitForSeconds(2f);
             yield return CoTeamUltimate(TeamHero);
         }
     }
@@ -118,18 +166,19 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
 
-            var recv = unit.GetComponentInChildren<HeroReceiveDamagee>();
-            if (recv == null) continue;
+            unit.IsFinished = false;
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
 
-            if (recv.Mana < recv.MaxMana) continue;
+            if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
 
-            // Consume mana immediately to lock-out more ult in this phase.
-            recv.Mana = 0f;
-            unit.RefreshObservers();
+            
 
             unit.SetUltimate();
 
-            yield return WaitForActionFinished(unit, 5.0f);
+            //yield return WaitForActionFinished(unit, 1f);
+            yield return new WaitUntil(() => unit.IsFinished);
+
 
             if (delayBetweenUltimates > 0f)
                 yield return new WaitForSeconds(delayBetweenUltimates);
@@ -148,11 +197,15 @@ public class BattleTurnManager : MonoBehaviour
             if (IsDead(unit)) continue;
 
             unit.IsFinished = false;
-            if (ShouldUseSkill(unit))
+            //if (ShouldUseSkill(unit))
+            //    unit.SetSkill();
+            //else
+            //    unit.SetAttack();
+
+            if(unit.CanSkill)
                 unit.SetSkill();
             else
                 unit.SetAttack();
-
             //yield return WaitForActionFinished(unit, 1f);
             yield return new WaitUntil(() => unit.IsFinished);
 
