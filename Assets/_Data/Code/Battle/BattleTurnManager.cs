@@ -43,7 +43,7 @@ public class BattleTurnManager : MonoBehaviour
         for (int turn = 1; turn <= maxTurns; turn++)
         {
             SetCanSkill();
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(0.5f);
             yield return CoUltimatePhase();
             yield return CoNormalSkillPhase();
         }
@@ -131,13 +131,13 @@ public class BattleTurnManager : MonoBehaviour
         if (heroTeamStarts)
         {
             yield return CoTeamUltimate(TeamHero);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             yield return CoTeamUltimate(TeamEnemy);
         }
         else
         {
             yield return CoTeamUltimate(TeamEnemy);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             yield return CoTeamUltimate(TeamHero);
         }
     }
@@ -147,13 +147,13 @@ public class BattleTurnManager : MonoBehaviour
         if (heroTeamStarts)
         {
             yield return CoTeamNormalSkill(TeamHero);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             yield return CoTeamNormalSkill(TeamEnemy);
         }
         else
         {
             yield return CoTeamNormalSkill(TeamEnemy);
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             yield return CoTeamNormalSkill(TeamHero);
         }
     }

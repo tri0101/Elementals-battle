@@ -59,6 +59,18 @@ public class HeroControl : Subject
         get => canSkill;
         set => canSkill = value;
     }
+    [SerializeField] private bool isTakeHit;
+    public bool IsTakeHit
+    {
+        get => isTakeHit;
+        set => isTakeHit = value;
+    }
+    [SerializeField] private bool isDead = false;
+    public bool IsDead
+    {
+        get => isDead;
+        set => isDead = value;
+    }
 
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
@@ -139,7 +151,16 @@ public class HeroControl : Subject
         distanceToTarget = GetAttackPosition(heroInfo.skill);
         
     }
+    public void SetIsTakeHit()
+    {
+        isTakeHit = true;
 
+    }
+    public void SetIsDead()
+    {
+        isDead = true;
+
+    }
     private void BuildTargets()
     {
         enemyTarget.Clear();
@@ -440,6 +461,10 @@ public class HeroControl : Subject
     }
 
     public void RefreshObservers(HeroNotifyType type, object data = null)
+    {
+        NotifyObservers(type, data);
+    }
+    public void RefreshObservers(HPNotifyType type, object data = null)
     {
         NotifyObservers(type, data);
     }

@@ -36,9 +36,13 @@ public class HeroIdleState : HeroBaseState
             return;
         }
         
-        if (hero.HeroControl.MoveX != 0)
+        if (hero.HeroControl.IsTakeHit)
         {
-            hero.SwitchState(hero.runState);
+            hero.SwitchState(hero.takeHitState);
+        }
+        if (hero.HeroControl.IsDead)
+        {
+            hero.SwitchState(hero.deathState);
         }
 
     }

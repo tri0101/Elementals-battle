@@ -31,19 +31,19 @@ public class HeroRunState : HeroBaseState
             hero.HeroControl.distanceToTarget.x
         );
 
-        if (hero.HeroControl.IsAttack && dx <= 0.01f)
+        if (hero.HeroControl.IsAttack && dx <= 0.1f)
         {
             hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.SwitchState(hero.attackState);
             return;
         }
-        if (hero.HeroControl.IsSkill && dx <= 0.01f)
+        if (hero.HeroControl.IsSkill && dx <= 0.1f)
         {
             hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.SwitchState(hero.skillState);
             return;
         }
-        if (hero.HeroControl.IsUltimate && dx <= 0.01f)
+        if (hero.HeroControl.IsUltimate && dx <= 0.1f)
         {
             hero.HeroControl.HeroRun.FaceDefaultDirection();
             hero.SwitchState(hero.ultimateState);

@@ -6,8 +6,8 @@ public class HeroTakeHitState : HeroBaseState
     public override void EnterState(HeroStateManager hero)
     {
 
-        
-            hero.HeroControl.ChangeAnimationAnyState(HeroStateManager.hero_Take_Hit);
+        hero.HeroControl.IsTakeHit = false;
+        hero.HeroControl.ChangeAnimationAnyState(HeroStateManager.hero_Take_Hit);
         
             
         

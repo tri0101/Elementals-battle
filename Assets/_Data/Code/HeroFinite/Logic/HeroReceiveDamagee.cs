@@ -71,60 +71,34 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         heroControl = transform.parent.parent.GetComponent<HeroControl>();
 
        
-        maxHealth = heroControl.HeroInfo.health;
-        maxMana = 1000f;
-        physicalArmor = heroControl.HeroInfo.armor;
+        //maxHealth = heroControl.HeroInfo.health;
+        //maxMana = 1000f;
+        //physicalArmor = heroControl.HeroInfo.armor;
 
-        mana = 0f;
         //mana = 0f;
-        health = maxHealth;
-        heroControl.RefreshObservers();
+        ////mana = 0f;
+        //health = maxHealth;
+        //heroControl.RefreshObservers();
 
     }
 
 
-    public void ReceiveDamage(Attack attack, HeroControl otherheroControl)
+    public void ReceiveDamage(float damage)
     {
-        
-        
 
-        if (isDead) return;
-        float finalDamage = CalculateDamage(attack, otherheroControl);
-        if (heroControl.CurrentStringState == "Block" || heroControl.CurrentStringState == "T_Block")
+
+        heroControl.SetIsTakeHit();
+        heroControl.HeroStatRuntime.MinusHP((int)damage);
+        heroControl.HeroStatRuntime.GainMana(200);
+        if(heroControl.HeroStatRuntime.CurrentHealth <= 0)
         {
-            mana += finalDamage;
-            heroControl.RefreshObservers();
-            return;
-        }
-        
-        health -= finalDamage;
-
-        mana += finalDamage * 1.5f;
-
-        //if(mana >= 1000f)
-        //{
-        //    mana = 1000f;
-        //}
-        isHit = true;
-        if (health <= 0)
-        {
-            health = 0;
             isDead = true;
-          
-
+           
+            heroControl.SetIsDead();
         }
-        heroControl.RefreshObservers();
     }
 
-    public void AddManaWhenAttack(float damage)
-    {
-        mana += damage * 2;
-        if(mana >= 1000)
-        {
-            mana = 1000f;
-        }
-        heroControl.RefreshObservers();
-    }
+
     public void CallStopAnim(float duration)
     {
         //isStopAnim = true;
@@ -146,45 +120,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
 
    
-    float CalculateDamage(Attack attack, HeroControl otherheroControl)
-        {
-            switch (attack.AttackInfo.damageType)
-            {
-                case DamageType.Physical:
-
-                {
-                    float damage = attack.AttackDamage;
-
-                    bool isCritical = Random.value < otherheroControl.HeroInfo.criticalRate;
-
-                    if (isCritical)
-                    {
-                        damage += damage * (otherheroControl.HeroInfo.criticalDamageRate /100);
-                        damage *= 2;
-                    }
-
-                    return damage * 100 / (100 + physicalArmor); }
-
-                case DamageType.Magical:
-                {
-                    float damage = attack.AttackDamage;
-
-                    bool isCritical = Random.value < otherheroControl.HeroInfo.criticalRate;
-
-                    if (isCritical)
-                    {
-                        damage += damage * (otherheroControl.HeroInfo.criticalDamageRate / 100);
-                        damage *= 2;
-                    }
-                    return damage * 100 / (100 + magicalArmor); }
-                
-                case DamageType.True:
-                { return attack.AttackDamage; }
-            }
-
-            return attack.AttackDamage;
-        }
-    
+   
 
 
 }

@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using NUnit.Framework;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class Attack : Subject
 {
@@ -7,74 +10,42 @@ public class Attack : Subject
     [SerializeField] private HeroControl heroControl;
     [SerializeField] private float attackDamage;
     public float AttackDamage => attackDamage;
-    Vector3 knockBack;
-    float durationKnock;
-    float durationStopping;
-    float speed;
+
     [SerializeField] string myTag;
     
     private void Awake()
     {
-        
-        knockBack = attackInfo.knockBack;
-        durationKnock = attackInfo.durationKnockBack;
-        durationStopping = attackInfo.durationStopping;
 
-        myTag = transform.parent.parent.parent.tag;
-        heroControl = transform.parent.parent.parent.GetComponent<HeroControl>();
-        //SetDamage();
+       
+        heroControl = transform.parent.parent.parent.parent.GetComponent<HeroControl>();
+        
+        
     }
-    
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag != "ReceiveField") return;
-
-        // Tag của kẻ bị đánh
-        string targetTag = other.transform.parent.parent.tag;
-
-        // 1. Bỏ qua nếu không phải hero hoặc Enemy
-        if (!targetTag.StartsWith("Player") && targetTag != "Enemy")
-            return;
-
-
-
-        string rangedTag = transform.parent.parent.tag; 
-
-        bool isRangedFromP1 = rangedTag == "RangedAttackPlayer1";
-        bool isRangedFromP2 = rangedTag == "RangedAttackPlayer2";
-
-        bool attackerIsP1 = myTag == "Player1" || isRangedFromP1;
-        bool attackerIsP2 = myTag == "Player2" || isRangedFromP2;
-
-        bool targetIsP1 = targetTag == "Player1";
-        bool targetIsP2 = targetTag == "Player2";
-
-       
-
-
-        // =========================
-        //       hero bị đánh
-        // =========================
-        var hero = other.GetComponent<HeroReceiveDamagee>();
-        if (hero != null)
+        if (!other.CompareTag("ReceiveField"))
         {
-           
-
-            hero.ReceiveDamage(this ,heroControl);
-
-           
-
-
-            NotifyObservers(this);
+            Debug.Log(other.tag);
+            return;
         }
+        attackDamage = attackInfo.mutiplerDamageSend * heroControl.HeroStatRuntime.Damage;
+        Debug.Log("Attack Damage: " + attackDamage);
+        var hero = other.GetComponent<HeroReceiveDamagee>();
+        if (hero == null)
+        {
+            Debug.LogError("HeroReceiveDamagee component not found on the collided object.");
+            return;
+        }
+
+
+        if (!heroControl.enemyTarget.Contains(hero.transform.parent.parent))
+        {
+            Debug.Log("Not enemy target");
+            return;
+        }
+        hero.ReceiveDamage(attackDamage);
+        NotifyObservers(this);
     }
 
-    void SetDamage()
-    {
-       
-            attackDamage = attackInfo.damageSend + heroControl.HeroInfo.damage;
-        
-       
-
-    }
 }

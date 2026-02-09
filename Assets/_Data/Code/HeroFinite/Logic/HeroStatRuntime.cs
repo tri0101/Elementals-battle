@@ -79,17 +79,49 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public void GainMana(int value)
     {
         currentMana += value;
-
+        if(currentMana >= 1000)
+        {
+            currentMana = 1000;
+        }
         float mana01 = currentMana / (float)MaxMana;
 
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
+      
     }
     public void MinusMana(int value)
     {
         currentMana -= value;
-
+        if (currentMana <= 0)
+        {
+            currentMana = 0;
+        }
         float mana01 = currentMana / (float)MaxMana;
 
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
+    }
+
+    public void GainHP(int value)
+    {
+        CurrentHealth += value;
+        if (currentHealth >= MaxHealth)
+        {
+            currentHealth = MaxHealth;
+        }
+        float health01 = CurrentHealth / (float)MaxHealth;
+
+        heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
+    }
+    public void MinusHP(int value)
+    {
+        CurrentHealth -= value;
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+        }
+        float health01 = CurrentHealth / (float)MaxHealth;
+
+        heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
+        heroControl.RefreshObservers(HPNotifyType.HPMinus, (int)value);
+        
     }
 }
