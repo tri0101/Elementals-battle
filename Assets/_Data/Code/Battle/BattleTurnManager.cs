@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class BattleTurnManager : MonoBehaviour
 {
+    [Header("UI")]
+    public TextMeshProUGUI turnText;
+    public GameObject clearImage;
+    public GameObject winExpPlusImage;
     [Header("Refs")]
     [SerializeField] private BattleManager battleManager;
+
 
     [Header("Turn Config")]
     [Min(1)] public int maxTurns = 20;
@@ -17,15 +23,22 @@ public class BattleTurnManager : MonoBehaviour
     [Tooltip("Delay between each ultimate cast and the next unit (seconds).")]
     [Min(0f)] public float delayBetweenUltimates = 0.05f;
 
+    [Header("Wave / Clear")]
+    [Tooltip("Seconds to wait after enemies die (before checking heroes finished clear).")]
+    [Min(0f)] public float afterClearDelay = 0.25f;
+
     private const string TeamHero = "Hero";
     private const string TeamEnemy = "Enemy";
 
     private bool heroTeamStarts;
 
+    private int currentWave = 1;
+
     private void Awake()
     {
         if (battleManager == null)
-            battleManager = FindFirstObjectByType<BattleManager>();
+            battleManager = GetComponent<BattleManager>();
+       
     }
 
     private void Start()
@@ -35,19 +48,142 @@ public class BattleTurnManager : MonoBehaviour
 
     private IEnumerator CoBattleLoop()
     {
+        // initial wait for wave spawn ready
         while (battleManager == null || !battleManager.IsWaveReady)
             yield return null;
 
-        heroTeamStarts = DecideHeroTeamStarts();
+        currentWave = 1;
 
-        for (int turn = 1; turn <= maxTurns; turn++)
+        while (true)
         {
-            SetCanSkill();
-            yield return new WaitForSeconds(0.5f);
-            yield return CoUltimatePhase();
-            yield return CoNormalSkillPhase();
+            heroTeamStarts = DecideHeroTeamStarts();
+
+            // ===== TURN LOOP FOR CURRENT WAVE =====
+            for (int turn = 1; turn <= maxTurns; turn++)
+            {
+                if (turnText != null)
+                    turnText.text = $"{turn}/20";
+
+                SetCanSkill();
+                yield return new WaitForSeconds(0.25f);
+
+                // Wave clear check at turn start
+                if (AreAllTeamDead(TeamEnemy))
+                {
+                    yield return CoHandleWaveCleared();
+                    break; // break turn loop, next wave (or end)
+                }
+
+                yield return CoUltimatePhase();
+
+                if (AreAllTeamDead(TeamEnemy))
+                {
+                    yield return CoHandleWaveCleared();
+                    break;
+                }
+
+                yield return CoNormalSkillPhase();
+
+                if (AreAllTeamDead(TeamEnemy))
+                {
+                    yield return CoHandleWaveCleared();
+                    break;
+                }
+            }
+
+            // If we handled clear and loaded new wave, wait until ready then continue.
+            // If no more waves, CoHandleWaveCleared() will break the outer loop.
+            if (battleManager == null)
+                yield break;
+
+            // If battleManager just loaded a new wave, wait for ready
+            while (!battleManager.IsWaveReady)
+                yield return null;
+
+            // If we reached maxTurns without clearing enemies, you can decide what to do:
+            // - fail, or
+            // - continue turns.
+            // Current behavior: continue waves loop; if enemies still alive, it will just run again.
         }
     }
+
+    private IEnumerator CoHandleWaveCleared()
+    {
+        // 1) Call SetClear() for all alive heroes
+        if (currentWave >= battleManager.stageConfig.waveStage)
+        {
+            for (int slot = 1; slot <= 6; slot++)
+            {
+                var hero = GetUnitAtSlot(TeamHero, slot);
+                if (hero == null) continue;
+                if (IsDead(hero))
+                {
+                    battleManager.battleResult.SetList(slot, false);
+                }
+                else
+                {
+                    battleManager.battleResult.SetList(slot, true);
+                }
+            }
+            battleManager.battleResult.SetExpPlus();
+            winExpPlusImage.SetActive(true);
+            battleManager.battleResult.CheckHeroesLost();
+            battleManager.battleResult.uiStageReward.gameObject.SetActive(true);
+            yield break;
+        }
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var hero = GetUnitAtSlot(TeamHero, slot);
+            if (hero == null) continue;
+            if (IsDead(hero)) continue;
+
+            
+                hero.SetClear();
+        }
+     
+        if (afterClearDelay > 0f)
+            yield return new WaitForSeconds(afterClearDelay);
+       
+        // 2) Wait until all alive heroes finished clear movement/animation (IsClear == false)
+        yield return new WaitUntil(AllAliveHeroesClearFinished);
+        clearImage.SetActive(true);
+        yield return new WaitForSeconds(0.5f);
+        // 3) Load next wave if exists
+        if (battleManager == null || battleManager.stageConfig == null)
+            yield break;
+
+        int maxWave = Mathf.Max(1, battleManager.stageConfig.waveStage);
+        if (currentWave >= maxWave)
+        {
+            // No more wave -> stop battle loop
+            yield break;
+        }
+
+        currentWave++;
+
+        // Important: BattleManager.LoadWave will destroy and respawn units.
+        // This coroutine will continue and wait for IsWaveReady at the top of loop.
+        battleManager.LoadWave(currentWave);
+        
+        clearImage.SetActive(false);
+    }
+
+    private bool AllAliveHeroesClearFinished()
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var hero = GetUnitAtSlot(TeamHero, slot);
+            if (hero == null) continue;
+            if (IsDead(hero)) continue;
+
+            // if any alive hero still clearing -> not finished
+            if (hero.IsClear)
+                return false;
+        }
+
+        return true;
+    }
+
     public void SetCanSkill()
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -56,49 +192,43 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             unit.CanSkill = false;
-
-
         }
+
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(TeamEnemy, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             unit.CanSkill = false;
-
-
-
         }
+
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
 
-            
             if (ShouldUseSkill(unit))
                 unit.CanSkill = true;
-
-            
         }
+
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(TeamEnemy, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
+
             if (ShouldUseSkill(unit))
                 unit.CanSkill = true;
-
-
-
         }
     }
+
     private bool DecideHeroTeamStarts()
     {
         float heroTotal = SumTeamSpeed(TeamHero);
         float enemyTotal = SumTeamSpeed(TeamEnemy);
 
-        bool heroStarts = heroTotal >= enemyTotal; 
+        bool heroStarts = heroTotal >= enemyTotal;
         Debug.Log($"[BattleTurnManager] TeamSpeed: Hero={heroTotal:0.##} Enemy={enemyTotal:0.##}. HeroStarts={heroStarts}");
         return heroStarts;
     }
@@ -167,21 +297,21 @@ public class BattleTurnManager : MonoBehaviour
             if (IsDead(unit)) continue;
 
             unit.IsFinished = false;
+
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
 
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
 
-            
-
             unit.SetUltimate();
 
-            //yield return WaitForActionFinished(unit, 1f);
             yield return new WaitUntil(() => unit.IsFinished);
-
 
             if (delayBetweenUltimates > 0f)
                 yield return new WaitForSeconds(delayBetweenUltimates);
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
         }
 
         if (delayBetweenActions > 0f)
@@ -197,20 +327,19 @@ public class BattleTurnManager : MonoBehaviour
             if (IsDead(unit)) continue;
 
             unit.IsFinished = false;
-            //if (ShouldUseSkill(unit))
-            //    unit.SetSkill();
-            //else
-            //    unit.SetAttack();
 
-            if(unit.CanSkill)
+            if (unit.CanSkill)
                 unit.SetSkill();
             else
                 unit.SetAttack();
-            //yield return WaitForActionFinished(unit, 1f);
+
             yield return new WaitUntil(() => unit.IsFinished);
 
             if (delayBetweenActions > 0f)
                 yield return new WaitForSeconds(delayBetweenActions);
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
         }
     }
 
@@ -229,13 +358,30 @@ public class BattleTurnManager : MonoBehaviour
         return recv != null && recv.IsDead;
     }
 
+    private bool AreAllTeamDead(string teamTag)
+    {
+        bool anyUnit = false;
+
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+
+            anyUnit = true;
+
+            if (!IsDead(unit))
+                return false;
+        }
+
+        return anyUnit;
+    }
+
     private HeroControl GetUnitAtSlot(string teamTag, int slotIndex1To6)
     {
         if (BattlefieldRegistry.Instance == null)
             return null;
 
         var all = BattlefieldRegistry.Instance.GetUnitsByTeam(teamTag);
-
         for (int i = 0; i < all.Count; i++)
         {
             var root = all[i];
@@ -248,23 +394,5 @@ public class BattleTurnManager : MonoBehaviour
         }
 
         return null;
-    }
-
-    private static IEnumerator WaitForActionFinished(HeroControl unit, float timeoutSeconds)
-    {
-        if (unit == null)
-            yield break;
-
-        float t = 0f;
-        while (t < timeoutSeconds)
-        {
-            if (!unit.ActionInProgress)
-                yield break;
-
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        unit.NotifyActionFinished();
     }
 }

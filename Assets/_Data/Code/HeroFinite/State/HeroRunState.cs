@@ -49,6 +49,13 @@ public class HeroRunState : HeroBaseState
             hero.SwitchState(hero.ultimateState);
             return;
         }
+        if (hero.HeroControl.IsClear && dx <= 0.1f)
+        {
+            hero.HeroControl.HeroRun.FaceDefaultDirection();
+            hero.HeroControl.IsClear = false;
+            hero.SwitchState(hero.idleState);
+            return;
+        }
 
    
      
@@ -75,6 +82,11 @@ public class HeroRunState : HeroBaseState
         {
             hero.HeroControl.HeroRun.MoveTo(
                 hero.HeroControl.distanceToTarget, hero.HeroControl.HeroInfo.ultimate.speedToEnemy);
+        }
+        else if (hero.HeroControl.IsClear)
+        {
+            hero.HeroControl.HeroRun.MoveTo(
+                hero.HeroControl.distanceToTarget, 100f);
         }
       
     }

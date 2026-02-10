@@ -17,8 +17,11 @@ public class HeroIdleState : HeroBaseState
     }
     public override void UpdateState(HeroStateManager hero)
     {
-        
-     
+
+        if (hero.HeroControl.NeedMoveToBattle)
+        {
+            hero.SwitchState(hero.runState);
+        }
         if (hero.HeroControl.IsAttack && !hero.HeroControl.IsPrepare)
         {
             hero.SwitchState(hero.runState);
@@ -39,6 +42,10 @@ public class HeroIdleState : HeroBaseState
         if (hero.HeroControl.IsTakeHit)
         {
             hero.SwitchState(hero.takeHitState);
+        }
+        if (hero.HeroControl.IsClear)
+        {
+            hero.SwitchState(hero.runState);
         }
         if (hero.HeroControl.IsDead)
         {

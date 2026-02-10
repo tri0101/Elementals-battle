@@ -4,8 +4,10 @@ using UnityEngine;
 public class UI_ListHeroBattle : MonoBehaviour
 {
     public HeroDatabase heroDatabase;
-    public Transform content;
+    public Transform contentBattle;
+    public Transform contentExpPlus;
     public GameObject heroBattlePrefab;
+    public GameObject heroExpPlusPrefab;
 
     void OnEnable()
     {
@@ -41,12 +43,18 @@ public class UI_ListHeroBattle : MonoBehaviour
                 continue;
             }
 
-            
-            var go = Instantiate(heroBattlePrefab, content);
+            //battle
+            var go = Instantiate(heroBattlePrefab, contentBattle);
             go.name = $"{slotIndex}";
 
             go.GetComponent<UI_HeroBattle>()
               .Setup(heroData, OnHeroSelected);
+            //exp plus
+            var goexpPlus = Instantiate(heroExpPlusPrefab, contentExpPlus);
+            goexpPlus.name = $"{slotIndex}";
+
+            goexpPlus.GetComponent<UI_HeroExpPlus>()
+              .Setup(heroData);
 
             
             go.transform.SetAsFirstSibling();
@@ -60,7 +68,9 @@ public class UI_ListHeroBattle : MonoBehaviour
 
     void Clear()
     {
-        foreach (Transform child in content)
+        foreach (Transform child in contentBattle)
+            Destroy(child.gameObject);
+        foreach (Transform child in contentExpPlus)
             Destroy(child.gameObject);
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class BattleManager : MonoBehaviour
 {
+    [Header("UI")]
+    public TextMeshProUGUI waveText;
     [Header("Refs")]
     public HeroDatabase heroDatabase;
 
@@ -15,8 +17,11 @@ public class BattleManager : MonoBehaviour
 
     [Header("Transform")]
     public Transform backBottom;
-   
+    public Transform backHeroExp;
     Dictionary<int, UI_HeroBattle> dictHeroBattle = new Dictionary<int, UI_HeroBattle>();
+    Dictionary<int, bool> listHeroStatus = new Dictionary<int, bool>();// true = live , false = dead
+    public UI_StageReward uiStageReward;
+    public BattleResult battleResult;
     [Header("Growth (for HeroStatCalculator)")]
     public HeroGrowthConfig growthConfig;
 
@@ -28,34 +33,45 @@ public class BattleManager : MonoBehaviour
     [Header("Wave Ready Gate")]
     [Tooltip("Seconds to wait after spawning all units before setting IsWaveReady = true.")]
     [Min(0f)]
-    public float readyDelaySeconds = 3f;
+    public float readyDelaySeconds = 0.5f;
 
     private Coroutine readyRoutine;
 
     void Awake()
     {
         stageConfig = StageContext.selectedStage;
+        if (battleResult == null)
+            battleResult = GetComponent<BattleResult>();
     }
 
     void Start()
     {
         AddHeroBattle();
-        LoadWave(1);
+        listHeroStatus.Clear();
+        LoadWave(1, keepHeroes: false);
     }
+
     void AddHeroBattle()
     {
         dictHeroBattle.Clear();
-   
+
         foreach (Transform child in backBottom)
         {
             var ui = child.GetComponent<UI_HeroBattle>();
             if (ui != null)
                 dictHeroBattle.Add(int.Parse(child.name), ui);
         }
-        
     }
-    public void LoadWave(int wave)
+
+    /// <summary>
+    /// keepHeroes = true:
+    /// - Keep hero GameObjects (HP/Mana preserved)
+    /// - Reset their transform to startPositions and set battleTarget again (so they "run in" like wave 1)
+    /// - Only respawn enemies for the wave
+    /// </summary>
+    public void LoadWave(int wave, bool keepHeroes)
     {
+        waveText.text = $"Wave {wave}/{stageConfig.waveStage}";
         IsWaveReady = false;
 
         if (readyRoutine != null)
@@ -64,10 +80,28 @@ public class BattleManager : MonoBehaviour
             readyRoutine = null;
         }
 
-        ClearSpawned();
+        if (!keepHeroes)
+        {
+            ClearSpawnedHeroes();
 
-        if (BattlefieldRegistry.Instance != null)
-            BattlefieldRegistry.Instance.Clear();
+            if (BattlefieldRegistry.Instance != null)
+                BattlefieldRegistry.Instance.Clear();
+        }
+        else
+        {
+            // Clear enemies only
+            ClearSpawnedEnemies();
+
+            // Clear & rebuild registry (safe and small N)
+            if (BattlefieldRegistry.Instance != null)
+            {
+                BattlefieldRegistry.Instance.Clear();
+                ReRegisterExistingHeroes();
+            }
+
+            // Reset hero positions to start, and set battle target 다시 (run in like wave 1)
+            ResetHeroesToStartAndRunIn();
+        }
 
         if (formation == null)
         {
@@ -98,10 +132,71 @@ public class BattleManager : MonoBehaviour
 
         heroDatabase.Init();
 
-        SpawnPlayerHeroes();
+        if (!keepHeroes)
+        {
+            SpawnPlayerHeroes();
+            battleResult.heroTotal = formation.listHeroRoot.childCount;
+        }
+           
+
         SpawnEnemiesForWave(wave);
 
         readyRoutine = StartCoroutine(CoSetWaveReadyAfterDelay());
+    }
+
+    public void LoadWave(int wave)
+    {
+        LoadWave(wave, keepHeroes: wave > 1);
+    }
+
+    private void ResetHeroesToStartAndRunIn()
+    {
+        if (formation == null)
+            return;
+
+        for (int i = 0; i < spawnedHeroes.Count; i++)
+        {
+            var go = spawnedHeroes[i];
+            if (go == null) continue;
+
+            if (!int.TryParse(go.name, out int slotIndex))
+                continue;
+
+            Transform startT = formation.GetStart(slotIndex);
+            Transform battleT = formation.GetBattle(slotIndex);
+            if (startT == null || battleT == null) continue;
+
+            // put hero back to start position (like wave 1)
+            go.transform.position = startT.position;
+
+            // re-issue battle target so AI/run state moves again
+            var heroControl = go.GetComponent<HeroControl>();
+            if (heroControl != null)
+            {
+                // make sure movement state re-triggers
+                heroControl.SetBattleTarget(battleT.position);
+
+                // optional: if your run state requires explicit "go back" flag
+                heroControl.GoBackBattleTarget();
+            }
+        }
+    }
+
+    private void ReRegisterExistingHeroes()
+    {
+        if (BattlefieldRegistry.Instance == null)
+            return;
+
+        for (int i = 0; i < spawnedHeroes.Count; i++)
+        {
+            var go = spawnedHeroes[i];
+            if (go == null) continue;
+
+            if (!int.TryParse(go.name, out int slotIndex))
+                continue;
+
+            BattlefieldRegistry.Instance.Register(go.transform, slotIndex, "Hero");
+        }
     }
 
     private IEnumerator CoSetWaveReadyAfterDelay()
@@ -161,10 +256,11 @@ public class BattleManager : MonoBehaviour
             heroGo.name = $"{slotIndex}";
             heroGo.transform.position = startT.position;
             heroGo.tag = "Hero";
-           
+            
             if (BattlefieldRegistry.Instance != null)
                 BattlefieldRegistry.Instance.Register(heroGo.transform, slotIndex, "Hero");
 
+            // Init base stat (HP/Mana are managed by HeroReceiveDamagee/HeroStatRuntime during gameplay)
             var statRuntime = heroGo.GetComponent<HeroStatRuntime>();
             if (statRuntime != null)
                 statRuntime.Init(heroData.info, heroData.instance, growthConfig);
@@ -172,9 +268,14 @@ public class BattleManager : MonoBehaviour
                 Debug.LogWarning($"[BattleManager] {heroGo.name} missing HeroStatRuntime. Add it to the hero prefab.");
 
             var heroControl = heroGo.GetComponent<HeroControl>();
-            dictHeroBattle[slotIndex].BindHeroControl(heroControl);
+            if (heroControl != null && dictHeroBattle.ContainsKey(slotIndex))
+                dictHeroBattle[slotIndex].BindHeroControl(heroControl);
+
             if (heroControl != null)
+            {
                 heroControl.SetBattleTarget(battleT.position);
+                heroControl.GoBackBattleTarget();
+            }
 
             spawnedHeroes.Add(heroGo);
         }
@@ -261,29 +362,63 @@ public class BattleManager : MonoBehaviour
             var statRuntime = enemyGo.GetComponent<HeroStatRuntime>();
             if (statRuntime != null)
                 statRuntime.Init(enemyInfo, enemyInstance, growthConfig);
-            else
-                Debug.LogWarning($"[BattleManager] {enemyGo.name} missing HeroStatRuntime. Add it to the enemy prefab.");
 
             var enemyControl = enemyGo.GetComponent<HeroControl>();
             if (enemyControl != null)
+            {
                 enemyControl.SetBattleTarget(battleT.position);
+                enemyControl.GoBackBattleTarget();
+            }
 
             spawnedEnemies.Add(enemyGo);
         }
     }
 
-    private void ClearSpawned()
+    private void ClearSpawnedEnemies()
     {
-        for (int i = 0; i < spawnedHeroes.Count; i++)
-            if (spawnedHeroes[i] != null)
-                Destroy(spawnedHeroes[i]);
-
-        spawnedHeroes.Clear();
-
         for (int i = 0; i < spawnedEnemies.Count; i++)
             if (spawnedEnemies[i] != null)
                 Destroy(spawnedEnemies[i]);
 
         spawnedEnemies.Clear();
+    }
+
+    private void ClearSpawnedHeroes()
+    {
+        ClearSpawnedEnemies();
+
+        for (int i = 0; i < spawnedHeroes.Count; i++)
+            if (spawnedHeroes[i] != null)
+                Destroy(spawnedHeroes[i]);
+
+        spawnedHeroes.Clear();
+    }
+    //public void SetExpPlus()
+    //{
+    //    foreach (Transform child in backHeroExp)
+    //    {
+    //        var ui = child.GetComponent<UI_HeroExpPlus>();
+    //        if (ui != null)
+    //        {
+    //            if (listHeroStatus[int.Parse(ui.name)])
+    //            {
+    //                ui.SetExpPlus(stageConfig.expForAliveHero);
+    //            }
+    //            else
+    //            {
+    //                ui.SetExpPlus(stageConfig.expForAliveHero / 2);
+    //            }
+    //        }
+                
+    //    }
+    //}
+    //public void SetList(int indexSlot , bool statusValue)
+    //{
+        
+    //    listHeroStatus[indexSlot] = statusValue;
+    //}
+    private void ClearSpawned()
+    {
+        ClearSpawnedHeroes();
     }
 }

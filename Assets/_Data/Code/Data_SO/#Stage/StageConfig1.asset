@@ -15,6 +15,9 @@ MonoBehaviour:
   stageID: 1
   waveStage: 3
   staminaCost: 7
+  expForAliveHero: 40
+  stageCondition: 0
+  conditionParam: 1
   enemies:
   - heroId: 500
     rank: 1
@@ -26,12 +29,6 @@ MonoBehaviour:
   enemySpawns:
   - wave: 1
     slotIndex: 1
-    heroId: 500
-  - wave: 1
-    slotIndex: 3
-    heroId: 500
-  - wave: 1
-    slotIndex: 2
     heroId: 500
   - wave: 2
     slotIndex: 2

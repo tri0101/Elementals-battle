@@ -85,17 +85,10 @@ public class HeroUI : MonoBehaviour, IObserver
         if (damageTextPrefab == null || value <= 0) return;
 
         TextMeshProUGUI text =
-            Instantiate(damageTextPrefab, transform);
+            Instantiate(damageTextPrefab, listDamage);
 
         text.text = value.ToString();
-        if(transform.tag == "Enemy")
-        {
-            text.transform.localPosition = new Vector3(0.1f, 0.35f, 0f);
-        }
-        else
-        {
-            text.transform.localPosition = new Vector3(-0.1f, 0.35f, 0f);
-        }
+       
 
         StartCoroutine(CoFloatAndFade(text));
     }
@@ -109,14 +102,20 @@ public class HeroUI : MonoBehaviour, IObserver
         float t = 0f;
         Color startColor = text.color;
 
+        bool isEnemy =
+            transform.parent != null &&
+            transform.parent.CompareTag("Enemy");
+
+        float x = isEnemy ? 0.1f : -0.1f;
+
         while (t < duration)
         {
             t += Time.deltaTime;
             float lerp = t / duration;
 
             float y = Mathf.Lerp(startY, endY, lerp);
-            text.transform.localPosition =
-                new Vector3(-0.1f, y, 0f);
+
+            text.transform.localPosition = new Vector3(x, y, 0f);
 
             text.color = new Color(
                 startColor.r,

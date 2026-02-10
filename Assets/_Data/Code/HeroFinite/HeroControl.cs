@@ -71,9 +71,18 @@ public class HeroControl : Subject
         get => isDead;
         set => isDead = value;
     }
+    [SerializeField] private bool isClear = false;
+    public bool IsClear
+    {
+        get => isClear;
+        set => isClear = value;
+    }
 
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
+
+    [SerializeField] private Transform clearPosition;// di chuyển đến vị trí này khi clea
+    public Transform ClearPosition => clearPosition;
 
     [SerializeField] private bool needMoveToBattle;
     public bool NeedMoveToBattle => needMoveToBattle;
@@ -120,11 +129,34 @@ public class HeroControl : Subject
     private bool actionInProgress;
     public bool ActionInProgress => actionInProgress;
 
+    public void Start()
+    {
+        InitClearPosition();
+    }
+    void InitClearPosition()
+    {
+        GameObject clearObj = new GameObject($"{name}_ClearPosition");
+        clearObj.transform.SetParent(transform); 
+
+        clearObj.transform.position = new Vector3(
+            50f,
+            transform.position.y,
+            transform.position.z
+        );
+
+        clearPosition = clearObj.transform;
+    }
     public void NotifyActionFinished()
     {
         actionInProgress = false;
     }
-
+    public void SetClear()
+    {
+        isClear = true;
+        enemyTarget.Clear();
+        
+        distanceToTarget = clearPosition.position;
+    }
     public void SetAttack()
     {
         isAttack = true;
