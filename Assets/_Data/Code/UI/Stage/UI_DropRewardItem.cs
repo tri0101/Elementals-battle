@@ -3,25 +3,26 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_DropPreviewItem : MonoBehaviour
+public class UI_DropRewardItem : MonoBehaviour
 {
-    
+
     public Image icon;
-    
+    public TextMeshProUGUI amountText;
 
     void Awake()
     {
 
     }
 
-    public void Setup(ItemData itemData)
+    public void Setup(ItemData itemData, int amount)
     {
         if (itemData == null) return;
 
         icon.sprite = itemData.icon;
+        amountText.text = amount.ToString();
         ApplyIconTransform(itemData);
 
-        
+
     }
 
 

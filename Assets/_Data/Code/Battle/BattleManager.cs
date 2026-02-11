@@ -73,7 +73,7 @@ public class BattleManager : MonoBehaviour
     {
         waveText.text = $"Wave {wave}/{stageConfig.waveStage}";
         IsWaveReady = false;
-
+        
         if (readyRoutine != null)
         {
             StopCoroutine(readyRoutine);
@@ -393,30 +393,13 @@ public class BattleManager : MonoBehaviour
 
         spawnedHeroes.Clear();
     }
-    //public void SetExpPlus()
-    //{
-    //    foreach (Transform child in backHeroExp)
-    //    {
-    //        var ui = child.GetComponent<UI_HeroExpPlus>();
-    //        if (ui != null)
-    //        {
-    //            if (listHeroStatus[int.Parse(ui.name)])
-    //            {
-    //                ui.SetExpPlus(stageConfig.expForAliveHero);
-    //            }
-    //            else
-    //            {
-    //                ui.SetExpPlus(stageConfig.expForAliveHero / 2);
-    //            }
-    //        }
-                
-    //    }
-    //}
-    //public void SetList(int indexSlot , bool statusValue)
-    //{
-        
-    //    listHeroStatus[indexSlot] = statusValue;
-    //}
+    public void SetActiveForUIBatle(bool value)
+    {
+        foreach(Transform child in backBottom)
+        {
+           child.gameObject.SetActive(value);
+        }
+    }
     private void ClearSpawned()
     {
         ClearSpawnedHeroes();

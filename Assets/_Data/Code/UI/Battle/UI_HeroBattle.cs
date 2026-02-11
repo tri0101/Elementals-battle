@@ -70,6 +70,7 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
     private Coroutine skillBlinkRoutine;
     private bool lastCanSkill;
+    public Image backDead;
 
     void Awake()
     {
@@ -163,6 +164,12 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
     private void Update()
     {
+        
+        if (heroControl.HeroStatRuntime.CurrentHealth <= 0)
+        {
+            skillText.gameObject.SetActive(false);
+            backDead.gameObject.SetActive(true);
+        }
         // Fallback polling in case HeroControl doesn't push notifications when CanSkill changes.
         UpdateSkillReadyState();
     }
@@ -241,6 +248,7 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
         if (instant || currentHp01 < 0f)
         {
+            
             currentHp01 = target01;
             hpBar.fillAmount = target01;
             return;
@@ -269,6 +277,7 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
         if (instant || currentMana01 < 0f)
         {
+            
             currentMana01 = target01;
             manaBar.fillAmount = target01;
             return;

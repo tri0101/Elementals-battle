@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
 
     public HeroData selectedHero;
     public List<RuneData> selectedRunes = new List<RuneData>();
+    public Transform cameraMain;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -42,11 +43,17 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("SampleScene");
     }
 
-
+    public void SetCameraActive(bool isActive)
+    {
+        cameraMain.gameObject.SetActive(isActive);
+    }
     public void LoadAdditiveScene(SceneId sceneLoad)
     {
         SceneManager.LoadScene(sceneLoad.ToString(), LoadSceneMode.Additive);
-
+        if(sceneLoad == SceneId.BattleScene)
+        {
+            SetCameraActive(false);
+        }
     }
     public void UnLoadAdditiveScene(SceneId sceneLoad)
     {

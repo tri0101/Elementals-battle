@@ -3,13 +3,15 @@ using UnityEngine.EventSystems;
 
 public class ClickToClose : MonoBehaviour, IPointerClickHandler
 {
-    public GameObject target; // Panel cần tắt (thường là panel cha)
+    public GameObject target; // Panel cần bật  (thường là panel cha)
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (target != null)
-            target.SetActive(false);
-        else
+        {
+            target.SetActive(true);
             gameObject.SetActive(false);
+        }
+           
     }
 }

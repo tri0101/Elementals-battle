@@ -159,6 +159,8 @@ public class HeroControl : Subject
     }
     public void SetAttack()
     {
+        if(heroInfo.normalAttack == null)
+            return;
         isAttack = true;
         actionInProgress = true;
         BuildTargets();
@@ -168,6 +170,8 @@ public class HeroControl : Subject
 
     public void SetUltimate()
     {
+        if(heroInfo.ultimate == null)
+            return;
         isUltimate = true;
         actionInProgress = true;
         BuildTargets();
@@ -177,6 +181,8 @@ public class HeroControl : Subject
 
     public void SetSkill()
     {
+        if(heroInfo.skill == null)
+            return;
         isSkill = true;
         actionInProgress = true; 
         BuildTargets();

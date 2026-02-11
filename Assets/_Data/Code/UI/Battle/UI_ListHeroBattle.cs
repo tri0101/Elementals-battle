@@ -3,12 +3,13 @@ using UnityEngine;
 
 public class UI_ListHeroBattle : MonoBehaviour
 {
+
     public HeroDatabase heroDatabase;
     public Transform contentBattle;
     public Transform contentExpPlus;
     public GameObject heroBattlePrefab;
     public GameObject heroExpPlusPrefab;
-
+   
     void OnEnable()
     {
         LoadHeroes();
@@ -59,6 +60,7 @@ public class UI_ListHeroBattle : MonoBehaviour
             
             go.transform.SetAsFirstSibling();
         }
+      
     }
 
     void OnHeroSelected(HeroViewData hero)
@@ -73,4 +75,5 @@ public class UI_ListHeroBattle : MonoBehaviour
         foreach (Transform child in contentExpPlus)
             Destroy(child.gameObject);
     }
+    
 }

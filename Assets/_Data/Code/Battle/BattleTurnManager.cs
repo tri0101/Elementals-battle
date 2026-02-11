@@ -1,7 +1,8 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
 
 public class BattleTurnManager : MonoBehaviour
 {
@@ -31,6 +32,7 @@ public class BattleTurnManager : MonoBehaviour
     private const string TeamEnemy = "Enemy";
 
     private bool heroTeamStarts;
+    private bool isEnd;
 
     private int currentWave = 1;
 
@@ -43,9 +45,12 @@ public class BattleTurnManager : MonoBehaviour
 
     private void Start()
     {
+        isEnd = false;
+        battleManager.SetActiveForUIBatle(false);
         StartCoroutine(CoBattleLoop());
     }
 
+  
     private IEnumerator CoBattleLoop()
     {
         // initial wait for wave spawn ready
@@ -54,7 +59,7 @@ public class BattleTurnManager : MonoBehaviour
 
         currentWave = 1;
 
-        while (true)
+        while (!isEnd)
         {
             heroTeamStarts = DecideHeroTeamStarts();
 
@@ -66,7 +71,7 @@ public class BattleTurnManager : MonoBehaviour
 
                 SetCanSkill();
                 yield return new WaitForSeconds(0.25f);
-
+                battleManager.SetActiveForUIBatle(true);
                 // Wave clear check at turn start
                 if (AreAllTeamDead(TeamEnemy))
                 {
@@ -86,6 +91,7 @@ public class BattleTurnManager : MonoBehaviour
 
                 if (AreAllTeamDead(TeamEnemy))
                 {
+                    battleManager.SetActiveForUIBatle(false);
                     yield return CoHandleWaveCleared();
                     break;
                 }
@@ -112,6 +118,7 @@ public class BattleTurnManager : MonoBehaviour
         // 1) Call SetClear() for all alive heroes
         if (currentWave >= battleManager.stageConfig.waveStage)
         {
+            isEnd = true;
             for (int slot = 1; slot <= 6; slot++)
             {
                 var hero = GetUnitAtSlot(TeamHero, slot);
@@ -125,10 +132,13 @@ public class BattleTurnManager : MonoBehaviour
                     battleManager.battleResult.SetList(slot, true);
                 }
             }
-            battleManager.battleResult.SetExpPlus();
-            winExpPlusImage.SetActive(true);
-            battleManager.battleResult.CheckHeroesLost();
-            battleManager.battleResult.uiStageReward.gameObject.SetActive(true);
+            ProgressManager.Instance.UpdateStage(battleManager.stageConfig.stageID); // cập nhật stage
+            
+            battleManager.battleResult.SetExpPlus(); // gán exp plus
+            winExpPlusImage.SetActive(true); // hiện thị exp plus
+            battleManager.battleResult.CheckHeroesLost(); // tính số sao nhận được 
+            battleManager.battleResult.RollDropsAndAddToInventory(); // tính toán rớt đồ
+            //battleManager.battleResult.uiStageReward.gameObject.SetActive(true);
             yield break;
         }
         for (int slot = 1; slot <= 6; slot++)
@@ -146,6 +156,7 @@ public class BattleTurnManager : MonoBehaviour
        
         // 2) Wait until all alive heroes finished clear movement/animation (IsClear == false)
         yield return new WaitUntil(AllAliveHeroesClearFinished);
+        
         clearImage.SetActive(true);
         yield return new WaitForSeconds(0.5f);
         // 3) Load next wave if exists
@@ -164,7 +175,7 @@ public class BattleTurnManager : MonoBehaviour
         // Important: BattleManager.LoadWave will destroy and respawn units.
         // This coroutine will continue and wait for IsWaveReady at the top of loop.
         battleManager.LoadWave(currentWave);
-        
+        turnText.text = $"1/20";
         clearImage.SetActive(false);
     }
 

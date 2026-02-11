@@ -18,6 +18,27 @@ public class ProgressManager : MonoBehaviour
 
         Load();
     }
+    public void UpdateStage(int stageId)
+    {
+        if (stageId < progress.currentStageId) return;
+        progress.currentStageId++;
+
+        progress.currentChapter = (progress.currentStageId - 1) / 10 + 1;
+        progress.currentStage = (progress.currentStageId - 1) % 10 + 1;
+    }
+    public void UpdateStarGain(int star, int stageID)
+    {
+        if (!progress.stageResult.ContainsKey(stageID))
+        {
+            progress.stageResult.Add(stageID, star);
+            return;
+        }
+
+        if (star > progress.stageResult[stageID])
+        {
+            progress.stageResult[stageID] = star;
+        }
+    }
 
     public void Save()
     {

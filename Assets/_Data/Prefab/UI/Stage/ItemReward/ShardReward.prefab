@@ -313,9 +313,9 @@ GameObject:
   - component: {fileID: 4980503968957444959}
   - component: {fileID: 6515878614677605230}
   - component: {fileID: 7253800875268526583}
-  - component: {fileID: 827490564415806322}
+  - component: {fileID: -3978380491482085247}
   m_Layer: 5
-  m_Name: ShardItem
+  m_Name: ShardReward
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -440,7 +440,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ShowMaskGraphic: 1
---- !u!114 &827490564415806322
+--- !u!114 &-3978380491482085247
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -449,10 +449,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7283579753988587613}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51238615d149ac84190cb87c6ea32c30, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a5c1cc12ef68344887f61cc7d22d1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   icon: {fileID: 6652200824266016870}
+  amountText: {fileID: 5001262712964062905}
 --- !u!1 &7725224231494987975
 GameObject:
   m_ObjectHideFlags: 0

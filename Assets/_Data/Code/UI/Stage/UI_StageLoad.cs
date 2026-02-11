@@ -11,59 +11,70 @@ public class UI_StageLoad : MonoBehaviour
     public Transform starRoot;
     public Button button;
     public UI_PanelDetailStage detailPanel;
+    [Header("Star Colors")]
+    public Color earnedColor = new Color32(255, 215, 0, 255);      // vàng
+    public Color notEarnedColor = new Color32(158, 101, 101, 255); // tối
+    [SerializeField] private bool unLocked;
+    [SerializeField] private int starsEarned;
     void Awake()
     {
         if (button == null)
             button = GetComponent<Button>();
         button.onClick.AddListener(OnClick);
+
+        //if (stageId > ProgressManager.Instance.progress.currentStageId)
+        //{
+        //    isClear = false;
+        //}
     }
 
+  
     public void Refresh()
     {
-        bool unlocked = IsUnlocked();
-        imageLock.SetActive(!unlocked);
-        //button.interactable = unlocked;
+        unLocked = IsUnlocked();
+        imageLock.SetActive(!unLocked);
+        button.enabled = unLocked;
 
         UpdateStar();
     }
 
     void UpdateStar()
     {
-        int star = GetStar();
-
+        starsEarned = GetStar();
+        
         for (int i = 0; i < starRoot.childCount; i++)
         {
-            starRoot.GetChild(i).gameObject.SetActive(i < star);
+            Image starImage = starRoot.GetChild(i).GetComponent<Image>();
+            if (starImage == null) continue;
+
+            if (i < starsEarned)
+                starImage.color = earnedColor;      
+            else
+                starImage.color = notEarnedColor;  
         }
     }
 
     bool IsUnlocked()
     {
-        var progress = ProgressManager.Instance.progress;
-
-     
-        if (stageId % 100 == 1)
-            return true;
-
-        int prevStageId = stageId - 1;
-        var prev = progress.stageResults
-            .Find(s => s.stageId == prevStageId);
-
-        return prev != null && prev.cleared;
+        return stageId <= ProgressManager.Instance.progress.currentStageId;
     }
 
     int GetStar()
     {
-        var result = ProgressManager.Instance.progress.stageResults
-            .Find(s => s.stageId == stageId);
-
-        return result != null ? result.star : 0;
+        if(!ProgressManager.Instance.progress.stageResult.ContainsKey(stageId))
+        {
+            return 0;
+        }
+        var result = ProgressManager.Instance.progress.stageResult[stageId];
+        return result;
     }
 
   
 
     public void OnClick()
     {
+        detailPanel.SetStars(starsEarned);
         detailPanel.OnLoadUI(stageId);
+       
     }
 }
