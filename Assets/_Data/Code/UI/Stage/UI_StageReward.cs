@@ -14,6 +14,7 @@ public class UI_StageReward : MonoBehaviour
     bool isShowingItem;
     [Header("UI")]
     public TextMeshProUGUI conditionText;
+    public TextMeshProUGUI coinText;
     public StageConfig stageConfig;
     public Transform starRoot;
     [Header("Database")]
@@ -41,8 +42,13 @@ public class UI_StageReward : MonoBehaviour
         panelIsActive = true;
         stageConfig = StageContext.selectedStage;
         SetTextCondition();
+        DisPlayCoin();
         DisPlayStar(starGain);
         DisPlayItems();
+    }
+    void DisPlayCoin()
+    {
+        coinText.text = itemDrop.ContainsKey(1) ? itemDrop[1].ToString() : "0";
     }
     public void SetStarGain(int value)
     {
@@ -172,6 +178,7 @@ public class UI_StageReward : MonoBehaviour
         // 1️⃣ Tạo toàn bộ item nhưng tắt đi
         foreach (var itemID in itemDrop.Keys)
         {
+            if (itemID == 1) continue; // skip coin
             ItemData itemData = itemDatabase.GetItem(itemID);
             int amount = itemDrop[itemID];
             if (itemData == null) continue;

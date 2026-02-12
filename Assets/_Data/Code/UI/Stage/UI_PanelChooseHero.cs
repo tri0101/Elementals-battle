@@ -119,7 +119,7 @@ public class UI_PanelChooseHero : MonoBehaviour
     void OnClickNext()
     {
         gameObject.SetActive(false);
-        StageContext.selectedStage = panelDetailStage.CurrentStage;
+        //StageContext.selectedStage = panelDetailStage.CurrentStage;
         GameManager.Instance.LoadAdditiveScene(SceneId.BattleScene);
         GameManager.Instance.UnLoadAdditiveScene(SceneId.MapScene);
 

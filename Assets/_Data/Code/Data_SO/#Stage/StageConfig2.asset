@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3446855f4b1fe7644a9d47c020838a86, type: 3}
-  m_Name: StageConfig1
+  m_Name: StageConfig2
   m_EditorClassIdentifier: 
-  stageID: 1
+  stageID: 2
   waveStage: 3
   staminaCost: 7
   expForAliveHero: 40
@@ -30,26 +30,32 @@ MonoBehaviour:
   - wave: 1
     slotIndex: 1
     heroId: 500
-  - wave: 2
-    slotIndex: 2
+  - wave: 1
+    slotIndex: 3
     heroId: 500
   - wave: 2
-    slotIndex: 4
+    slotIndex: 3
+    heroId: 500
+  - wave: 2
+    slotIndex: 5
     heroId: 500
   - wave: 3
     slotIndex: 1
+    heroId: 500
+  - wave: 3
+    slotIndex: 6
     heroId: 500
   dropItems:
   - itemId: 100
     minAmount: 1
     maxAmount: 3
     dropRate: 0.5
-  - itemId: 101
+  - itemId: 102
     minAmount: 1
     maxAmount: 2
     dropRate: 0.8
   - itemId: 1
-    minAmount: 780
-    maxAmount: 1000
+    minAmount: 800
+    maxAmount: 1100
     dropRate: 1
   powerRecommend: 0

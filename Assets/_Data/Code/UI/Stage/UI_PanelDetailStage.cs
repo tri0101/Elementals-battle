@@ -26,6 +26,7 @@ public class UI_PanelDetailStage : MonoBehaviour
     public Color notEarnedColor = new Color32(158, 101, 101, 255); // tối
     [Header("Script")]
     public UI_PanelChooseHero panelChooseHero;
+    public UI_StageSweep stageSweep;
     StageConfig currentStage;
     public StageConfig CurrentStage => currentStage;
     public int currentStageId;
@@ -40,7 +41,10 @@ public class UI_PanelDetailStage : MonoBehaviour
     }
     public void OnLoadUI(int stageId)
     {
+
         currentStageId = stageId;
+        
+        
         gameObject.SetActive(true);
         stage.SetActive(false);
         backEmpty.SetActive(true);
@@ -50,7 +54,7 @@ public class UI_PanelDetailStage : MonoBehaviour
             Debug.LogError($"StageConfig not found: {stageId}");
             return;
         }
-
+        StageContext.selectedStage = currentStage;
         LoadItems();
         LoadEnemy();
         LoadStamina();
@@ -64,6 +68,7 @@ public class UI_PanelDetailStage : MonoBehaviour
 
         foreach (var drop in currentStage.dropItems)
         {
+            if(drop.itemId == 1) continue; // skip coin
             ItemData itemData = itemDatabase.GetItem(drop.itemId);
             if (itemData == null) continue;
 
@@ -129,10 +134,15 @@ public class UI_PanelDetailStage : MonoBehaviour
         if(starsEarned >= 3)
         {
             backButtonSweep.gameObject.SetActive(true);
+            backButtonSweep.GetChild(0).GetComponent<Button>().onClick.RemoveAllListeners();
+            backButtonSweep.GetChild(0).GetComponent<Button>().onClick.AddListener(() => OnClick(1));
+            backButtonSweep.GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
+            backButtonSweep.GetChild(1).GetComponent<Button>().onClick.AddListener(() => OnClick(10));
         }
         else
         {
             backButtonSweep.gameObject.SetActive(false);
+   
         }
     }
     public void SetStars(int stars)
@@ -166,6 +176,12 @@ public class UI_PanelDetailStage : MonoBehaviour
     public void SetStageInt(int stageId)
     {
         currentStageId = stageId;
+    }
+
+    void OnClick(int times)
+    {
+        stageSweep.SetTimes(times);
+        stageSweep.gameObject.SetActive(true);
     }
 
 }

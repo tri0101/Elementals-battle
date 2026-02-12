@@ -137,7 +137,7 @@ public class BattleTurnManager : MonoBehaviour
             battleManager.battleResult.SetExpPlus(); // gán exp plus
             winExpPlusImage.SetActive(true); // hiện thị exp plus
             battleManager.battleResult.CheckHeroesLost(); // tính số sao nhận được 
-            battleManager.battleResult.RollDropsAndAddToInventory(); // tính toán rớt đồ
+            battleManager.battleResult.SetUpRollItems(); // tính toán rớt đồ
             //battleManager.battleResult.uiStageReward.gameObject.SetActive(true);
             yield break;
         }
