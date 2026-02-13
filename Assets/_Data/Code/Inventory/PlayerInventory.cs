@@ -44,6 +44,7 @@ public class PlayerInventory :  Subject
         AddItem(106, 1000); 
         AddItem(1, 5000000); 
         AddItem(2, 25000); 
+        AddItem(3, 1); 
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)
@@ -120,7 +121,7 @@ public class PlayerInventory :  Subject
             item.quantity += amount;
         }
 
-        if (itemId == 1 || itemId == 2)
+        if (itemId == 1 || itemId == 2 || itemId == 3)
         {
             NotifyObservers((itemId, item.quantity));
         }
@@ -132,10 +133,17 @@ public class PlayerInventory :  Subject
             return false;
 
         item.quantity -= amount;
-        if (itemId == 1 || itemId == 2)
+        if (itemId == 1 || itemId == 2 || itemId == 3)
         {
             NotifyObservers((itemId, item.quantity));
         }
         return true;
+    }
+    public int GetItemQuantity(int itemId)
+    {
+        var item = items.Find(i => i.itemId == itemId);
+        if (item == null)
+            return 0;
+        return item.quantity;
     }
 }

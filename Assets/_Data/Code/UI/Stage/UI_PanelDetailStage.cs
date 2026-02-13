@@ -91,6 +91,7 @@ public class UI_PanelDetailStage : MonoBehaviour
     {
          if (staminaCost != null)
             staminaCost.text = currentStage.staminaCost.ToString();
+        RefreshUIStamina();
     }
     void CreateItem(ItemData data)
     {
@@ -167,6 +168,9 @@ public class UI_PanelDetailStage : MonoBehaviour
     }
     void OnClickNext()
     {
+       
+        PlayerInventory.Instance.ConsumeItem(3, currentStage.staminaCost);
+        
         gameObject.SetActive(false);
         panelChooseHero.gameObject.SetActive(true);
         panelChooseHero.SetStageInt(currentStageId);
@@ -183,5 +187,17 @@ public class UI_PanelDetailStage : MonoBehaviour
         stageSweep.SetTimes(times);
         stageSweep.gameObject.SetActive(true);
     }
-
+    void RefreshUIStamina()
+    {
+        if(currentStage.staminaCost <= PlayerInventory.Instance.GetItemQuantity(3))
+        {
+            staminaCost.color = Color.white;
+            buttonNext.interactable = true;
+        }
+        else
+        {
+            staminaCost.color = Color.red;
+           buttonNext.interactable = false;
+        }
+    }
 }
