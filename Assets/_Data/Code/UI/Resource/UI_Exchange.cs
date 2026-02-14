@@ -1,16 +1,17 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+﻿using System;
 using System.Collections;
-
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.UI;
 public class UI_Exchange : MonoBehaviour
 {
-    public Transform panelBuyStamina;
-    public Transform panelBuyCoin;
+    [SerializeField] private Transform panelBuyStamina;
+    [SerializeField] private Transform panelBuyCoin;
 
     [Header("Success UI")]
-    public Transform panelSuccessPrefab;
-    public Transform successParent;
+    [SerializeField] private Transform panelSuccessPrefab;
+    [SerializeField] private Transform successParent;
 
     private int timesBuyStamina = 0;
     private int timesBuyCoin = 0;
@@ -19,16 +20,18 @@ public class UI_Exchange : MonoBehaviour
     private int staminaRewardBase = 120;
 
     [Header("UI")]
-    public TextMeshProUGUI staminaReward;
-    public TextMeshProUGUI coinReward;
-    public TextMeshProUGUI diamondCostBuyStamina;
-    public TextMeshProUGUI diamondCostBuyCoin;
+    [SerializeField] private TextMeshProUGUI staminaReward;
+    [SerializeField] private TextMeshProUGUI coinReward;
+    [SerializeField] private TextMeshProUGUI diamondCostBuyStamina;
+    [SerializeField] private TextMeshProUGUI diamondCostBuyCoin;
 
-    public Button buttonBuyStamina;
-    public Button buttonBuyCoin;
-    public Button buttonBackStamina;
-    public Button buttonBackCoin;
+    [SerializeField] private Button buttonBuyStamina;
+    [SerializeField] private Button buttonBuyCoin;
+    [SerializeField] private Button buttonBackStamina;
+    [SerializeField] private Button buttonBackCoin;
 
+    
+  
     private void Awake()
     {
         buttonBuyStamina.onClick.AddListener(OnClickBuyStamina);
@@ -83,7 +86,7 @@ public class UI_Exchange : MonoBehaviour
         PlayerInventory.Instance.AddItem(2, -cost);
         timesBuyStamina++;
         PlayerInventory.Instance.AddItem(3, staminaRewardBase);
-
+       
         RefreshStaminaUI();
         SpawnSuccessUI();
     }

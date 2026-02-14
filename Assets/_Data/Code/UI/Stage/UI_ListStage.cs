@@ -4,11 +4,11 @@ using UnityEngine.UI;
 
 public class UI_ListStage : MonoBehaviour
 {
-    public Transform levelContent;
-    public List<UI_StageLoad> stages = new();
+    [SerializeField] private Transform levelContent;
+    [SerializeField] private List<UI_StageLoad> stages = new();
 
-    public Button prevButton;
-    public Button nextButton;
+    [SerializeField] private Button prevButton;
+    [SerializeField] private Button nextButton;
 
      PlayerProgress playerProgress;
     int currentChapter;
@@ -54,7 +54,7 @@ public class UI_ListStage : MonoBehaviour
             }
         }
 
-        stages.Sort((a, b) => a.stageId.CompareTo(b.stageId));
+        stages.Sort((a, b) => a.StageId.CompareTo(b.StageId));
 
         SetupButtons();
         RefreshAll();

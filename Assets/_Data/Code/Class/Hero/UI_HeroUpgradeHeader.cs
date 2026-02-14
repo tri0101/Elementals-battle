@@ -7,21 +7,22 @@ public class UI_HeroUpgradeHeader : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] int currentHeroId;
-    public TextMeshProUGUI heroNameText;
-    public TextMeshProUGUI heroRoleText;
-    public TextMeshProUGUI heroPower;
-    public TextMeshProUGUI heroDamage;
-    public TextMeshProUGUI heroArmor;
-    public TextMeshProUGUI heroHealth;
-    public Transform heroPreviewPanel;
+    [SerializeField] private TextMeshProUGUI heroNameText;
+    [SerializeField] private TextMeshProUGUI heroRoleText;
+    [SerializeField] private TextMeshProUGUI heroPower;
+    [SerializeField] private TextMeshProUGUI heroDamage;
+    [SerializeField] private TextMeshProUGUI heroArmor;
+    [SerializeField] private TextMeshProUGUI heroHealth;
+    [SerializeField] private Transform heroPreviewPanel;
 
     [Header("Data")]
-    public HeroGrowthConfig growthConfig; 
-    public HeroLevelConfig levelConfig; 
+    [SerializeField] private HeroGrowthConfig growthConfig;
+    public HeroGrowthConfig GrowthConfig => growthConfig;
+    [SerializeField] private HeroLevelConfig levelConfig; 
     [Header("Level Bar")]
-    public TextMeshProUGUI currentLevelText;
-    public TextMeshProUGUI currentLevelExpBarText;
-    public Image expFillImage;
+    [SerializeField] private TextMeshProUGUI currentLevelText;
+    [SerializeField] private TextMeshProUGUI currentLevelExpBarText;
+    [SerializeField] private Image expFillImage;
 
     GameObject currentPreview;
 

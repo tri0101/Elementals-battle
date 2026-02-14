@@ -1,35 +1,36 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using TMPro;
-public class UI_PanelDetailStage : MonoBehaviour
+using UnityEngine;
+using UnityEngine.UI;
+public class UI_PanelDetailStage : MonoBehaviour, IObserver
 {
     [Header("Database")]
-    public StageDatabase stageDatabase;
-    public ItemDatabase itemDatabase;
-    public HeroDatabase heroDatabase;
+    [SerializeField] private StageDatabase stageDatabase;
+    [SerializeField] private ItemDatabase itemDatabase;
+    [SerializeField] private HeroDatabase heroDatabase;
 
     [Header("UI")]
-    public Transform contentItem;
-    public Transform contentEnemy;
-    public Transform starRoot;
-    public Transform backButtonSweep;
-    public GameObject itemPrefab;
-    public GameObject itemPrefabShard;
-    public GameObject enemyPrefab;
-    public GameObject stage;
-    public GameObject backEmpty;
-    public Button buttonBack;
-    public Button buttonNext;
-    public TextMeshProUGUI staminaCost;
+    [SerializeField] private Transform contentItem;
+    [SerializeField] private Transform contentEnemy;
+    [SerializeField] private Transform starRoot;
+    [SerializeField] private Transform backButtonSweep;
+    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private GameObject itemPrefabShard;
+    [SerializeField] private GameObject enemyPrefab;
+    [SerializeField] private GameObject stage;
+    [SerializeField] private GameObject backEmpty;
+    [SerializeField] private Button buttonBack;
+    [SerializeField] private Button buttonNext;
+    [SerializeField] private TextMeshProUGUI staminaCost;
     [Header("Star Colors")]
     public Color earnedColor = new Color32(255, 215, 0, 255);      // vàng
     public Color notEarnedColor = new Color32(158, 101, 101, 255); // tối
     [Header("Script")]
-    public UI_PanelChooseHero panelChooseHero;
-    public UI_StageSweep stageSweep;
+    [SerializeField] private UI_PanelChooseHero panelChooseHero;
+    [SerializeField] private UI_StageSweep stageSweep;
     StageConfig currentStage;
     public StageConfig CurrentStage => currentStage;
-    public int currentStageId;
+    [SerializeField] private int currentStageId;
     private int starsEarned;
 
 
@@ -38,6 +39,15 @@ public class UI_PanelDetailStage : MonoBehaviour
         buttonBack.onClick.AddListener(OnClickBack);
 
         buttonNext.onClick.AddListener(OnClickNext);
+    }
+    void OnEnable()
+    {
+        PlayerInventory.Instance.AddObserver(this);
+    }
+
+    void OnDisable()
+    {
+        PlayerInventory.Instance.RemoveObbserver(this);
     }
     public void OnLoadUI(int stageId)
     {
@@ -168,8 +178,15 @@ public class UI_PanelDetailStage : MonoBehaviour
     }
     void OnClickNext()
     {
-       
-        PlayerInventory.Instance.ConsumeItem(3, currentStage.staminaCost);
+        if(currentStage.staminaCost > PlayerInventory.Instance.GetItemQuantity(3))
+        {
+            UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
+        }
+        else
+        {
+            PlayerInventory.Instance.ConsumeItem(3, currentStage.staminaCost);
+        }
+           
         
         gameObject.SetActive(false);
         panelChooseHero.gameObject.SetActive(true);
@@ -198,6 +215,18 @@ public class UI_PanelDetailStage : MonoBehaviour
         {
             staminaCost.color = Color.red;
            buttonNext.interactable = false;
+        }
+    }
+    public void OnNotify(object data)
+    {
+
+        if (data is ValueTuple<int, int> tuple)
+        {
+            int itemId = tuple.Item1;
+            int value = tuple.Item2;
+
+            if (itemId == 3)
+                RefreshUIStamina();
         }
     }
 }

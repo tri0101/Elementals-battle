@@ -6,14 +6,14 @@ using UnityEngine.Rendering;
 public class UI_ListSweep : MonoBehaviour
 {
     [Header("UI")]
-    public TextMeshProUGUI battleText;
-    public TextMeshProUGUI coinText;
+    [SerializeField] private TextMeshProUGUI battleText;
+    [SerializeField] private TextMeshProUGUI coinText;
     [Header("Database")]
-    public ItemDatabase itemDatabase;
+    [SerializeField] private ItemDatabase itemDatabase;
     [Header("Transform")]
-    public Transform contentItem;
-    public GameObject itemPrefab;
-    public GameObject itemPrefabShard;
+    [SerializeField] private Transform contentItem;
+    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private GameObject itemPrefabShard;
     private Dictionary<int, int> itemDrop = new Dictionary<int, int>();
     public void SetText(int orderBattle)
     {

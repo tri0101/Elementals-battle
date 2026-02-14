@@ -5,25 +5,27 @@ using TMPro;
 public class BattleManager : MonoBehaviour
 {
     [Header("UI")]
-    public TextMeshProUGUI waveText;
+    [SerializeField] private TextMeshProUGUI waveText;
     [Header("Refs")]
-    public HeroDatabase heroDatabase;
+    [SerializeField] private HeroDatabase heroDatabase;
 
     [Header("Stage")]
-    public StageConfig stageConfig;
+    [SerializeField] private StageConfig stageConfig;
+    public StageConfig StageConfig => stageConfig;
 
     [Header("Formation (scene setup)")]
-    public BattleFormation formation;
+    [SerializeField] private BattleFormation formation;
 
     [Header("Transform")]
-    public Transform backBottom;
-    public Transform backHeroExp;
+    [SerializeField] private Transform backBottom;
+    [SerializeField] private Transform backHeroExp;
     Dictionary<int, UI_HeroBattle> dictHeroBattle = new Dictionary<int, UI_HeroBattle>();
     Dictionary<int, bool> listHeroStatus = new Dictionary<int, bool>();// true = live , false = dead
-    public UI_StageReward uiStageReward;
-    public BattleResult battleResult;
+    [SerializeField] private UI_StageReward uiStageReward;
+    [SerializeField] private BattleResult battleResult;
+    public BattleResult BattleResult => battleResult;
     [Header("Growth (for HeroStatCalculator)")]
-    public HeroGrowthConfig growthConfig;
+    [SerializeField] private HeroGrowthConfig growthConfig;
 
     private readonly List<GameObject> spawnedHeroes = new List<GameObject>();
     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
@@ -33,7 +35,7 @@ public class BattleManager : MonoBehaviour
     [Header("Wave Ready Gate")]
     [Tooltip("Seconds to wait after spawning all units before setting IsWaveReady = true.")]
     [Min(0f)]
-    public float readyDelaySeconds = 0.5f;
+    private float readyDelaySeconds = 0.5f;
 
     private Coroutine readyRoutine;
 
@@ -109,13 +111,13 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (formation.listHeroRoot == null)
+        if (formation.ListHeroRoot == null)
         {
             Debug.LogError("[BattleManager] formation.listHeroRoot is NULL (ListHero)");
             return;
         }
 
-        if (formation.listEnemyRoot == null)
+        if (formation.ListEnemyRoot == null)
         {
             Debug.LogError("[BattleManager] formation.listEnemyRoot is NULL (ListEnemy)");
             return;
@@ -135,7 +137,7 @@ public class BattleManager : MonoBehaviour
         if (!keepHeroes)
         {
             SpawnPlayerHeroes();
-            battleResult.heroTotal = formation.listHeroRoot.childCount;
+            battleResult.HeroTotal = formation.ListHeroRoot.childCount;
         }
            
 
@@ -252,7 +254,7 @@ public class BattleManager : MonoBehaviour
                 continue;
             }
 
-            GameObject heroGo = Instantiate(heroData.info.HeroPrefab, formation.listHeroRoot);
+            GameObject heroGo = Instantiate(heroData.info.HeroPrefab, formation.ListHeroRoot);
             heroGo.name = $"{slotIndex}";
             heroGo.transform.position = startT.position;
             heroGo.tag = "Hero";
@@ -332,7 +334,7 @@ public class BattleManager : MonoBehaviour
                 continue;
             }
 
-            GameObject enemyGo = Instantiate(enemyInfo.HeroPrefab, formation.listEnemyRoot);
+            GameObject enemyGo = Instantiate(enemyInfo.HeroPrefab, formation.ListEnemyRoot);
             enemyGo.name = $"Enemy_{enemyHeroId}_Slot{slotIndex}";
             enemyGo.transform.position = startT.position;
             enemyGo.tag = "Enemy";

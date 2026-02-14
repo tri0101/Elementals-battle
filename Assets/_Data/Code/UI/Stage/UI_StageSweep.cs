@@ -7,11 +7,11 @@ using UnityEngine.UI;
 public class UI_StageSweep : MonoBehaviour
 {
     [Header("Transform")]
-    public GameObject listSweep;
-    public Transform panelListSweep;
-    public Button buttonAgain;
-    public Button buttonOk;
-    public ScrollRect scrollRect;
+    [SerializeField] private GameObject listSweep;
+    [SerializeField] private Transform panelListSweep;
+    [SerializeField] private Button buttonAgain;
+    [SerializeField] private Button buttonOk;
+    [SerializeField] private ScrollRect scrollRect;
 
     int sweepTimes;
 

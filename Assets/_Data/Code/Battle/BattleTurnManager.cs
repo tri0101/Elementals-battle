@@ -7,26 +7,26 @@ using Unity.VisualScripting;
 public class BattleTurnManager : MonoBehaviour
 {
     [Header("UI")]
-    public TextMeshProUGUI turnText;
-    public GameObject clearImage;
-    public GameObject winExpPlusImage;
+    [SerializeField] private TextMeshProUGUI turnText;
+    [SerializeField] private GameObject clearImage;
+    [SerializeField] private GameObject winExpPlusImage;
     [Header("Refs")]
     [SerializeField] private BattleManager battleManager;
 
 
     [Header("Turn Config")]
-    [Min(1)] public int maxTurns = 20;
+    [Min(1)] private int maxTurns = 20;
 
     [Tooltip("Delay between each hero action (seconds).")]
-    [Min(0f)] public float delayBetweenActions = 0.15f;
+    [Min(0f)] private float delayBetweenActions = 0.15f;
 
     [Header("Ultimate Phase")]
     [Tooltip("Delay between each ultimate cast and the next unit (seconds).")]
-    [Min(0f)] public float delayBetweenUltimates = 0.05f;
+    [Min(0f)] private float delayBetweenUltimates = 0.05f;
 
     [Header("Wave / Clear")]
     [Tooltip("Seconds to wait after enemies die (before checking heroes finished clear).")]
-    [Min(0f)] public float afterClearDelay = 0.25f;
+    [Min(0f)] private float afterClearDelay = 0.25f;
 
     private const string TeamHero = "Hero";
     private const string TeamEnemy = "Enemy";
@@ -58,7 +58,8 @@ public class BattleTurnManager : MonoBehaviour
             yield return null;
 
         currentWave = 1;
-
+        yield return CoPassiveBattlePhase();
+        yield return new WaitForSeconds(0.25f);
         while (!isEnd)
         {
             heroTeamStarts = DecideHeroTeamStarts();
@@ -116,7 +117,7 @@ public class BattleTurnManager : MonoBehaviour
     private IEnumerator CoHandleWaveCleared()
     {
         // 1) Call SetClear() for all alive heroes
-        if (currentWave >= battleManager.stageConfig.waveStage)
+        if (currentWave >= battleManager.StageConfig.waveStage)
         {
             isEnd = true;
             for (int slot = 1; slot <= 6; slot++)
@@ -125,19 +126,23 @@ public class BattleTurnManager : MonoBehaviour
                 if (hero == null) continue;
                 if (IsDead(hero))
                 {
-                    battleManager.battleResult.SetList(slot, false);
+                    
+                    battleManager.BattleResult.SetList(slot, false);
+                    battleManager.BattleResult.SetListByID(hero.HeroInfo.ID, false);
                 }
                 else
                 {
-                    battleManager.battleResult.SetList(slot, true);
+                    battleManager.BattleResult.SetListByID(hero.HeroInfo.ID, true);
+                    battleManager.BattleResult.SetList(slot, true);
                 }
             }
-            ProgressManager.Instance.UpdateStage(battleManager.stageConfig.stageID); // cập nhật stage
+            ProgressManager.Instance.UpdateStage(battleManager.StageConfig.stageID); // cập nhật stage
             
-            battleManager.battleResult.SetExpPlus(); // gán exp plus
+            battleManager.BattleResult.SetUIExpPlus(); // gán exp plus UI
+            battleManager.BattleResult.SetExpPlus(); // gán exp plus
             winExpPlusImage.SetActive(true); // hiện thị exp plus
-            battleManager.battleResult.CheckHeroesLost(); // tính số sao nhận được 
-            battleManager.battleResult.SetUpRollItems(); // tính toán rớt đồ
+            battleManager.BattleResult.CheckHeroesLost(); // tính số sao nhận được 
+            battleManager.BattleResult.SetUpRollItems(); // tính toán rớt đồ
             //battleManager.battleResult.uiStageReward.gameObject.SetActive(true);
             yield break;
         }
@@ -160,10 +165,10 @@ public class BattleTurnManager : MonoBehaviour
         clearImage.SetActive(true);
         yield return new WaitForSeconds(0.5f);
         // 3) Load next wave if exists
-        if (battleManager == null || battleManager.stageConfig == null)
+        if (battleManager == null || battleManager.StageConfig == null)
             yield break;
 
-        int maxWave = Mathf.Max(1, battleManager.stageConfig.waveStage);
+        int maxWave = Mathf.Max(1, battleManager.StageConfig.waveStage);
         if (currentWave >= maxWave)
         {
             // No more wave -> stop battle loop
@@ -266,7 +271,19 @@ public class BattleTurnManager : MonoBehaviour
 
         return sum;
     }
-
+    private IEnumerator CoPassiveBattlePhase()
+    {
+        if (heroTeamStarts)
+        {
+            yield return CoTeamPassiveBattle(TeamHero);
+            yield return CoTeamPassiveBattle(TeamEnemy);
+        }
+        else
+        {
+            yield return CoTeamPassiveBattle(TeamEnemy);
+            yield return CoTeamPassiveBattle(TeamHero);
+        }
+    }
     private IEnumerator CoUltimatePhase()
     {
         if (heroTeamStarts)
@@ -328,7 +345,54 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+   
+    private IEnumerator CoTeamPassiveBattle(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
 
+            unit.IsFinished = false;
+
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
+
+            if (reC.HeroInfo.passive == null) continue;
+            List<AbilityEffect> effectBattle = reC.HeroInfo.passive.GetEffectsStartBattle();
+            if (effectBattle.Count == 0) continue;
+            for (int i = 0; i < effectBattle.Count; i++)
+            {
+                var effect = effectBattle[i];
+                if (effect.type == AbilityEffectType.ModifyStat)
+                {
+                    if(effect.target == AbilityTarget.HeroAll) 
+                        ApplyStatAllStartBattle(effect.statType, effect.modifyValue);
+                }
+            }
+
+            
+
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
+        }
+
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
+    void ApplyStatAllStartBattle(ModifyStatType type, float  value)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamHero, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            unit.HeroStatRuntime.ApplyStatStartBattle(type, value);
+
+        }
+    }
     private IEnumerator CoTeamNormalSkill(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)

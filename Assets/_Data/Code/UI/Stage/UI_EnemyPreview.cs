@@ -5,17 +5,17 @@ using System;
 
 public class UI_EnemyPreview : MonoBehaviour
 {
-    public Image icon;
+    [SerializeField] private Image icon;
 
     [Header("Level")]
-    public TextMeshProUGUI levelText;
+    [SerializeField] private TextMeshProUGUI levelText;
 
     [Header("Star")]
-    public Transform starRoot;
+    [SerializeField] private Transform starRoot;
 
     [Header("Rank")]
-    public Transform rankRoot;
-    public Image frameRank;
+    [SerializeField] private Transform rankRoot;
+    [SerializeField] private Image frameRank;
 
     private HorizontalLayoutGroup starLayout;
     private HorizontalLayoutGroup rankLayout;

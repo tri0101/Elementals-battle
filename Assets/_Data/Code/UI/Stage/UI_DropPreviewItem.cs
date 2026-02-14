@@ -5,8 +5,8 @@ using TMPro;
 
 public class UI_DropPreviewItem : MonoBehaviour
 {
-    
-    public Image icon;
+
+    [SerializeField] private Image icon;
     
 
     void Awake()

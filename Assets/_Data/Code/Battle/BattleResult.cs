@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -6,16 +7,28 @@ public class BattleResult : MonoBehaviour
 {
 
     [Header("Transform")]
-    public Transform backHeroExp;
-    public Transform listHeroPrefab;
+    [SerializeField] private Transform backHeroExp;
+    [SerializeField] private Transform listHeroPrefab;
     [Header("Stage")]
-    public StageConfig stageConfig;
+    [SerializeField] private StageConfig stageConfig;
+    public StageConfig StageConfig
+    {
+        get => stageConfig;
+        
+    }
 
     [Header("Drop Result")]
 
     Dictionary<int, bool> listHeroStatus = new Dictionary<int, bool>();// true = live , false = dead
-    public UI_StageReward uiStageReward;
-    public int heroTotal;
+    Dictionary<int, bool> listHeroStatusById = new Dictionary<int, bool>();// true = live , false = dead
+
+    [SerializeField] private UI_StageReward uiStageReward;
+     int heroTotal;
+    public int HeroTotal
+    {
+        get => heroTotal;
+        set => heroTotal = value;
+    }
 
     private void Awake()
     {
@@ -28,16 +41,19 @@ public class BattleResult : MonoBehaviour
         listHeroStatus.Clear();
 
     }
-
-    public void SetExpPlus()
+   
+    public void SetUIExpPlus()
     {
         foreach (Transform child in backHeroExp)
         {
             var ui = child.GetComponent<UI_HeroExpPlus>();
             if (ui != null)
             {
+                HeroInstance hero = PlayerInventory.Instance.Heroes[int.Parse(ui.name)];
                 if (listHeroStatus[int.Parse(ui.name)])
                 {
+                    
+                    
                     ui.SetExpPlus(stageConfig.expForAliveHero);
                 }
                 else
@@ -48,10 +64,33 @@ public class BattleResult : MonoBehaviour
 
         }
     }
+    public void SetExpPlus()
+    {
+        foreach(var heroId in listHeroStatusById.Keys)
+        {
+            HeroInstance hero = PlayerInventory.Instance.GetHeroInstance(heroId);
+            if (hero != null)
+            {
+                if (listHeroStatusById[heroId])
+                {
+                    HeroUpgradeService.Instance.FeedExp(hero, stageConfig.expForAliveHero);
+                }
+                else
+                {
+                    HeroUpgradeService.Instance.FeedExp(hero, stageConfig.expForAliveHero/2);
+                }
+            }
+        }
+    }
     public void SetList(int indexSlot, bool statusValue)
     {
 
         listHeroStatus[indexSlot] = statusValue;
+    }
+    public void SetListByID(int heroId, bool statusValue)
+    {
+
+        listHeroStatusById[heroId] = statusValue;
     }
 
     public void CheckHeroesLost()

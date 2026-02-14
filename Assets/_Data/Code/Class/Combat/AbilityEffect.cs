@@ -3,59 +3,69 @@ using UnityEngine;
 
 public enum AbilityEffectType
 {
-    Damage = 0,
-    Heal = 1,
-    AddMana = 2,
 
-    // Buff/Debuff generic (tăng/giảm stat)
-    ModifyStat = 10,
+    
+    ModifyStat = 0,         // Buff/Debuff generic (tăng/giảm stat)
 
     // CC
-    Stun = 20,
-    Paralyze = 21
+    Stun = 20,              // choáng
+    Paralyze = 21           // tê liệt
 }
 
 public enum AbilityTarget
 {
-    CurrentTarget = 0,   // mục tiêu đang đánh
-    Self = 1,
-    AllyLowestHp = 2,
-    AllyAll = 3,
-    EnemyAll = 4
+    CurrentTarget = 0,      // mục tiêu đang đánh
+    Self = 1,               //bản thân
+    HeroLowestHp = 2,       // đồng minh có HP thấp nhất
+    HeroHighestDamage = 3,  // đồng minh có sát thương cao nhất
+    EnemyAll = 4,           // tất cả kẻ địch
+    HeroAll = 5,            // tất cả đồng minh
+    DPSEnemyAll = 6,        // tất cả kẻ địch có hệ DPS
+    TankEnemyAll = 7,       // tất cả kẻ địch có hệ Tank
+    SupportEnemyAll = 8,    // tất cả kẻ địch có hệ Support
+    DPSHeroAll = 9,         // tất cả đồng minh có hệ DPS
+    TankHeroAll = 10,       // tất cả đồng minh có hệ Tank
+    SupportHeroAll = 11,    // tất cả đồng minh có hệ Support
 }
 
-public enum StatType
+public enum ModifyStatType
 {
-    Attack = 0,
-    Defense = 1,
-    Speed = 2
+    Damage = 0,       //tăng damage
+    Health = 1,           //tăng hp
+    Speed = 2,       // tăng speed
+    Armor = 3,       // tăng armor
+    CritRate = 4,    // tăng tỉ lệ chí mạng
+    CritDamage = 5,   // tăng tỉ lệ dame chí mạng
 }
-
+public enum TimesToCall
+{
+    onStartBattle = 0,   //gọi khi bắt đầu trận đấu
+    onStartTurn = 1,    //gọi khi bắt đầu lượt của hero
+    onAttack = 2,       //gọi khi hero tấn công
+    onAttacked = 3,     //gọi khi hero bị tấn công
+}
 [Serializable]
 public class AbilityEffect
 {
     public AbilityEffectType type;
 
+    [Header("Trigger")]
+    public TimesToCall timeToCall = TimesToCall.onAttack;
     [Header("Targeting")]
     public AbilityTarget target = AbilityTarget.CurrentTarget;
 
     [Header("Proc")]
-    [Range(0f, 1f)] public float chance = 1f;
-
-    [Header("Value")]
-    // Ý nghĩa tùy effect:
-    // - Damage: multiplier hoặc flat (tùy bạn unify sau)
-    // - Heal: % maxHP hoặc flat
-    // - ModifyStat: % hoặc flat
-    public float value = 0f;
-
-    [Header("Duration (seconds or turns)")]
-    public float duration = 0f;
+    [Range(0f, 1f)] public float chance = 1f; // tỉ lệ ra hiệu ứng (0-1)
 
     [Header("Stat (for ModifyStat)")]
     //chỉ dùng khi type == ModifyStat
-    public StatType statType = StatType.Attack;
+    public ModifyStatType statType = ModifyStatType.Damage;
+    [Header("Value")]
+    public bool canUpgrade = false; // có thể nâng cấp hiệu ứng này khi nâng cấp kỹ năng hay không
+    public float modifyValue = 0f; // giá trị tăng ( %)
 
-    // -1 = debuff, +1 = buff (hoặc bạn có thể dùng value âm dương)
-    public int direction = -1;
+
+    [Header("Duration")]
+    public int durationTurn = 1 ; // thời gian hiệu lực khống chế /buff/debuff (turn) , bằng - 1 = vĩnh viễn;
+   
 }

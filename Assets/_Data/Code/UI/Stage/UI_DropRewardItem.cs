@@ -6,8 +6,8 @@ using TMPro;
 public class UI_DropRewardItem : MonoBehaviour
 {
 
-    public Image icon;
-    public TextMeshProUGUI amountText;
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI amountText;
 
     void Awake()
     {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum AbilityType
@@ -44,6 +45,7 @@ public class AbilityInfo : ScriptableObject
 
     [Header("Animation State Name")]
     public string animStateName;
+    public Sprite icon;
 
     [Header("Speed run to enemy")]
     public float speedToEnemy;
@@ -68,4 +70,23 @@ public class AbilityInfo : ScriptableObject
 
     [Header("Effects (executed in order)")]
     public List<AbilityEffect> effects = new List<AbilityEffect>();
+
+    public List<AbilityEffect> GetEffectsStartBattle()
+    {
+        if (effects == null)
+            return null;
+
+        return effects
+            .Where(e => e != null && e.timeToCall == TimesToCall.onStartBattle)
+            .ToList();
+    }
+    public List<AbilityEffect> GetEffectsStartTurn()
+    {
+        if (effects == null)
+            return null;
+
+        return effects
+            .Where(e => e != null && e.timeToCall == TimesToCall.onStartTurn)
+            .ToList();
+    }
 }

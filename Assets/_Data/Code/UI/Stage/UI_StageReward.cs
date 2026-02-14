@@ -13,29 +13,29 @@ public class UI_StageReward : MonoBehaviour
     bool isShowingStar;
     bool isShowingItem;
     [Header("UI")]
-    public TextMeshProUGUI conditionText;
-    public TextMeshProUGUI coinText;
-    public StageConfig stageConfig;
-    public Transform starRoot;
+    [SerializeField] private TextMeshProUGUI conditionText;
+    [SerializeField] private TextMeshProUGUI coinText;
+    [SerializeField] private StageConfig stageConfig;
+    [SerializeField] private Transform starRoot;
     [Header("Database")]
-    public ItemDatabase itemDatabase;
+    [SerializeField] private ItemDatabase itemDatabase;
     [Header("Transform")]
-    public Transform contentItem;
-    public GameObject itemPrefab;
-    public GameObject itemPrefabShard;
+    [SerializeField] private Transform contentItem;
+    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private GameObject itemPrefabShard;
     [Header("Star Colors")]
     public Color earnedColor = new Color32(255, 215, 0, 255);      // vàng
     public Color notEarnedColor = new Color32(158, 101, 101, 255); // tối
 
     [Header("Star Effect")]
-    public float delayBetweenStars = 0.4f;
-    public float flashDuration = 0.15f;
-    public float flashScale = 1.25f;
-    public int starGain = 0;
+    [SerializeField] private float delayBetweenStars = 0.4f;
+    [SerializeField] private float flashDuration = 0.15f;
+    [SerializeField] private float flashScale = 1.25f;
+    [SerializeField] private int starGain = 0;
     [Header("Item Effect")]
-    public float itemDelay = 0.3f;
-    public float itemFlashDuration = 0.15f;
-    public float itemFlashScale = 1.2f;
+    [SerializeField] private float itemDelay = 0.3f;
+    [SerializeField] private float itemFlashDuration = 0.15f;
+    [SerializeField] private float itemFlashScale = 1.2f;
     private Dictionary<int, int> itemDrop = new Dictionary<int, int>(); // itemID , amount
     private void OnEnable()
     {

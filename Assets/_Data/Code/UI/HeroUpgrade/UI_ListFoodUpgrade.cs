@@ -5,19 +5,19 @@ using System.Collections;
 
 public class UI_ListFoodUpgrade : MonoBehaviour
 {
-    public ItemDatabase itemDatabase;
-    public Transform content;
+    [SerializeField] private ItemDatabase itemDatabase;
+    [SerializeField] private Transform content;
 
     [Header("Prefabs")]
-    public GameObject prefabItem1;   // dùng cho 50,51
-    public GameObject prefabItem2;   // dùng cho 52,53
-    public GameObject prefabItem3;   // dùng cho 54
-    public GameObject prefabItem55;  // dùng cho 55
-    public UI_ListHeroUpgrade uiHeroUpgrade;
+    [SerializeField] private GameObject prefabItem1;   // dùng cho 50,51
+    [SerializeField] private GameObject prefabItem2;   // dùng cho 52,53
+    [SerializeField] private GameObject prefabItem3;   // dùng cho 54
+    [SerializeField] private GameObject prefabItem55;  // dùng cho 55
+    [SerializeField] private UI_ListHeroUpgrade uiHeroUpgrade;
     [Header("Level Bar")]
-    public TextMeshProUGUI currentLevelText;
-    public TextMeshProUGUI currentLevelExpBarText;
-    public Image expFillImage;
+    [SerializeField] private TextMeshProUGUI currentLevelText;
+    [SerializeField] private TextMeshProUGUI currentLevelExpBarText;
+    [SerializeField] private Image expFillImage;
 
     Coroutine expAnimRoutine;
 
@@ -60,7 +60,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
             return;
 
         var selected = HeroUpgradeContext.SelectedHero.instance;
-        var config = HeroUpgradeService.Instance?.levelConfig;
+        var config = HeroUpgradeService.Instance?.LevelConfig;
         if (config == null)
         {
             // Nếu không có config thì fallback về hành vi cũ
@@ -99,7 +99,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
 
     IEnumerator AnimateExpChange(int prevLevel, int prevExp, int newLevel, int newExp)
     {
-        var config = HeroUpgradeService.Instance.levelConfig;
+        var config = HeroUpgradeService.Instance.LevelConfig;
         int[] table = config.expPerLevel;
 
         // Hàm phụ lấy exp cần cho 1 level và xác định max level
@@ -217,7 +217,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
             return;
 
         var selected = HeroUpgradeContext.SelectedHero;
-        if (selected == null || HeroUpgradeService.Instance == null || HeroUpgradeService.Instance.levelConfig == null)
+        if (selected == null || HeroUpgradeService.Instance == null || HeroUpgradeService.Instance.LevelConfig == null)
         {
             currentLevelText.text = "-";
             currentLevelExpBarText.text = "-";
@@ -231,7 +231,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
 
         UpdateLevelText(level);
 
-        var config = HeroUpgradeService.Instance.levelConfig;
+        var config = HeroUpgradeService.Instance.LevelConfig;
         int nextLevelIndex = level - 1;
         if (nextLevelIndex >= 0 && nextLevelIndex < config.expPerLevel.Length)
         {
@@ -267,10 +267,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
 
     int GetPlayerItemAmount(int itemId)
     {
-        var item = PlayerInventory.Instance.items
-            .Find(i => i.itemId == itemId);
-
-        return item != null ? item.quantity : 0;
+       return PlayerInventory.Instance != null ? PlayerInventory.Instance.GetItemQuantity(itemId) : 0;
     }
 
     void Clear()

@@ -4,8 +4,10 @@ using UnityEngine;
 public class PlayerInventory :  Subject
 {
     public static PlayerInventory Instance;
-    public List<HeroInstance> heroes = new();
-    public List<ItemInstance> items = new();
+    [SerializeField] private List<HeroInstance> heroes = new();
+    public IReadOnlyList<HeroInstance> Heroes => heroes;
+    [SerializeField] private List<ItemInstance> items = new();
+    public IReadOnlyList<ItemInstance> Items => items;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -53,7 +55,7 @@ public class PlayerInventory :  Subject
 
         if (hero == null)
         {
-            heroes.Add(new HeroInstance
+            hero = new HeroInstance
             {
                 heroId = heroId,
                 level = 1,
@@ -61,8 +63,10 @@ public class PlayerInventory :  Subject
                 star = 4,
                 rank = 1,
                 shard = 0
-            });
+            };
 
+            hero.InitSkillInstances();
+            heroes.Add(hero);
             return new GachaResult
             {
                 heroId = heroId,
@@ -145,5 +149,9 @@ public class PlayerInventory :  Subject
         if (item == null)
             return 0;
         return item.quantity;
+    }
+    public HeroInstance GetHeroInstance(int heroId)
+    {
+        return heroes.Find(h => h.heroId == heroId);
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class HeroUpgradeService : MonoBehaviour
 {
     public static HeroUpgradeService Instance;
-    public HeroLevelConfig levelConfig;
+    [SerializeField] private HeroLevelConfig levelConfig;
+    public HeroLevelConfig LevelConfig => levelConfig;
 
     void Awake()
     {
@@ -14,6 +16,12 @@ public class HeroUpgradeService : MonoBehaviour
     /// <summary>
     /// Cho hero ăn 1 ExpFood
     /// </summary>
+    /// 
+    public void FeedExp(HeroInstance hero, int value)
+    {
+        hero.currentExp += value;
+        ProcessLevelUp(hero);
+    }
     public bool FeedExp(HeroInstance hero, ItemData item)
     {
         // 1. chỉ nhận exp food
@@ -56,8 +64,8 @@ public class HeroUpgradeService : MonoBehaviour
  
         foreach (var cost in costs)
         {
-            var inv = PlayerInventory.Instance.items.Find(i => i.itemId == cost.itemId);
-            int owned = inv != null ? inv.quantity : 0;
+            
+            var owned = PlayerInventory.Instance.GetItemQuantity(cost.itemId);
             if (owned < cost.amount)
             {
                 return false;

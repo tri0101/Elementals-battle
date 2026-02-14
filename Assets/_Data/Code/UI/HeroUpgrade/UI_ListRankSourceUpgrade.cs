@@ -8,17 +8,17 @@ using TMPro;
 public class UI_ListRankSourceUpgrade : MonoBehaviour
 {
     [Header("Config")]
-    public HeroRankConfig rankConfig;
-    public ItemDatabase itemDatabase;
+    [SerializeField] private HeroRankConfig rankConfig;
+    [SerializeField] private ItemDatabase itemDatabase;
 
     [Header("UI")]
-    public Transform content;
-    public Transform contentForAnim;
-    public Transform panelUpgradeSuccess;
-    public GameObject itemPrefab;
-    public TextMeshProUGUI amountTextCoin;
-    public Button upgradeButton;
-    public UI_ListHeroUpgrade uiHeroUpgrade;
+    [SerializeField] private Transform content;
+    [SerializeField] private Transform contentForAnim;
+    [SerializeField] private Transform panelUpgradeSuccess;
+    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private TextMeshProUGUI amountTextCoin;
+    [SerializeField] private Button upgradeButton;
+    [SerializeField] private UI_ListHeroUpgrade uiHeroUpgrade;
 
     HeroViewData currentHero;
 
@@ -90,7 +90,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
 
         // rank 1-4 => đen, rank 5-8 => xanh
-        if (uiItem != null && uiItem.icon != null && currentHero != null && currentHero.instance != null)
+        if (uiItem != null && uiItem.Icon != null && currentHero != null && currentHero.instance != null)
         {
             int rank = currentHero.instance.rank;
             if (rank >= 1 && rank <= 4)
@@ -138,10 +138,8 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
     int GetOwned(int itemId)
     {
-        ItemInstance item = PlayerInventory.Instance.items
-            .Find(i => i.itemId == itemId);
-
-        return item != null ? item.quantity : 0;
+        
+        return PlayerInventory.Instance.GetItemQuantity(itemId);
     }
 
 
@@ -277,7 +275,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
 
         int prevPower = -1;
-        var growth = uiHeroUpgrade != null && uiHeroUpgrade.header != null ? uiHeroUpgrade.header.growthConfig : null;
+        var growth = uiHeroUpgrade != null && uiHeroUpgrade.Header != null ? uiHeroUpgrade.Header.GrowthConfig : null;
         if (growth != null)
         {
             var prevStat = HeroStatCalculator.Calculate(currentHero.info, prevSnapshot, growth);
@@ -286,14 +284,14 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
 
         GameObject prevClone = null;
-        if (uiHeroUpgrade != null && uiHeroUpgrade.content != null)
+        if (uiHeroUpgrade != null && uiHeroUpgrade.Content != null)
         {
-            foreach (Transform ch in uiHeroUpgrade.content)
+            foreach (Transform ch in uiHeroUpgrade.Content)
             {
                 var comp = ch.GetComponent<UI_HeroUpgradeItem>();
-                if (comp == null || comp.icon == null) continue;
+                if (comp == null || comp.Icon == null) continue;
 
-                if (comp.icon.sprite == currentHero.info.iconFace)
+                if (comp.Icon.sprite == currentHero.info.iconFace)
                 {
                     prevClone = Instantiate(ch.gameObject);
                     var btn = prevClone.GetComponent<Button>();
@@ -419,7 +417,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
         // Tính power mới sau khi nâng (dùng growthConfig từ header nếu có)
         int newPower = -1;
-        var growth2 = uiHeroUpgrade != null && uiHeroUpgrade.header != null ? uiHeroUpgrade.header.growthConfig : null;
+        var growth2 = uiHeroUpgrade != null && uiHeroUpgrade.Header != null ? uiHeroUpgrade.Header.GrowthConfig : null;
         if (growth2 != null)
         {
             var newStat = HeroStatCalculator.Calculate(currentHero.info, currentHero.instance, growth2);
@@ -433,15 +431,15 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
 
         // Capture visual "after" bằng cách clone lại UI_HeroUpgradeItem tương ứng (sau khi refresh)
         GameObject afterClone = null;
-        if (uiHeroUpgrade != null && uiHeroUpgrade.content != null)
+        if (uiHeroUpgrade != null && uiHeroUpgrade.Content != null)
         {
-            foreach (Transform ch in uiHeroUpgrade.content)
+            foreach (Transform ch in uiHeroUpgrade.Content)
             {
                 var comp = ch.GetComponent<UI_HeroUpgradeItem>();
-                if (comp == null || comp.icon == null) continue;
-                if (comp.icon.sprite == currentHero.info.iconFace)
+                if (comp == null || comp.Icon == null) continue;
+                if (comp.Icon.sprite == currentHero.info.iconFace)
                 {
-                    afterClone = Instantiate(uiHeroUpgrade.heroUpgradeItemPrefab);
+                    afterClone = Instantiate(uiHeroUpgrade.HeroUpgradeItemPrefab);
                     afterClone.GetComponent<UI_HeroUpgradeItem>()
                         .Setup(currentHero);
                     var btn = afterClone.GetComponent<Button>();

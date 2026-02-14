@@ -6,9 +6,9 @@ using System.Collections;
 
 public class UI_FoodUpgradeItem : MonoBehaviour
 {
-    public Image icon;
-    public TextMeshProUGUI amountText;
-    public GameObject backEmpty;
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI amountText;
+    [SerializeField] private GameObject backEmpty;
     Button button;
     Image imagePlus;
     Coroutine glowRoutine;

@@ -2,11 +2,14 @@
 
 public class UI_ListHeroUpgrade : MonoBehaviour
 {
-    public HeroDatabase heroDatabase;
-    public Transform content;
-    public GameObject heroUpgradeItemPrefab;
-    public UI_HeroUpgradeHeader header;
-    public UI_ListRankSourceUpgrade rankSourceList;
+    [SerializeField] private HeroDatabase heroDatabase;
+    [SerializeField] private Transform content;
+    public Transform Content => content;
+    [SerializeField] private GameObject heroUpgradeItemPrefab;
+    public GameObject HeroUpgradeItemPrefab => heroUpgradeItemPrefab;
+    [SerializeField] private UI_HeroUpgradeHeader header;
+    public UI_HeroUpgradeHeader Header => header;
+    [SerializeField] private UI_ListRankSourceUpgrade rankSourceList;
 
     void OnEnable()
     {

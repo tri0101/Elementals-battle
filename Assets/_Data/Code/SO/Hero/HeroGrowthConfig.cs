@@ -5,7 +5,7 @@ public class HeroGrowthConfig : ScriptableObject
 {
     [Header("Level Bonus (%)")]
     public float levelBonusPerLevel = 0.02f; // mỗi level +2%
-
+    public float levelBonusPerSkill = 0.01f; // mỗi level kỹ năng +1%
     [Header("Star Bonus (%)")]
     public float[] starBonus;
     // index = star

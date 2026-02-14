@@ -75,7 +75,45 @@ public sealed class HeroStatRuntime : MonoBehaviour
         currentHealth = finalStat.health;
         currentMana = 0f;
     }
+    
+    public void ApplyStatStartBattle(ModifyStatType type, float value)
+    {
+        switch (type)
+        {
+            case ModifyStatType.Damage:
+                GainDamage(value);
+                break;
+            case ModifyStatType.Health:
+                GainHPMax(value);
+                break;
+            case ModifyStatType.Armor:
+                
+                break;
+            case ModifyStatType.CritRate:
+                
+                break;
+            case ModifyStatType.CritDamage:
+                
+                break;
+            case ModifyStatType.Speed:
+                
+                break;
+        }
+    }
+    public void GainHPMax(float  value)
+    {
+        finalStat.health *= (1 + value);
+        currentHealth = finalStat.health;
+        float health01 = CurrentHealth / (float)MaxHealth;
+        heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
 
+    }
+    public void GainDamage(float  value)
+    {
+        finalStat.damage *= (1 + value);
+        
+
+    }
     public void GainMana(int value)
     {
         currentMana += value;
@@ -124,4 +162,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HPNotifyType.HPMinus, (int)value);
         
     }
+
+
+    
 }

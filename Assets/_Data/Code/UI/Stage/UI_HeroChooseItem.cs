@@ -6,12 +6,12 @@ using UnityEngine.UI;
 
 public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Button buttonChoose;
-    public Image icon;
-    public TextMeshProUGUI levelText;
-    public Transform starRoot;
-    public Transform rankRoot;
-    public Image frameRank;
+    [SerializeField] private Button buttonChoose;
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI levelText;
+    [SerializeField] private Transform starRoot;
+    [SerializeField] private Transform rankRoot;
+    [SerializeField] private Image frameRank;
 
     public HeroViewData Data => data;
     private HeroViewData data;
@@ -21,9 +21,9 @@ public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
     private HorizontalLayoutGroup starLayout;
     private HorizontalLayoutGroup rankLayout;
 
-    public bool IsInFormation { get; private set; }
-    public Transform originalParent;
-    public CanvasGroup canvasGroup;
+    public  bool IsInFormation { get; private set; }
+    [SerializeField] private Transform originalParent;
+    [SerializeField] private CanvasGroup canvasGroup;
 
     private int blackRank = 1;
     private int greenRank = 5;

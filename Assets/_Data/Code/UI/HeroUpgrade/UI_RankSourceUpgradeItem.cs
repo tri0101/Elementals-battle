@@ -6,11 +6,12 @@ using System.Collections;
 public class UI_RankSourceUpgradeItem : MonoBehaviour
 {
     [Header("UI")]
-    public Image icon;
-    public TextMeshProUGUI amountText;
+    [SerializeField] private Image icon;
+    public Image Icon => icon;
+    [SerializeField] private TextMeshProUGUI amountText;
 
     [Header("Empty State")]
-    public GameObject backEmpty;
+    [SerializeField] private GameObject backEmpty;
     Image imagePlus; // con của backEmpty
 
 

@@ -7,11 +7,11 @@ using static UnityEngine.GraphicsBuffer;
 
 public class UI_ShowGacha : MonoBehaviour
 {
-    public Transform prefabHeroSample;
-    public Transform prefabHeroShardSample;
-    public HeroDatabase heroDatabase;
-    public Transform panelGacha;
-    public bool panelIsActive;
+    [SerializeField] private Transform prefabHeroSample;
+    [SerializeField] private Transform prefabHeroShardSample;
+    [SerializeField] private HeroDatabase heroDatabase;
+    [SerializeField] private Transform panelGacha;
+    [SerializeField] private bool panelIsActive;
     private GridLayoutGroup grid;
 
     private bool isShowing = false; 

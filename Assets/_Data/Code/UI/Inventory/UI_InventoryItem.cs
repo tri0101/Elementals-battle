@@ -5,9 +5,9 @@ using TMPro;
 
 public class UI_InventoryItem : MonoBehaviour
 {
-    public Button buttonDetail;
-    public Image icon;
-    public TextMeshProUGUI amountText;
+    [SerializeField] private Button buttonDetail;
+    [SerializeField] private Image icon;
+    [SerializeField] private TextMeshProUGUI amountText;
 
     void Awake()
     {

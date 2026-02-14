@@ -1,4 +1,4 @@
-public static class HeroStatCalculator
+﻿public static class HeroStatCalculator
 {
     // =========================
     // BONUS CALCULATION
@@ -111,8 +111,68 @@ public static class HeroStatCalculator
             critDamage = CalculateCritDamage(info),
             speed = CalculateSpeed(info)
         };
-
+        
         stat.power = CalculatePower(stat);
+       
         return stat;
+    }
+
+    public static void ApplyStartBattlePassive(
+    HeroInfo info,
+    HeroInstance instance,
+    HeroGrowthConfig growth,
+    ref HeroStat stat
+)
+    {
+        if (info.passive == null || info.passive.effects == null)
+            return;
+
+        foreach (var effect in info.passive.effects)
+        {
+            // 1. chỉ xử lý ModifyStat
+            if (effect.type != AbilityEffectType.ModifyStat)
+                continue;
+
+            // 2. chỉ gọi khi StartBattle
+            if (effect.timeToCall != TimesToCall.onStartBattle)
+                continue;
+
+            // 3. roll chance
+            if (UnityEngine.Random.value > effect.chance)
+                continue;
+
+            // 4. apply stat
+            ApplyModifyStat(effect, ref stat);
+        }
+    }
+    private static void ApplyModifyStat(
+    AbilityEffect effect,
+    ref HeroStat stat
+)
+    {
+        float percent = effect.modifyValue;
+
+        switch (effect.statType)
+        {
+            case ModifyStatType.Damage:
+                stat.damage *= (1f + percent);
+                break;
+
+            case ModifyStatType.Health:
+                stat.health *= (1f + percent);
+                break;
+
+            case ModifyStatType.Speed:
+                stat.speed *= (1f + percent);
+                break;
+
+            case ModifyStatType.Armor:
+                stat.armor *= (1f + percent);
+                break;
+        }
+
+        // Nếu durationTurn != -1
+        // => đây là buff có thời hạn
+        // có thể thêm vào hệ thống BuffManager sau
     }
 }

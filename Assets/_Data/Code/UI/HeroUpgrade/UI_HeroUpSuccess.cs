@@ -4,10 +4,10 @@ using UnityEngine.UI;
 
 public class UI_HeroUpSuccess : MonoBehaviour
 {
-    public Transform panelHeroUp;
-    public Transform textPowerPrev;
-    public Transform textPowerAfter;
-    public Button button;
+    [SerializeField] private Transform panelHeroUp;
+    [SerializeField] private Transform textPowerPrev;
+    [SerializeField] private Transform textPowerAfter;
+    [SerializeField] private Button button;
     void Awake()
     {
         if (button != null)

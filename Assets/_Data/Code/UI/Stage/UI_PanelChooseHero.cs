@@ -5,22 +5,22 @@ using System.Linq;
 
 public class UI_PanelChooseHero : MonoBehaviour
 {
-    public int currentStageId;
-    public HeroDatabase heroDatabase;
-    public HeroGrowthConfig growthConfig;
-    public Transform content;
-    public GameObject heroItemPrefab;
-    public TextMeshProUGUI powerText;
-    public UI_PanelDetailStage panelDetailStage;
-    public UI_FormationManager formationManager;
+    [SerializeField] private int currentStageId;
+    [SerializeField] private HeroDatabase heroDatabase;
+    [SerializeField] private HeroGrowthConfig growthConfig;
+    [SerializeField] private Transform content;
+    [SerializeField] private GameObject heroItemPrefab;
+    [SerializeField] private TextMeshProUGUI powerText;
+    [SerializeField] private UI_PanelDetailStage panelDetailStage;
+    [SerializeField] private UI_FormationManager formationManager;
 
     [Header("Buttons")]
-    public Button buttonBack;
-    public Button buttonNext;
-    public Button buttonAll;
-    public Button buttonDPS;
-    public Button buttonTank;
-    public Button buttonSupport;
+    [SerializeField] private Button buttonBack;
+    [SerializeField] private Button buttonNext;
+    [SerializeField] private Button buttonAll;
+    [SerializeField] private Button buttonDPS;
+    [SerializeField] private Button buttonTank;
+    [SerializeField] private Button buttonSupport;
 
     private RoleHero? currentFilter = null;
 

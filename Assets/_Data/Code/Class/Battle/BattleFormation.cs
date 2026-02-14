@@ -5,18 +5,20 @@ using UnityEngine;
 public class BattleFormation : MonoBehaviour
 {
     [Header("Root")]
-    public Transform listHeroRoot;
+    [SerializeField] private Transform listHeroRoot;
+    public Transform ListHeroRoot => listHeroRoot;
 
     [Header("Hero Positions (size = 6)")]
-    public Transform[] startPositions = new Transform[7];
-    public Transform[] battlePositions = new Transform[7];
+    [SerializeField] private Transform[] startPositions = new Transform[7];
+    [SerializeField] private Transform[] battlePositions = new Transform[7];
 
     [Header("Enemy Root")]
-    public Transform listEnemyRoot;
+    [SerializeField] private Transform listEnemyRoot;
+    public Transform ListEnemyRoot => listEnemyRoot;
 
     [Header("Enemy Positions (size = 6)")]
-    public Transform[] enemyStartPositions = new Transform[7];
-    public Transform[] enemyBattlePositions = new Transform[7];
+    [SerializeField] private Transform[] enemyStartPositions = new Transform[7];
+    [SerializeField] private Transform[] enemyBattlePositions = new Transform[7];
 
     public Transform GetStart(int slotIndex1Based)
     {

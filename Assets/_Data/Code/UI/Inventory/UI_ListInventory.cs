@@ -3,14 +3,14 @@ using UnityEngine.UI;
 
 public class UI_ListInventory : MonoBehaviour
 {
-    public ItemDatabase itemDatabase;
-    public Transform content;
-    public GameObject itemPrefab;
-    public GameObject itemPrefabShard;
-    public Button buttonAll;
-    public Button buttonResource;
-    public Button buttonShard;
-    public Button buttonOther;
+    [SerializeField] private ItemDatabase itemDatabase;
+    [SerializeField] private Transform content;
+    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private GameObject itemPrefabShard;
+    [SerializeField] private Button buttonAll;
+    [SerializeField] private Button buttonResource;
+    [SerializeField] private Button buttonShard;
+    [SerializeField] private Button buttonOther;
 
     enum FilterType { All, Resource, Shard, Other }
     FilterType currentFilter = FilterType.All;
@@ -74,7 +74,7 @@ public class UI_ListInventory : MonoBehaviour
         if (PlayerInventory.Instance == null || itemDatabase == null || itemPrefab == null || content == null)
             return;
 
-        foreach (var itemInstance in PlayerInventory.Instance.items)
+        foreach (var itemInstance in PlayerInventory.Instance.Items)
         {
             if (itemInstance == null) continue;
 
