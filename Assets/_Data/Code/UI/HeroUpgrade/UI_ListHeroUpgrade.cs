@@ -10,6 +10,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
     [SerializeField] private UI_HeroUpgradeHeader header;
     public UI_HeroUpgradeHeader Header => header;
     [SerializeField] private UI_ListRankSourceUpgrade rankSourceList;
+    [SerializeField] private UI_ListSkillUpgrade skillUpgradeList;  
 
     void OnEnable()
     {
@@ -47,6 +48,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
         // Khi click hero → cập nhật panel chi tiết
         UpdateHeroHeader(hero);
         rankSourceList.Setup(hero);
+        skillUpgradeList.LoadSkill();
     }
     public void UpdateHeroHeader(HeroViewData hero)
     {
