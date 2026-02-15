@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 
-public class UI_ListRankSourceUpgrade : MonoBehaviour
+public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
 {
     [Header("Config")]
     [SerializeField] private HeroRankConfig rankConfig;
@@ -23,7 +24,14 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
     HeroViewData currentHero;
 
     bool isProcessing = false;
-
+    void OnEnable()
+    {
+        PlayerInventory.Instance.AddObserver(this);
+    }
+    void OnDisable()
+    {
+        PlayerInventory.Instance.RemoveObbserver(this);
+    }
     public void Setup(HeroViewData hero)
     {
         currentHero = hero;
@@ -68,14 +76,38 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         int ownedCoin = GetOwned(1);
         if (amountTextCoin != null)
             amountTextCoin.text = $"{requiredCoin}";
-
+        RefreshAmountCoin();
 
         var compiled = CompileRequirements(req, currentHero.info.role);
         bool can = CanUpgrade(compiled);
+       
         if (upgradeButton != null)
-            upgradeButton.interactable = can && !isProcessing;
+            upgradeButton.interactable = can &&  !isProcessing;
     }
+    void RefreshAmountCoin()
+    {
+        if(int.Parse(amountTextCoin.text) > PlayerInventory.Instance.GetItemQuantity(1))
+        {
+            amountTextCoin.color = Color.red;
+        }
+        else
+        {
+            amountTextCoin.color = Color.white;
+            upgradeButton.interactable = true && !isProcessing;
+        }
+    }
+    public void OnNotify(object data)
+    {
 
+        if (data is ValueTuple<int, int> tuple)
+        {
+            int itemId = tuple.Item1;
+            int value = tuple.Item2;
+
+            if (itemId == 1)
+                RefreshAmountCoin();
+        }
+    }
 
     void CreateSlot(int itemId, int required)
     {
@@ -244,6 +276,10 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
         if (compiled == null || compiled.Count == 0) return false;
         foreach (var c in compiled)
         {
+            if(c.itemId == 1) // coin
+            {
+                continue;
+            }
             int owned = GetOwned(c.itemId);
             if (owned < c.amount) return false;
         }
@@ -253,8 +289,13 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour
     void OnUpgradeClicked()
     {
         if (isProcessing) return; 
-        if (currentHero == null) return;
 
+        if (currentHero == null) return;
+        if(int.Parse(amountTextCoin.text) > PlayerInventory.Instance.GetItemQuantity(1))
+        {
+            UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyCoin();
+            return;
+        }
         RankRequirement req = rankConfig.rankRequirements
             .Find(r => r.rank == currentHero.instance.rank);
 

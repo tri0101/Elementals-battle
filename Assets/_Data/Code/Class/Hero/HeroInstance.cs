@@ -27,4 +27,5 @@ public class HeroInstance
 
         return skill.level;
     }
+    
 }

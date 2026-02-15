@@ -12,7 +12,9 @@
 
         // Level bonus
         bonus += instance.level * growth.levelBonusPerLevel;
-
+        bonus += instance.GetAbilityLevel(AbilityType.Skill) * growth.levelBonusPerSkill;
+        bonus += instance.GetAbilityLevel(AbilityType.Ultimate) * growth.levelBonusPerSkill;
+        bonus += instance.GetAbilityLevel(AbilityType.Passive) * growth.levelBonusPerSkill;
         // Star bonus
         if (instance.star < growth.starBonus.Length)
             bonus += growth.starBonus[instance.star];

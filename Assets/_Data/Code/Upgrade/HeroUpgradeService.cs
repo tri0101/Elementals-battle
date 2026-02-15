@@ -94,4 +94,13 @@ public class HeroUpgradeService : MonoBehaviour
 
         return true;
     }
+
+    public void UpSkill(HeroInstance hero,AbilityType type)
+    {
+        var skill = hero.skillInstances.Find(s => s.AbilityType == type);
+        if (skill != null)
+        {
+            skill.level++;
+        }
+    }
 }

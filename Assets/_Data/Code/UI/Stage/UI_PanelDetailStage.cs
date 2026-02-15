@@ -181,6 +181,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
         if(currentStage.staminaCost > PlayerInventory.Instance.GetItemQuantity(3))
         {
             UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
+            return;
         }
         else
         {
@@ -214,7 +215,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
         else
         {
             staminaCost.color = Color.red;
-           buttonNext.interactable = false;
+           
         }
     }
     public void OnNotify(object data)
