@@ -80,7 +80,9 @@ MonoBehaviour:
   canSkill: 0
   isTakeHit: 0
   isDead: 0
+  isClear: 0
   battleTarget: {x: 0, y: 0, z: 0}
+  clearPosition: {fileID: 0}
   needMoveToBattle: 0
   currentStringState: 
   heroInfo: {fileID: 11400000, guid: b98b625904fc7324a9db1db894bfa5d5, type: 2}
@@ -156,6 +158,7 @@ MonoBehaviour:
     currentExp: 0
     star: 0
     rank: 0
+    skillInstances: []
     shard: 0
   finalStat:
     damage: 0
@@ -216,6 +219,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1625896525288483079}
   - component: {fileID: 3641036148669686408}
+  - component: {fileID: 2454947875189837922}
   m_Layer: 0
   m_Name: Collider (1)
   m_TagString: Untagged
@@ -291,6 +295,22 @@ PolygonCollider2D:
       - {x: 0.5671827, y: 0.14925283}
       - {x: 0.65658695, y: 0.27568087}
   m_UseDelaunayMesh: 0
+--- !u!114 &2454947875189837922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 984062655749073311}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackInfo: {fileID: 11400000, guid: 5b69cf7cf3d324449bf71e3dae717724, type: 2}
+  heroControl: {fileID: 0}
+  attackDamage: 0
+  myTag: 
 --- !u!1 &1951775371466149800
 GameObject:
   m_ObjectHideFlags: 0
@@ -300,7 +320,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1146535206092798117}
-  - component: {fileID: 3050306067062125081}
   m_Layer: 0
   m_Name: Attack_2
   m_TagString: Untagged
@@ -324,22 +343,6 @@ Transform:
   - {fileID: 4065854816549607495}
   m_Father: {fileID: 5879607137523459667}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3050306067062125081
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1951775371466149800}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackInfo: {fileID: 11400000, guid: fe491d45e44811b449162830877751f7, type: 2}
-  heroControl: {fileID: 0}
-  attackDamage: 0
-  myTag: 
 --- !u!1 &3037014505941702571
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,6 +353,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4065854816549607495}
   - component: {fileID: 8630712940686394029}
+  - component: {fileID: 6818164987149547454}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -426,6 +430,22 @@ PolygonCollider2D:
       - {x: 1.3716009, y: 0.027053595}
       - {x: 1.5142426, y: 0.45997453}
   m_UseDelaunayMesh: 0
+--- !u!114 &6818164987149547454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3037014505941702571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackInfo: {fileID: 11400000, guid: f2e7ffdd704fd5c46968dab6542fc593, type: 2}
+  heroControl: {fileID: 0}
+  attackDamage: 0
+  myTag: 
 --- !u!1 &3108960951855596775
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,7 +614,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1749085797969469537}
-  - component: {fileID: 5041592040989769124}
   m_Layer: 0
   m_Name: Attack_1
   m_TagString: Untagged
@@ -619,22 +638,6 @@ Transform:
   - {fileID: 1625896525288483079}
   m_Father: {fileID: 5879607137523459667}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5041592040989769124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4626341041916029623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackInfo: {fileID: 11400000, guid: aeea3423cc1555c40aa05fa2c5abc4db, type: 2}
-  heroControl: {fileID: 0}
-  attackDamage: 0
-  myTag: 
 --- !u!1 &4797017927434228944
 GameObject:
   m_ObjectHideFlags: 0
@@ -769,6 +772,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3916227017987193931}
   - component: {fileID: 9055719079147699909}
+  - component: {fileID: 2397450549921894863}
   m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
@@ -838,12 +842,29 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: 0.72730947, y: 0.43163124}
-      - {x: 0.36669788, y: 0.5110697}
-      - {x: 0.3115434, y: 0.13740128}
+      - {x: 0.3525595, y: 0.4014975}
+      - {x: 0.3691677, y: 0.31803074}
+      - {x: 0.6013789, y: 0.28231913}
       - {x: 0.37295502, y: 0.010814667}
       - {x: 0.68385935, y: 0.049244404}
       - {x: 0.7954877, y: 0.27568087}
   m_UseDelaunayMesh: 0
+--- !u!114 &2397450549921894863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6471048093767356676}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackInfo: {fileID: 11400000, guid: 63aa610c96a4faf47bccbcb81d6eacd1, type: 2}
+  heroControl: {fileID: 0}
+  attackDamage: 0
+  myTag: 
 --- !u!1 &6867502375343540244
 GameObject:
   m_ObjectHideFlags: 0
@@ -948,6 +969,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1206974101830303524}
   - component: {fileID: 1294561205869525008}
+  - component: {fileID: 3521516385103630857}
   m_Layer: 0
   m_Name: Colllider
   m_TagString: Untagged
@@ -1026,6 +1048,22 @@ PolygonCollider2D:
       - {x: 1.3390949, y: 0.05391734}
       - {x: 1.4141209, y: 0.4609602}
   m_UseDelaunayMesh: 0
+--- !u!114 &3521516385103630857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7926217839006815709}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackInfo: {fileID: 11400000, guid: 638697911de4a2440889528993c94062, type: 2}
+  heroControl: {fileID: 0}
+  attackDamage: 0
+  myTag: 
 --- !u!1 &8485829678663304701
 GameObject:
   m_ObjectHideFlags: 0
@@ -1035,7 +1073,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4732761014376626211}
-  - component: {fileID: 6079538711711298852}
   m_Layer: 0
   m_Name: Skill
   m_TagString: Untagged
@@ -1059,22 +1096,6 @@ Transform:
   - {fileID: 1206974101830303524}
   m_Father: {fileID: 5879607137523459667}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6079538711711298852
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8485829678663304701}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e444470767c68a479100a062ebea7a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackInfo: {fileID: 11400000, guid: 716a0be231a1680458e218a6f59796fa, type: 2}
-  heroControl: {fileID: 0}
-  attackDamage: 0
-  myTag: 
 --- !u!1001 &2653061611112137702
 PrefabInstance:
   m_ObjectHideFlags: 0

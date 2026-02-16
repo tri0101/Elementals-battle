@@ -15,12 +15,17 @@ MonoBehaviour:
   ID: 5
   Name: Lightning Ronin
   role: 1
-  damage: 0
-  health: 500
-  armor: 0
+  normalAttack: {fileID: 11400000, guid: 358905b3eea4d774bbcef5f77e57f33a, type: 2}
+  skill: {fileID: 11400000, guid: bba20d5d27e2bea4bbe9587b93fb2600, type: 2}
+  skillChance: 0.33
+  ultimate: {fileID: 11400000, guid: 4c37d13deadd3414d8f788f2153646ba, type: 2}
+  passive: {fileID: 11400000, guid: dd6f64af03ca31d46b319bd38919f83c, type: 2}
+  damage: 150
+  health: 1035
+  armor: 53
   criticalRate: 100
   criticalDamageRate: 50
-  speed: 0
+  speed: 55
   durationA1: 0.8
   durationA2: 0.8
   iconFace: {fileID: 8621254271928795283, guid: cd2b308fef731a2428676ebde744db09, type: 3}

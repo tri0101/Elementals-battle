@@ -163,7 +163,7 @@ public class HeroControl : Subject
             return;
         isAttack = true;
         actionInProgress = true;
-        BuildTargets();
+        BuildTargets(heroInfo.normalAttack);
         distanceToTarget = GetAttackPosition(heroInfo.normalAttack);
         
     }
@@ -174,7 +174,7 @@ public class HeroControl : Subject
             return;
         isUltimate = true;
         actionInProgress = true;
-        BuildTargets();
+        BuildTargets(heroInfo.ultimate);
         distanceToTarget = GetAttackPosition(heroInfo.ultimate);
         
     }
@@ -185,7 +185,7 @@ public class HeroControl : Subject
             return;
         isSkill = true;
         actionInProgress = true; 
-        BuildTargets();
+        BuildTargets(heroInfo.skill);
         distanceToTarget = GetAttackPosition(heroInfo.skill);
         
     }
@@ -199,7 +199,7 @@ public class HeroControl : Subject
         isDead = true;
 
     }
-    private void BuildTargets()
+    private void BuildTargets(AbilityInfo ability)
     {
         enemyTarget.Clear();
 
@@ -213,7 +213,7 @@ public class HeroControl : Subject
         //    return;
         //}
 
-        AbilityInfo ability = heroInfo.normalAttack;
+        
         string enemyTeam = CompareTag("Hero") ? "Enemy" : "Hero";
 
         switch (ability.targetingMode)
@@ -273,6 +273,39 @@ public class HeroControl : Subject
                 result = enemy.position;
                 result.x += dir * ability.distance;
                 break;
+
+            case PositionAttack.MiddleRow:
+                {
+                    if (enemyTarget == null || enemyTarget.Count == 0)
+                        return transform.position;
+
+                    if (enemyTarget.Count == 1)
+                    {
+                        // Nếu chỉ có 1 enemy thì đứng trước nó
+                        Transform enemyOnly = enemyTarget[0];
+                        float direc = enemyOnly.position.x > transform.position.x ? -1f : 1f;
+
+                        result = enemyOnly.position;
+                        result.x += direc * ability.distance;
+                        return result;
+                    }
+
+                    // Lấy 2 enemy đầu trong row
+                    Transform enemyA = enemyTarget[0];
+                    Transform enemyB = enemyTarget[1];
+
+                    // Tính trung điểm
+                    float middleX = (enemyA.position.x + enemyB.position.x) / 2f;
+
+                    result = new Vector3(
+                        middleX,
+                        transform.position.y,
+                        transform.position.z
+                    );
+
+                    break;
+                }
+
         }
 
         return result;
