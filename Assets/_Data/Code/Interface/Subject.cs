@@ -34,4 +34,9 @@ public abstract class Subject : MonoBehaviour
         foreach (var observer in _observers)
             observer.OnNotify(type, data);
     }
+    protected void NotifyObservers(HPNotifyType type, DamageType damageType, object data = null )
+    {
+        foreach (var observer in _observers)
+            observer.OnNotify(type, data, damageType);
+    }
 }

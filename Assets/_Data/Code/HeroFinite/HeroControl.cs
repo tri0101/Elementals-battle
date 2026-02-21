@@ -77,6 +77,12 @@ public class HeroControl : Subject
         get => isClear;
         set => isClear = value;
     }
+    [SerializeField] private bool isCrit = false;
+    public bool IsCrit
+    {
+        get => isCrit;
+        set => isCrit = value;
+    }
 
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
@@ -157,12 +163,20 @@ public class HeroControl : Subject
         
         distanceToTarget = clearPosition.position;
     }
+
+    //tính tỉ lệ chí mạng
+    public bool IsCritical()
+    {
+        float randomValue = Random.Range(0f, 100f);
+        return randomValue < heroInfo.criticalRate;
+    }
     public void SetAttack()
     {
         if(heroInfo.normalAttack == null)
             return;
         isAttack = true;
         actionInProgress = true;
+        isCrit = IsCritical();
         BuildTargets(heroInfo.normalAttack);
         distanceToTarget = GetAttackPosition(heroInfo.normalAttack);
         
@@ -174,6 +188,7 @@ public class HeroControl : Subject
             return;
         isUltimate = true;
         actionInProgress = true;
+        isCrit = IsCritical();
         BuildTargets(heroInfo.ultimate);
         distanceToTarget = GetAttackPosition(heroInfo.ultimate);
         
@@ -184,7 +199,8 @@ public class HeroControl : Subject
         if(heroInfo.skill == null)
             return;
         isSkill = true;
-        actionInProgress = true; 
+        actionInProgress = true;
+        isCrit = IsCritical();
         BuildTargets(heroInfo.skill);
         distanceToTarget = GetAttackPosition(heroInfo.skill);
         
@@ -538,6 +554,10 @@ public class HeroControl : Subject
     public void RefreshObservers(HPNotifyType type, object data = null)
     {
         NotifyObservers(type, data);
+    }
+    public void RefreshObservers(HPNotifyType type,  DamageType damageType, object data = null)
+    {
+        NotifyObservers(type,  damageType, data);
     }
 
     public void SetBattleTarget(Vector3 pos)

@@ -30,7 +30,7 @@ public class HeroInfo : ScriptableObject
     public float armor;
     [Header("Attribute probability")]
     public float criticalRate; // tỉ lệ chí mạng
-    public float criticalDamageRate; // sát thương chí mạng
+    public float criticalDamageRate; // sát thương chí mạng (150 , 200)
 
     [Header("Speed")]
     public float speed;

@@ -83,12 +83,12 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
 
 
-    public void ReceiveDamage(float damage)
+    public void ReceiveDamage(float damage, DamageType damageType)
     {
 
 
         heroControl.SetIsTakeHit();
-        heroControl.HeroStatRuntime.MinusHP((int)damage);
+        heroControl.HeroStatRuntime.MinusHP((int)damage, damageType);
         heroControl.HeroStatRuntime.GainMana(200);
         if(heroControl.HeroStatRuntime.CurrentHealth <= 0)
         {

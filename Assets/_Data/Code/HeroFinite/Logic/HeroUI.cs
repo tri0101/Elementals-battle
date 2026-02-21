@@ -8,6 +8,12 @@ public enum HPNotifyType
     HPMinus, 
     HPPlus
 }
+public enum DamageType // để phân biệt kiểu damage (normal, crit, block)
+{
+    critDamage,
+    blockDamage,
+    normalDamage
+}
 
 public class HeroUI : MonoBehaviour, IObserver
 {
@@ -21,7 +27,8 @@ public class HeroUI : MonoBehaviour, IObserver
     public Transform listDamage;
     // ===== Bar Animation =====
     [SerializeField] private float barAnimDuration = 0.25f;
-
+    [SerializeField] private Material normalMaterial;
+    [SerializeField] private Material critMaterial;
     private float currentHp01 = -1f;
     private float currentMana01 = -1f;
 
@@ -65,12 +72,12 @@ public class HeroUI : MonoBehaviour, IObserver
 
       
     }
-    public void OnNotify(HPNotifyType type, object value)
+    public void OnNotify(HPNotifyType type, object value,DamageType damageType )
     {
         switch (type)
         {
             case HPNotifyType.HPMinus:
-                SpawnDamageText((int)value);
+                SpawnDamageText((int)value, damageType);
                 break;
 
             
@@ -78,9 +85,9 @@ public class HeroUI : MonoBehaviour, IObserver
 
       
     }
-    
+
     // ================= FLOATING TEXT =================
-    private void SpawnDamageText(int value)
+    private void SpawnDamageText(int value, DamageType damageType)
     {
         if (damageTextPrefab == null || value <= 0) return;
 
@@ -88,7 +95,22 @@ public class HeroUI : MonoBehaviour, IObserver
             Instantiate(damageTextPrefab, listDamage);
 
         text.text = value.ToString();
-       
+
+        switch (damageType)
+        {
+            case DamageType.critDamage:
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                break;
+
+            case DamageType.normalDamage:
+            default:
+                text.color = new Color32(211, 71, 35, 255);
+                text.fontSize = 12;
+                text.fontSharedMaterial = normalMaterial;
+                break;
+        }
 
         StartCoroutine(CoFloatAndFade(text));
     }

@@ -24,12 +24,22 @@ public class Attack : Subject
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        DamageType damageType;
         if (!other.CompareTag("ReceiveField"))
         {
             Debug.Log(other.tag);
             return;
         }
         attackDamage = attackInfo.mutiplerDamageSend * heroControl.HeroStatRuntime.Damage;
+        if (heroControl.IsCrit)
+        {
+            attackDamage *= (heroControl.HeroInfo.criticalDamageRate / 100);
+            damageType = DamageType.critDamage;
+        }
+        else
+        {
+            damageType = DamageType.normalDamage;
+        }
         Debug.Log("Attack Damage: " + attackDamage);
         var hero = other.GetComponent<HeroReceiveDamagee>();
         if (hero == null)
@@ -44,7 +54,7 @@ public class Attack : Subject
             Debug.Log("Not enemy target");
             return;
         }
-        hero.ReceiveDamage(attackDamage);
+        hero.ReceiveDamage(attackDamage, damageType);
         NotifyObservers(this);
     }
 

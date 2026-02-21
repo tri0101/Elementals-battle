@@ -149,7 +149,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
     }
-    public void MinusHP(int value)
+    public void MinusHP(int value , DamageType damageType)
     {
         CurrentHealth -= value;
         if (currentHealth <= 0)
@@ -159,7 +159,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         float health01 = CurrentHealth / (float)MaxHealth;
 
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
-        heroControl.RefreshObservers(HPNotifyType.HPMinus, (int)value);
+        heroControl.RefreshObservers(HPNotifyType.HPMinus,  damageType, (int)value);
         
     }
 
