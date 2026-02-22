@@ -1,16 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
-
+using TMPro;
 public class UI_ListStage : MonoBehaviour
 {
     [SerializeField] private Transform levelContent;
     [SerializeField] private List<UI_StageLoad> stages = new();
-
+    [SerializeField] private UI_ListStarReward listStarReward;
     [SerializeField] private Button prevButton;
     [SerializeField] private Button nextButton;
+    [SerializeField] private Button buttonReward10;
+    [SerializeField] private Button buttonReward20;
+    [SerializeField] private Button buttonReward30;
+    [SerializeField] private TextMeshProUGUI totalStarText;
 
-     PlayerProgress playerProgress;
+    PlayerProgress playerProgress;
     int currentChapter;
     int maxChapter;
 
@@ -20,6 +24,7 @@ public class UI_ListStage : MonoBehaviour
         maxChapter = levelContent.childCount;
 
         LoadChapter(playerProgress.currentChapter);
+        
     }
 
     void LoadChapter(int chapterIndex)
@@ -58,6 +63,8 @@ public class UI_ListStage : MonoBehaviour
 
         SetupButtons();
         RefreshAll();
+        LoadStarReward();
+        OnClickButtonReward();
     }
 
     void SetupButtons()
@@ -100,5 +107,26 @@ public class UI_ListStage : MonoBehaviour
     public void OnStageCleared()
     {
         RefreshAll();
+    }
+    void LoadStarReward()
+    {
+        int starRewrad = ProgressManager.Instance.GetStarInChapter(currentChapter);
+        totalStarText.text = $"{starRewrad}"+"/30";
+    }
+    void OnClickButtonReward()
+    {
+        buttonReward10.onClick.RemoveAllListeners();
+        buttonReward20.onClick.RemoveAllListeners();
+        buttonReward30.onClick.RemoveAllListeners();
+        buttonReward10.onClick.AddListener(() => ShowPanel(0));
+        buttonReward20.onClick.AddListener(() => ShowPanel(1));
+        buttonReward30.onClick.AddListener(() => ShowPanel(2));
+        
+    }
+
+    void ShowPanel(int index)
+    {
+        listStarReward.gameObject.SetActive(true);
+        listStarReward.OnClick(currentChapter, index);
     }
 }

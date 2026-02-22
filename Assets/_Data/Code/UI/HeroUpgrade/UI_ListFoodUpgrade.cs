@@ -14,12 +14,14 @@ public class UI_ListFoodUpgrade : MonoBehaviour
     [SerializeField] private GameObject prefabItem3;   // dùng cho 54
     [SerializeField] private GameObject prefabItem55;  // dùng cho 55
     [SerializeField] private UI_ListHeroUpgrade uiHeroUpgrade;
+
     [Header("Level Bar")]
     [SerializeField] private TextMeshProUGUI currentLevelText;
     [SerializeField] private TextMeshProUGUI currentLevelExpBarText;
     [SerializeField] private Image expFillImage;
 
     Coroutine expAnimRoutine;
+    private Coroutine levelTextAnimRoutine;
 
     void OnEnable()
     {
@@ -73,7 +75,6 @@ public class UI_ListFoodUpgrade : MonoBehaviour
         int prevLevel = selected.level;
         int prevExp = selected.currentExp;
 
-       
         bool ok = HeroUpgradeService.Instance.FeedExp(selected, item);
         if (!ok) return;
 
@@ -81,8 +82,12 @@ public class UI_ListFoodUpgrade : MonoBehaviour
         int newLevel = selected.level;
         int newExp = selected.currentExp;
 
-       
+        bool leveledUp = newLevel > prevLevel;
+
+        // Update level text + animate highlight if level changed
         UpdateLevelText(newLevel);
+        if (leveledUp)
+            PlayLevelTextAnim();
 
         // Hủy animation trước nếu đang chạy
         if (expAnimRoutine != null)
@@ -91,10 +96,68 @@ public class UI_ListFoodUpgrade : MonoBehaviour
         // Bắt đầu animation mới cho fillAmount của Image
         expAnimRoutine = StartCoroutine(AnimateExpChange(prevLevel, prevExp, newLevel, newExp));
 
-        
         LoadFoodItems();
+
+        // Refresh toàn bộ header/chỉ số bên phải; phần "chỉ số" sẽ update theo UI_HeroUpgradeHeader
         if (uiHeroUpgrade != null)
+        {
             uiHeroUpgrade.Refresh();
+
+            // Chỉ pop các chỉ số khi lên ít nhất 1 level mới
+            if (leveledUp && uiHeroUpgrade.Header != null)
+                uiHeroUpgrade.Header.PlayStatUpgradeFx();
+        }
+    }
+
+    private void PlayLevelTextAnim()
+    {
+        if (currentLevelText == null) return;
+
+        if (levelTextAnimRoutine != null)
+            StopCoroutine(levelTextAnimRoutine);
+
+        levelTextAnimRoutine = StartCoroutine(AnimateTMP(currentLevelText, 0.1f, 1.5f, Color.green));
+    }
+
+    private IEnumerator AnimateTMP(TextMeshProUGUI txt, float duration, float scaleUp, Color highlightColor)
+    {
+        if (txt == null) yield break;
+
+        Transform t = txt.transform;
+        Vector3 baseScale = t.localScale;
+        Color baseColor = txt.color;
+
+        float half = Mathf.Max(0.0001f, duration * 0.5f);
+
+        // Up
+        float elapsed = 0f;
+        while (elapsed < half)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float k = Mathf.Clamp01(elapsed / half);
+            float eased = Mathf.SmoothStep(0f, 1f, k);
+
+            t.localScale = Vector3.Lerp(baseScale, baseScale * scaleUp, eased);
+            txt.color = Color.Lerp(baseColor, highlightColor, eased);
+            yield return null;
+        }
+
+        // Down
+        elapsed = 0f;
+        while (elapsed < half)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float k = Mathf.Clamp01(elapsed / half);
+            float eased = Mathf.SmoothStep(0f, 1f, k);
+
+            t.localScale = Vector3.Lerp(baseScale * scaleUp, baseScale, eased);
+            txt.color = Color.Lerp(highlightColor, baseColor, eased);
+            yield return null;
+        }
+
+        t.localScale = baseScale;
+        txt.color = baseColor;
+        levelTextAnimRoutine = null;
     }
 
     IEnumerator AnimateExpChange(int prevLevel, int prevExp, int newLevel, int newExp)
@@ -102,7 +165,6 @@ public class UI_ListFoodUpgrade : MonoBehaviour
         var config = HeroUpgradeService.Instance.LevelConfig;
         int[] table = config.expPerLevel;
 
-        // Hàm phụ lấy exp cần cho 1 level và xác định max level
         bool GetNeed(int lvl, out int need, out bool isMax)
         {
             int idx = lvl - 1;
@@ -180,7 +242,6 @@ public class UI_ListFoodUpgrade : MonoBehaviour
             float val = Mathf.Lerp(from, to, Mathf.SmoothStep(0f, 1f, t));
             if (expFillImage != null) expFillImage.fillAmount = val;
 
-            // Hiển thị exp ước lượng trong quá trình animate (giúp người dùng thấy thay đổi)
             int shownExp = Mathf.RoundToInt(val * needForDisplay);
             currentLevelExpBarText.text = $"{shownExp} / {needForDisplay}";
 
@@ -267,7 +328,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
 
     int GetPlayerItemAmount(int itemId)
     {
-       return PlayerInventory.Instance != null ? PlayerInventory.Instance.GetItemQuantity(itemId) : 0;
+        return PlayerInventory.Instance != null ? PlayerInventory.Instance.GetItemQuantity(itemId) : 0;
     }
 
     void Clear()

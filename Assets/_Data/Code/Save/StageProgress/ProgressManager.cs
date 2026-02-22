@@ -18,6 +18,26 @@ public class ProgressManager : MonoBehaviour
 
         Load();
     }
+    public int GetStarInChapter(int chapter)
+    {
+        int totalStar = 0;
+
+        int startId = (chapter - 1) * 10 + 1;
+        int endId = chapter * 10;
+
+        foreach (var kvp in progress.stageResult)
+        {
+            int stageId = kvp.Key;
+            int star = kvp.Value;
+
+            if (stageId >= startId && stageId <= endId)
+            {
+                totalStar += star;
+            }
+        }
+
+        return totalStar;
+    }
     public void UpdateStage(int stageId)
     {
         if (stageId < progress.currentStageId) return;
@@ -57,5 +77,9 @@ public class ProgressManager : MonoBehaviour
         {
             progress = new PlayerProgress();
         }
+    }
+    public int  GetChapter()
+    {
+        return progress.currentChapter;
     }
 }

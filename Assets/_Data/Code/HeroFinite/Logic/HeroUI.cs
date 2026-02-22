@@ -94,11 +94,13 @@ public class HeroUI : MonoBehaviour, IObserver
         TextMeshProUGUI text =
             Instantiate(damageTextPrefab, listDamage);
 
-        text.text = value.ToString();
+
+       
 
         switch (damageType)
         {
             case DamageType.critDamage:
+                text.text = "CRIT-" + value.ToString();
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;
@@ -106,6 +108,7 @@ public class HeroUI : MonoBehaviour, IObserver
 
             case DamageType.normalDamage:
             default:
+                text.text = value.ToString();
                 text.color = new Color32(211, 71, 35, 255);
                 text.fontSize = 12;
                 text.fontSharedMaterial = normalMaterial;

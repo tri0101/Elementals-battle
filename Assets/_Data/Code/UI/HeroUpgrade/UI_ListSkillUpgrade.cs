@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,6 +31,8 @@ public class UI_ListSkillUpgrade : MonoBehaviour
     public Color notEarnedColor = new Color32(158, 101, 101, 255); // tối
 
     private readonly Dictionary<AbilityType, UI_SkillUpgradeItem> skillItemsByType = new();
+
+    private Coroutine powerAnimRoutine;
 
     void OnEnable()
     {
@@ -97,7 +100,7 @@ public class UI_ListSkillUpgrade : MonoBehaviour
         textLevelHero.text = heroViewData.instance.level.ToString();
         textRoleHero.text = heroViewData.info.role.ToString();
 
-        int power = RefreshPower(heroViewData);
+        int power = RefreshPower(heroViewData, true);
         textPowerHero.text = power.ToString();
 
         SetUpStar(heroViewData.instance.star);
@@ -117,7 +120,7 @@ public class UI_ListSkillUpgrade : MonoBehaviour
         }
     }
 
-    int RefreshPower(HeroViewData data)
+    int RefreshPower(HeroViewData data, bool isFirst)
     {
         var stat = HeroStatCalculator.Calculate(
                data.info,
@@ -125,7 +128,64 @@ public class UI_ListSkillUpgrade : MonoBehaviour
                growthConfig
            );
 
-        return starHero = Mathf.RoundToInt(stat.power);
+        int power = Mathf.RoundToInt(stat.power);
+        starHero = power;
+        if (!isFirst)
+        {
+            if (textPowerHero != null)
+            {
+                // restart animation if spam upgrade
+                if (powerAnimRoutine != null)
+                    StopCoroutine(powerAnimRoutine);
+
+                powerAnimRoutine = StartCoroutine(AnimatePowerText(textPowerHero, 0.1f, 1.5f, Color.green));
+            }
+        }
+        
+
+        return power;
+    }
+
+    private IEnumerator AnimatePowerText(TextMeshProUGUI txt, float duration, float scaleUp, Color highlightColor)
+    {
+        if (txt == null) yield break;
+
+        Transform t = txt.transform;
+        Vector3 baseScale = t.localScale;
+        Color baseColor = txt.color;
+
+        float half = Mathf.Max(0.0001f, duration * 0.5f);
+
+        // Up
+        float elapsed = 0f;
+        while (elapsed < half)
+        {
+            elapsed += Time.deltaTime;
+            float k = Mathf.Clamp01(elapsed / half);
+            float eased = Mathf.SmoothStep(0f, 1f, k);
+
+            t.localScale = Vector3.Lerp(baseScale, baseScale * scaleUp, eased);
+            txt.color = Color.Lerp(baseColor, highlightColor, eased);
+            yield return null;
+        }
+
+        // Down
+        elapsed = 0f;
+        while (elapsed < half)
+        {
+            elapsed += Time.deltaTime;
+            float k = Mathf.Clamp01(elapsed / half);
+            float eased = Mathf.SmoothStep(0f, 1f, k);
+
+            t.localScale = Vector3.Lerp(baseScale * scaleUp, baseScale, eased);
+            txt.color = Color.Lerp(highlightColor, baseColor, eased);
+            yield return null;
+        }
+
+        // snap exact
+        t.localScale = baseScale;
+        txt.color = baseColor;
+        powerAnimRoutine = null;
     }
 
     int RefreshCost(AbilityType type, int currentLevel)
@@ -159,7 +219,7 @@ public class UI_ListSkillUpgrade : MonoBehaviour
 
     void OnClickUp(HeroInstance hero, AbilityType type)
     {
-        
+
         int cost = RefreshCost(type, hero.GetAbilityLevel(type));
         if (PlayerInventory.Instance.GetItemQuantity(1) < cost)
         {
@@ -171,8 +231,9 @@ public class UI_ListSkillUpgrade : MonoBehaviour
             PlayerInventory.Instance.ConsumeItem(1, cost);
         }
         HeroUpgradeService.Instance.UpSkill(hero, type);
-        // refresh power (header)
-        textPowerHero.text = RefreshPower(heroViewData).ToString();
+
+        // refresh power (header) + animate
+        textPowerHero.text = RefreshPower(heroViewData, false).ToString();
 
         // refresh that skill row: level + new cost + coin color
         if (skillItemsByType.TryGetValue(type, out var itemUi) && itemUi != null)
