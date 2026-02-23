@@ -4,11 +4,11 @@ using UnityEngine;
 public class UI_ListHeroBattle : MonoBehaviour
 {
 
-    public HeroDatabase heroDatabase;
-    public Transform contentBattle;
-    public Transform contentExpPlus;
-    public GameObject heroBattlePrefab;
-    public GameObject heroExpPlusPrefab;
+   
+    [SerializeField] private Transform contentBattle;
+    [SerializeField] private Transform contentExpPlus;
+    [SerializeField] private GameObject heroBattlePrefab;
+    [SerializeField] private GameObject heroExpPlusPrefab;
    
     void OnEnable()
     {
@@ -20,7 +20,7 @@ public class UI_ListHeroBattle : MonoBehaviour
         Clear();
 
         
-        var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
         var heroById = new Dictionary<int, HeroViewData>();
         foreach (var h in heroes)
         {

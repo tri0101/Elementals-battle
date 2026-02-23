@@ -6,8 +6,7 @@ public class BattleManager : MonoBehaviour
 {
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI waveText;
-    [Header("Refs")]
-    [SerializeField] private HeroDatabase heroDatabase;
+
 
     [Header("Stage")]
     [SerializeField] private StageConfig stageConfig;
@@ -123,16 +122,12 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        if (heroDatabase == null)
-        {
-            Debug.LogError("[BattleManager] heroDatabase is NULL");
-            return;
-        }
+        
 
         if (growthConfig == null)
             Debug.LogWarning("[BattleManager] growthConfig is NULL. Units will fallback to HeroInfo base stats (no scaling).");
 
-        heroDatabase.Init();
+        DatabaseManager.Instance.HeroDatabase.Init();
 
         if (!keepHeroes)
         {
@@ -212,7 +207,7 @@ public class BattleManager : MonoBehaviour
 
     private void SpawnPlayerHeroes()
     {
-        var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
         var heroById = new Dictionary<int, HeroViewData>();
         foreach (var h in heroes)
         {
@@ -327,7 +322,7 @@ public class BattleManager : MonoBehaviour
                 continue;
             }
 
-            var enemyInfo = heroDatabase.GetHero(enemyHeroId);
+            var enemyInfo = DatabaseManager.Instance.HeroDatabase.GetHero(enemyHeroId);
             if (enemyInfo == null || enemyInfo.HeroPrefab == null)
             {
                 Debug.LogWarning($"[BattleManager] Enemy heroId={enemyHeroId} missing in HeroDatabase or missing HeroPrefab.");

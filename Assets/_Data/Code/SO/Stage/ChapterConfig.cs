@@ -12,4 +12,5 @@ public class ChapterConfig : ScriptableObject
     public List<ItemStarReward> dropItems0; // index = 0 => 10 sao, index = 1 => 20 sao, index = 2 => 30 sao
     public List<ItemStarReward> dropItems1;
     public List<ItemStarReward> dropItems2;
+
 }

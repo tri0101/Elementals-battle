@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class UI_ListInventory : MonoBehaviour
 {
-    [SerializeField] private ItemDatabase itemDatabase;
+   
     [SerializeField] private Transform content;
     [SerializeField] private GameObject itemPrefab;
     [SerializeField] private GameObject itemPrefabShard;
@@ -71,14 +71,14 @@ public class UI_ListInventory : MonoBehaviour
     {
         Clear();
 
-        if (PlayerInventory.Instance == null || itemDatabase == null || itemPrefab == null || content == null)
+        if (PlayerInventory.Instance == null || DatabaseManager.Instance.ItemDatabase == null || itemPrefab == null || content == null)
             return;
 
         foreach (var itemInstance in PlayerInventory.Instance.Items)
         {
             if (itemInstance == null) continue;
 
-            var itemData = itemDatabase.GetItem(itemInstance.itemId);
+            var itemData = DatabaseManager.Instance.ItemDatabase.GetItem(itemInstance.itemId);
             if (itemData == null) continue;
 
           

@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class UI_PanelDetailStage : MonoBehaviour, IObserver
 {
-    [Header("Database")]
-    [SerializeField] private StageDatabase stageDatabase;
-    [SerializeField] private ItemDatabase itemDatabase;
-    [SerializeField] private HeroDatabase heroDatabase;
+  
 
     [Header("UI")]
     [SerializeField] private Transform contentItem;
@@ -58,7 +55,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
         gameObject.SetActive(true);
         stage.SetActive(false);
         backEmpty.SetActive(true);
-        currentStage = stageDatabase.GetStage(stageId);
+        currentStage = DatabaseManager.Instance.StageDatabase.GetStage(stageId);
         if (currentStage == null)
         {
             Debug.LogError($"StageConfig not found: {stageId}");
@@ -79,7 +76,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
         foreach (var drop in currentStage.dropItems)
         {
             if(drop.itemId == 1) continue; // skip coin
-            ItemData itemData = itemDatabase.GetItem(drop.itemId);
+            ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(drop.itemId);
             if (itemData == null) continue;
 
             CreateItem(itemData);
@@ -91,7 +88,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
 
         foreach (var enemy in currentStage.enemies)
         {
-            HeroInfo heroData = heroDatabase.GetHero(enemy.heroId);
+            HeroInfo heroData = DatabaseManager.Instance.HeroDatabase.GetHero(enemy.heroId);
             if (heroData == null) continue;
 
             CreateEnemy(heroData, enemy);

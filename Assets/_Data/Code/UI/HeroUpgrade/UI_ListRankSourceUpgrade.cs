@@ -10,7 +10,6 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
 {
     [Header("Config")]
     [SerializeField] private HeroRankConfig rankConfig;
-    [SerializeField] private ItemDatabase itemDatabase;
 
     [Header("UI")]
     [SerializeField] private Transform content;
@@ -111,7 +110,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
 
     void CreateSlot(int itemId, int required)
     {
-        ItemData itemData = itemDatabase.GetItem(itemId);
+        ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(itemId);
         if (itemData == null) return;
 
         int owned = GetOwned(itemId);
@@ -152,7 +151,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
         {
             ItemCost cost = req.costs.Find(c =>
             {
-                ItemData data = itemDatabase.GetItem(c.itemId);
+                ItemData data = DatabaseManager.Instance.ItemDatabase.GetItem(c.itemId);
                 return data != null && data.name.Contains(key);
             });
 
@@ -252,7 +251,7 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
         {
             ItemCost cost = req.costs.Find(c =>
             {
-                ItemData data = itemDatabase.GetItem(c.itemId);
+                ItemData data = DatabaseManager.Instance.ItemDatabase.GetItem(c.itemId);
                 return data != null && data.name.Contains(key);
             });
 

@@ -6,7 +6,7 @@ using System.Linq;
 public class UI_PanelChooseHero : MonoBehaviour
 {
     [SerializeField] private int currentStageId;
-    [SerializeField] private HeroDatabase heroDatabase;
+
     [SerializeField] private HeroGrowthConfig growthConfig;
     [SerializeField] private Transform content;
     [SerializeField] private GameObject heroItemPrefab;
@@ -59,7 +59,7 @@ public class UI_PanelChooseHero : MonoBehaviour
             return;
 
         Clear();
-        var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
 
         foreach (var hero in heroes)
         {
@@ -76,7 +76,7 @@ public class UI_PanelChooseHero : MonoBehaviour
     public void RefreshPower()
     {
         float totalPower = 0f;
-        var allHeroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var allHeroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
 
         int[] idsInFormation = FormationManager.Load();
 

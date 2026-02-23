@@ -5,7 +5,7 @@ using System.Collections;
 
 public class UI_ListFoodUpgrade : MonoBehaviour
 {
-    [SerializeField] private ItemDatabase itemDatabase;
+   
     [SerializeField] private Transform content;
 
     [Header("Prefabs")]
@@ -43,7 +43,7 @@ public class UI_ListFoodUpgrade : MonoBehaviour
 
     void CreateItem(int itemId)
     {
-        ItemData itemData = itemDatabase.GetItem(itemId);
+        ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(itemId);
         if (itemData == null) return;
 
         int amount = GetPlayerItemAmount(itemId);

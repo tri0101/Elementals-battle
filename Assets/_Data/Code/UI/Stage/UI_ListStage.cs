@@ -6,13 +6,10 @@ public class UI_ListStage : MonoBehaviour
 {
     [SerializeField] private Transform levelContent;
     [SerializeField] private List<UI_StageLoad> stages = new();
-    [SerializeField] private UI_ListStarReward listStarReward;
+
     [SerializeField] private Button prevButton;
     [SerializeField] private Button nextButton;
-    [SerializeField] private Button buttonReward10;
-    [SerializeField] private Button buttonReward20;
-    [SerializeField] private Button buttonReward30;
-    [SerializeField] private TextMeshProUGUI totalStarText;
+    [SerializeField] private UI_PanelReward panelReward;
 
     PlayerProgress playerProgress;
     int currentChapter;
@@ -63,8 +60,10 @@ public class UI_ListStage : MonoBehaviour
 
         SetupButtons();
         RefreshAll();
-        LoadStarReward();
-        OnClickButtonReward();
+        panelReward.OnClickButtonReward(currentChapter);
+        panelReward.LoadUI(currentChapter);
+        panelReward.LoadStarReward(currentChapter);
+       
     }
 
     void SetupButtons()
@@ -108,25 +107,5 @@ public class UI_ListStage : MonoBehaviour
     {
         RefreshAll();
     }
-    void LoadStarReward()
-    {
-        int starRewrad = ProgressManager.Instance.GetStarInChapter(currentChapter);
-        totalStarText.text = $"{starRewrad}"+"/30";
-    }
-    void OnClickButtonReward()
-    {
-        buttonReward10.onClick.RemoveAllListeners();
-        buttonReward20.onClick.RemoveAllListeners();
-        buttonReward30.onClick.RemoveAllListeners();
-        buttonReward10.onClick.AddListener(() => ShowPanel(0));
-        buttonReward20.onClick.AddListener(() => ShowPanel(1));
-        buttonReward30.onClick.AddListener(() => ShowPanel(2));
-        
-    }
-
-    void ShowPanel(int index)
-    {
-        listStarReward.gameObject.SetActive(true);
-        listStarReward.OnClick(currentChapter, index);
-    }
+   
 }

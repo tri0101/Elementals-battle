@@ -9,7 +9,6 @@ public class UI_FormationManager : MonoBehaviour
     public GameObject heroItemPrefab;
 
     [Header("Refs")]
-    public HeroDatabase heroDatabase;
     public UI_PanelChooseHero panelChooseHero;
 
     private const int MAX_SLOT = 6;
@@ -208,7 +207,7 @@ public class UI_FormationManager : MonoBehaviour
             }
         }
 
-        var allHeroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var allHeroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
 
         for (int i = 1; i <= MAX_SLOT; i++)
         {
@@ -287,7 +286,7 @@ public class UI_FormationManager : MonoBehaviour
     public List<string> CheckFormationStatus()
     {
         List<string> slotDetails = new List<string>();
-        var allHeroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var allHeroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
 
         for (int i = 1; i <= MAX_SLOT; i++)
         {

@@ -17,8 +17,7 @@ public class UI_StageReward : MonoBehaviour
     [SerializeField] private TextMeshProUGUI coinText;
     [SerializeField] private StageConfig stageConfig;
     [SerializeField] private Transform starRoot;
-    [Header("Database")]
-    [SerializeField] private ItemDatabase itemDatabase;
+
     [Header("Transform")]
     [SerializeField] private Transform contentItem;
     [SerializeField] private GameObject itemPrefab;
@@ -179,7 +178,7 @@ public class UI_StageReward : MonoBehaviour
         foreach (var itemID in itemDrop.Keys)
         {
             if (itemID == 1) continue; // skip coin
-            ItemData itemData = itemDatabase.GetItem(itemID);
+            ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(itemID);
             int amount = itemDrop[itemID];
             if (itemData == null) continue;
 

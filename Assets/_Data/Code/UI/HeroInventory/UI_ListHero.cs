@@ -2,9 +2,9 @@
 
 public class UI_ListHero : MonoBehaviour
 {
-    public HeroDatabase heroDatabase;
-    public Transform content;
-    public GameObject heroItemPrefab;
+   
+    [SerializeField] private Transform content;
+    [SerializeField] private GameObject heroItemPrefab;
 
     void OnEnable()
     {
@@ -15,7 +15,7 @@ public class UI_ListHero : MonoBehaviour
     {
         Clear();
 
-        var heroes = PlayerInventory.Instance.GetHeroViewList(heroDatabase);
+        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
 
         foreach (var hero in heroes)
             CreateItem(hero);

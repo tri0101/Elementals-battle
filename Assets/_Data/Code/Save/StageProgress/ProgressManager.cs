@@ -82,4 +82,21 @@ public class ProgressManager : MonoBehaviour
     {
         return progress.currentChapter;
     }
+
+    public void SetClaim(int chapterID, int index)
+    {
+        if (!progress.chapterRewardClaimed.ContainsKey(chapterID))
+        {
+            progress.chapterRewardClaimed[chapterID] = new bool[3];
+        }
+        progress.chapterRewardClaimed[chapterID][index] = true;
+    }
+    public bool IsClaimed(int chapterID, int index)
+    {
+        if (!progress.chapterRewardClaimed.ContainsKey(chapterID))
+        {
+            return false;
+        }
+        return progress.chapterRewardClaimed[chapterID][index];
+    }
 }

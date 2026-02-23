@@ -2,7 +2,7 @@
 
 public class UI_ListHeroUpgrade : MonoBehaviour
 {
-    [SerializeField] private HeroDatabase heroDatabase;
+    
     [SerializeField] private Transform content;
     public Transform Content => content;
     [SerializeField] private GameObject heroUpgradeItemPrefab;
@@ -28,7 +28,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
         Clear();
 
         var heroes = PlayerInventory.Instance
-            .GetHeroViewList(heroDatabase);
+            .GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
 
         foreach (var hero in heroes)
             CreateItem(hero);
