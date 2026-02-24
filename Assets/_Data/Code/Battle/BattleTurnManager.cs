@@ -120,6 +120,7 @@ public class BattleTurnManager : MonoBehaviour
         if (currentWave >= battleManager.StageConfig.waveStage)
         {
             isEnd = true;
+            Time.timeScale = 1f;
             for (int slot = 1; slot <= 6; slot++)
             {
                 var hero = GetUnitAtSlot(TeamHero, slot);
