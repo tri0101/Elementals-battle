@@ -25,6 +25,7 @@ public class UI_InventoryItem : MonoBehaviour
             return;
         }
 
+
         if (icon != null)
         {
             icon.sprite = itemData.icon;
@@ -34,6 +35,7 @@ public class UI_InventoryItem : MonoBehaviour
         if (amountText != null)
             amountText.text = quantity.ToString();
 
+        GetComponent<Image>().color = itemData.colorFrame;
         if (buttonDetail != null)
             buttonDetail.interactable = quantity > 0;
     }

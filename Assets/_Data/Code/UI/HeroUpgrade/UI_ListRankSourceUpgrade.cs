@@ -118,25 +118,25 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
         var go = Instantiate(itemPrefab, content);
         var uiItem = go.GetComponent<UI_RankSourceUpgradeItem>();
         uiItem.Setup(itemData, owned, required);
+        
 
-
-        // rank 1-4 => đen, rank 5-8 => xanh
-        if (uiItem != null && uiItem.Icon != null && currentHero != null && currentHero.instance != null)
-        {
-            int rank = currentHero.instance.rank;
-            if (rank >= 1 && rank <= 4)
-            {
-                uiItem.GetComponent<Image>().color = Color.black;
-            }
-            else if (rank >= 5 && rank <= 8)
-            {
-                uiItem.GetComponent<Image>().color = new Color(73f / 255f, 1f, 115f / 255f);
-            }
-            else
-            {
-                uiItem.GetComponent<Image>().color = Color.white;
-            }
-        }
+        //// rank 1-4 => đen, rank 5-8 => xanh
+        //if (uiItem != null && uiItem.Icon != null && currentHero != null && currentHero.instance != null)
+        //{
+        //    int rank = currentHero.instance.rank;
+        //    if (rank >= 1 && rank <= 4)
+        //    {
+        //        uiItem.GetComponent<Image>().color = Color.black;
+        //    }
+        //    else if (rank >= 5 && rank <= 8)
+        //    {
+        //        uiItem.GetComponent<Image>().color = new Color(73f / 255f, 1f, 115f / 255f);
+        //    }
+        //    else
+        //    {
+        //        uiItem.GetComponent<Image>().color = Color.white;
+        //    }
+        //}
     }
 
     void CreateSlotByRole(RankRequirement req, RoleHero role, bool main)

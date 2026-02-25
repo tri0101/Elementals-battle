@@ -17,7 +17,7 @@ public class UI_DropPreviewItem : MonoBehaviour
     public void Setup(ItemData itemData)
     {
         if (itemData == null) return;
-
+        GetComponent<Image>().color = itemData.colorFrame;
         icon.sprite = itemData.icon;
         ApplyIconTransform(itemData);
 

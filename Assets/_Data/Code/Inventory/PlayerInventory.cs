@@ -47,6 +47,7 @@ public class PlayerInventory :  Subject
         AddItem(1, 500); 
         AddItem(2, 25000); 
         AddItem(3, 1); 
+        AddItem(4, 25); 
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)

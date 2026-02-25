@@ -7,7 +7,7 @@ public enum ItemType
     RankPotion = 3,     // thuốc tăng rank
     Currency = 4,        // vàng, kim cương
     HeroShard = 5,
-    
+    Other = 6,         // các loại item khác
 }
 
 [System.Serializable]

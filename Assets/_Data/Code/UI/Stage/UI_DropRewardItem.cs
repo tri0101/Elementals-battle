@@ -17,7 +17,7 @@ public class UI_DropRewardItem : MonoBehaviour
     public void Setup(ItemData itemData, int amount)
     {
         if (itemData == null) return;
-
+        GetComponent<Image>().color = itemData.colorFrame;
         icon.sprite = itemData.icon;
         amountText.text = amount.ToString();
         ApplyIconTransform(itemData);

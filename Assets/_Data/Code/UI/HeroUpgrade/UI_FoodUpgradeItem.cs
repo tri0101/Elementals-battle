@@ -17,7 +17,7 @@ public class UI_FoodUpgradeItem : MonoBehaviour
     private int currentAmount;
     private Action<ItemData> onClickCallback;
 
-    public void Setup(ItemData itemData, int amount, Action<ItemData> onClick = null)
+    public void Setup(ItemData itemData, int amount,Action<ItemData> onClick = null)
     {
         
         EnsureReferences();
@@ -25,7 +25,7 @@ public class UI_FoodUpgradeItem : MonoBehaviour
         this.itemData = itemData;
         this.currentAmount = amount;
         this.onClickCallback = onClick;
-
+        GetComponent<Image>().color = itemData.colorFrame;
 
         //Hiển thị UI
         if (icon != null)

@@ -14,4 +14,5 @@ public class ItemData : ScriptableObject
     public int rankValue;      
 
     public bool stackable = true;
+    public Color colorFrame;
 }

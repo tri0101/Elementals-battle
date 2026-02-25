@@ -9,9 +9,10 @@ public class UI_ShowGacha : MonoBehaviour
 {
     [SerializeField] private Transform prefabHeroSample;
     [SerializeField] private Transform prefabHeroShardSample;
-    [SerializeField] private HeroDatabase heroDatabase;
+
     [SerializeField] private Transform panelGacha;
     [SerializeField] private bool panelIsActive;
+    [SerializeField] UI_CostGacha costGacha;
     private GridLayoutGroup grid;
 
     private bool isShowing = false; 
@@ -22,6 +23,9 @@ public class UI_ShowGacha : MonoBehaviour
     {
         grid = panelGacha.GetComponent<GridLayoutGroup>();
     }
+
+
+
     public void OnClickRoll()
     {
         if (isShowing || panelIsActive) return;
@@ -32,13 +36,21 @@ public class UI_ShowGacha : MonoBehaviour
 
         grid.childAlignment = TextAnchor.MiddleCenter;
         grid.padding = new RectOffset(0, 0, 0, 0);
-
+        if (costGacha.CurrentTypeOne == GachaCostType.Ticket)
+        {
+            PlayerInventory.Instance.ConsumeItem(4, costGacha.TicketCostOne);
+        }
+        else
+        {
+            PlayerInventory.Instance.ConsumeItem(2, costGacha.DiamondCostOne);
+        }
         StartCoroutine(RollOne());
     }
 
 
     public void OnClickRollTen()
     {
+        
         if (isShowing || panelIsActive) return;
 
         panelIsActive = true;
@@ -47,7 +59,14 @@ public class UI_ShowGacha : MonoBehaviour
 
         grid.childAlignment = TextAnchor.UpperLeft;
         grid.padding = new RectOffset(200, 150, 40, 100);
-
+        if(costGacha.CurrentTypeTen == GachaCostType.Ticket)
+        {
+            PlayerInventory.Instance.ConsumeItem(4, costGacha.TicketCostTen);
+        }
+        else
+        {
+            PlayerInventory.Instance.ConsumeItem(2, costGacha.DiamondCostTen);
+        }
         StartCoroutine(RollTen());
     }
 
@@ -62,6 +81,7 @@ public class UI_ShowGacha : MonoBehaviour
         yield return ShowResult(result);
 
         isShowing = false;
+        costGacha.RefreshUI();
     }
 
     IEnumerator RollTen()
@@ -78,6 +98,7 @@ public class UI_ShowGacha : MonoBehaviour
         }
 
         isShowing = false;
+        costGacha.RefreshUI();
     }
 
     void ClearOldCards()
@@ -88,13 +109,30 @@ public class UI_ShowGacha : MonoBehaviour
 
 
 
+    //IEnumerator ShowResult(GachaResult result)
+    //{
+    //    HeroInfo hero = DatabaseManager.Instance.HeroDatabase.GetHero(result.heroId);
+    //    if (hero == null) yield break;
+
+
+
+    //    Transform item = Instantiate(
+    //        result.type == GachaResultType.Hero
+    //            ? prefabHeroSample
+    //            : prefabHeroShardSample
+    //    );
+
+    //    item.SetParent(panelGacha, false);
+    //    item.gameObject.SetActive(true);
+
+    //    Image icon = item.Find("HeroIcon").GetComponent<Image>();
+    //    Image light = item.Find("LightOverlay").GetComponent<Image>();
+
+    //    yield return RevealWithLight(icon, light, hero.iconFace);
+    //}
+
     IEnumerator ShowResult(GachaResult result)
     {
-        HeroInfo hero = heroDatabase.GetHero(result.heroId);
-        if (hero == null) yield break;
-
-       
-
         Transform item = Instantiate(
             result.type == GachaResultType.Hero
                 ? prefabHeroSample
@@ -107,10 +145,22 @@ public class UI_ShowGacha : MonoBehaviour
         Image icon = item.Find("HeroIcon").GetComponent<Image>();
         Image light = item.Find("LightOverlay").GetComponent<Image>();
 
-        yield return RevealWithLight(icon, light, hero.iconFace);
-    }
+        // HERO
+        if (result.type == GachaResultType.Hero)
+        {
+            HeroInfo hero = DatabaseManager.Instance.HeroDatabase.GetHero(result.heroId);
+            if (hero == null) yield break;
 
- 
+            yield return RevealWithLight(icon, light, hero.iconFace);
+            yield break;
+        }
+
+        // SHARD / ITEM => dùng ItemDatabase
+        ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(result.itemId);
+        if (itemData == null) yield break;
+
+        yield return RevealWithLight(icon, light, itemData.icon);
+    }
 
     IEnumerator RevealWithLight(Image icon, Image light, Sprite sprite)
     {
@@ -154,5 +204,7 @@ public class UI_ShowGacha : MonoBehaviour
             }
         }
     }
+
+   
 
 }

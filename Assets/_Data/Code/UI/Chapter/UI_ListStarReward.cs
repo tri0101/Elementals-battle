@@ -95,12 +95,16 @@ public class UI_ListStarReward : MonoBehaviour
     void OnClickButtonClaim(int chapterID, int index)
     {
         ChapterConfig chapterConfig = DatabaseManager.Instance.ChapterDatabase.GetChapter(chapterID);
+        UI_CanvasReward.Instance.gameObject.SetActive(true);
+        UI_CanvasReward.Instance.ClearOldItems();
         if (index == 0)
         {
             ProgressManager.Instance.SetClaim(chapterID, 0);
             foreach (var rewardItems in chapterConfig.dropItems0)
             {
-                PlayerInventory.Instance.AddItem(rewardItems.itemId, rewardItems.amount);
+                
+                ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(rewardItems.itemId);
+                UI_CanvasReward.Instance.SetUp(itemData, rewardItems.amount);
             }
         }
         else if (index == 1)
@@ -108,7 +112,9 @@ public class UI_ListStarReward : MonoBehaviour
             ProgressManager.Instance.SetClaim(chapterID, 1);
             foreach (var rewardItems in chapterConfig.dropItems1)
             {
-                PlayerInventory.Instance.AddItem(rewardItems.itemId, rewardItems.amount);
+                
+                ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(rewardItems.itemId);
+                UI_CanvasReward.Instance.SetUp(itemData, rewardItems.amount);
             }
         }
         else if (index == 2)
@@ -116,12 +122,16 @@ public class UI_ListStarReward : MonoBehaviour
             ProgressManager.Instance.SetClaim(chapterID, 2);
             foreach (var rewardItems in chapterConfig.dropItems2)
             {
-                PlayerInventory.Instance.AddItem(rewardItems.itemId, rewardItems.amount); ;
+                
+                ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(rewardItems.itemId);
+                UI_CanvasReward.Instance.SetUp(itemData, rewardItems.amount);
             }
         }
 
-
+        UI_CanvasReward.Instance.ShowReward();
         buttonClaim.interactable = false;
+        panelReward.LoadUI(chapterID);
+        gameObject.SetActive(false);
     }
     void LoadButton(int chapterID, int index)
     {

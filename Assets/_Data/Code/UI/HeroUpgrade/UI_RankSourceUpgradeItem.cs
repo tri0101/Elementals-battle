@@ -35,7 +35,7 @@ public class UI_RankSourceUpgradeItem : MonoBehaviour
         // ===== EMPTY + GLOW =====
         bool lack = owned < required;
         backEmpty.SetActive(lack);
-
+        GetComponent<Image>().color = itemData.colorFrame;
         if (lack) StartGlow();
         else StopGlow();
     }
