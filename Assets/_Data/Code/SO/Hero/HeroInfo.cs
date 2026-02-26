@@ -5,7 +5,16 @@ public enum RoleHero
     DPS = 1,
     Support = 2,
 }
+public enum FightSouldType
+{
+    GuardianSoul = 0, // hồn bảo hộ
+    ReaperSoul = 1, // hồn tử thần
+    ArcaneSoul = 2, // hồn ma thuật
+    WarHammerSoul = 3, // hồn búa chiến
+
+}
 [CreateAssetMenu(menuName ="hero/heroInfo")]
+
 
 
 public class HeroInfo : ScriptableObject
@@ -42,8 +51,8 @@ public class HeroInfo : ScriptableObject
     [Header("UI")]
     public Sprite iconFace;
 
-    [Header("Power")]
-    public Sprite power;
+    [Header("Fight Soul")]
+    public FightSouldType fightSouldType;
 
     [Header("HeroPreview")]
     public GameObject HeroPreviewPrefabs;

@@ -6,6 +6,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
     [SerializeField] Transform panelLevel;
     [SerializeField] Transform panelSkill;
     [SerializeField] Transform panelStar;
+    [SerializeField] Transform panelFightSoul;
     [SerializeField] Transform barLevel;
     [SerializeField] Transform barStar;
 
@@ -17,6 +18,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelLevel.gameObject.SetActive(false);
         panelSkill.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
+        panelFightSoul.gameObject.SetActive(false);
     }
     public void LoadPanelLevel()
     {
@@ -26,6 +28,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelRank.gameObject.SetActive(false);
         panelSkill.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
+        panelFightSoul.gameObject.SetActive(false);
     }
     public void LoadPanelSKill()
     {
@@ -34,6 +37,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelRank.gameObject.SetActive(false);
         panelLevel.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
+        panelFightSoul.gameObject.SetActive(false);
     }
     public void LoadPanelStar()
     {
@@ -43,5 +47,16 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelRank.gameObject.SetActive(false);
         panelLevel.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(true);
+        panelFightSoul.gameObject.SetActive(false);
+    }
+
+    public void LoadPanelFightSoul()
+    {
+        panelFightSoul.gameObject.SetActive(true);
+        panelSkill.gameObject.SetActive(false);
+        panelRank.gameObject.SetActive(false);
+        panelLevel.gameObject.SetActive(false);
+        panelStar.gameObject.SetActive(false);
+
     }
 }

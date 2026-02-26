@@ -7,15 +7,16 @@ using static UnityEngine.GraphicsBuffer;
 
 public class UI_ShowGacha : MonoBehaviour
 {
-    [SerializeField] private Transform prefabHeroSample;
-    [SerializeField] private Transform prefabHeroShardSample;
 
+    [SerializeField] private GameObject itemPrefab;
+    [SerializeField] private GameObject heroPrefab;
+    [SerializeField] private GameObject shardPrefab;
     [SerializeField] private Transform panelGacha;
     [SerializeField] private bool panelIsActive;
     [SerializeField] UI_CostGacha costGacha;
     private GridLayoutGroup grid;
 
-    private bool isShowing = false; 
+    private bool isShowing = false;
     public bool IsShowing => isShowing;
 
     /* ================= BUTTON ================= */
@@ -23,8 +24,6 @@ public class UI_ShowGacha : MonoBehaviour
     {
         grid = panelGacha.GetComponent<GridLayoutGroup>();
     }
-
-
 
     public void OnClickRoll()
     {
@@ -47,10 +46,8 @@ public class UI_ShowGacha : MonoBehaviour
         StartCoroutine(RollOne());
     }
 
-
     public void OnClickRollTen()
     {
-        
         if (isShowing || panelIsActive) return;
 
         panelIsActive = true;
@@ -59,7 +56,7 @@ public class UI_ShowGacha : MonoBehaviour
 
         grid.childAlignment = TextAnchor.UpperLeft;
         grid.padding = new RectOffset(200, 150, 40, 100);
-        if(costGacha.CurrentTypeTen == GachaCostType.Ticket)
+        if (costGacha.CurrentTypeTen == GachaCostType.Ticket)
         {
             PlayerInventory.Instance.ConsumeItem(4, costGacha.TicketCostTen);
         }
@@ -69,8 +66,6 @@ public class UI_ShowGacha : MonoBehaviour
         }
         StartCoroutine(RollTen());
     }
-
-
 
     IEnumerator RollOne()
     {
@@ -90,7 +85,6 @@ public class UI_ShowGacha : MonoBehaviour
         IGachaService gacha = GachaManager.Instance;
         for (int i = 0; i < 10; i++)
         {
-            
             GachaResult result = gacha.Roll();
             yield return ShowResult(result);
 
@@ -107,92 +101,57 @@ public class UI_ShowGacha : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-
-
-    //IEnumerator ShowResult(GachaResult result)
-    //{
-    //    HeroInfo hero = DatabaseManager.Instance.HeroDatabase.GetHero(result.heroId);
-    //    if (hero == null) yield break;
-
-
-
-    //    Transform item = Instantiate(
-    //        result.type == GachaResultType.Hero
-    //            ? prefabHeroSample
-    //            : prefabHeroShardSample
-    //    );
-
-    //    item.SetParent(panelGacha, false);
-    //    item.gameObject.SetActive(true);
-
-    //    Image icon = item.Find("HeroIcon").GetComponent<Image>();
-    //    Image light = item.Find("LightOverlay").GetComponent<Image>();
-
-    //    yield return RevealWithLight(icon, light, hero.iconFace);
-    //}
-
     IEnumerator ShowResult(GachaResult result)
     {
-        Transform item = Instantiate(
-            result.type == GachaResultType.Hero
-                ? prefabHeroSample
-                : prefabHeroShardSample
-        );
-
-        item.SetParent(panelGacha, false);
-        item.gameObject.SetActive(true);
-
-        Image icon = item.Find("HeroIcon").GetComponent<Image>();
-        Image light = item.Find("LightOverlay").GetComponent<Image>();
-
-        // HERO
         if (result.type == GachaResultType.Hero)
         {
             HeroInfo hero = DatabaseManager.Instance.HeroDatabase.GetHero(result.heroId);
             if (hero == null) yield break;
 
-            yield return RevealWithLight(icon, light, hero.iconFace);
+            GameObject go = Instantiate(heroPrefab, panelGacha, false);
+            go.SetActive(true);
+
+            UI_GachaResult ui = go.GetComponent<UI_GachaResult>();
+            if (ui != null)
+                ui.SetUp(hero);
+
+            // Hero luôn là hero mới → chơi hiệu ứng
+            yield return StartCoroutine(PlayNewHeroEffect(go));
+
             yield break;
         }
 
-        // SHARD / ITEM => dùng ItemDatabase
-        ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(result.itemId);
-        if (itemData == null) yield break;
-
-        yield return RevealWithLight(icon, light, itemData.icon);
-    }
-
-    IEnumerator RevealWithLight(Image icon, Image light, Sprite sprite)
-    {
-        icon.enabled = false;
-        light.enabled = true;
-        light.color = new Color(1f, 1f, 1f, 0f);
-
-        float t = 0f;
-        float duration = 0.07f;
-
-        while (t < duration)
+        if (result.type == GachaResultType.Item)
         {
-            t += Time.deltaTime;
-            float a = Mathf.Lerp(0f, 1f, t / duration);
-            light.color = new Color(1f, 1f, 1f, a);
-            yield return null;
+            ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(result.itemId);
+            if (itemData == null) yield break;
+
+            GameObject go = Instantiate(itemPrefab, panelGacha, false);
+            go.SetActive(true);
+
+            UI_GachaResult ui = go.GetComponent<UI_GachaResult>();
+            if (ui != null)
+                ui.Setup(itemData, result.amount);
+
+            yield break;
         }
 
-        icon.sprite = sprite;
-        icon.enabled = true;
-
-        t = 0f;
-        while (t < duration)
+        // Shard
         {
-            t += Time.deltaTime;
-            float a = Mathf.Lerp(1f, 0f, t / duration);
-            light.color = new Color(1f, 1f, 1f, a);
-            yield return null;
-        }
+            int shardAmount = 10;
 
-        light.enabled = false;
+            ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(result.itemId);
+            if (itemData == null) yield break;
+
+            GameObject go = Instantiate(shardPrefab, panelGacha, false);
+            go.SetActive(true);
+
+            UI_GachaResult ui = go.GetComponent<UI_GachaResult>();
+            if (ui != null)
+                ui.Setup(itemData, shardAmount);
+        }
     }
+
     private void Update()
     {
         if (panelIsActive && !isShowing)
@@ -204,7 +163,60 @@ public class UI_ShowGacha : MonoBehaviour
             }
         }
     }
+    IEnumerator PlayNewHeroEffect(GameObject heroGO)
+    {
+        // Tạo layer flash nằm trong hero
+        GameObject flashObj = new GameObject("HeroFlash");
+        flashObj.transform.SetParent(heroGO.transform, false);
 
-   
+        RectTransform rt = flashObj.AddComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
 
+        Image flashImg = flashObj.AddComponent<Image>();
+        flashImg.color = new Color(1, 1, 1, 0);
+        flashImg.raycastTarget = false;
+
+        float duration = 0.15f;
+        float t = 0;
+
+        // Fade in
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float alpha = t / duration;
+            flashImg.color = new Color(1, 1, 1, alpha);
+            yield return null;
+        }
+
+        // Fade out
+        t = 0;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float alpha = 1 - (t / duration);
+            flashImg.color = new Color(1, 1, 1, alpha);
+            yield return null;
+        }
+
+        Destroy(flashObj);
+    }
+    Image CreateFlashImage()
+    {
+        GameObject flashObj = new GameObject("Flash");
+        flashObj.transform.SetParent(panelGacha.parent, false);
+
+        RectTransform rt = flashObj.AddComponent<RectTransform>();
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+
+        Image img = flashObj.AddComponent<Image>();
+        img.raycastTarget = false;
+
+        return img;
+    }
 }

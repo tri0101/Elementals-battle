@@ -21,6 +21,8 @@ public class GachaBannerRuntime
                 case HeroTier.S: tierS.Add(hero); break;
             }
         }
+        if (banner != null && banner.itemPool != null)
+            items.AddRange(banner.itemPool);
     }
 
     public int RollHero(HeroTier tier)
