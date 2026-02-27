@@ -27,7 +27,7 @@ public class UI_HeroUpgradeItem : MonoBehaviour
     private int blackRank = 1;
     private int greenRank = 5;
 
-    private Color blackColor = Color.black;
+    private Color blackColor = new Color(157/255f, 143/255f, 143/255f);
     private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
     void Awake()
     {

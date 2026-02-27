@@ -85,6 +85,7 @@ public class UI_StageSweep : MonoBehaviour
 
     public void OnClickOne()
     {
+        PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost);
         ClearListSweeps();
 
         var go = Instantiate(listSweep, panelListSweep);
@@ -102,11 +103,12 @@ public class UI_StageSweep : MonoBehaviour
 
     public void OnClickTen()
     {
+        
         ClearListSweeps();
 
         SetButtonsActive(false);
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < sweepTimes; i++)
         {
             var go = Instantiate(listSweep, panelListSweep);
             var ui = go.GetComponent<UI_ListSweep>();

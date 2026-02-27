@@ -10,7 +10,8 @@ public class UI_ListHeroUpgrade : MonoBehaviour
     [SerializeField] private UI_HeroUpgradeHeader header;
     public UI_HeroUpgradeHeader Header => header;
     [SerializeField] private UI_ListRankSourceUpgrade rankSourceList;
-    [SerializeField] private UI_ListSkillUpgrade skillUpgradeList;  
+    [SerializeField] private UI_ListSkillUpgrade skillUpgradeList;
+    [SerializeField] private UI_ListSouls listSouls;
 
     void OnEnable()
     {
@@ -49,6 +50,7 @@ public class UI_ListHeroUpgrade : MonoBehaviour
         UpdateHeroHeader(hero);
         rankSourceList.Setup(hero);
         skillUpgradeList.LoadSkill();
+        listSouls.LoadSouls();
     }
     public void UpdateHeroHeader(HeroViewData hero)
     {

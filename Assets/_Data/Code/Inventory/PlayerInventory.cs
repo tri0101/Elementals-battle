@@ -8,6 +8,7 @@ public class PlayerInventory :  Subject
     public IReadOnlyList<HeroInstance> Heroes => heroes;
     [SerializeField] private List<ItemInstance> items = new();
     public IReadOnlyList<ItemInstance> Items => items;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -47,13 +48,14 @@ public class PlayerInventory :  Subject
         AddItem(1, 500); 
         AddItem(2, 25000); 
         AddItem(3, 1); 
-        AddItem(4, 25); 
+        AddItem(4, 25);
+        AddItem(5, 400);
     }
     // ================= INVENTORY =================
     public GachaResult AddHero(int heroId)
     {
         HeroInstance hero = heroes.Find(h => h.heroId == heroId);
-
+        HeroInfo heroInfo = DatabaseManager.Instance.HeroDatabase.GetHero(heroId);
         if (hero == null)
         {
             hero = new HeroInstance
@@ -67,6 +69,10 @@ public class PlayerInventory :  Subject
             };
 
             hero.InitSkillInstances();
+            
+            hero.AddFightSoul(heroInfo.soulID[0]);
+            hero.AddFightSoul(heroInfo.soulID[1]);
+            hero.AddFightSoul(heroInfo.soulID[2]);
             heroes.Add(hero);
             return new GachaResult
             {
@@ -108,6 +114,7 @@ public class PlayerInventory :  Subject
 
         return list;
     }
+  
     public void AddItem(int itemId, int amount)
     {
         ItemInstance item = items.Find(i => i.itemId == itemId);

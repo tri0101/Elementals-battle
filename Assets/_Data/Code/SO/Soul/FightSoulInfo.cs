@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class FightSoulInfo : ScriptableObject
 {
-    public FightSouldType fightSouldType;
+    public int soulID;
+    public FightSoulType fightSoulType;
     public string soulName;
     public Sprite spriteSoul;
     public string description;

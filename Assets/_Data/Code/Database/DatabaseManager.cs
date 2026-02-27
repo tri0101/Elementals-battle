@@ -12,6 +12,8 @@ public class DatabaseManager : MonoBehaviour
     public ItemDatabase ItemDatabase => itemDatabase;
     [SerializeField] private ChapterDatabase chapterDatabase;
     public ChapterDatabase ChapterDatabase => chapterDatabase;
+    [SerializeField] private FightSoulDatabase fightSoulDatabase;
+    public FightSoulDatabase FightSoulDatabase => fightSoulDatabase;
 
     private void Awake()
     {

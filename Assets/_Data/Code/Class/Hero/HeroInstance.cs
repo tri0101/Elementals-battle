@@ -9,6 +9,7 @@ public class HeroInstance
     public int star;
     public int rank;
     public List<SkillInstance> skillInstances = new List<SkillInstance>();
+    public List<FightSoulInstance> soulsInstances = new List<FightSoulInstance>();
     public int shard;
 
     public void InitSkillInstances()
@@ -17,7 +18,12 @@ public class HeroInstance
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Ultimate, level = 1 });
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Passive, level = 1 });
     }
-
+    
+    public void AddFightSoul(int id)
+    {
+        soulsInstances.Add(new FightSoulInstance {soulID =(id), level = 1, currentExp = 0 });
+    }
+    
     public int GetAbilityLevel(AbilityType type)
     {
         var skill = skillInstances.Find(s => s.AbilityType == type);

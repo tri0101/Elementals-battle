@@ -4,7 +4,7 @@ public static class HeroRankHelper
     private static int blackRank = 1;
     private static int greenRank = 5;
 
-    private static Color blackColor = Color.black;
+    private static Color blackColor = new Color(157 / 255f, 143 / 255f, 143 / 255f);
     private static Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
 
     public static void GetRankVisual(
@@ -18,7 +18,7 @@ public static class HeroRankHelper
 
         if (rank < greenRank)
         {
-            nameColor = blackColor;
+            nameColor = Color.white;
             if (rank > blackRank)
                 plusValue = rank - blackRank;
         }

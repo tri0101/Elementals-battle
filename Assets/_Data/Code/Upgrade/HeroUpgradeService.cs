@@ -103,4 +103,12 @@ public class HeroUpgradeService : MonoBehaviour
             skill.level++;
         }
     }
+
+
+    public void UpSoul(HeroInstance hero, int index)// hero nào , hồn lực thứ mấy
+    {
+        if (index < 0 || index >= hero.soulsInstances.Count)
+            return;
+        hero.soulsInstances[index].level++;
+    }
 }

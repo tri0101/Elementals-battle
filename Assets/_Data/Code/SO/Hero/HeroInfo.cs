@@ -1,18 +1,30 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
+using System.Collections.Generic;
 public enum RoleHero
 {
     Tank = 0,
     DPS = 1,
     Support = 2,
 }
-public enum FightSouldType
+public enum FightSoulType
 {
-    GuardianSoul = 0, // hồn bảo hộ
-    ReaperSoul = 1, // hồn tử thần
-    ArcaneSoul = 2, // hồn ma thuật
-    WarHammerSoul = 3, // hồn búa chiến
+    ManaSoul = 0, // hồn liên quan đến mana
+    SkillRateSoul = 1, // hồn liên quan đến tỉ lệ sử dụng kỹ năng
+    HealthSoul = 2, // hồn liên quan đến máu
+  
 
 }
+//public enum FightSoulType
+//{
+//    GuardianSoul = 0, // hồn bảo hộ
+//    ReaperSoul = 1, // hồn tử thần
+//    ArcaneSoul = 2, // hồn ma thuật
+//    WarHammerSoul = 3, // hồn búa chiến
+//    ScriptureSoul = 4,// hồn kinh thư
+//    StarSoul = 5, // hồn sao
+
+//}
 [CreateAssetMenu(menuName ="hero/heroInfo")]
 
 
@@ -52,7 +64,7 @@ public class HeroInfo : ScriptableObject
     public Sprite iconFace;
 
     [Header("Fight Soul")]
-    public FightSouldType fightSouldType;
+    public List<int> soulID = new List<int>();
 
     [Header("HeroPreview")]
     public GameObject HeroPreviewPrefabs;
@@ -60,4 +72,6 @@ public class HeroInfo : ScriptableObject
     [Header("HeroPrefab")]
     public GameObject HeroPrefab;
 
+
+    
 }
