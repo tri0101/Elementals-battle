@@ -11,6 +11,7 @@ public enum SceneId
     InventoryScene = 5,
     MapScene = 6,
     PersistentScene = 7,
+    StoreScene = 8,
 
 }
 
