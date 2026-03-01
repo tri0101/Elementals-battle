@@ -13,8 +13,8 @@ public class UI_StageSweep : MonoBehaviour
     [SerializeField] private Button buttonOk;
     [SerializeField] private ScrollRect scrollRect;
 
-    int sweepTimes;
-
+    int sweepTimes; //số lần quét lý thuyết (1 hoặc 10)
+    int canSweepTimes; //số lần quét thực tế 
     List<GameObject> sweepItems = new List<GameObject>();
     Coroutine showCoroutine;
     Coroutine scrollCoroutine;
@@ -34,20 +34,20 @@ public class UI_StageSweep : MonoBehaviour
         {
             buttonAgain.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Clear x1";
             buttonAgain.onClick.RemoveAllListeners();
-            buttonAgain.onClick.AddListener(OnClickOne);
+            buttonAgain.onClick.AddListener(() => OnClickOne());
 
-            OnClickOne();
+            //OnClickOne();
         }
         else
         {
             buttonAgain.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Clear x10";
             buttonAgain.onClick.RemoveAllListeners();
-            buttonAgain.onClick.AddListener(OnClickTen);
+            buttonAgain.onClick.AddListener(()=> OnClickTen());
 
-            OnClickTen();
+            //OnClickTen();
         }
     }
-
+    
     void Update()
     {
         if (isSequentialRunning && Input.GetMouseButtonDown(0))
@@ -71,9 +71,53 @@ public class UI_StageSweep : MonoBehaviour
         sweepItems.Clear();
     }
 
+    public int GetTime(int times) // times là số lần lý thuyết ,còn sweepTimes là số lần thực tế sau khi check stamina
+    {
+        if (times == 1)
+        {
+            if (PlayerInventory.Instance.GetItemQuantity(3) < StageContext.selectedStage.staminaCost)
+            {
+                return 0;
+            }
+            else
+            {
+                gameObject.SetActive(true);
+
+                PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost);
+                return 1;
+               
+            }
+        }
+        else if (times == 10)
+        {
+            int SweepBasedOnStamina = 0;
+            if (PlayerInventory.Instance.GetItemQuantity(3) < StageContext.selectedStage.staminaCost)
+            {
+                return 0;
+            }
+            if (PlayerInventory.Instance.GetItemQuantity(3) >= StageContext.selectedStage.staminaCost * 10)
+            {
+                SweepBasedOnStamina = 10; // có đủ stamina để quét 10 lần
+                PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost * 10);
+                gameObject.SetActive(true);
+                return 10;
+                
+            }
+            else
+            {
+                SweepBasedOnStamina = PlayerInventory.Instance.GetItemQuantity(3) / StageContext.selectedStage.staminaCost; // số lần có thể quét dựa trên stamina hiện tại
+                PlayerInventory.Instance.ConsumeItem(3, SweepBasedOnStamina * StageContext.selectedStage.staminaCost);
+                gameObject.SetActive(true);
+                return SweepBasedOnStamina;
+
+            }
+        }
+        return 0;
+    }
     public void SetTimes(int times)
     {
         sweepTimes = times;
+        
     }
 
     void SetButtonsActive(bool value)
@@ -85,7 +129,12 @@ public class UI_StageSweep : MonoBehaviour
 
     public void OnClickOne()
     {
-        PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost);
+        if(GetTime(1) == 0)
+        {
+            UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
+            return;
+        }
+        
         ClearListSweeps();
 
         var go = Instantiate(listSweep, panelListSweep);
@@ -103,12 +152,18 @@ public class UI_StageSweep : MonoBehaviour
 
     public void OnClickTen()
     {
+        canSweepTimes = GetTime(10);
+        if(canSweepTimes == 0)
+        {
+            UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
+            return;
+        }
         
         ClearListSweeps();
 
         SetButtonsActive(false);
 
-        for (int i = 0; i < sweepTimes; i++)
+        for (int i = 0; i < canSweepTimes; i++)
         {
             var go = Instantiate(listSweep, panelListSweep);
             var ui = go.GetComponent<UI_ListSweep>();

@@ -199,41 +199,53 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
 
     void OnClick(int times)
     {
-        if(times == 1)
-        {
-            if (PlayerInventory.Instance.GetItemQuantity(3) < StageContext.selectedStage.staminaCost)
-            {
-                UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
-                return;
-            }
-            else
-            {
-                stageSweep.SetTimes(times);
-                stageSweep.gameObject.SetActive(true);
-            }
+        //if(times == 1)
+        //{
+        //    if (PlayerInventory.Instance.GetItemQuantity(3) < StageContext.selectedStage.staminaCost)
+        //    {
+        //        UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
+        //        return;
+        //    }
+        //    else
+        //    {
+        //        stageSweep.SetTimes(times);
+        //        stageSweep.gameObject.SetActive(true);
+        //    }
+        //}
+        //else if(times == 10)
+        //{
+        //    int SweepBasedOnStamina = 0;
+        //    if (PlayerInventory.Instance.GetItemQuantity(3) < StageContext.selectedStage.staminaCost)
+        //    {
+        //        UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
+        //        return;
+        //    }
+        //    if (PlayerInventory.Instance.GetItemQuantity(3) >= StageContext.selectedStage.staminaCost * 10)
+        //    {
+        //        SweepBasedOnStamina = 10; // có đủ stamina để quét 10 lần
+        //        PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost * 10);
+        //        stageSweep.SetTimes(times);
+        //        stageSweep.gameObject.SetActive(true);
+        //    }
+        //    else
+        //    {
+        //        SweepBasedOnStamina = PlayerInventory.Instance.GetItemQuantity(3) / StageContext.selectedStage.staminaCost; // số lần có thể quét dựa trên stamina hiện tại
+        //        PlayerInventory.Instance.ConsumeItem(3, SweepBasedOnStamina * StageContext.selectedStage.staminaCost);
+        //        stageSweep.SetTimes(SweepBasedOnStamina);
+        //        stageSweep.gameObject.SetActive(true);
+        //    }
+        //}
+        stageSweep.SetTimes(times);
+        if (times == 1)
+        { 
+            
+            
+            stageSweep.OnClickOne();
         }
-        else if(times == 10)
+        else
         {
-            int SweepBasedOnStamina = 0;
-            if (PlayerInventory.Instance.GetItemQuantity(3) < StageContext.selectedStage.staminaCost)
-            {
-                UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
-                return;
-            }
-            if (PlayerInventory.Instance.GetItemQuantity(3) >= StageContext.selectedStage.staminaCost * 10)
-            {
-                SweepBasedOnStamina = 10; // có đủ stamina để quét 10 lần
-                PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost * 10);
-                stageSweep.SetTimes(times);
-                stageSweep.gameObject.SetActive(true);
-            }
-            else
-            {
-                SweepBasedOnStamina = PlayerInventory.Instance.GetItemQuantity(3) / StageContext.selectedStage.staminaCost; // số lần có thể quét dựa trên stamina hiện tại
-                PlayerInventory.Instance.ConsumeItem(3, SweepBasedOnStamina * StageContext.selectedStage.staminaCost);
-                stageSweep.SetTimes(SweepBasedOnStamina);
-                stageSweep.gameObject.SetActive(true);
-            }
+            
+            stageSweep.OnClickTen();
         }
 
 

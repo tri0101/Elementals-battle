@@ -52,6 +52,12 @@ public class PlayerInventory :  Subject
         AddItem(5, 400);
     }
     // ================= INVENTORY =================
+    public void SetItems(List<ItemInstance> loadedItems)
+    {
+        items = new List<ItemInstance>(loadedItems);
+        
+        NotifyObservers();
+    }
     public GachaResult AddHero(int heroId)
     {
         HeroInstance hero = heroes.Find(h => h.heroId == heroId);
@@ -74,6 +80,7 @@ public class PlayerInventory :  Subject
             hero.AddFightSoul(heroInfo.soulID[1]);
             hero.AddFightSoul(heroInfo.soulID[2]);
             heroes.Add(hero);
+            NotifyObservers();
             return new GachaResult
             {
                 heroId = heroId,
@@ -87,14 +94,16 @@ public class PlayerInventory :  Subject
             itemId: heroId + 1000,           // shard id = hero id + 1000
             
             amount: 10
-        );
 
+        );
+            NotifyObservers();
             return new GachaResult
             {
                 heroId = heroId,
                 type = GachaResultType.Shard
             };
         }
+       
     }
     public List<HeroViewData> GetHeroViewList(HeroDatabase db)
     {
@@ -137,6 +146,8 @@ public class PlayerInventory :  Subject
         {
             NotifyObservers((itemId, item.quantity));
         }
+
+        NotifyObservers();
     }
     public bool ConsumeItem(int itemId, int amount)
     {
@@ -149,6 +160,7 @@ public class PlayerInventory :  Subject
         {
             NotifyObservers((itemId, item.quantity));
         }
+        NotifyObservers();
         return true;
     }
     public int GetItemQuantity(int itemId)
@@ -162,4 +174,10 @@ public class PlayerInventory :  Subject
     {
         return heroes.Find(h => h.heroId == heroId);
     }
+    public List<ItemInstance> GetAllItems()
+    {
+        return items;
+    }
 }
+
+

@@ -19,7 +19,7 @@ public class UI_PanelStoreDetail : MonoBehaviour
         
     }
 
-    public void SetUp(GameObject objItem, ItemData itemData, ShopItemData shopItemData, Sprite icon)
+    public void SetUp(GameObject objItem, ItemData itemData, ShopItemData shopItemData, Sprite icon, UI_StoreItem uI_StoreItem)
     {
         gameObject.SetActive(true);
         nameAndAmountText.text = $"{itemData.itemName} x{shopItemData.amount}";
@@ -49,18 +49,20 @@ public class UI_PanelStoreDetail : MonoBehaviour
         TextMeshProUGUI text = buyButton.GetComponentInChildren<TextMeshProUGUI>();
         text.text = "BUY";
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(()=> OnClickBuy(itemData.id, shopItemData.amount));
+        buyButton.onClick.AddListener(()=> OnClickBuy(itemData.id, shopItemData.amount, uI_StoreItem));
     }
 
     int GetOwnedAmount(int itemId)
     {
         return PlayerInventory.Instance.GetItemQuantity(itemId);
     }
-    void OnClickBuy(int itemId ,int amount)
+    void OnClickBuy(int itemId ,int amount, UI_StoreItem uI_StoreItem)
     {
         PlayerInventory.Instance.AddItem(itemId, amount);
         buyButton.interactable = false;
         TextMeshProUGUI text = buyButton.GetComponentInChildren<TextMeshProUGUI>();
         text.text = "SOLD";
+        uI_StoreItem.SetSoldOut();
+        transform.gameObject.SetActive(false);
     }
 }
