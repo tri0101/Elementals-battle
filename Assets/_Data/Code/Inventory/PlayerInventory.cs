@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerInventory :  Subject
 {
@@ -23,7 +24,7 @@ public class PlayerInventory :  Subject
     {
         foreach (var item in items)
         {
-            if (item.itemId == 1 || item.itemId == 2)
+            if (item.itemId == 1 || item.itemId == 2 || item.itemId == 3)
             {
                 NotifyObservers((item.itemId, item.quantity));
             }
@@ -52,12 +53,31 @@ public class PlayerInventory :  Subject
         AddItem(5, 400);
     }
     // ================= INVENTORY =================
+    //set and get  ( dùng để lưu)
     public void SetItems(List<ItemInstance> loadedItems)
     {
         items = new List<ItemInstance>(loadedItems);
-        
-        NotifyObservers();
+
+        items.FindAll(i => i.itemId == 1 || i.itemId == 2 ||  i.itemId == 3).ForEach(i => NotifyObservers((i.itemId, i.quantity)));
     }
+    public void SetHeroes(List<HeroInstance> loadedHeroes)
+    {
+        heroes = new List<HeroInstance>(loadedHeroes);
+
+        
+    }
+    public List<ItemInstance> GetAllItems()
+    {
+        return items;
+    }
+    public List<HeroInstance> GetAllHeroes()
+    {
+        return heroes;
+    }
+
+
+
+
     public GachaResult AddHero(int heroId)
     {
         HeroInstance hero = heroes.Find(h => h.heroId == heroId);
@@ -174,10 +194,7 @@ public class PlayerInventory :  Subject
     {
         return heroes.Find(h => h.heroId == heroId);
     }
-    public List<ItemInstance> GetAllItems()
-    {
-        return items;
-    }
+ 
 }
 
 

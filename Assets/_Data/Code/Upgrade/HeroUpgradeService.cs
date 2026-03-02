@@ -2,7 +2,7 @@
 using UnityEngine;
 using static UnityEditor.Progress;
 
-public class HeroUpgradeService : MonoBehaviour
+public class HeroUpgradeService : Subject
 {
     public static HeroUpgradeService Instance;
     [SerializeField] private HeroLevelConfig levelConfig;
@@ -21,6 +21,7 @@ public class HeroUpgradeService : MonoBehaviour
     {
         hero.currentExp += value;
         ProcessLevelUp(hero);
+        NotifyObservers();
     }
     public bool FeedExp(HeroInstance hero, ItemData item)
     {
@@ -37,7 +38,7 @@ public class HeroUpgradeService : MonoBehaviour
 
         // 4. xử lý level up
         ProcessLevelUp(hero);
-
+        NotifyObservers();
         return true;
     }
 
@@ -54,6 +55,7 @@ public class HeroUpgradeService : MonoBehaviour
             hero.currentExp -= needExp;
             hero.level++;
         }
+        NotifyObservers();
     }
 
     public bool UpgradeRank(HeroInstance hero, List<ItemCost> costs)
@@ -91,7 +93,7 @@ public class HeroUpgradeService : MonoBehaviour
         }
 
         hero.rank++;
-
+        NotifyObservers();
         return true;
     }
 
@@ -102,6 +104,7 @@ public class HeroUpgradeService : MonoBehaviour
         {
             skill.level++;
         }
+        NotifyObservers();
     }
 
 
@@ -110,5 +113,6 @@ public class HeroUpgradeService : MonoBehaviour
         if (index < 0 || index >= hero.soulsInstances.Count)
             return;
         hero.soulsInstances[index].level++;
+        NotifyObservers();
     }
 }

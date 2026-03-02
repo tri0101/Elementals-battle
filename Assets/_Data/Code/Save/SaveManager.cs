@@ -4,16 +4,25 @@ using UnityEngine;
 
 [System.Serializable]
 
-public class InventorySaveData
+public class ItemInstanceData
 {
     public List<ItemInstance> items = new();
+   
 }
+
+public class HeroInstanceData
+{
+    public List<HeroInstance> heroes = new();
+   
+}
+
 
 public class SaveManager : MonoBehaviour, IObserver
 {
     public static SaveManager Instance;
+    const string ITEMS_SAVE_KEY = "ItemSaveData";
+    const string HEROES_SAVE_KEY = "HeroSaveData";
 
-    
 
     void Awake()
     {
@@ -33,32 +42,61 @@ public class SaveManager : MonoBehaviour, IObserver
     {
 
         PlayerInventory.Instance.AddObserver(this);
+        HeroUpgradeService.Instance.AddObserver(this);
+        LoadInventoryItems();
+        LoadInventoryHeroes();
     }
 
     public void SaveInventory()
     {
-        InventorySaveData data = new InventorySaveData();
+        SaveItem();
+        SaveHero();
+    }
+    void SaveItem()
+    {
+        ItemInstanceData data = new ItemInstanceData();
         data.items = new List<ItemInstance>(PlayerInventory.Instance.GetAllItems());
 
         string json = JsonUtility.ToJson(data);
-        PlayerPrefs.SetString("InventorySaveData", json);
+        PlayerPrefs.SetString(ITEMS_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+    void SaveHero()
+    {
+        HeroInstanceData data = new HeroInstanceData();
+        data.heroes = new List<HeroInstance>(PlayerInventory.Instance.GetAllHeroes());
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(HEROES_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
     public void OnNotify()
     {
         SaveInventory();
     }
-    public void LoadInventory()
+    public void LoadInventoryItems()
     {
-        if (!PlayerPrefs.HasKey("InventorySaveData"))
+        if (!PlayerPrefs.HasKey(ITEMS_SAVE_KEY))
             return;
 
-        string json = PlayerPrefs.GetString("InventorySaveData");
+        string json = PlayerPrefs.GetString(ITEMS_SAVE_KEY);
 
-        InventorySaveData data =
-            JsonUtility.FromJson<InventorySaveData>(json);
+        ItemInstanceData data =
+            JsonUtility.FromJson<ItemInstanceData>(json);
 
         PlayerInventory.Instance.SetItems(data.items);
+    }
+    public void LoadInventoryHeroes()
+    {
+        if (!PlayerPrefs.HasKey(HEROES_SAVE_KEY))
+            return;
+
+        string json = PlayerPrefs.GetString(HEROES_SAVE_KEY);
+
+        HeroInstanceData data =
+            JsonUtility.FromJson<HeroInstanceData>(json);
+
+        PlayerInventory.Instance.SetHeroes(data.heroes);
     }
 
     // / ================= DEV TOOL =================
