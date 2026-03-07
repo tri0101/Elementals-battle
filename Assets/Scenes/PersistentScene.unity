@@ -610,6 +610,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf56818bb0706554b8e6746843a52e14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  progress:
+    currentStageId: 1
+    currentChapter: 1
+    currentStage: 1
+    stageResults: []
+    chapterRewardsClaimed: []
 --- !u!114 &872526252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1123,12 +1129,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c338539caec879f4e967a67978dd1a57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  banner: {fileID: 11400000, guid: 77fc693d92139114b910cab5fbb80dca, type: 2}
+  standardBanner: {fileID: 11400000, guid: 77fc693d92139114b910cab5fbb80dca, type: 2}
+  featuredBanner: {fileID: 11400000, guid: 63fdabfe665b86c4abcf5beabea12f01, type: 2}
+  tokenExchangeList: {fileID: 11400000, guid: 6e1f23253336967488dd1c7b286596d0, type: 2}
+  standardSoftPityStart: 80
+  standardHardPity: 120
+  standardSoftPityChanceAtStart: 0.02
+  standardSoftPityChanceAtEnd: 1
+  featuredSoftPityStart: 80
+  featuredHardPity: 120
+  featuredSoftPityChanceAtStart: 0.02
+  featuredSoftPityChanceAtEnd: 1
   pullCount: 0
-  oneDiamondCost: 220
-  tenDiamondCost: 2580
-  oneTicketCost: 1
-  tenTicketCost: 10
+  selectedFeaturedHeroId: -1
+  featuredPityCounter: 0
   itemDropChance: 0.8
 --- !u!4 &1602896902
 Transform:

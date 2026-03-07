@@ -7,7 +7,19 @@ public enum GachaCostType
     Ticket,
     Null
 }
-
+public enum GachaCostTypeID
+{
+    Diamond = 2,
+    CommonTicket = 4,
+    PremiumTicket = 7,
+    EventTicket = 12
+}
+[System.Serializable]
+public struct GachaCost
+{
+    public int rollOne;
+    public int rollTen;
+}
 
 public class UI_CostGacha : MonoBehaviour
 {
@@ -26,18 +38,23 @@ public class UI_CostGacha : MonoBehaviour
     [SerializeField] private Button tenRollButton;
 
     [Header("Cost Config")]
-    [SerializeField] private int diamondCostOne = 280;
-    public int DiamondCostOne => diamondCostOne;
-    [SerializeField] private int diamondCostTen = 2588;
-    public int DiamondCostTen => diamondCostTen;
-    [SerializeField] private int ticketCostOne = 1;
-    public int TicketCostOne => ticketCostOne;
-    [SerializeField] private int ticketCostTen = 10;
-    public int TicketCostTen => ticketCostTen;
+    //[SerializeField] private int diamondCostOne = 280;
+    //public int DiamondCostOne => diamondCostOne;
+    //[SerializeField] private int diamondCostTen = 2588;
+    //public int DiamondCostTen => diamondCostTen;
+    //[SerializeField] private int ticketCostOne = 1;
+    //public int TicketCostOne => ticketCostOne;
+    //[SerializeField] private int ticketCostTen = 10;
+    //public int TicketCostTen => ticketCostTen;
 
-    private const int DIAMOND_ID = 2;
-    private const int TICKET_ID = 4;
-    
+    [SerializeField] private GachaCostTypeID diamondID;
+    public GachaCostTypeID DiamondID => diamondID;
+    [SerializeField] private GachaCostTypeID ticketID;
+    public GachaCostTypeID TicketID => ticketID;
+    [SerializeField] private GachaCost diamondCost;
+    public GachaCost DiamondCost => diamondCost;
+    [SerializeField] private GachaCost  ticketCost;
+    public GachaCost TicketCost => ticketCost;
     [SerializeField] private GachaCostType currentTypeOne;
     public GachaCostType CurrentTypeOne => currentTypeOne;
     [SerializeField]  private GachaCostType currentTypeTen;
@@ -61,26 +78,26 @@ public class UI_CostGacha : MonoBehaviour
 
     void SetupRollOne()
     {
-        int ticket = GetItem(TICKET_ID);
-        int diamond = GetItem(DIAMOND_ID);
+        int ticket = GetItem((int)ticketID);
+        int diamond = GetItem((int)diamondID);
 
-        if (ticket >= ticketCostOne)
+        if (ticket >= ticketCost.rollOne)
         {
             currentTypeOne = GachaCostType.Ticket;
             SetTicketUI(oneRollIcon, oneRollCostText, oneRollButton,
-                        ticket, ticketCostOne);
+                        ticket, ticketCost.rollOne);
         }
-        else if (diamond >= diamondCostOne)
+        else if (diamond >= diamondCost.rollOne)
         {
             currentTypeOne = GachaCostType.Diamond;
             SetDiamondUI(oneRollIcon, oneRollCostText, oneRollButton,
-                         diamond, diamondCostOne);
+                         diamond, diamondCost.rollOne);
         }
         else
         {
             currentTypeOne = GachaCostType.Diamond;
             SetDiamondUI(oneRollIcon, oneRollCostText, oneRollButton,
-                         diamond, diamondCostOne);
+                         diamond, diamondCost.rollOne);
         }
     }
 
@@ -88,26 +105,26 @@ public class UI_CostGacha : MonoBehaviour
 
     void SetupRollTen()
     {
-        int ticket = GetItem(TICKET_ID);
-        int diamond = GetItem(DIAMOND_ID);
+        int ticket = GetItem((int)ticketID);
+        int diamond = GetItem((int)diamondID);
 
-        if (ticket >= ticketCostTen)
+        if (ticket >= ticketCost.rollTen)
         {
             currentTypeTen = GachaCostType.Ticket;
             SetTicketUI(tenRollIcon, tenRollCostText, tenRollButton,
-                        ticket, ticketCostTen);
+                        ticket, ticketCost.rollTen);
         }
-        else if (diamond >= diamondCostTen)
+        else if (diamond >= diamondCost.rollTen)
         {
             currentTypeTen = GachaCostType.Diamond;
             SetDiamondUI(tenRollIcon, tenRollCostText, tenRollButton,
-                         diamond, diamondCostTen);
+                         diamond, diamondCost.rollTen);
         }
         else
         {
             currentTypeTen = GachaCostType.Diamond;
             SetDiamondUI(tenRollIcon, tenRollCostText, tenRollButton,
-                         diamond, diamondCostTen);
+                         diamond, diamondCost.rollTen);
         }
     }
 

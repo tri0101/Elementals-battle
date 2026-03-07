@@ -13,7 +13,11 @@ public class ItemInstanceData
 public class HeroInstanceData
 {
     public List<HeroInstance> heroes = new();
-   
+
+}
+public class ProgressInstanceData
+{
+    public PlayerProgress progress = new();
 }
 
 
@@ -22,6 +26,7 @@ public class SaveManager : MonoBehaviour, IObserver
     public static SaveManager Instance;
     const string ITEMS_SAVE_KEY = "ItemSaveData";
     const string HEROES_SAVE_KEY = "HeroSaveData";
+    const string PROGRESS_SAVE_KEY = "ProgressSaveData";
 
 
     void Awake()
@@ -41,16 +46,28 @@ public class SaveManager : MonoBehaviour, IObserver
     void Start()
     {
 
-        PlayerInventory.Instance.AddObserver(this);
-        HeroUpgradeService.Instance.AddObserver(this);
+        if (PlayerInventory.Instance != null)
+            PlayerInventory.Instance.AddObserver(this);
+
+        if (HeroUpgradeService.Instance != null)
+            HeroUpgradeService.Instance.AddObserver(this);
+
+        if (ProgressManager.Instance != null)
+            ProgressManager.Instance.AddObserver(this);
         LoadInventoryItems();
         LoadInventoryHeroes();
+        LoadProgress();
     }
 
     public void SaveInventory()
     {
-        SaveItem();
-        SaveHero();
+        SaveItem(); // save items
+        SaveHero(); // save hero
+       
+    }
+    public void SaveCurrentProgress()
+    {
+        SaveProgress(); // save stage , chapter , result
     }
     void SaveItem()
     {
@@ -70,9 +87,20 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(HEROES_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
+    void SaveProgress()
+    {
+        ProgressInstanceData data = new ProgressInstanceData();
+        data.progress = ProgressManager.Instance.getProgress();
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(PROGRESS_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
     public void OnNotify()
     {
         SaveInventory();
+
+        SaveCurrentProgress();
     }
     public void LoadInventoryItems()
     {
@@ -98,7 +126,18 @@ public class SaveManager : MonoBehaviour, IObserver
 
         PlayerInventory.Instance.SetHeroes(data.heroes);
     }
+    public void LoadProgress()
+    {
+        if (!PlayerPrefs.HasKey(PROGRESS_SAVE_KEY))
+            return;
 
+        string json = PlayerPrefs.GetString(PROGRESS_SAVE_KEY);
+
+        ProgressInstanceData data =
+            JsonUtility.FromJson<ProgressInstanceData>(json);
+
+        ProgressManager.Instance.SetProgress(data.progress);
+    }
     // / ================= DEV TOOL =================
 #if UNITY_EDITOR
     [ContextMenu("CLEAR ALL SAVE")]

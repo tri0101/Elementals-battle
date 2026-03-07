@@ -37,11 +37,11 @@ public class UI_ShowGacha : MonoBehaviour
         grid.padding = new RectOffset(0, 0, 0, 0);
         if (costGacha.CurrentTypeOne == GachaCostType.Ticket)
         {
-            PlayerInventory.Instance.ConsumeItem(4, costGacha.TicketCostOne);
+            PlayerInventory.Instance.ConsumeItem((int)costGacha.TicketID, costGacha.TicketCost.rollOne);
         }
         else
         {
-            PlayerInventory.Instance.ConsumeItem(2, costGacha.DiamondCostOne);
+            PlayerInventory.Instance.ConsumeItem((int)costGacha.DiamondID, costGacha.DiamondCost.rollOne);
         }
         StartCoroutine(RollOne());
     }
@@ -58,12 +58,13 @@ public class UI_ShowGacha : MonoBehaviour
         grid.padding = new RectOffset(200, 150, 40, 100);
         if (costGacha.CurrentTypeTen == GachaCostType.Ticket)
         {
-            PlayerInventory.Instance.ConsumeItem(4, costGacha.TicketCostTen);
+            PlayerInventory.Instance.ConsumeItem((int)costGacha.TicketID, costGacha.TicketCost.rollTen);
         }
         else
         {
-            PlayerInventory.Instance.ConsumeItem(2, costGacha.DiamondCostTen);
+            PlayerInventory.Instance.ConsumeItem((int)costGacha.DiamondID, costGacha.DiamondCost.rollTen);
         }
+
         StartCoroutine(RollTen());
     }
 

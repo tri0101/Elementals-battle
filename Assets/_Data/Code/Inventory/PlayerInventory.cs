@@ -51,6 +51,7 @@ public class PlayerInventory :  Subject
         AddItem(3, 1); 
         AddItem(4, 25);
         AddItem(5, 400);
+        AddItem(7, 100);
     }
     // ================= INVENTORY =================
     //set and get  ( dùng để lưu)
@@ -162,7 +163,7 @@ public class PlayerInventory :  Subject
             item.quantity += amount;
         }
 
-        if (itemId == 1 || itemId == 2 || itemId == 3)
+        if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5)
         {
             NotifyObservers((itemId, item.quantity));
         }
@@ -176,7 +177,7 @@ public class PlayerInventory :  Subject
             return false;
 
         item.quantity -= amount;
-        if (itemId == 1 || itemId == 2 || itemId == 3)
+        if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5)
         {
             NotifyObservers((itemId, item.quantity));
         }

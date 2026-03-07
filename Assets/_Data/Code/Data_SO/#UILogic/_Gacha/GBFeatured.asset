@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 74bd598844ff8bb43a995b2801ae5956, type: 3}
-  m_Name: GachaBanner
+  m_Name: GBFeatured
   m_EditorClassIdentifier: 
   pool:
   - heroId: 1
@@ -41,14 +41,6 @@ MonoBehaviour:
     tier: 3
   - heroId: 53
     tier: 3
-  - heroId: 54
-    tier: 3
-  - heroId: 55
-    tier: 3
-  - heroId: 56
-    tier: 3
-  - heroId: 57
-    tier: 3
   itemPool:
   - itemId: 50
     amount: 1
@@ -59,3 +51,7 @@ MonoBehaviour:
   - itemId: 52
     amount: 5
     weight: 0.176
+  bannerType: 1
+  featuredPool: 36000000370000003800000039000000
+  featuredSoftPityStart: 80
+  featuredHardPity: 120

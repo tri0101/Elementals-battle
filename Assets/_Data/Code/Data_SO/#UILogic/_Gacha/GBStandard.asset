@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74bd598844ff8bb43a995b2801ae5956, type: 3}
+  m_Name: GBStandard
+  m_EditorClassIdentifier: 
+  pool:
+  - heroId: 1
+    tier: 0
+  - heroId: 2
+    tier: 0
+  - heroId: 3
+    tier: 0
+  - heroId: 3
+    tier: 0
+  - heroId: 4
+    tier: 1
+  - heroId: 5
+    tier: 1
+  - heroId: 6
+    tier: 1
+  - heroId: 7
+    tier: 2
+  - heroId: 8
+    tier: 2
+  - heroId: 9
+    tier: 2
+  - heroId: 50
+    tier: 3
+  - heroId: 51
+    tier: 3
+  - heroId: 52
+    tier: 3
+  - heroId: 53
+    tier: 3
+  itemPool:
+  - itemId: 50
+    amount: 1
+    weight: 0.455
+  - itemId: 51
+    amount: 2
+    weight: 0.377
+  - itemId: 52
+    amount: 5
+    weight: 0.176
+  bannerType: 0
+  featuredPool: 
+  featuredSoftPityStart: 80
+  featuredHardPity: 120

@@ -15,7 +15,7 @@ public class UI_ListStage : MonoBehaviour
     int currentChapter;
     int maxChapter;
 
-    void Awake()
+    void Start()
     {
         playerProgress = ProgressManager.Instance.progress;
         maxChapter = levelContent.childCount;

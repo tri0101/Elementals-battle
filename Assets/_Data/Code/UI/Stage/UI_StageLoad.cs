@@ -62,15 +62,16 @@ public class UI_StageLoad : MonoBehaviour
 
     int GetStar()
     {
-        if(!ProgressManager.Instance.progress.stageResult.ContainsKey(stageId))
-        {
+        StageResultData found =
+            ProgressManager.Instance.progress.stageResults
+            .Find(x => x.stageId == stageId);
+
+        if (found == null)
             return 0;
-        }
-        var result = ProgressManager.Instance.progress.stageResult[stageId];
-        return result;
+
+        return found.star;
     }
 
-  
 
     public void OnClick()
     {

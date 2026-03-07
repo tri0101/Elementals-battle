@@ -5,20 +5,37 @@ public class GachaManager : MonoBehaviour, IGachaService
 {
     public static GachaManager Instance { get; private set; }
 
-    public GachaBanner banner;
+    [Header("Banners")]
+    [SerializeField] private GachaBanner standardBanner;
+    public GachaBanner StandardBanner => standardBanner;
+    [SerializeField] private GachaBanner featuredBanner;
+    public GachaBanner FeaturedBanner => featuredBanner;
+    [SerializeField] private BannerTokenExchange tokenExchangeList;
+
+    [SerializeField] private GachaBanner activeBanner;
     private GachaBannerRuntime runtime;
 
-    public int pullCount;
-    private const int PITY_S = 120;
+    [Header("Standard Pity")]
+    [SerializeField] private int standardSoftPityStart = 80;
+    [SerializeField] private int standardHardPity = 120;
+    [SerializeField] private float standardSoftPityChanceAtStart = 0.02f;
+    [SerializeField] private float standardSoftPityChanceAtEnd = 1.0f;
 
-    [SerializeField] private int oneDiamondCost = 220;
-    [SerializeField] private int tenDiamondCost = 2580;
-    [SerializeField] private int oneTicketCost = 1;
-    [SerializeField] private int tenTicketCost = 10;
+    [Header("Featured Pity (SS)")]
+    [SerializeField] private int featuredSoftPityStart = 80;
+    [SerializeField] private int featuredHardPity = 120;
+    [SerializeField] private float featuredSoftPityChanceAtStart = 0.02f;
+    [SerializeField] private float featuredSoftPityChanceAtEnd = 1.0f;
+
+    public int pullCount;
+
+    [Header("Featured State")]
+    [SerializeField] private int selectedFeaturedHeroId = -1;
+    [SerializeField] private int featuredPityCounter = 0;
 
     [Header("Item Drop Rate")]
     [Range(0f, 1f)]
-    [SerializeField] private float itemDropChance = 0.8f; // 10% ra item (nếu itemPool có)
+    [SerializeField] private float itemDropChance = 0.8f;
 
     private void Awake()
     {
@@ -31,17 +48,61 @@ public class GachaManager : MonoBehaviour, IGachaService
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        if (runtime == null)
-            runtime = new GachaBannerRuntime(banner);
+        SetActiveBanner(standardBanner != null ? standardBanner : featuredBanner);
+    }
+
+    public void SetActiveBanner(GachaBanner banner)
+    {
+        activeBanner = banner;
+        runtime = activeBanner != null ? new GachaBannerRuntime(activeBanner) : null;
+
+        pullCount = 0;
+        featuredPityCounter = 0;
+
+        // Optional: auto-pick first featured hero if entering featured banner and none selected
+        if (activeBanner != null && activeBanner.bannerType == GachaBannerType.Featured)
+        {
+            if (selectedFeaturedHeroId <= 0 && featuredBanner != null && featuredBanner.featuredPool != null && featuredBanner.featuredPool.Count > 0)
+                selectedFeaturedHeroId = featuredBanner.featuredPool[0];
+        }
+    }
+
+    public void SetFeaturedSelectionByHeroId(int heroId)
+    {
+        if (featuredBanner == null || featuredBanner.featuredPool == null || featuredBanner.featuredPool.Count == 0)
+        {
+            Debug.LogError("Featured banner has no featuredPool configured.");
+            return;
+        }
+
+        if (!featuredBanner.featuredPool.Contains(heroId))
+        {
+            Debug.LogError($"HeroId {heroId} is not in featuredPool.");
+            return;
+        }
+
+        selectedFeaturedHeroId = heroId;
+        featuredPityCounter = 0;
+    }
+
+    public int GetSelectedFeaturedHeroId()
+    {
+        return selectedFeaturedHeroId;
     }
 
     public GachaResult Roll()
     {
-        if (PlayerInventory.Instance)
-            pullCount++;
+        if (runtime == null || activeBanner == null)
+        {
+            Debug.LogError("GachaManager.Roll failed: activeBanner/runtime is null.");
+            return default;
+        }
 
-        // 1) Nếu banner có itemPool và random trúng item => trả item
-        if (banner != null && banner.itemPool != null && banner.itemPool.Count > 0)
+        pullCount++;
+        if (activeBanner.bannerType == GachaBannerType.Featured)
+            featuredPityCounter++;
+
+        if (activeBanner.itemPool != null && activeBanner.itemPool.Count > 0)
         {
             if (Random.value < itemDropChance)
             {
@@ -61,24 +122,29 @@ public class GachaManager : MonoBehaviour, IGachaService
             }
         }
 
-        // 2) Roll hero như cũ (có pity S)
-        int heroId;
+        int heroId = -1;
 
-        if (pullCount >= PITY_S)
+        if (activeBanner.bannerType == GachaBannerType.Standard)
         {
-            pullCount = 0;
-            heroId = runtime.RollHero(HeroTier.S);
+            heroId = RollStandardBannerHeroId();
+            if (heroId > 0 && IsTierS(heroId))
+                pullCount = 0;
         }
         else
         {
-            HeroTier tier = RollTierNormal();
-            heroId = runtime.RollHero(tier);
+            heroId = RollFeaturedBannerHeroId();
+            if (heroId > 0 && IsTierSS(heroId))
+                featuredPityCounter = 0;
         }
 
-        // AddHero hiện tại trả Hero hoặc Shard (và shard có AddItem(heroId+1000,10))
+        if (heroId <= 0)
+        {
+            Debug.LogError("Gacha roll failed: heroId <= 0 (check banner pools).");
+            return default;
+        }
+
         var result = PlayerInventory.Instance.AddHero(heroId);
 
-        // patch thêm amount/itemId nếu là shard để UI có thể lấy ItemData luôn
         if (result.type == GachaResultType.Shard)
         {
             result.itemId = heroId + 1000;
@@ -96,19 +162,110 @@ public class GachaManager : MonoBehaviour, IGachaService
     public List<GachaResult> RollTen()
     {
         List<GachaResult> results = new List<GachaResult>();
-
         for (int i = 0; i < 10; i++)
             results.Add(Roll());
-
         return results;
     }
 
-    HeroTier RollTierNormal()
+    int RollStandardBannerHeroId()
     {
-        float rand = Random.value;
+        if (pullCount >= standardHardPity && runtime.HasTier(HeroTier.S))
+            return runtime.RollHero(HeroTier.S);
 
-        if (rand < 0.6f) return HeroTier.D;
-        if (rand < 0.9f) return HeroTier.C;
-        return HeroTier.B;
+        if (pullCount >= standardSoftPityStart && runtime.HasTier(HeroTier.S))
+        {
+            float p = SoftPityChance(
+                pullCount,
+                standardSoftPityStart,
+                standardHardPity,
+                standardSoftPityChanceAtStart,
+                standardSoftPityChanceAtEnd);
+
+            if (Random.value < p)
+                return runtime.RollHero(HeroTier.S);
+        }
+
+        return runtime.RollHero(RollTierNormalCBA());
+    }
+
+    int RollFeaturedBannerHeroId()
+    {
+        // If SS pity triggers, return the selected SS heroId (instead of random SS)
+        bool selectedValid = selectedFeaturedHeroId > 0
+                             && featuredBanner != null
+                             && featuredBanner.featuredPool != null
+                             && featuredBanner.featuredPool.Contains(selectedFeaturedHeroId);
+
+        if (featuredPityCounter >= featuredHardPity && runtime.HasTier(HeroTier.SS))
+            return selectedValid ? selectedFeaturedHeroId : runtime.RollHero(HeroTier.SS);
+
+        if (featuredPityCounter >= featuredSoftPityStart && runtime.HasTier(HeroTier.SS))
+        {
+            float p = SoftPityChance(
+                featuredPityCounter,
+                featuredSoftPityStart,
+                featuredHardPity,
+                featuredSoftPityChanceAtStart,
+                featuredSoftPityChanceAtEnd);
+
+            if (Random.value < p)
+                return selectedValid ? selectedFeaturedHeroId : runtime.RollHero(HeroTier.SS);
+        }
+
+        // Normal featured outcome: C/B/A/S
+        return runtime.RollHero(RollTierNormalCBAS());
+    }
+
+    HeroTier RollTierNormalCBA()
+    {
+        float r = Random.value;
+        if (r < 0.70f) return HeroTier.C;
+        if (r < 0.95f) return HeroTier.B;
+        return HeroTier.A;
+    }
+
+    HeroTier RollTierNormalCBAS()
+    {
+        float r = Random.value;
+        if (r < 0.70f) return HeroTier.C;
+        if (r < 0.92f) return HeroTier.B;
+        if (r < 0.99f) return HeroTier.A;
+        return HeroTier.S;
+    }
+
+    static float SoftPityChance(int counter, int softStart, int hard, float pStart, float pEnd)
+    {
+        if (counter < softStart) return 0f;
+        if (counter >= hard) return 1f;
+
+        float t = Mathf.InverseLerp(softStart, hard, counter);
+        return Mathf.Lerp(pStart, pEnd, t);
+    }
+
+    bool IsTierS(int heroId)
+    {
+        if (activeBanner == null || activeBanner.pool == null) return false;
+        for (int i = 0; i < activeBanner.pool.Count; i++)
+            if (activeBanner.pool[i].heroId == heroId)
+                return activeBanner.pool[i].tier == HeroTier.S;
+        return false;
+    }
+
+    bool IsTierSS(int heroId)
+    {
+        if (activeBanner == null || activeBanner.pool == null) return false;
+        for (int i = 0; i < activeBanner.pool.Count; i++)
+            if (activeBanner.pool[i].heroId == heroId)
+                return activeBanner.pool[i].tier == HeroTier.SS;
+        return false;
+    }
+
+    public List<int> GetFeaturedPool()
+    {
+        return featuredBanner.featuredPool;
+    }
+    public BannerTokenExchange GetTokenExchangeList()
+    {
+        return tokenExchangeList;
     }
 }

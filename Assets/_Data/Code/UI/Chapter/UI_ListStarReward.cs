@@ -75,6 +75,7 @@ public class UI_ListStarReward : MonoBehaviour
         int starGet = ProgressManager.Instance.GetStarInChapter(chapterID);
         buttonClaim.onClick.RemoveAllListeners();
         buttonClaim.onClick.AddListener(() => OnClickButtonClaim(chapterID, index));
+        
         if (index == 0)
         {
             starText.text = $"{starGet}" + "/10";
@@ -130,6 +131,7 @@ public class UI_ListStarReward : MonoBehaviour
 
         UI_CanvasReward.Instance.ShowReward();
         buttonClaim.interactable = false;
+        buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
         panelReward.LoadUI(chapterID);
         gameObject.SetActive(false);
     }
@@ -141,18 +143,22 @@ public class UI_ListStarReward : MonoBehaviour
         if ((starGet < 10 && index == 0) || isClaimed)
         {
             buttonClaim.interactable = false;
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
         }
         else if ((starGet < 20 && index == 1) || isClaimed)
         {
             buttonClaim.interactable = false;
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
         }
         else if ((starGet < 30 && index == 2) || isClaimed)
         {
             buttonClaim.interactable = false;
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
         }
         else
         {
             buttonClaim.interactable = !isClaimed;
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
 
         }
     }
