@@ -27,6 +27,7 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     [SerializeField] Button buttonCloseTokenExchange;
 
     [Header("Text")]
+    [SerializeField] TextMeshProUGUI nameHeroPreviewText;
     [SerializeField] TextMeshProUGUI itemTokenAmountText;
     [SerializeField] TextMeshProUGUI recruitText1x;
     [SerializeField] TextMeshProUGUI recruitText10x;
@@ -37,6 +38,11 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         PlayerInventory.Instance.AddObserver(this);
         AddListener();
         RefreshTicketText();
+        
+    }
+    void OnEnable()
+    {
+        OnHeroClicked(54);
     }
     void AddListener()
     {
@@ -54,6 +60,7 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     void TokenExchange()
     {
         panelTokenExchange.gameObject.SetActive(true);
+        ClearContentTokenExchange();
         BannerTokenExchange tokenExchangeDataList = GachaManager.Instance.GetTokenExchangeList();
         foreach (BannerTokenExchangeData data in tokenExchangeDataList.exchangeDataList)
         {
@@ -66,7 +73,7 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     {
         
         panelChooseHero.gameObject.SetActive(true);
-        ClearContent();
+        ClearContentChoose();
 
         List<int> featurePool = GachaManager.Instance.GetFeaturedPool();
         for (int i = 0; i < featurePool.Count; i++)
@@ -94,6 +101,7 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
 
         // báo cho gacha system (theo heroId)
         GachaManager.Instance.SetFeaturedSelectionByHeroId(selectedHeroId);
+        nameHeroPreviewText.text = DatabaseManager.Instance.HeroDatabase.GetHero(selectedHeroId).Name;
         SetPreviewHero();
         RefreshAll();
     }
@@ -108,12 +116,16 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         }
     }
 
-    void ClearContent()
+    void ClearContentChoose()
     {
         foreach (Transform t in contentChoose)
             Destroy(t.gameObject);
     }
-
+    void ClearContentTokenExchange()
+    {
+        foreach (Transform t in contentTokenExchange)
+            Destroy(t.gameObject);
+    }
     void SetPreviewHero()
     {
         ClearPreviewPrefab();
@@ -151,9 +163,9 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
             int itemId = tuple.Item1;
             int value = tuple.Item2;
 
-            if (itemId == 5)
+            if (itemId == 6)
                 itemTokenAmountText.text = value.ToString();
-            else if(itemId == 6){
+            else if(itemId == 7){
                 RefreshTicketText();
             }
 
@@ -161,8 +173,9 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     }
     void RefreshTicketText()
     {
-        int currentTickets = PlayerInventory.Instance.GetItemQuantity(6);
+        int currentTickets = PlayerInventory.Instance.GetItemQuantity(7);
         recruitText1x.text = $"{currentTickets}/1";
         recruitText10x.text = $"{currentTickets}/10";
     }
+    
 }

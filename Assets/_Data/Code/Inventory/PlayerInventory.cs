@@ -34,6 +34,8 @@ public class PlayerInventory :  Subject
     [ContextMenu("DEV / Give Test Items")]
     public void GiveTestItems()
     {
+        AddItem(7, 150);
+        AddItem(6, 150);
         AddItem(51, 1000); 
         AddItem(52, 1000); 
         AddItem(55, 1000); 
@@ -51,7 +53,7 @@ public class PlayerInventory :  Subject
         AddItem(3, 1); 
         AddItem(4, 25);
         AddItem(5, 400);
-        AddItem(7, 100);
+
     }
     // ================= INVENTORY =================
     //set and get  ( dùng để lưu)
@@ -163,7 +165,7 @@ public class PlayerInventory :  Subject
             item.quantity += amount;
         }
 
-        if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5)
+        if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5 || itemId == 6 || itemId == 7)
         {
             NotifyObservers((itemId, item.quantity));
         }
@@ -177,7 +179,7 @@ public class PlayerInventory :  Subject
             return false;
 
         item.quantity -= amount;
-        if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5)
+        if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5 || itemId == 6 || itemId == 7)
         {
             NotifyObservers((itemId, item.quantity));
         }

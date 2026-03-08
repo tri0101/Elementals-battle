@@ -21,6 +21,7 @@ public class GachaManager : MonoBehaviour, IGachaService
     [SerializeField] private float standardSoftPityChanceAtStart = 0.02f;
     [SerializeField] private float standardSoftPityChanceAtEnd = 1.0f;
 
+
     [Header("Featured Pity (SS)")]
     [SerializeField] private int featuredSoftPityStart = 80;
     [SerializeField] private int featuredHardPity = 120;
@@ -29,9 +30,14 @@ public class GachaManager : MonoBehaviour, IGachaService
 
     public int pullCount;
 
+    [Header("Stanard State")]
+
+    [SerializeField] int standardPityCounter = 0;
+    public int StandardPityCounter => standardPityCounter;
     [Header("Featured State")]
     [SerializeField] private int selectedFeaturedHeroId = -1;
     [SerializeField] private int featuredPityCounter = 0;
+    public int FeaturedPityCounter => featuredPityCounter;
 
     [Header("Item Drop Rate")]
     [Range(0f, 1f)]
@@ -97,11 +103,14 @@ public class GachaManager : MonoBehaviour, IGachaService
             Debug.LogError("GachaManager.Roll failed: activeBanner/runtime is null.");
             return default;
         }
-
+        if (activeBanner.bannerType == GachaBannerType.Featured)
+        {
+            PlayerInventory.Instance.AddItem(6, 1); // tặng 1 token mỗi lần roll featured 
+        }
         pullCount++;
         if (activeBanner.bannerType == GachaBannerType.Featured)
             featuredPityCounter++;
-
+        else standardPityCounter++;
         if (activeBanner.itemPool != null && activeBanner.itemPool.Count > 0)
         {
             if (Random.value < itemDropChance)
@@ -128,7 +137,8 @@ public class GachaManager : MonoBehaviour, IGachaService
         {
             heroId = RollStandardBannerHeroId();
             if (heroId > 0 && IsTierS(heroId))
-                pullCount = 0;
+                standardPityCounter = 0;
+
         }
         else
         {
@@ -136,7 +146,7 @@ public class GachaManager : MonoBehaviour, IGachaService
             if (heroId > 0 && IsTierSS(heroId))
                 featuredPityCounter = 0;
         }
-
+       
         if (heroId <= 0)
         {
             Debug.LogError("Gacha roll failed: heroId <= 0 (check banner pools).");

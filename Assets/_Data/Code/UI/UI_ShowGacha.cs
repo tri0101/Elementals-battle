@@ -1,9 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.GraphicsBuffer;
+public enum GachaType
+{
+    Standard,
+    Featured
+}
 
 public class UI_ShowGacha : MonoBehaviour
 {
@@ -13,7 +19,10 @@ public class UI_ShowGacha : MonoBehaviour
     [SerializeField] private GameObject shardPrefab;
     [SerializeField] private Transform panelGacha;
     [SerializeField] private bool panelIsActive;
+    [SerializeField] private GachaType currentGachaType;
     [SerializeField] UI_CostGacha costGacha;
+
+    [SerializeField] TextMeshProUGUI textGuaranteedText;
     private GridLayoutGroup grid;
 
     private bool isShowing = false;
@@ -104,6 +113,7 @@ public class UI_ShowGacha : MonoBehaviour
 
     IEnumerator ShowResult(GachaResult result)
     {
+        RefreshTextGuaranteed();
         if (result.type == GachaResultType.Hero)
         {
             HeroInfo hero = DatabaseManager.Instance.HeroDatabase.GetHero(result.heroId);
@@ -151,6 +161,7 @@ public class UI_ShowGacha : MonoBehaviour
             if (ui != null)
                 ui.Setup(itemData, shardAmount);
         }
+       
     }
 
     private void Update()
@@ -219,5 +230,20 @@ public class UI_ShowGacha : MonoBehaviour
         img.raycastTarget = false;
 
         return img;
+    }
+
+    void RefreshTextGuaranteed()
+    {
+        if(currentGachaType == GachaType.Standard)
+        {
+            int pityCounter = GachaManager.Instance.StandardPityCounter;
+            textGuaranteedText.text = $"S Guaranteed: {pityCounter}/120";
+        }
+        else if(currentGachaType == GachaType.Featured)
+        {
+            int pityCounter = GachaManager.Instance.FeaturedPityCounter;
+            textGuaranteedText.text = $"SS Guaranteed: {pityCounter}/120";
+        }
+        
     }
 }

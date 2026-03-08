@@ -1110,6 +1110,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1602896902}
   - component: {fileID: 1602896901}
+  - component: {fileID: 1602896903}
   m_Layer: 0
   m_Name: GachaManager
   m_TagString: Untagged
@@ -1132,6 +1133,7 @@ MonoBehaviour:
   standardBanner: {fileID: 11400000, guid: 77fc693d92139114b910cab5fbb80dca, type: 2}
   featuredBanner: {fileID: 11400000, guid: 63fdabfe665b86c4abcf5beabea12f01, type: 2}
   tokenExchangeList: {fileID: 11400000, guid: 6e1f23253336967488dd1c7b286596d0, type: 2}
+  activeBanner: {fileID: 0}
   standardSoftPityStart: 80
   standardHardPity: 120
   standardSoftPityChanceAtStart: 0.02
@@ -1141,6 +1143,7 @@ MonoBehaviour:
   featuredSoftPityChanceAtStart: 0.02
   featuredSoftPityChanceAtEnd: 1
   pullCount: 0
+  standardPityCounter: 0
   selectedFeaturedHeroId: -1
   featuredPityCounter: 0
   itemDropChance: 0.8
@@ -1159,6 +1162,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1602896903
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602896900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 095b04b7f45be304cac0ffe656150903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1630230353
 GameObject:
   m_ObjectHideFlags: 0
@@ -1840,6 +1855,7 @@ MonoBehaviour:
   buttonOk: {fileID: 1427724386}
   itemPrefab: {fileID: 2924482303342926292, guid: 5eb39ce3a4f705e4cb69a9b9289d2a66, type: 3}
   itemPrefabShard: {fileID: 7283579753988587613, guid: 87baebf70415c8d49aabfa407e53b316, type: 3}
+  heroPrefab: {fileID: 2948606533755211504, guid: 02c49b9112b6b92439612662b1e47d9c, type: 3}
 --- !u!1 &2090279849
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,9 +14,9 @@ public class UI_CanvasReward : MonoBehaviour
     [Header("Prefab")]
     [SerializeField] private GameObject itemPrefab;
     [SerializeField] private GameObject itemPrefabShard;
+    [SerializeField] private GameObject heroPrefab;
 
-    private List<GameObject> spawnedItems = new List<GameObject>();
-    private List<ItemData> rewardItems = new List<ItemData>();
+    private readonly List<GameObject> spawnedItems = new List<GameObject>();
 
     private Coroutine showCoroutine;
     private bool isShowing = false;
@@ -45,12 +45,8 @@ public class UI_CanvasReward : MonoBehaviour
 
     public void ClearOldItems()
     {
-        rewardItems.Clear();
-
         foreach (Transform child in contentItem)
-        {
             Destroy(child.gameObject);
-        }
 
         spawnedItems.Clear();
 
@@ -62,14 +58,16 @@ public class UI_CanvasReward : MonoBehaviour
 
     #endregion
 
-    #region SETUP
+    #region SETUP (Item / Shard)
 
     public void SetUp(ItemData itemData, int amount)
     {
-        CreateItem(itemData, amount);
-        rewardItems.Add(itemData);
+        if (itemData == null || amount <= 0)
+            return;
 
-        // Cộng vào inventory
+        CreateItem(itemData, amount);
+
+        // Add to inventory (Item / Shard)
         PlayerInventory.Instance.AddItem(itemData.id, amount);
     }
 
@@ -77,8 +75,8 @@ public class UI_CanvasReward : MonoBehaviour
     {
         GameObject prefab =
             data.type == ItemType.HeroShard
-            ? (itemPrefabShard ?? itemPrefab)
-            : itemPrefab;
+                ? (itemPrefabShard ?? itemPrefab)
+                : itemPrefab;
 
         var go = Instantiate(prefab, contentItem);
 
@@ -86,9 +84,66 @@ public class UI_CanvasReward : MonoBehaviour
         if (ui != null)
             ui.Setup(data, amount);
 
-        go.SetActive(false); // Ẩn trước
-
+        go.SetActive(false);
         spawnedItems.Add(go);
+    }
+
+    #endregion
+
+    #region SETUP (Hero)
+
+    public void SetUp(HeroInfo heroInfo)
+    {
+        if (heroInfo == null)
+            return;
+
+        CreateHero(heroInfo);
+        // Inventory add hero should be handled by caller (because it can become shard depending on owned state)
+    }
+
+    private void CreateHero(HeroInfo heroInfo)
+    {
+        if (heroPrefab == null)
+        {
+            Debug.LogError("UI_CanvasReward: heroPrefab is null.");
+            return;
+        }
+
+        var go = Instantiate(heroPrefab, contentItem);
+
+        // Hero UI uses UI_GachaResult (same as UI_ShowGacha)
+        var ui = go.GetComponent<UI_GachaResult>();
+        if (ui != null)
+            ui.SetUp(heroInfo);
+        else
+            Debug.LogError("UI_CanvasReward: heroPrefab missing UI_GachaResult component.");
+
+        go.SetActive(false);
+        spawnedItems.Add(go);
+    }
+
+    #endregion
+
+    #region SETUP (BannerTokenExchangeData)
+
+    public void SetUp(BannerTokenExchangeData data)
+    {
+        var result = PlayerInventory.Instance.AddHero(data.heroId);
+
+        if (result.type == GachaResultType.Hero)
+        {
+            HeroInfo heroInfo = DatabaseManager.Instance.HeroDatabase.GetHero(data.heroId);
+            SetUp(heroInfo);
+        }
+        else
+        {
+            // Shard
+            int shardItemId = data.heroId + 1000;
+            int shardAmount = 10;
+
+            ItemData shardItem = DatabaseManager.Instance.ItemDatabase.GetItem(shardItemId);
+            SetUp(shardItem, shardAmount);
+        }
     }
 
     #endregion
@@ -127,9 +182,7 @@ public class UI_CanvasReward : MonoBehaviour
             StopCoroutine(showCoroutine);
 
         foreach (var item in spawnedItems)
-        {
             item.SetActive(true);
-        }
 
         isShowing = false;
     }
@@ -142,7 +195,6 @@ public class UI_CanvasReward : MonoBehaviour
     {
         RectTransform rect = item.GetComponent<RectTransform>();
 
-        // SCALE POP
         rect.localScale = Vector3.one * 0.8f;
         float t = 0f;
         float duration = 0.25f;
@@ -157,7 +209,6 @@ public class UI_CanvasReward : MonoBehaviour
 
         rect.localScale = Vector3.one;
 
-        // FLASH
         Image flash = CreateFlashOverlay(item.transform);
 
         float flashTime = 0.25f;

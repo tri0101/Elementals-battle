@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-
 public class ItemInstanceData
 {
     public List<ItemInstance> items = new();
-   
 }
 
 public class HeroInstanceData
 {
     public List<HeroInstance> heroes = new();
-
 }
+
 public class ProgressInstanceData
 {
     public PlayerProgress progress = new();
+}
+
+public class TokenExchangeSaveData
+{
+    public List<TokenExchangeEntry> entries = new();
 }
 
 
@@ -27,7 +30,7 @@ public class SaveManager : MonoBehaviour, IObserver
     const string ITEMS_SAVE_KEY = "ItemSaveData";
     const string HEROES_SAVE_KEY = "HeroSaveData";
     const string PROGRESS_SAVE_KEY = "ProgressSaveData";
-
+    const string TOKEN_EXCHANGE_SAVE_KEY = "TokenExchangeSaveData";
 
     void Awake()
     {
@@ -39,13 +42,10 @@ public class SaveManager : MonoBehaviour, IObserver
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
-        
-
     }
+
     void Start()
     {
-
         if (PlayerInventory.Instance != null)
             PlayerInventory.Instance.AddObserver(this);
 
@@ -54,21 +54,26 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if (ProgressManager.Instance != null)
             ProgressManager.Instance.AddObserver(this);
+
+        if(TokenExchangeState.Instance != null)
+            TokenExchangeState.Instance.AddObserver(this);
         LoadInventoryItems();
         LoadInventoryHeroes();
         LoadProgress();
+        LoadTokenExchange();
     }
 
     public void SaveInventory()
     {
-        SaveItem(); // save items
-        SaveHero(); // save hero
-       
+        SaveItem();
+        SaveHero();
     }
+
     public void SaveCurrentProgress()
     {
-        SaveProgress(); // save stage , chapter , result
+        SaveProgress();
     }
+
     void SaveItem()
     {
         ItemInstanceData data = new ItemInstanceData();
@@ -78,6 +83,7 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(ITEMS_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
+
     void SaveHero()
     {
         HeroInstanceData data = new HeroInstanceData();
@@ -87,6 +93,7 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(HEROES_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
+
     void SaveProgress()
     {
         ProgressInstanceData data = new ProgressInstanceData();
@@ -96,12 +103,26 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(PROGRESS_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
+
+    void SaveTokenExchange()
+    {
+        if (TokenExchangeState.Instance == null)
+            return;
+
+        TokenExchangeSaveData data = TokenExchangeState.Instance.Export();
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(TOKEN_EXCHANGE_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+
     public void OnNotify()
     {
         SaveInventory();
-
         SaveCurrentProgress();
+        SaveTokenExchange();
     }
+
     public void LoadInventoryItems()
     {
         if (!PlayerPrefs.HasKey(ITEMS_SAVE_KEY))
@@ -114,6 +135,7 @@ public class SaveManager : MonoBehaviour, IObserver
 
         PlayerInventory.Instance.SetItems(data.items);
     }
+
     public void LoadInventoryHeroes()
     {
         if (!PlayerPrefs.HasKey(HEROES_SAVE_KEY))
@@ -126,6 +148,7 @@ public class SaveManager : MonoBehaviour, IObserver
 
         PlayerInventory.Instance.SetHeroes(data.heroes);
     }
+
     public void LoadProgress()
     {
         if (!PlayerPrefs.HasKey(PROGRESS_SAVE_KEY))
@@ -138,7 +161,24 @@ public class SaveManager : MonoBehaviour, IObserver
 
         ProgressManager.Instance.SetProgress(data.progress);
     }
-    // / ================= DEV TOOL =================
+
+    void LoadTokenExchange()
+    {
+        if (!PlayerPrefs.HasKey(TOKEN_EXCHANGE_SAVE_KEY))
+            return;
+
+        string json = PlayerPrefs.GetString(TOKEN_EXCHANGE_SAVE_KEY);
+
+        TokenExchangeSaveData data =
+            JsonUtility.FromJson<TokenExchangeSaveData>(json);
+
+        if (data == null)
+            return;
+
+        if (TokenExchangeState.Instance != null)
+            TokenExchangeState.Instance.Import(data);
+    }
+
 #if UNITY_EDITOR
     [ContextMenu("CLEAR ALL SAVE")]
     private void ClearAllSave()
@@ -148,5 +188,4 @@ public class SaveManager : MonoBehaviour, IObserver
         Debug.Log("All PlayerPrefs deleted.");
     }
 #endif
-   
 }
