@@ -137,29 +137,31 @@ public class UI_ListStarReward : MonoBehaviour
     }
     void LoadButton(int chapterID, int index)
     {
+        gameObject.SetActive(false);
         ChapterConfig chapterConfig = DatabaseManager.Instance.ChapterDatabase.GetChapter(chapterID);
         int starGet = ProgressManager.Instance.GetStarInChapter(chapterID);
         bool isClaimed = ProgressManager.Instance.IsClaimed(chapterID, index);
         if ((starGet < 10 && index == 0) || isClaimed)
         {
             buttonClaim.interactable = false;
-            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claim";
         }
         else if ((starGet < 20 && index == 1) || isClaimed)
         {
             buttonClaim.interactable = false;
-            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claim";
         }
         else if ((starGet < 30 && index == 2) || isClaimed)
         {
             buttonClaim.interactable = false;
-            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claim";
         }
         else
         {
             buttonClaim.interactable = !isClaimed;
-            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claimed";
+            buttonClaim.GetComponentInChildren<TextMeshProUGUI>().text = "Claim";
 
         }
+        gameObject.SetActive(true);
     }
 }

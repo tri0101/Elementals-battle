@@ -21,7 +21,8 @@ public class UI_PanelStoreDetail : MonoBehaviour
 
     public void SetUp(GameObject objItem, ItemData itemData, ShopItemData shopItemData, Sprite icon, UI_StoreItem uI_StoreItem)
     {
-        gameObject.SetActive(true);
+     
+        gameObject.SetActive(false);
         nameAndAmountText.text = $"{itemData.itemName} x{shopItemData.amount}";
         costText.text = shopItemData.price.ToString();
         iconCurrency.sprite = icon;
@@ -50,6 +51,7 @@ public class UI_PanelStoreDetail : MonoBehaviour
         text.text = "BUY";
         buyButton.onClick.RemoveAllListeners();
         buyButton.onClick.AddListener(()=> OnClickBuy(itemData.id, shopItemData.amount, uI_StoreItem));
+        gameObject.SetActive(true);
     }
 
     int GetOwnedAmount(int itemId)

@@ -15,6 +15,7 @@ public class UI_TokenExchange : MonoBehaviour
 
     public void SetUp(BannerTokenExchangeData data)
     {
+        gameObject.SetActive(false);
         HeroInfo heroInfo = DatabaseManager.Instance.HeroDatabase.GetHero(data.heroId);
         nameText.text = heroInfo.Name;
         redeemText.text = $"Redeem: {data.redeemLimit}";
@@ -24,6 +25,7 @@ public class UI_TokenExchange : MonoBehaviour
         GameObject go = Instantiate(heroInfo.HeroPreviewPrefabs, contentPreview);
         exchangeButton.onClick.RemoveAllListeners();
         exchangeButton.onClick.AddListener(()=>ClickExchangeHero(data));  
+        gameObject.SetActive(true);
     }
     void RefreshCost(BannerTokenExchangeData data)
     {

@@ -32,6 +32,7 @@ public class UI_ShowGacha : MonoBehaviour
     void Awake()
     {
         grid = panelGacha.GetComponent<GridLayoutGroup>();
+        RefreshTextGuaranteed();
     }
 
     public void OnClickRoll()

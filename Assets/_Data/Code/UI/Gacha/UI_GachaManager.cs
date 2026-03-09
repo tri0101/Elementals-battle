@@ -17,14 +17,20 @@ public class UI_GachaManager : MonoBehaviour
 
     public void LoadStandard()
     {
-        standardPanel.gameObject.SetActive(true);
+       
         GachaManager.Instance.SetActiveBanner(GachaManager.Instance.StandardBanner);
+        UI_CostGacha costGacha = standardPanel.GetComponent<UI_CostGacha>();
+        costGacha.RefreshUI();
+        standardPanel.gameObject.SetActive(true);
         featuredPanel.gameObject.SetActive(false);
     }
     public void LoadFeatured()
     {
-        featuredPanel.gameObject.SetActive (true);
+        
         GachaManager.Instance.SetActiveBanner(GachaManager.Instance.FeaturedBanner);
+        UI_CostGacha costGacha = featuredPanel.GetComponent<UI_CostGacha>();
+        costGacha.RefreshUI();
+        featuredPanel.gameObject.SetActive(true);
         standardPanel.gameObject.SetActive(false);
     }
 }

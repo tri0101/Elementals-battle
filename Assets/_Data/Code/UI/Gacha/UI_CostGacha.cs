@@ -150,7 +150,7 @@ public class UI_CostGacha : MonoBehaviour
         RectTransform rect = icon.GetComponent<RectTransform>();
         rect.sizeDelta = new Vector2(60, 60);
 
-        costText.text = required.ToString();
+        costText.text = playerDiamond + "/" + required;
         costText.color = playerDiamond >= required ? Color.white : Color.red;
 
         btn.interactable = playerDiamond >= required;

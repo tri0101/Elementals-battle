@@ -23,6 +23,11 @@ public class TokenExchangeSaveData
     public List<TokenExchangeEntry> entries = new();
 }
 
+public class GachaPitySaveData
+{
+    public int standardPityCounter;
+    public int featuredPityCounter;
+}
 
 public class SaveManager : MonoBehaviour, IObserver
 {
@@ -31,7 +36,7 @@ public class SaveManager : MonoBehaviour, IObserver
     const string HEROES_SAVE_KEY = "HeroSaveData";
     const string PROGRESS_SAVE_KEY = "ProgressSaveData";
     const string TOKEN_EXCHANGE_SAVE_KEY = "TokenExchangeSaveData";
-
+    const string GACHA_PITY_SAVE_KEY = "GachaPitySaveData";
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -57,10 +62,16 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if(TokenExchangeState.Instance != null)
             TokenExchangeState.Instance.AddObserver(this);
+
+
+        if (GachaManager.Instance != null)
+            GachaManager.Instance.AddObserver(this);
+
         LoadInventoryItems();
         LoadInventoryHeroes();
         LoadProgress();
         LoadTokenExchange();
+        LoadGachaPity();
     }
 
     public void SaveInventory()
@@ -115,12 +126,28 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(TOKEN_EXCHANGE_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
+    void SaveGachaPity()
+    {
+        if (GachaManager.Instance == null)
+            return;
+
+        var data = new GachaPitySaveData
+        {
+            standardPityCounter = GachaManager.Instance.StandardPityCounter,
+            featuredPityCounter = GachaManager.Instance.FeaturedPityCounter
+        };
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(GACHA_PITY_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
 
     public void OnNotify()
     {
         SaveInventory();
         SaveCurrentProgress();
         SaveTokenExchange();
+        SaveGachaPity();
     }
 
     public void LoadInventoryItems()
@@ -177,6 +204,20 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if (TokenExchangeState.Instance != null)
             TokenExchangeState.Instance.Import(data);
+    }
+    void LoadGachaPity()
+    {
+        if (!PlayerPrefs.HasKey(GACHA_PITY_SAVE_KEY))
+            return;
+
+        string json = PlayerPrefs.GetString(GACHA_PITY_SAVE_KEY);
+        GachaPitySaveData data = JsonUtility.FromJson<GachaPitySaveData>(json);
+
+        if (data == null)
+            return;
+
+        if (GachaManager.Instance != null)
+            GachaManager.Instance.SetPityCounters(data.standardPityCounter, data.featuredPityCounter);
     }
 
 #if UNITY_EDITOR

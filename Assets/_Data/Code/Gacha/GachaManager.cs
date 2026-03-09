@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class GachaManager : MonoBehaviour, IGachaService
+public class GachaManager : Subject, IGachaService
 {
     public static GachaManager Instance { get; private set; }
 
@@ -56,14 +56,45 @@ public class GachaManager : MonoBehaviour, IGachaService
 
         SetActiveBanner(standardBanner != null ? standardBanner : featuredBanner);
     }
+    public void SetPityCounters(int standard, int featured)
+    {
+        standardPityCounter = Mathf.Max(0, standard);
+        featuredPityCounter = Mathf.Max(0, featured);
+    }
+
+    void IncStandardPity()
+    {
+        standardPityCounter++;
+        NotifyObservers(); // báo SaveManager save
+    }
+
+    void IncFeaturedPity()
+    {
+        featuredPityCounter++;
+        NotifyObservers();
+    }
+
+    void ResetStandardPity()
+    {
+        if (standardPityCounter == 0) return;
+        standardPityCounter = 0;
+        NotifyObservers();
+    }
+
+    void ResetFeaturedPity()
+    {
+        if (featuredPityCounter == 0) return;
+        featuredPityCounter = 0;
+        NotifyObservers();
+    }
 
     public void SetActiveBanner(GachaBanner banner)
     {
         activeBanner = banner;
         runtime = activeBanner != null ? new GachaBannerRuntime(activeBanner) : null;
 
-        pullCount = 0;
-        featuredPityCounter = 0;
+        //pullCount = 0;
+        //featuredPityCounter = 0;
 
         // Optional: auto-pick first featured hero if entering featured banner and none selected
         if (activeBanner != null && activeBanner.bannerType == GachaBannerType.Featured)
@@ -88,7 +119,7 @@ public class GachaManager : MonoBehaviour, IGachaService
         }
 
         selectedFeaturedHeroId = heroId;
-        featuredPityCounter = 0;
+        
     }
 
     public int GetSelectedFeaturedHeroId()
@@ -109,8 +140,8 @@ public class GachaManager : MonoBehaviour, IGachaService
         }
         pullCount++;
         if (activeBanner.bannerType == GachaBannerType.Featured)
-            featuredPityCounter++;
-        else standardPityCounter++;
+            IncFeaturedPity();
+        else IncStandardPity();
         if (activeBanner.itemPool != null && activeBanner.itemPool.Count > 0)
         {
             if (Random.value < itemDropChance)
@@ -137,14 +168,14 @@ public class GachaManager : MonoBehaviour, IGachaService
         {
             heroId = RollStandardBannerHeroId();
             if (heroId > 0 && IsTierS(heroId))
-                standardPityCounter = 0;
+                ResetStandardPity();
 
         }
         else
         {
             heroId = RollFeaturedBannerHeroId();
             if (heroId > 0 && IsTierSS(heroId))
-                featuredPityCounter = 0;
+                ResetFeaturedPity();
         }
        
         if (heroId <= 0)
@@ -179,13 +210,13 @@ public class GachaManager : MonoBehaviour, IGachaService
 
     int RollStandardBannerHeroId()
     {
-        if (pullCount >= standardHardPity && runtime.HasTier(HeroTier.S))
+        if (standardPityCounter >= standardHardPity && runtime.HasTier(HeroTier.S))
             return runtime.RollHero(HeroTier.S);
 
-        if (pullCount >= standardSoftPityStart && runtime.HasTier(HeroTier.S))
+        if (standardPityCounter >= standardSoftPityStart && runtime.HasTier(HeroTier.S))
         {
             float p = SoftPityChance(
-                pullCount,
+                standardPityCounter,
                 standardSoftPityStart,
                 standardHardPity,
                 standardSoftPityChanceAtStart,

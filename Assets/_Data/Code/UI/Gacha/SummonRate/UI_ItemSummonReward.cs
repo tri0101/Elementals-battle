@@ -3,30 +3,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class UI_DropRewardItem : MonoBehaviour
+
+public class UI_ItemSummonReward : MonoBehaviour
 {
-
     [SerializeField] private Image icon;
-    [SerializeField] private TextMeshProUGUI amountText;
 
-    void Awake()
+
+    public void SetUp(int itemId)
     {
-
-    }
-
-    public void Setup(ItemData itemData, int amount)
-    {
-        
-        if (itemData == null) return;
-        GetComponent<Image>().color = itemData.colorFrame;
+        ItemData itemData = DatabaseManager.Instance.ItemDatabase.GetItem(itemId);
         icon.sprite = itemData.icon;
-        amountText.text = amount.ToString();
         ApplyIconTransform(itemData);
-
-
     }
-
-
     void ApplyIconTransform(ItemData item)
     {
         if (icon == null || item == null) return;
@@ -55,4 +43,5 @@ public class UI_DropRewardItem : MonoBehaviour
         icon.transform.localScale = scale;
         icon.transform.localRotation = Quaternion.Euler(0f, 0f, rotZ);
     }
+
 }
