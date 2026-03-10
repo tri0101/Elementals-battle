@@ -1111,6 +1111,7 @@ GameObject:
   - component: {fileID: 1602896902}
   - component: {fileID: 1602896901}
   - component: {fileID: 1602896903}
+  - component: {fileID: 1602896904}
   m_Layer: 0
   m_Name: GachaManager
   m_TagString: Untagged
@@ -1133,6 +1134,7 @@ MonoBehaviour:
   standardBanner: {fileID: 11400000, guid: 77fc693d92139114b910cab5fbb80dca, type: 2}
   featuredBanner: {fileID: 11400000, guid: 63fdabfe665b86c4abcf5beabea12f01, type: 2}
   tokenExchangeList: {fileID: 11400000, guid: 6e1f23253336967488dd1c7b286596d0, type: 2}
+  limitedOfferList: {fileID: 11400000, guid: 7c28fa8197909b8488929f37228bbef7, type: 2}
   activeBanner: {fileID: 0}
   standardSoftPityStart: 80
   standardHardPity: 120
@@ -1172,6 +1174,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 095b04b7f45be304cac0ffe656150903, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1602896904
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602896900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2117ecb41b5030c4683ef31aecc30dca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1630230353

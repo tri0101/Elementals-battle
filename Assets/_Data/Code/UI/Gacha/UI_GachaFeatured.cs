@@ -12,17 +12,21 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     [SerializeField] Transform panelLogHistory;
     [SerializeField] Transform panelLimitedOffer;
     [SerializeField] Transform panelSummonRate;
+    [SerializeField] Transform panelSummonReward;
+    [SerializeField] Transform panelDetailRate;
 
 
     [SerializeField] Transform contentChoose;
     [SerializeField] Transform contentPreview;
     [SerializeField] Transform contentTokenExchange;
+    [SerializeField] Transform contentLimitedOffer;
     [SerializeField] Transform contentSummonReward;
 
     [Header("Prefab")]
     [SerializeField] GameObject heroPrefabChoose;
     [SerializeField] GameObject heroPrefabTokenExchange;
     [SerializeField] GameObject summonRewardPrefab;
+    [SerializeField] GameObject limitedOfferPrefab;
     [Header("Button Select")]
     [SerializeField] Button buttonChoose;
     [SerializeField] Button buttonTokenExchange;
@@ -69,6 +73,8 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         buttonSummonRate.onClick.AddListener(SummonRate);
         buttonSummonReward.onClick.RemoveAllListeners();
         buttonSummonReward.onClick.AddListener(SummonReward);
+        buttonDetailRate.onClick.RemoveAllListeners();
+        buttonDetailRate.onClick.AddListener(SummonDetailRate);
         // == Close Button ==
         buttonCloseChoose.onClick.RemoveAllListeners();
         buttonCloseChoose.onClick.AddListener(ClosePanelChoose);
@@ -81,7 +87,7 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     }
     void TokenExchange()
     {
-        panelTokenExchange.gameObject.SetActive(true);
+        
         ClearContentTokenExchange();
         BannerTokenExchange tokenExchangeDataList = GachaManager.Instance.GetTokenExchangeList();
         foreach (BannerTokenExchangeData data in tokenExchangeDataList.exchangeDataList)
@@ -89,34 +95,40 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
             GameObject go = Instantiate(heroPrefabTokenExchange, contentTokenExchange);
             var ui = go.GetComponent<UI_TokenExchange>();
             ui.SetUp(data);
+            ui.SetUIFeatured(this);
         }
+        panelTokenExchange.gameObject.SetActive(true);
     }
     void LimitedOffer()
     {
+        ClearContentLimitedOffer();
+        BannerLimitedOffer limitedOfferList = GachaManager.Instance.GetLimitedOfferList();
+        foreach(BannerLimitedOfferData data in limitedOfferList.exchangeDataList)
+        {
+            GameObject go = Instantiate(limitedOfferPrefab, contentLimitedOffer);
+            UI_LimitedOffer ui = go.GetComponent<UI_LimitedOffer>();
+            ui.SetUp(data);
+            ui.SetUIFeatured(this);
+        }
+        
         panelLimitedOffer.gameObject.SetActive(true);
     }
     void SummonRate()
     {
         
-        ClearContentSummonReward();
+        
         SummonReward();
         panelSummonRate.gameObject.SetActive(true);
     }
-    void ClearContentSummonReward()
-    {
-           foreach (Transform t in contentSummonReward)
-            Destroy(t.gameObject);
-    }
+ 
     void SummonReward()
     {
+        ClearContentSummonReward();
+        panelDetailRate.gameObject.SetActive(false);
         //tier SS
         GameObject goSS = Instantiate(summonRewardPrefab, contentSummonReward);
             var uiSS = goSS.GetComponent<UI_SummonReward>();
         uiSS.SetUp(HeroTier.SS);
-        //tier S
-        GameObject goS = Instantiate(summonRewardPrefab, contentSummonReward);
-        var uiS = goS.GetComponent<UI_SummonReward>();
-        uiS.SetUp(HeroTier.S);
         //tier A
         GameObject goA = Instantiate(summonRewardPrefab, contentSummonReward);
         var uiA = goA.GetComponent<UI_SummonReward>();
@@ -133,10 +145,12 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         GameObject goItem = Instantiate(summonRewardPrefab, contentSummonReward);
         var uiItem = goItem.GetComponent<UI_SummonReward>();
         uiItem.SetUpItem();
+        panelSummonReward.gameObject.SetActive(true);
     }
     void SummonDetailRate()
     {
-
+        panelDetailRate.gameObject.SetActive(true);
+        panelSummonReward.gameObject.SetActive(false);
     }
     void ChooseHeroFeatured()
     {
@@ -194,6 +208,18 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     {
         foreach (Transform t in contentTokenExchange)
             Destroy(t.gameObject);
+    }
+    void ClearContentSummonReward()
+    {
+        foreach (Transform t in contentSummonReward)
+            Destroy(t.gameObject);
+    }
+    void ClearContentLimitedOffer()
+    {
+        foreach(Transform t in contentLimitedOffer)
+        {
+            Destroy(t.gameObject);
+        }
     }
     void SetPreviewHero()
     {
@@ -258,5 +284,29 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         recruitText1x.text = $"{currentTickets}/1";
         recruitText10x.text = $"{currentTickets}/10";
     }
+
+    public void RefreshAllCost() // refresh tất cả redeem sau mỗi lần mua
+    {
+        foreach(Transform tokenTransform in contentTokenExchange.transform)
+        {
+            UI_TokenExchange ui = tokenTransform.GetComponent<UI_TokenExchange>();
+            if(ui != null)
+            {
+                ui.RefreshCost();
+            }
+        }
+    }
     
+    public void RefreshItemLimitedOffer() //refresh lại ui item sau mỗi lần mua
+    {
+        foreach (Transform offerTransform in contentLimitedOffer.transform)
+        {
+            
+            UI_LimitedOffer ui = offerTransform.GetComponent<UI_LimitedOffer>();
+            ui.ClearContentNeed();
+            ui.SetUpPrefabNeed();
+            ui.RefreshExchangeButton();
+            
+        }
+    }
 }

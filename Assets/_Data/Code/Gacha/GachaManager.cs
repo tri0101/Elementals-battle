@@ -11,6 +11,7 @@ public class GachaManager : Subject, IGachaService
     [SerializeField] private GachaBanner featuredBanner;
     public GachaBanner FeaturedBanner => featuredBanner;
     [SerializeField] private BannerTokenExchange tokenExchangeList;
+    [SerializeField] private BannerLimitedOffer limitedOfferList;
 
     [SerializeField] private GachaBanner activeBanner;
     private GachaBannerRuntime runtime;
@@ -254,7 +255,7 @@ public class GachaManager : Subject, IGachaService
         }
 
         // Normal featured outcome: C/B/A/S
-        return runtime.RollHero(RollTierNormalCBAS());
+        return runtime.RollHero(RollTierNormalCBA());
     }
 
     HeroTier RollTierNormalCBA()
@@ -308,5 +309,9 @@ public class GachaManager : Subject, IGachaService
     public BannerTokenExchange GetTokenExchangeList()
     {
         return tokenExchangeList;
+    }
+    public BannerLimitedOffer GetLimitedOfferList()
+    {
+        return limitedOfferList;
     }
 }

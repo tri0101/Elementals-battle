@@ -11,23 +11,25 @@ public class UI_TokenExchange : MonoBehaviour
     [SerializeField] TextMeshProUGUI amountCostText;
     [Header("Button")]
     [SerializeField] Button exchangeButton;
-
+    [SerializeField] BannerTokenExchangeData data;
+    UI_GachaFeatured UI_GachaFeatured;
 
     public void SetUp(BannerTokenExchangeData data)
     {
         gameObject.SetActive(false);
+        this.data = data;
         HeroInfo heroInfo = DatabaseManager.Instance.HeroDatabase.GetHero(data.heroId);
         nameText.text = heroInfo.Name;
         redeemText.text = $"Redeem: {data.redeemLimit}";
         amountCostText.text = $"{data.amountCost}";
-        RefreshCost(data);
-        RefreshRedeem(data);
+        RefreshCost();
+        RefreshRedeem();
         GameObject go = Instantiate(heroInfo.HeroPreviewPrefabs, contentPreview);
         exchangeButton.onClick.RemoveAllListeners();
         exchangeButton.onClick.AddListener(()=>ClickExchangeHero(data));  
         gameObject.SetActive(true);
     }
-    void RefreshCost(BannerTokenExchangeData data)
+    public void RefreshCost()
     {
         if (PlayerInventory.Instance.GetItemQuantity(6) < data.amountCost)
         {
@@ -41,7 +43,11 @@ public class UI_TokenExchange : MonoBehaviour
         }
         
     }
-    void RefreshRedeem(BannerTokenExchangeData data)
+    public void SetUIFeatured(UI_GachaFeatured ui)
+    {
+        UI_GachaFeatured = ui;
+    }
+    public void RefreshRedeem()
     {
         int redeemedCount = TokenExchangeState.Instance.GetRedeemedCount(data.heroId);
         redeemText.text = $"Redeem: {redeemedCount}/{data.redeemLimit}";
@@ -50,7 +56,7 @@ public class UI_TokenExchange : MonoBehaviour
             exchangeButton.interactable = false;
         }   
     }
-
+    
     void ClickExchangeHero(BannerTokenExchangeData data)
     {
         PlayerInventory.Instance.ConsumeItem(6, data.amountCost);
@@ -59,7 +65,9 @@ public class UI_TokenExchange : MonoBehaviour
         UI_CanvasReward.Instance.SetUp(data);
         UI_CanvasReward.Instance.ShowReward();
         TokenExchangeState.Instance.IncrementRedeem(data.heroId);
-        RefreshCost(data);
-        RefreshRedeem(data);
+        RefreshCost();
+        RefreshRedeem();
+        UI_GachaFeatured.RefreshAllCost();
+        
     }
 }

@@ -26,7 +26,11 @@ public class UI_DropRewardItem : MonoBehaviour
 
     }
 
+    public void SetUpColorText(Color color)
+    {
+        amountText.color = color;
 
+    }
     void ApplyIconTransform(ItemData item)
     {
         if (icon == null || item == null) return;
