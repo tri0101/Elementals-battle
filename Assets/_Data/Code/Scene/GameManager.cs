@@ -12,6 +12,8 @@ public enum SceneId
     MapScene = 6,
     PersistentScene = 7,
     StoreScene = 8,
+    TeamScene = 9,
+    RestaurantScene = 10,   
 
 }
 

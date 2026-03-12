@@ -55,6 +55,8 @@ public class HeroInfo : ScriptableObject
 
     [Header("Speed")]
     public float speed;
+    [Header("Speed Food")]
+    public List<int> speedFoodList; // 0 - tier 1 , // 1 - tier 2 , // 2 - tier 3
 
     [Header("Duration Attack")]
     public float durationA1;

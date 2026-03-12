@@ -6,6 +6,8 @@ public class HeroInstance
     public int heroId;
     public int level;
     public int currentExp;
+    public int speedLevel;
+    public int currentSpeedExp;
     public int star;
     public int rank;
     public List<SkillInstance> skillInstances = new List<SkillInstance>();

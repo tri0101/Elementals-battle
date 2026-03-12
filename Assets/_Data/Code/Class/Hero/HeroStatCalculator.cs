@@ -15,6 +15,7 @@
         bonus += instance.GetAbilityLevel(AbilityType.Skill) * growth.levelBonusPerSkill;
         bonus += instance.GetAbilityLevel(AbilityType.Ultimate) * growth.levelBonusPerSkill;
         bonus += instance.GetAbilityLevel(AbilityType.Passive) * growth.levelBonusPerSkill;
+
         // Star bonus
         if (instance.star < growth.starBonus.Length)
             bonus += growth.starBonus[instance.star];
@@ -65,10 +66,21 @@
         return info.armor * roleScale.armor * (1f + bonus);
     }
 
-    public static float CalculateSpeed(HeroInfo info)
+    // Speed = (base speed * role scale) + (speedLevel * 3)
+    public static float CalculateSpeed(
+        HeroInfo info,
+        HeroInstance instance
+    )
     {
         var roleScale = RoleScaleTable.Get(info.role);
-        return info.speed * roleScale.speed;
+
+        float baseSpeed = info.speed * roleScale.speed;
+
+        int speedLevel = 0;
+        if (instance != null && instance.speedLevel > 0)
+            speedLevel = instance.speedLevel;
+
+        return baseSpeed + (speedLevel * 3f);
     }
 
     public static float CalculateCritRate(HeroInfo info)
@@ -111,20 +123,20 @@
             armor = CalculateArmor(info, instance, growth),
             critRate = CalculateCritRate(info),
             critDamage = CalculateCritDamage(info),
-            speed = CalculateSpeed(info)
+            speed = CalculateSpeed(info, instance)
         };
-        
+
         stat.power = CalculatePower(stat);
-       
+
         return stat;
     }
 
     public static void ApplyStartBattlePassive(
-    HeroInfo info,
-    HeroInstance instance,
-    HeroGrowthConfig growth,
-    ref HeroStat stat
-)
+        HeroInfo info,
+        HeroInstance instance,
+        HeroGrowthConfig growth,
+        ref HeroStat stat
+    )
     {
         if (info.passive == null || info.passive.effects == null)
             return;
@@ -147,10 +159,11 @@
             ApplyModifyStat(effect, ref stat);
         }
     }
+
     private static void ApplyModifyStat(
-    AbilityEffect effect,
-    ref HeroStat stat
-)
+        AbilityEffect effect,
+        ref HeroStat stat
+    )
     {
         float percent = effect.modifyValue;
 
@@ -172,9 +185,5 @@
                 stat.armor *= (1f + percent);
                 break;
         }
-
-        // Nếu durationTurn != -1
-        // => đây là buff có thời hạn
-        // có thể thêm vào hệ thống BuffManager sau
     }
 }

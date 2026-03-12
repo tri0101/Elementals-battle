@@ -46,34 +46,34 @@ public class LimitedOfferState : Subject
         return GetRedeemedCount(data.id) < data.exchangeLimit;
     }
 
-    //public TokenExchangeSaveData Export()
-    //{
-    //    var data = new TokenExchangeSaveData();
+    public LimitedOfferSaveData Export()
+    {
+        var data = new LimitedOfferSaveData();
 
-    //    foreach (var kv in exchangeById)
-    //    {
-    //        data.entries.Add(new TokenExchangeEntry
-    //        {
-    //            heroId = kv.Key,
-    //            redeemedCount = kv.Value
-    //        });
-    //    }
+        foreach (var kv in exchangeById)
+        {
+            data.entries.Add(new LimitedOfferEntry
+            {
+                id = kv.Key,
+                exchangeCount = kv.Value
+            });
+        }
 
-    //    return data;
-    //}
+        return data;
+    }
 
-    //public void Import(TokenExchangeSaveData data)
-    //{
-    //    exchangeById.Clear();
+    public void Import(LimitedOfferSaveData data)
+    {
+        exchangeById.Clear();
 
-    //    if (data == null || data.entries == null)
-    //        return;
+        if (data == null || data.entries == null)
+            return;
 
-    //    for (int i = 0; i < data.entries.Count; i++)
-    //    {
-    //        var e = data.entries[i];
-    //        if (e == null) continue;
-    //        exchangeById[e.heroId] = Mathf.Max(0, e.redeemedCount);
-    //    }
-    //}
+        for (int i = 0; i < data.entries.Count; i++)
+        {
+            var e = data.entries[i];
+            if (e == null) continue;
+            exchangeById[e.id] = Mathf.Max(0, e.exchangeCount);
+        }
+    }
 }

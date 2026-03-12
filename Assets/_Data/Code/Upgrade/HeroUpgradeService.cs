@@ -7,7 +7,8 @@ public class HeroUpgradeService : Subject
     public static HeroUpgradeService Instance;
     [SerializeField] private HeroLevelConfig levelConfig;
     public HeroLevelConfig LevelConfig => levelConfig;
-
+    [SerializeField] private HeroSpeedConfig speedConfig;
+    public HeroSpeedConfig SpeedConfig => speedConfig;
     void Awake()
     {
         Instance = this;
@@ -54,6 +55,40 @@ public class HeroUpgradeService : Subject
 
             hero.currentExp -= needExp;
             hero.level++;
+        }
+        NotifyObservers();
+    }
+    public bool FeedSpeedExp(HeroInstance hero, ItemData item)
+    {
+        // 1. chỉ nhận exp food
+        if (item.speedValue <= 0)
+            return false;
+
+        // 2. trừ item
+        bool consumed = PlayerInventory.Instance.ConsumeItem(item.id, 1);
+        if (!consumed) return false;
+
+        // 3. cộng exp
+        hero.currentSpeedExp += item.speedValue;
+
+        // 4. xử lý level up
+        ProcessSpeedLevelUp(hero);
+        NotifyObservers();
+        return true;
+    }
+
+    void ProcessSpeedLevelUp(HeroInstance hero)
+    {
+        // tránh out of range
+        while (hero.speedLevel - 1 < speedConfig.expPerLevel.Length)
+        {
+            int needExp = speedConfig.expPerLevel[hero.speedLevel - 1];
+
+            if (hero.currentSpeedExp < needExp)
+                break;
+
+            hero.currentSpeedExp -= needExp;
+            hero.speedLevel++;
         }
         NotifyObservers();
     }

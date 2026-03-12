@@ -36,6 +36,9 @@ public class PlayerInventory :  Subject
     {
         AddItem(7, 150);
         AddItem(6, 150);
+        AddItem(200, 10);
+        AddItem(201, 10);
+        AddItem(202, 10);
         AddItem(51, 1000); 
         AddItem(52, 1000); 
         AddItem(55, 1000); 
@@ -92,6 +95,8 @@ public class PlayerInventory :  Subject
                 heroId = heroId,
                 level = 1,
                 currentExp = 0,
+                speedLevel = 1,
+                currentSpeedExp = 0,
                 star = 4,
                 rank = 1,
                 shard = 0

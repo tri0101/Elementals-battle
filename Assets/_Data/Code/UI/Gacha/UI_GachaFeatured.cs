@@ -118,16 +118,10 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         
         
         SummonReward();
-        panelSummonRate.gameObject.SetActive(true);
-    }
- 
-    void SummonReward()
-    {
         ClearContentSummonReward();
-        panelDetailRate.gameObject.SetActive(false);
         //tier SS
         GameObject goSS = Instantiate(summonRewardPrefab, contentSummonReward);
-            var uiSS = goSS.GetComponent<UI_SummonReward>();
+        var uiSS = goSS.GetComponent<UI_SummonReward>();
         uiSS.SetUp(HeroTier.SS);
         //tier A
         GameObject goA = Instantiate(summonRewardPrefab, contentSummonReward);
@@ -145,6 +139,15 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         GameObject goItem = Instantiate(summonRewardPrefab, contentSummonReward);
         var uiItem = goItem.GetComponent<UI_SummonReward>();
         uiItem.SetUpItem();
+        panelSummonRate.gameObject.SetActive(true);
+
+    }
+ 
+    void SummonReward()
+    {
+       
+        panelDetailRate.gameObject.SetActive(false);
+        
         panelSummonReward.gameObject.SetActive(true);
     }
     void SummonDetailRate()

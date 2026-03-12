@@ -22,7 +22,10 @@ public class TokenExchangeSaveData
 {
     public List<TokenExchangeEntry> entries = new();
 }
-
+public class LimitedOfferSaveData
+{
+    public List<LimitedOfferEntry> entries = new();
+}
 public class GachaPitySaveData
 {
     public int standardPityCounter;
@@ -36,6 +39,7 @@ public class SaveManager : MonoBehaviour, IObserver
     const string HEROES_SAVE_KEY = "HeroSaveData";
     const string PROGRESS_SAVE_KEY = "ProgressSaveData";
     const string TOKEN_EXCHANGE_SAVE_KEY = "TokenExchangeSaveData";
+    const string LIMITED_OFFER_SAVE_KEY = "LimitedOfferSaveData";
     const string GACHA_PITY_SAVE_KEY = "GachaPitySaveData";
     void Awake()
     {
@@ -62,7 +66,8 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if(TokenExchangeState.Instance != null)
             TokenExchangeState.Instance.AddObserver(this);
-
+        if(LimitedOfferState.Instance != null)
+            LimitedOfferState.Instance.AddObserver(this);
 
         if (GachaManager.Instance != null)
             GachaManager.Instance.AddObserver(this);
@@ -71,6 +76,7 @@ public class SaveManager : MonoBehaviour, IObserver
         LoadInventoryHeroes();
         LoadProgress();
         LoadTokenExchange();
+        LoadLimitedOffer();
         LoadGachaPity();
     }
 
@@ -126,6 +132,17 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(TOKEN_EXCHANGE_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
+    void SaveLimitedOffer()
+    {
+        if (LimitedOfferState.Instance == null)
+            return;
+
+        LimitedOfferSaveData data = LimitedOfferState.Instance.Export();
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(LIMITED_OFFER_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
     void SaveGachaPity()
     {
         if (GachaManager.Instance == null)
@@ -147,6 +164,7 @@ public class SaveManager : MonoBehaviour, IObserver
         SaveInventory();
         SaveCurrentProgress();
         SaveTokenExchange();
+        SaveLimitedOffer();
         SaveGachaPity();
     }
 
@@ -204,6 +222,22 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if (TokenExchangeState.Instance != null)
             TokenExchangeState.Instance.Import(data);
+    }
+    void LoadLimitedOffer()
+    {
+        if (!PlayerPrefs.HasKey(LIMITED_OFFER_SAVE_KEY))
+            return;
+
+        string json = PlayerPrefs.GetString(LIMITED_OFFER_SAVE_KEY);
+
+        LimitedOfferSaveData data =
+            JsonUtility.FromJson<LimitedOfferSaveData>(json);
+
+        if (data == null)
+            return;
+
+        if (LimitedOfferState.Instance != null)
+            LimitedOfferState.Instance.Import(data);
     }
     void LoadGachaPity()
     {

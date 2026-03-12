@@ -8,6 +8,7 @@ public enum ItemType
     Currency = 4,        // vàng, kim cương
     HeroShard = 5,
     Other = 6,         // các loại item khác
+    SpeedFood = 7,       // thức ăn tăng tốc độ
 }
 
 [System.Serializable]

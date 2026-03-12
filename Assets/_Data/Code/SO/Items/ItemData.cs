@@ -10,8 +10,8 @@ public class ItemData : ScriptableObject
     public Sprite icon;
 
     
-    public int expValue;       
-    public int rankValue;      
+    public int expValue;
+    public int speedValue;      
 
     public bool stackable = true;
     public Color colorFrame;
