@@ -32,6 +32,7 @@ public class GachaPitySaveData
     public int featuredPityCounter;
 }
 
+
 public class SaveManager : MonoBehaviour, IObserver
 {
     public static SaveManager Instance;
@@ -41,6 +42,7 @@ public class SaveManager : MonoBehaviour, IObserver
     const string TOKEN_EXCHANGE_SAVE_KEY = "TokenExchangeSaveData";
     const string LIMITED_OFFER_SAVE_KEY = "LimitedOfferSaveData";
     const string GACHA_PITY_SAVE_KEY = "GachaPitySaveData";
+    const string HERO_SELECTEDID_BANNER = "BannerHeroIdSaveData";
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -158,7 +160,11 @@ public class SaveManager : MonoBehaviour, IObserver
         PlayerPrefs.SetString(GACHA_PITY_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
-
+    public void SaveHeroSelectedIdBanner(int heroId)
+    {
+        PlayerPrefs.SetInt(HERO_SELECTEDID_BANNER, heroId);
+        PlayerPrefs.Save();
+    }
     public void OnNotify()
     {
         SaveInventory();
@@ -252,6 +258,12 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if (GachaManager.Instance != null)
             GachaManager.Instance.SetPityCounters(data.standardPityCounter, data.featuredPityCounter);
+    }
+    public int LoadHeroSelectedIdBanner() {         
+        if (!PlayerPrefs.HasKey(HERO_SELECTEDID_BANNER))
+            return -1;
+        return PlayerPrefs.GetInt(HERO_SELECTEDID_BANNER);
+
     }
 
 #if UNITY_EDITOR

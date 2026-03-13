@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.Progress;
 
@@ -10,6 +11,7 @@ public class PlayerInventory :  Subject
     [SerializeField] private List<ItemInstance> items = new();
     public IReadOnlyList<ItemInstance> Items => items;
 
+    int maxMana = 150;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -202,7 +204,34 @@ public class PlayerInventory :  Subject
     {
         return heroes.Find(h => h.heroId == heroId);
     }
- 
+
+
+
+    //=================Time =================
+    void Update()
+    {
+        RegenMana();
+    }
+    void RegenMana()
+    {
+        int currentMana = GetItemQuantity(3);
+
+        if (currentMana >= maxMana)
+            return;
+
+        int regenInterval = 3;
+
+        int secondsPassed = TimeManager.Instance.GetSecondsPassed();
+
+        while (secondsPassed >= regenInterval)
+        {
+            AddItem(3, 1);
+
+            TimeManager.Instance.AdvanceTime(regenInterval);
+
+            secondsPassed -= regenInterval;
+        }
+    }
 }
 
 

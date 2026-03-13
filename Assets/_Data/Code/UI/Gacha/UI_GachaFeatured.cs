@@ -59,7 +59,14 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
     }
     void OnEnable()
     {
-        OnHeroClicked(54);
+        int heroId = SaveManager.Instance.LoadHeroSelectedIdBanner();
+        if (heroId == -1)
+            OnHeroClicked(54);
+        else
+        {
+            OnHeroClicked(heroId);
+        }
+        
     }
     void AddListener()
     {
@@ -189,6 +196,7 @@ public class UI_GachaFeatured : MonoBehaviour, IObserver
         GachaManager.Instance.SetFeaturedSelectionByHeroId(selectedHeroId);
         nameHeroPreviewText.text = DatabaseManager.Instance.HeroDatabase.GetHero(selectedHeroId).Name;
         SetPreviewHero();
+        SaveManager.Instance.SaveHeroSelectedIdBanner(selectedHeroId);
         RefreshAll();
     }
 

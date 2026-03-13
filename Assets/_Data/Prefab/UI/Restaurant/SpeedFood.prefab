@@ -39,8 +39,8 @@ RectTransform:
   - {fileID: 6797394188740725281}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -155,6 +155,8 @@ MonoBehaviour:
   icon: {fileID: 8358411614557162161}
   backNo: {fileID: 8682376774239949184}
   amountText: {fileID: 8084928704548315202}
+  flyTargetAnchoredPos: {x: 375, y: 425}
+  flyDuration: 0.25
 --- !u!1 &1492196704778837168
 GameObject:
   m_ObjectHideFlags: 0

@@ -51,7 +51,7 @@ public class UI_ShowResource : MonoBehaviour, IObserver
             else if (itemId == 2)
                 diamondText.text = value.ToString();
             else if (itemId == 3)
-                staminaText.text = value.ToString();
+                staminaText.text = $"{value}/150";
         }
     }
 }

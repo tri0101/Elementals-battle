@@ -49,6 +49,16 @@ public class UI_PanelHeroRestaurant : MonoBehaviour
     void OnEnable()
     {
         LoadHeroes();
+
+        // NEW: auto load first hero in player's list as default preview
+        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
+        if (heroes != null && heroes.Count > 0)
+        {
+            // nếu có filter đang bật thì chọn hero đầu tiên phù hợp filter
+            var first = heroes.FirstOrDefault(h => !currentFilter.HasValue || h.info.role == currentFilter.Value);
+            if (first != null && first.info != null)
+                LoadPreview(first);
+        }
     }
 
     void OnDisable()
@@ -73,6 +83,15 @@ public class UI_PanelHeroRestaurant : MonoBehaviour
     {
         currentFilter = role;
         LoadHeroes();
+
+        // NEW: đổi filter xong cũng auto preview hero đầu tiên hợp filter
+        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
+        if (heroes != null && heroes.Count > 0)
+        {
+            var first = heroes.FirstOrDefault(h => !currentFilter.HasValue || h.info.role == currentFilter.Value);
+            if (first != null && first.info != null)
+                LoadPreview(first);
+        }
     }
 
     public void LoadHeroes()
@@ -99,13 +118,18 @@ public class UI_PanelHeroRestaurant : MonoBehaviour
         if (nameHeroText != null)
             nameHeroText.text = $"{hero.info.Name}";
 
-        if (speed != null)
-            speed.text = $"Speed:";
+        LoadSpeedBonus(hero);
 
         LoadSpeedFoodItem(hero.info);
 
         // show current speed level bar instantly when opening preview
         UpdateSpeedLevelBarInstant();
+    }
+
+    void LoadSpeedBonus(HeroViewData hero)
+    {
+        int currentLevel = hero.instance != null ? hero.instance.speedLevel : 0;
+        speed.text = $"Speed Bonus: {currentLevel * 3} ";
     }
 
     void LoadSpeedFoodItem(HeroInfo hero)
@@ -158,7 +182,7 @@ public class UI_PanelHeroRestaurant : MonoBehaviour
 
         // start new fill animation
         expAnimRoutine = StartCoroutine(AnimateSpeedExpChange(prevLevel, prevExp, newLevel, newExp));
-
+        LoadSpeedBonus(currentPreviewHero);
         // refresh item quantities
         LoadSpeedFoodItem(currentPreviewHero.info);
     }
