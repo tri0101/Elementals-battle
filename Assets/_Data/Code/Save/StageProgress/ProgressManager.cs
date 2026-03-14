@@ -99,7 +99,10 @@ public class ProgressManager : Subject
     {
         return progress.currentChapter;
     }
-
+    public int GetStage()
+    {
+        return progress.currentStage;
+    }
     public void SetClaim(int chapterID, int index)
     {
         ChapterRewardClaimedData found =

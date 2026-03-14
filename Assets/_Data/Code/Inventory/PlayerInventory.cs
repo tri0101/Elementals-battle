@@ -221,16 +221,20 @@ public class PlayerInventory :  Subject
 
         int regenInterval = 3;
 
-        int secondsPassed = TimeManager.Instance.GetSecondsPassed();
+        int secondsPassed = TimeManager.Instance.GetManaSecondsPassed();
 
         while (secondsPassed >= regenInterval)
         {
             AddItem(3, 1);
 
-            TimeManager.Instance.AdvanceTime(regenInterval);
+            TimeManager.Instance.AdvanceManaTime(regenInterval);
 
             secondsPassed -= regenInterval;
         }
+    }
+    public int GetHeroCount()
+    {
+        return heroes.Count;
     }
 }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -17,7 +17,6 @@ public class ProgressInstanceData
 {
     public PlayerProgress progress = new();
 }
-
 public class TokenExchangeSaveData
 {
     public List<TokenExchangeEntry> entries = new();
@@ -31,7 +30,12 @@ public class GachaPitySaveData
     public int standardPityCounter;
     public int featuredPityCounter;
 }
-
+public class AccountSaveData
+{
+    public string playerName;
+    public int playerLevel;
+    public int playerExp;
+}
 
 public class SaveManager : MonoBehaviour, IObserver
 {
@@ -43,6 +47,9 @@ public class SaveManager : MonoBehaviour, IObserver
     const string LIMITED_OFFER_SAVE_KEY = "LimitedOfferSaveData";
     const string GACHA_PITY_SAVE_KEY = "GachaPitySaveData";
     const string HERO_SELECTEDID_BANNER = "BannerHeroIdSaveData";
+    const string ACCOUNT_SAVE_KEY = "AccountSaveData";
+    const string DEFAULT_PLAYER_NAME = "Abc123";
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -66,13 +73,16 @@ public class SaveManager : MonoBehaviour, IObserver
         if (ProgressManager.Instance != null)
             ProgressManager.Instance.AddObserver(this);
 
-        if(TokenExchangeState.Instance != null)
+        if (TokenExchangeState.Instance != null)
             TokenExchangeState.Instance.AddObserver(this);
-        if(LimitedOfferState.Instance != null)
+        if (LimitedOfferState.Instance != null)
             LimitedOfferState.Instance.AddObserver(this);
 
         if (GachaManager.Instance != null)
             GachaManager.Instance.AddObserver(this);
+
+        if (AccountManager.Instance != null)
+            AccountManager.Instance.AddObserver(this);
 
         LoadInventoryItems();
         LoadInventoryHeroes();
@@ -80,6 +90,7 @@ public class SaveManager : MonoBehaviour, IObserver
         LoadTokenExchange();
         LoadLimitedOffer();
         LoadGachaPity();
+        LoadAccount(); 
     }
 
     public void SaveInventory()
@@ -120,6 +131,30 @@ public class SaveManager : MonoBehaviour, IObserver
 
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(PROGRESS_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+
+    void SaveAccount() 
+    {
+        if (AccountManager.Instance == null)
+            return;
+
+        var accI = AccountManager.Instance.AccountI;
+        var accP = AccountManager.Instance.AccountP;
+
+        // đảm bảo luôn có tên để lưu
+        if (string.IsNullOrWhiteSpace(accI.namePlayer))
+            accI.namePlayer = DEFAULT_PLAYER_NAME;
+
+        AccountSaveData data = new AccountSaveData
+        {
+            playerName = accI.namePlayer,
+            playerLevel = accP.level,
+            playerExp = accP.exp
+        };
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(ACCOUNT_SAVE_KEY, json);
         PlayerPrefs.Save();
     }
 
@@ -172,6 +207,7 @@ public class SaveManager : MonoBehaviour, IObserver
         SaveTokenExchange();
         SaveLimitedOffer();
         SaveGachaPity();
+        SaveAccount(); 
     }
 
     public void LoadInventoryItems()
@@ -211,6 +247,35 @@ public class SaveManager : MonoBehaviour, IObserver
             JsonUtility.FromJson<ProgressInstanceData>(json);
 
         ProgressManager.Instance.SetProgress(data.progress);
+    }
+
+    void LoadAccount() 
+    {
+        if (AccountManager.Instance == null)
+            return;
+
+        // Chưa có save => set default name rồi save luôn 1 lần
+        if (!PlayerPrefs.HasKey(ACCOUNT_SAVE_KEY))
+        {
+            AccountManager.Instance.AccountI.namePlayer = DEFAULT_PLAYER_NAME;
+            SaveAccount();
+            return;
+        }
+
+        string json = PlayerPrefs.GetString(ACCOUNT_SAVE_KEY);
+        AccountSaveData data = JsonUtility.FromJson<AccountSaveData>(json);
+
+        if (data == null)
+            return;
+
+        AccountManager.Instance.AccountI.namePlayer =
+            string.IsNullOrWhiteSpace(data.playerName) ? DEFAULT_PLAYER_NAME : data.playerName;
+
+        AccountManager.Instance.SetAccount(new AccountProgress
+        {
+            level = Mathf.Max(1, data.playerLevel),
+            exp = Mathf.Max(0, data.playerExp)
+        });
     }
 
     void LoadTokenExchange()
@@ -259,7 +324,8 @@ public class SaveManager : MonoBehaviour, IObserver
         if (GachaManager.Instance != null)
             GachaManager.Instance.SetPityCounters(data.standardPityCounter, data.featuredPityCounter);
     }
-    public int LoadHeroSelectedIdBanner() {         
+    public int LoadHeroSelectedIdBanner()
+    {
         if (!PlayerPrefs.HasKey(HERO_SELECTEDID_BANNER))
             return -1;
         return PlayerPrefs.GetInt(HERO_SELECTEDID_BANNER);

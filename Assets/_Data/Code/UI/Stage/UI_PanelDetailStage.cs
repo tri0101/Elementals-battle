@@ -180,10 +180,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
             UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyStamina();
             return;
         }
-        else
-        {
-            PlayerInventory.Instance.ConsumeItem(3, currentStage.staminaCost);
-        }
+      
            
         
         gameObject.SetActive(false);

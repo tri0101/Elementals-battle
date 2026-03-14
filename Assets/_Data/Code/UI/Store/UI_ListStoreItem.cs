@@ -14,14 +14,14 @@ public class UI_ListStoreItem : MonoBehaviour
     [Header("Effect Settings")]
     [SerializeField] private float rotateDuration = 1f;
     [SerializeField] private float flashSpeed = 8f;
+    [SerializeField] private UI_PanelStoreDetail detailStore;   
+    
 
-    private const string LAST_RESET_KEY = "LastShopReset";
-    private readonly int[] resetHours = { 0, 6, 12, 18 };
     private bool isRefreshing = false;
 
     void OnEnable()
     {
-        CheckReset();
+        
         BuildShop();
 
         buttonRefresh.onClick.RemoveAllListeners();
@@ -39,8 +39,12 @@ public class UI_ListStoreItem : MonoBehaviour
             if (!isRefreshing)
                 StartCoroutine(RefreshShop());
         });
-
+        if (TimeManager.Instance.ShouldResetShop())
+        {
+            StartCoroutine(RefreshShop());
+        }
     }
+  
 
     void CheckRefresh()
     {
@@ -59,6 +63,7 @@ public class UI_ListStoreItem : MonoBehaviour
     IEnumerator RefreshShop()
         
     {
+        detailStore.gameObject.SetActive(false);
         PlayerInventory.Instance.ConsumeItem(2, 50);
         panelRefresh.gameObject.SetActive(false);
         isRefreshing = true;
@@ -184,33 +189,13 @@ public class UI_ListStoreItem : MonoBehaviour
         foreach (Transform child in contentItems)
             Destroy(child.gameObject);
     }
-
-    void CheckReset()
+    private void Update()
     {
-        DateTime now = DateTime.Now;
-        DateTime currentResetPoint = GetCurrentResetPoint(now);
-        string saved = PlayerPrefs.GetString(LAST_RESET_KEY, "");
-
-        if (saved != currentResetPoint.ToString())
+        if(TimeManager.Instance.ShouldResetShop())
         {
-            PlayerPrefs.SetString(LAST_RESET_KEY, currentResetPoint.ToString());
-            PlayerPrefs.Save();
+            StartCoroutine(RefreshShop());
         }
     }
 
-    DateTime GetCurrentResetPoint(DateTime now)
-    {
-        DateTime today = now.Date;
-        DateTime latest = today;
 
-        foreach (int hour in resetHours)
-        {
-            DateTime point = today.AddHours(hour);
-            if (now >= point)
-                latest = point;
-        }
-
-        return latest;
-    }
-    
 }
