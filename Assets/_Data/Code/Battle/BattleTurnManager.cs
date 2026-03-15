@@ -141,6 +141,7 @@ public class BattleTurnManager : MonoBehaviour
             
             battleManager.BattleResult.SetUIExpPlus(); // gán exp plus UI
             battleManager.BattleResult.SetExpPlus(); // gán exp plus
+            battleManager.BattleResult.SetExpForPlayer(); // gán exp cho player
             winExpPlusImage.SetActive(true); // hiện thị exp plus
             battleManager.BattleResult.CheckHeroesLost(); // tính số sao nhận được 
             battleManager.BattleResult.SetUpRollItems(); // tính toán rớt đồ

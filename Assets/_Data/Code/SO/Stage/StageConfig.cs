@@ -13,6 +13,7 @@ public class StageConfig : ScriptableObject
     [Header("Cost")]
     public int staminaCost;
     public int expForAliveHero;
+    public int expForPlayer;
     [Header("Stage Condition")]// chỉ dành cho sao 2 , sao 1 và 3 cố định
     public StageCondition stageCondition;
     public int conditionParam;// ví dụ hero mất bao nhiêu người ( dành cho heroLost)

@@ -28,7 +28,7 @@ public class AccountManager : Subject
     public AccountInfo AccountI => accountI;
 
     [SerializeField] private AccountLevelConfig levelConfig;
-
+    private const int DIAMOND_PER_LEVEL = 100;
     private void Awake()
     {
         if (Instance != null)
@@ -93,6 +93,7 @@ public class AccountManager : Subject
     {
         if (amount <= 0) return;
 
+        int startLevel = accountP.level;
         accountP.exp += amount;
 
         while (true)
@@ -118,7 +119,13 @@ public class AccountManager : Subject
             accountP.level++;
         }
 
+        int levelGained = Mathf.Max(0, accountP.level - startLevel);
+        int diamondAmount = levelGained * DIAMOND_PER_LEVEL;
+
+        if (diamondAmount > 0 && UI_LevelUp.Instance != null)
+            UI_LevelUp.Instance.CallUILevelUp(diamondAmount);
+
         NotifyObservers();
     }
-    
+
 }

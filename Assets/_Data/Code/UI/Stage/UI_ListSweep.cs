@@ -8,6 +8,7 @@ public class UI_ListSweep : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI battleText;
     [SerializeField] private TextMeshProUGUI coinText;
+    [SerializeField] private TextMeshProUGUI expText;
 
     [Header("Transform")]
     [SerializeField] private Transform contentItem;
@@ -27,6 +28,10 @@ public class UI_ListSweep : MonoBehaviour
     void SetCoin()
     {
         coinText.text = itemDrop.ContainsKey(1) ? itemDrop[1].ToString() : "0";
+    }
+    void SetExp()
+    {
+        expText.text = AccountManager.Instance.AccountP.exp.ToString();
     }
     void SetUpItems()
     {

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 
 
-public class UI_PanelAccount : MonoBehaviour
+public class UI_PanelAccount : MonoBehaviour, IObserver
 {
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI levelText;
@@ -17,6 +17,7 @@ public class UI_PanelAccount : MonoBehaviour
     private void OnEnable()
     {
         RefreshUI();
+        AccountManager.Instance.AddObserver(this);
     }
     public void RefreshUI()
     {
@@ -34,5 +35,8 @@ public class UI_PanelAccount : MonoBehaviour
         panelDetail.gameObject.SetActive(true);
        
     }
-    
+    public void OnNotify()
+    {
+        RefreshUI();
+    }
 }

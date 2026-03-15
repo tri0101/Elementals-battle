@@ -15,6 +15,7 @@ public class UI_StageReward : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI conditionText;
     [SerializeField] private TextMeshProUGUI coinText;
+    [SerializeField] private TextMeshProUGUI expPlayerText;
     [SerializeField] private StageConfig stageConfig;
     [SerializeField] private Transform starRoot;
 
@@ -42,12 +43,18 @@ public class UI_StageReward : MonoBehaviour
         stageConfig = StageContext.selectedStage;
         SetTextCondition();
         DisPlayCoin();
+        DisPlayExpPlayer();
         DisPlayStar(starGain);
         DisPlayItems();
     }
     void DisPlayCoin()
     {
         coinText.text = itemDrop.ContainsKey(1) ? itemDrop[1].ToString() : "0";
+    }
+
+    void DisPlayExpPlayer()
+    {
+        expPlayerText.text = stageConfig.expForPlayer.ToString();
     }
     public void SetStarGain(int value)
     {

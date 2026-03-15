@@ -64,6 +64,10 @@ public class BattleResult : MonoBehaviour
 
         }
     }
+    public void SetExpForPlayer()
+    {
+        AccountManager.Instance.AddExp(stageConfig.expForPlayer);
+    }
     public void SetExpPlus()
     {
         foreach(var heroId in listHeroStatusById.Keys)

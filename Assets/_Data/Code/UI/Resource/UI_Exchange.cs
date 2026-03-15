@@ -44,20 +44,22 @@ public class UI_Exchange : MonoBehaviour
 
     public void ShowPanelBuyStamina()
     {
+        RefreshStaminaUI();
         panelBuyStamina.gameObject.SetActive(true);
         panelBuyCoin.gameObject.SetActive(false);
 
         staminaReward.text = staminaRewardBase.ToString();
-        RefreshStaminaUI();
+       
     }
 
     public void ShowPanelBuyCoin()
     {
+        RefreshCoinUI();
         panelBuyCoin.gameObject.SetActive(true);
         panelBuyStamina.gameObject.SetActive(false);
 
         coinReward.text = coinRewardBase.ToString();
-        RefreshCoinUI();
+        
     }
 
     void OnClickBackStamina()
@@ -86,7 +88,8 @@ public class UI_Exchange : MonoBehaviour
         PlayerInventory.Instance.AddItem(2, -cost);
         timesBuyStamina++;
         PlayerInventory.Instance.AddItem(3, staminaRewardBase);
-       
+        DailyTaskManager.Instance.AddProgress(1, 1); 
+
         RefreshStaminaUI();
         SpawnSuccessUI();
     }
@@ -105,6 +108,7 @@ public class UI_Exchange : MonoBehaviour
         PlayerInventory.Instance.AddItem(2, -cost);
         timesBuyCoin++;
         PlayerInventory.Instance.AddItem(1, coinRewardBase);
+        DailyTaskManager.Instance.AddProgress(2, 1);
 
         RefreshCoinUI();
         SpawnSuccessUI();

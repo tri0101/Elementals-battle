@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 205e1c4c7d5902b47a7d0bd52d596102, type: 3}
+  m_Name: DailyTask
+  m_EditorClassIdentifier: 
+  dailyTasks:
+  - taskID: 1
+    description: Buy stamina 3 times
+    target: 3
+    rewards:
+    - itemId: 2
+      amount: 10
+    expReward: 60
+    action: 1
+  - taskID: 2
+    description: Buy gold 3 times
+    target: 3
+    rewards:
+    - itemId: 2
+      amount: 10
+    expReward: 60
+    action: 2
