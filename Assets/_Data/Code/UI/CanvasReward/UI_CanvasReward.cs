@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using NUnit.Framework.Interfaces;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,8 +16,10 @@ public class UI_CanvasReward : MonoBehaviour
     [SerializeField] private GameObject itemPrefab;
     [SerializeField] private GameObject itemPrefabShard;
     [SerializeField] private GameObject heroPrefab;
+    [SerializeField] private GameObject expItemPrefab;
 
-    private readonly List<GameObject> spawnedItems = new List<GameObject>();
+    [SerializeField] private  List<GameObject> spawnedItems = new List<GameObject>();
+    [SerializeField] private  Dictionary<int, UI_DropRewardItem> itemUIsById = new Dictionary<int, UI_DropRewardItem>();
 
     private Coroutine showCoroutine;
     private bool isShowing = false;
@@ -49,6 +52,7 @@ public class UI_CanvasReward : MonoBehaviour
             Destroy(child.gameObject);
 
         spawnedItems.Clear();
+        itemUIsById.Clear();
 
         if (showCoroutine != null)
             StopCoroutine(showCoroutine);
@@ -65,24 +69,36 @@ public class UI_CanvasReward : MonoBehaviour
         if (itemData == null || amount <= 0)
             return;
 
-        CreateItem(itemData, amount);
+        CreateOrAccumulateItem(itemData, amount);
 
         // Add to inventory (Item / Shard)
         PlayerInventory.Instance.AddItem(itemData.id, amount);
     }
 
-    private void CreateItem(ItemData data, int amount)
+    private void CreateOrAccumulateItem(ItemData data, int amount)
     {
+        // If same item id already exists in UI -> accumulate instead of instantiate
+        if (itemUIsById.TryGetValue(data.id, out var existingUi) && existingUi != null)
+        {
+            existingUi.AddAmount(amount);
+            return;
+        }
+
         GameObject prefab =
-            data.type == ItemType.HeroShard
-                ? (itemPrefabShard ?? itemPrefab)
-                : itemPrefab;
+            data.id == 0
+                ? (expItemPrefab ?? itemPrefab)
+                : data.type == ItemType.HeroShard
+                    ? (itemPrefabShard ?? itemPrefab)
+                    : itemPrefab;
 
         var go = Instantiate(prefab, contentItem);
 
         var ui = go.GetComponent<UI_DropRewardItem>();
         if (ui != null)
+        {
             ui.Setup(data, amount);
+            itemUIsById[data.id] = ui;
+        }
 
         go.SetActive(false);
         spawnedItems.Add(go);
@@ -111,7 +127,6 @@ public class UI_CanvasReward : MonoBehaviour
 
         var go = Instantiate(heroPrefab, contentItem);
 
-        // Hero UI uses UI_GachaResult (same as UI_ShowGacha)
         var ui = go.GetComponent<UI_GachaResult>();
         if (ui != null)
             ui.SetUp(heroInfo);
@@ -137,7 +152,6 @@ public class UI_CanvasReward : MonoBehaviour
         }
         else
         {
-            // Shard
             int shardItemId = data.heroId + 1000;
             int shardAmount = 10;
 

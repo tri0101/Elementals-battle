@@ -29,7 +29,10 @@ public class UI_LevelUp : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         panelLevelUp.gameObject.SetActive(false);
     }
-
+    public bool CheckActivePanelLevelUp()
+    {
+        return panelLevelUp.gameObject.activeSelf;
+    }
     public void CallUILevelUp(int amountDiamond)
     {
         panelLevelUp.gameObject.SetActive(true);

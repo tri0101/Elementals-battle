@@ -68,7 +68,15 @@ public class DailyTaskManager : Subject
     {
         return tasks;
     }
-
+    public void SetClaim(int takskID)
+    {
+        DailyTaskProgress taskProgress = tasks.Find(x => x.taskID == takskID);
+        if (taskProgress != null)
+        {
+            taskProgress.isClaimed = true;
+            NotifyObservers(takskID);
+        }
+    }
     public void AddProgress(int taskID, int amount)
     {
         if (amount <= 0) return;
@@ -90,13 +98,13 @@ public class DailyTaskManager : Subject
             tasks.Add(taskProgress);
         }
 
-        if (taskProgress.isCompleted) return;
+        //if (taskProgress.isClaimed) return;
 
         taskProgress.progress += amount;
 
         if (taskProgress.progress >= task.target)
         {
-            taskProgress.progress = task.target;
+            //taskProgress.progress = task.target;
             taskProgress.isCompleted = true;
         }
         NotifyObservers(taskID);
