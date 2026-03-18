@@ -56,8 +56,10 @@ public class BattleTurnManager : MonoBehaviour
         // initial wait for wave spawn ready
         while (battleManager == null || !battleManager.IsWaveReady)
             yield return null;
-
+        battleManager.SetActiveForUIBatle(true);
         currentWave = 1;
+        yield return CoSoulBattlePhase();
+        yield return new WaitForSeconds(0.25f);
         yield return CoPassiveBattlePhase();
         yield return new WaitForSeconds(0.25f);
         while (!isEnd)
@@ -273,6 +275,19 @@ public class BattleTurnManager : MonoBehaviour
 
         return sum;
     }
+    private IEnumerator CoSoulBattlePhase()
+    {
+        if (heroTeamStarts)
+        {
+            yield return CoTeamSoulBattle(TeamHero);
+            yield return CoTeamSoulBattle(TeamEnemy);
+        }
+        else
+        {
+            yield return CoTeamSoulBattle(TeamEnemy);
+            yield return CoTeamSoulBattle(TeamHero);
+        }
+    }
     private IEnumerator CoPassiveBattlePhase()
     {
         if (heroTeamStarts)
@@ -347,7 +362,34 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
-   
+    private IEnumerator CoTeamSoulBattle(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            unit.IsFinished = false;
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
+            if (reC.HeroInfo.soulID == null) continue;
+            HeroInstance instance = PlayerInventory.Instance.GetHeroInstance(reC.HeroInfo.ID);
+            if (reC.HeroInfo.soulID == null || reC.HeroInfo.soulID.Count == 0)
+                continue;
+
+            int count = Mathf.Min(1, reC.HeroInfo.soulID.Count); // hiện tại vẫn giới hạn 1
+            for (int i = 0; i < count; i++)
+            {
+                int soulId = reC.HeroInfo.soulID[i];
+                FightSoulInfo soul = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soulId);
+                if (soul != null)
+                    reC.HeroStatRuntime.GainValueBySoul(instance, soul);
+            }
+
+        }
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
     private IEnumerator CoTeamPassiveBattle(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)

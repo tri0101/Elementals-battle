@@ -74,6 +74,10 @@ public class PlayerInventory :  Subject
 
         
     }
+    public HeroInstance FindHeroInstance(int id)
+    {
+        return heroes.Find(h => h.heroId == id);
+    }
     public List<ItemInstance> GetAllItems()
     {
         return items;

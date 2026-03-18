@@ -64,12 +64,7 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// keepHeroes = true:
-    /// - Keep hero GameObjects (HP/Mana preserved)
-    /// - Reset their transform to startPositions and set battleTarget again (so they "run in" like wave 1)
-    /// - Only respawn enemies for the wave
-    /// </summary>
+
     public void LoadWave(int wave, bool keepHeroes)
     {
         waveText.text = $"Wave {wave}/{stageConfig.waveStage}";
@@ -90,17 +85,17 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-            // Clear enemies only
+           
             ClearSpawnedEnemies();
 
-            // Clear & rebuild registry (safe and small N)
+            
             if (BattlefieldRegistry.Instance != null)
             {
                 BattlefieldRegistry.Instance.Clear();
                 ReRegisterExistingHeroes();
             }
 
-            // Reset hero positions to start, and set battle target 다시 (run in like wave 1)
+     
             ResetHeroesToStartAndRunIn();
         }
 
@@ -163,17 +158,17 @@ public class BattleManager : MonoBehaviour
             Transform battleT = formation.GetBattle(slotIndex);
             if (startT == null || battleT == null) continue;
 
-            // put hero back to start position (like wave 1)
+            
             go.transform.position = startT.position;
 
-            // re-issue battle target so AI/run state moves again
+        
             var heroControl = go.GetComponent<HeroControl>();
             if (heroControl != null)
             {
-                // make sure movement state re-triggers
+                
                 heroControl.SetBattleTarget(battleT.position);
 
-                // optional: if your run state requires explicit "go back" flag
+               
                 heroControl.GoBackBattleTarget();
             }
         }

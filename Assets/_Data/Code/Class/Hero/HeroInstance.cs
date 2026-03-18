@@ -20,7 +20,10 @@ public class HeroInstance
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Ultimate, level = 1 });
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Passive, level = 1 });
     }
-    
+    public int GetLevelSoul(int index)
+    {
+        return soulsInstances.Count > index ? soulsInstances[index].level : 0;
+    }
     public void AddFightSoul(int id)
     {
         soulsInstances.Add(new FightSoulInstance {soulID =(id), level = 1, currentExp = 0 });

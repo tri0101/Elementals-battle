@@ -239,10 +239,53 @@ public class HeroControl : Subject
                 BuildTargetsNone();
                 break;
 
-            case AbilityTargetingMode.Row:
+                      case AbilityTargetingMode.Row:
                 {
-                    int row = Random.Range(1, 4); 
-                    AddAliveEnemiesInRow(enemyTeam, row);
+                    // Ưu tiên hàng trước: Column 1 (slot 1/2/3).
+                    // Nếu còn sống => random 1 con trong 1/2/3 rồi lấy CẢ row của nó (vd slot 2 => row (2,5)).
+                    var aliveFront = GetAliveEnemiesInColumn(enemyTeam, 1);
+
+                    if (aliveFront.Count > 0)
+                    {
+                        Transform chosen = aliveFront[Random.Range(0, aliveFront.Count)];
+
+                        if (BattlefieldRegistry.Instance.TryGetSlotIndex(chosen, out int slot))
+                        {
+                            int row = BattlefieldRegistry.SlotToRow(slot);
+                            enemyTarget.Clear();
+                            AddAliveEnemiesInRow(enemyTeam, row);
+                        }
+                        else
+                        {
+                            BuildTargetsNone();
+                        }
+
+                        break;
+                    }
+
+                    // Hàng trước chết hết => mới xét hàng sau: Column 2 (slot 4/5/6)
+                    var aliveBack = GetAliveEnemiesInColumn(enemyTeam, 2);
+
+                    if (aliveBack.Count > 0)
+                    {
+                        Transform chosen = aliveBack[Random.Range(0, aliveBack.Count)];
+
+                        if (BattlefieldRegistry.Instance.TryGetSlotIndex(chosen, out int slot))
+                        {
+                            int row = BattlefieldRegistry.SlotToRow(slot);
+                            enemyTarget.Clear();
+                            AddAliveEnemiesInRow(enemyTeam, row);
+                        }
+                        else
+                        {
+                            BuildTargetsNone();
+                        }
+
+                        break;
+                    }
+
+                    // Không còn mục tiêu
+                    BuildTargetsNone();
                     break;
                 }
 

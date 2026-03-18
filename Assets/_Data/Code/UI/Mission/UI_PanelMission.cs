@@ -78,6 +78,8 @@ public class UI_PanelMission : MonoBehaviour
     {
         foreach (Transform child in content)
         {
+            UI_MissonTask taskItem = child.GetComponent<UI_MissonTask>();
+            if (!taskItem.TaskProgress.isClaimed) continue;
             Destroy(child.gameObject);
         }
     }

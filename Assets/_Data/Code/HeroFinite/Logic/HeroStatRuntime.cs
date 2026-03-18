@@ -75,7 +75,16 @@ public sealed class HeroStatRuntime : MonoBehaviour
         currentHealth = finalStat.health;
         currentMana = 0f;
     }
-    
+    public void GainValueBySoul(HeroInstance instance ,FightSoulInfo soulInfo)
+    {
+        if(soulInfo.fightSoulType == FightSoulType.ManaSoul)
+        {
+
+            if (soulInfo.soulValueConfigs == null || soulInfo.soulValueConfigs.Length == 0)
+                return;
+            GainMana(soulInfo.soulValueConfigs[instance.GetLevelSoul(0) - 1].value);
+        }
+    }
     public void ApplyStatStartBattle(ModifyStatType type, float value)
     {
         switch (type)
