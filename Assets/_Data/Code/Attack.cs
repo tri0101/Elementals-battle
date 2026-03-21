@@ -30,6 +30,7 @@ public class Attack : Subject
             Debug.Log(other.tag);
             return;
         }
+        
         attackDamage = attackInfo.mutiplerDamageSend * heroControl.HeroStatRuntime.Damage;
         if (heroControl.IsCrit)
         {
@@ -40,6 +41,8 @@ public class Attack : Subject
         {
             damageType = DamageType.normalDamage;
         }
+        
+
         Debug.Log("Attack Damage: " + attackDamage);
         var hero = other.GetComponent<HeroReceiveDamagee>();
         if (hero == null)
@@ -55,7 +58,49 @@ public class Attack : Subject
             return;
         }
         hero.ReceiveDamage(attackDamage, damageType);
+        ApplyEffect();
         NotifyObservers(this);
+    }
+    void ApplyEffect()
+    {
+        if (heroControl.CurrentStringState != HeroStateManager.hero_Ultimate)
+            return;
+
+
+        if (heroControl.HeroInfo == null)
+        {
+            Debug.LogError("HeroInfo NULL", this);
+            return;
+        }
+
+        if (heroControl.HeroInfo.ultimate == null)
+        {
+            Debug.LogError("HeroInfo.ultimate NULL", this);
+            return;
+        }
+
+        List<AbilityEffect> effects = heroControl.HeroInfo.ultimate.GetEffectsOnAttack();
+       
+
+        if (effects == null || effects.Count == 0)
+        {
+            Debug.LogWarning("No effects returned by GetEffectsOnAttack()", this);
+            return;
+        }
+
+        foreach (var effect in effects)
+        {
+          
+
+            foreach (var target in heroControl.enemyTarget)
+            {
+                HeroControl enemyControl = target.GetComponent<HeroControl>();
+                if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                Debug.Log("vo dc r");
+                int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
+                enemyControl.HeroStatRuntime.ApplyAES(effect.type, effect.durationTurn, damagePerTurn);
+            }
+        }
     }
 
 }

@@ -1,7 +1,48 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+[System.Serializable]
 
 public sealed class HeroStatRuntime : MonoBehaviour
 {
+    private struct AbilityEffectState
+    {
+        public int remainingTurn;
+        public int damagePerTurn;
+
+        public AbilityEffectState(int remainingTurn, int damagePerTurn)
+        {
+            this.remainingTurn = remainingTurn;
+            this.damagePerTurn = damagePerTurn;
+        }
+    }
+    private readonly Dictionary<AbilityEffectType, AbilityEffectState> dotByType =
+        new Dictionary<AbilityEffectType, AbilityEffectState>();
+
+    public bool HasAES(AbilityEffectType type) => dotByType.ContainsKey(type);
+
+    public void ApplyAES(AbilityEffectType type, int remainingTurn, int damagePerTurn)
+    {
+        Debug.Log("vo apply aes");
+        if (remainingTurn <= 0 || damagePerTurn < 0) return;
+        Debug.Log("qua dc check <=0");
+        // Only allow DOT-like types here (avoid ModifyStat, Stun...)
+        if (type != AbilityEffectType.Burn)
+            return;
+        ApplyUIEffect(type);
+        if (dotByType.TryGetValue(type, out var cur))
+        {
+            // refresh rule: lấy duration lớn hơn + damage lớn hơn
+            cur.remainingTurn = Mathf.Max(cur.remainingTurn, remainingTurn);
+            cur.damagePerTurn = Mathf.Max(cur.damagePerTurn, damagePerTurn);
+            dotByType[type] = cur;
+        }
+        else
+        {
+            dotByType[type] = new AbilityEffectState(remainingTurn, damagePerTurn);
+        }
+    }
     [Header("Refs")]
     [SerializeField] private HeroControl heroControl;
 
@@ -183,6 +224,25 @@ public sealed class HeroStatRuntime : MonoBehaviour
         
     }
 
+    public void ApplyUIEffect(AbilityEffectType effectType )
+    {
+        switch (effectType)
+        {
+            case AbilityEffectType.Burn:
+                ApplyBurn();
+                break;
+        }
+    }
+    void ApplyBurn()
+    {
+        heroControl.SpriteEffect.color = new Color(
+            255f / 255f,
+            50f / 255f,
+            0f / 255f,
+            150f / 255f
+        );
 
-    
+        heroControl.SpriteEffect.gameObject.SetActive(true);
+    }
+
 }

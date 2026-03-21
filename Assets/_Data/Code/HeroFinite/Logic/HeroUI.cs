@@ -49,6 +49,10 @@ public class HeroUI : MonoBehaviour, IObserver
         manaBar = transform.Find("Mana").GetChild(1).GetComponent<Image>();
         listDamage = transform.Find("ListDamage");
         SetHpBar(1f, true);
+        if(heroControl.HeroInfo.ultimate == null)
+        {
+            manaBar.transform.parent.gameObject.SetActive(false);
+        }
         SetManaBar(heroControl.HeroStatRuntime.CurrentMana / heroControl.HeroStatRuntime.MaxMana, true);
     }
     public void OnNotify(ModifyStatType type)

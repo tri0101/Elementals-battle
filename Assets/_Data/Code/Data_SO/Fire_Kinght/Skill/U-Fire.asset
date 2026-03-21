@@ -15,6 +15,7 @@ MonoBehaviour:
   abilityName: 
   type: 2
   animStateName: 
+  icon: {fileID: 0}
   speedToEnemy: 150
   positionAttack: 1
   distance: 7
@@ -24,4 +25,12 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 200
-  effects: []
+  effects:
+  - type: 1
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 0
+    canUpgrade: 0
+    modifyValue: 50
+    durationTurn: 2

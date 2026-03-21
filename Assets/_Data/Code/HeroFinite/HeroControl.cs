@@ -11,6 +11,8 @@ public class HeroControl : Subject
     public Animator Animator => animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
     public SpriteRenderer SpriteRenderer => spriteRenderer;
+    [SerializeField] private SpriteRenderer spriteEffect;
+    public SpriteRenderer SpriteEffect => spriteEffect;
 
     [SerializeField] private string fixedLayer;
     public string FixedLayer => fixedLayer;
@@ -215,6 +217,7 @@ public class HeroControl : Subject
         BuildTargets(heroInfo.skill);
         distanceToTarget = GetAttackPosition(heroInfo.skill);
         
+        
     }
     public void SetIsTakeHit()
     {
@@ -226,6 +229,7 @@ public class HeroControl : Subject
         isDead = true;
 
     }
+    
     private void BuildTargets(AbilityInfo ability)
     {
         enemyTarget.Clear();
@@ -502,6 +506,8 @@ public class HeroControl : Subject
         fixedLayer = LayerMask.LayerToName(receiveT.gameObject.layer);
         animator = normalT.GetComponent<Animator>();
         spriteRenderer = normalT.GetComponent<SpriteRenderer>();
+        Transform spriteEffectT = transform.Find("SpriteEffect");
+        spriteEffect = spriteEffectT.GetComponent<SpriteRenderer>();
 
         heroStatRuntime = GetComponent<HeroStatRuntime>();
         heroStateManager = GetComponent<HeroStateManager>();
@@ -645,5 +651,10 @@ public class HeroControl : Subject
     public void GoBackBattleTarget()
     {
         needMoveToBattle = true;
+    }
+    void LateUpdate()
+    {
+        spriteEffect.sprite = spriteRenderer.sprite;
+        spriteEffect.flipX = spriteRenderer.flipX;
     }
 }

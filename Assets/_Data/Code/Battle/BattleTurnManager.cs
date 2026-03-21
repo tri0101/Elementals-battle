@@ -346,7 +346,7 @@ public class BattleTurnManager : MonoBehaviour
 
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
-
+            if(reC.HeroInfo.ultimate == null) continue;
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
 
            
