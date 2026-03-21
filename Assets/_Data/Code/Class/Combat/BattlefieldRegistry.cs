@@ -76,6 +76,12 @@ public sealed class BattlefieldRegistry : MonoBehaviour
         foreach (var kv in slotByRoot)
             if (kv.Key != null)
                 list.Add(kv.Key);
+        list.Sort((a, b) =>
+        {
+            TryGetSlotIndex(a, out int slotA);
+            TryGetSlotIndex(b, out int slotB);
+            return slotA.CompareTo(slotB);
+        });
         return list;
     }
 
@@ -88,6 +94,12 @@ public sealed class BattlefieldRegistry : MonoBehaviour
             if (kv.Value == teamTag)
                 list.Add(kv.Key);
         }
+        list.Sort((a, b) =>
+        {
+            TryGetSlotIndex(a, out int slotA);
+            TryGetSlotIndex(b, out int slotB);
+            return slotA.CompareTo(slotB);
+        });
         return list;
     }
 

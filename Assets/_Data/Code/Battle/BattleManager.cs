@@ -34,7 +34,7 @@ public class BattleManager : MonoBehaviour
     [Header("Wave Ready Gate")]
     [Tooltip("Seconds to wait after spawning all units before setting IsWaveReady = true.")]
     [Min(0f)]
-    private float readyDelaySeconds = 0.5f;
+    private float readyDelaySeconds = 0.01f;
 
     private Coroutine readyRoutine;
 
@@ -99,6 +99,7 @@ public class BattleManager : MonoBehaviour
             ResetHeroesToStartAndRunIn();
         }
 
+        SpawnEnemiesForWave(wave);
         if (formation == null)
         {
             Debug.LogError("[BattleManager] formation is NULL");
@@ -131,7 +132,7 @@ public class BattleManager : MonoBehaviour
         }
            
 
-        SpawnEnemiesForWave(wave);
+        //SpawnEnemiesForWave(wave);
 
         readyRoutine = StartCoroutine(CoSetWaveReadyAfterDelay());
     }
@@ -248,21 +249,32 @@ public class BattleManager : MonoBehaviour
             heroGo.name = $"{slotIndex}";
             heroGo.transform.position = startT.position;
             heroGo.tag = "Hero";
-            
+
             if (BattlefieldRegistry.Instance != null)
                 BattlefieldRegistry.Instance.Register(heroGo.transform, slotIndex, "Hero");
 
-            // Init base stat (HP/Mana are managed by HeroReceiveDamagee/HeroStatRuntime during gameplay)
+            ///init giá trị mặc định
             var statRuntime = heroGo.GetComponent<HeroStatRuntime>();
             if (statRuntime != null)
                 statRuntime.Init(heroData.info, heroData.instance, growthConfig);
             else
                 Debug.LogWarning($"[BattleManager] {heroGo.name} missing HeroStatRuntime. Add it to the hero prefab.");
-
             var heroControl = heroGo.GetComponent<HeroControl>();
+            //bonus giá trị từ soul
+            foreach (var soul in heroData.info.soulID)
+            {
+                if (soul == 5 || soul == 6) continue;// tạm skip 2 soul này
+                FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
+                if (soulInfo != null)
+                {
+                    statRuntime.GainValueBySoul(heroData.instance, soulInfo);
+                }
+            }
             if (heroControl != null && dictHeroBattle.ContainsKey(slotIndex))
                 dictHeroBattle[slotIndex].BindHeroControl(heroControl);
 
+            
+            
             if (heroControl != null)
             {
                 heroControl.SetBattleTarget(battleT.position);
@@ -287,23 +299,38 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        Dictionary<int, EnemySpawnData> enemyDataByHeroId = null;
+        // Allow multiple EnemySpawnData per heroId (consume sequentially)
+        Dictionary<int, Queue<EnemySpawnData>> enemyQueueByHeroId = null;
         if (stageConfig.enemies != null && stageConfig.enemies.Count > 0)
         {
-            enemyDataByHeroId = new Dictionary<int, EnemySpawnData>(stageConfig.enemies.Count);
+            enemyQueueByHeroId = new Dictionary<int, Queue<EnemySpawnData>>(stageConfig.enemies.Count);
             for (int i = 0; i < stageConfig.enemies.Count; i++)
             {
                 var e = stageConfig.enemies[i];
                 if (e == null) continue;
-                enemyDataByHeroId[e.heroId] = e;
+
+                if (!enemyQueueByHeroId.TryGetValue(e.heroId, out var q))
+                    enemyQueueByHeroId[e.heroId] = q = new Queue<EnemySpawnData>();
+
+                q.Enqueue(e);
             }
         }
 
+        // Collect entries for this wave and spawn deterministically by slot
+        var waveEntries = new List<EnemySpawnEntry>(6);
         for (int i = 0; i < stageConfig.enemySpawns.Count; i++)
         {
             var entry = stageConfig.enemySpawns[i];
             if (entry == null) continue;
             if (entry.wave != wave) continue;
+            waveEntries.Add(entry);
+        }
+
+        waveEntries.Sort((a, b) => a.slotIndex.CompareTo(b.slotIndex));
+
+        for (int i = 0; i < waveEntries.Count; i++)
+        {
+            var entry = waveEntries[i];
 
             int slotIndex = entry.slotIndex;
             int enemyHeroId = entry.heroId;
@@ -332,13 +359,21 @@ public class BattleManager : MonoBehaviour
             if (BattlefieldRegistry.Instance != null)
                 BattlefieldRegistry.Instance.Register(enemyGo.transform, slotIndex, "Enemy");
 
+            // flip to face heroes
             {
                 Vector3 s = enemyGo.transform.localScale;
                 enemyGo.transform.localScale = new Vector3(-Mathf.Abs(s.x), s.y, s.z);
             }
 
+            // Pick per-spawn config (if provided). If multiple configs exist for same heroId, consume in order.
+            EnemySpawnData enemyData = null;
+            if (enemyQueueByHeroId != null && enemyQueueByHeroId.TryGetValue(enemyHeroId, out var q) && q != null && q.Count > 0)
+            {
+                enemyData = q.Dequeue();
+            }
+
             HeroInstance enemyInstance = null;
-            if (enemyDataByHeroId != null && enemyDataByHeroId.TryGetValue(enemyHeroId, out var enemyData) && enemyData != null)
+            if (enemyData != null)
             {
                 enemyInstance = new HeroInstance
                 {

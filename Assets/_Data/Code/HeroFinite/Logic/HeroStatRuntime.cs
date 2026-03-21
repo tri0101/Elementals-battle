@@ -82,10 +82,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
             if (soulInfo.soulValueConfigs == null || soulInfo.soulValueConfigs.Length == 0)
                 return;
-            GainMana(soulInfo.soulValueConfigs[instance.GetLevelSoul(0) - 1].value);
+            GainMana(soulInfo.soulValueConfigs[instance.GetLevelSoul(0) - 1].value, true);
         }
     }
-    public void ApplyStatStartBattle(ModifyStatType type, float value)
+    public void ApplyStats(ModifyStatType type, float value, bool instant)
     {
         switch (type)
         {
@@ -93,13 +93,14 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 GainDamage(value);
                 break;
             case ModifyStatType.Health:
-                GainHPMax(value);
+                GainHPMax(value, instant);
                 break;
             case ModifyStatType.Armor:
                 
                 break;
             case ModifyStatType.CritRate:
-                
+                GainCritRate(value, instant);
+
                 break;
             case ModifyStatType.CritDamage:
                 
@@ -109,13 +110,20 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 break;
         }
     }
-    public void GainHPMax(float  value)
+    public void GainHPMax(float  value, bool instant = false)
     {
         finalStat.health *= (1 + value);
         currentHealth = finalStat.health;
+        if (instant) return;
         float health01 = CurrentHealth / (float)MaxHealth;
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
 
+    }
+    public void GainCritRate(float value, bool instant = false)
+    {
+        finalStat.critRate +=value;
+        if (instant) return;
+       
     }
     public void GainDamage(float  value)
     {
@@ -123,15 +131,16 @@ public sealed class HeroStatRuntime : MonoBehaviour
         
 
     }
-    public void GainMana(int value)
+    public void GainMana(int value, bool instant = false)
     {
         currentMana += value;
         if(currentMana >= 1000)
         {
             currentMana = 1000;
         }
+        if (instant) return;
         float mana01 = currentMana / (float)MaxMana;
-
+      
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
       
     }
@@ -147,24 +156,26 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
     }
 
-    public void GainHP(int value)
+    public void GainHP(int value, bool instant = false)
     {
         CurrentHealth += value;
         if (currentHealth >= MaxHealth)
         {
             currentHealth = MaxHealth;
         }
+        if (instant) return;
         float health01 = CurrentHealth / (float)MaxHealth;
 
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
     }
-    public void MinusHP(int value , DamageType damageType)
+    public void MinusHP(int value , DamageType damageType, bool instant = false)
     {
         CurrentHealth -= value;
         if (currentHealth <= 0)
         {
             currentHealth = 0;
         }
+        if (instant) return;
         float health01 = CurrentHealth / (float)MaxHealth;
 
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);

@@ -132,7 +132,7 @@ public class HeroControl : Subject
     public Vector3 distanceToTarget;
     public const string SkillObserver = "Skill";
 
-    private bool actionInProgress;
+    [SerializeField] private bool actionInProgress;
     public bool ActionInProgress => actionInProgress;
 
     public void Start()
@@ -142,7 +142,7 @@ public class HeroControl : Subject
     void InitClearPosition()
     {
         GameObject clearObj = new GameObject($"{name}_ClearPosition");
-        clearObj.transform.SetParent(transform); 
+        clearObj.transform.SetParent(transform, false); 
 
         clearObj.transform.position = new Vector3(
             50f,
@@ -174,6 +174,9 @@ public class HeroControl : Subject
     {
         if(heroInfo.normalAttack == null)
             return;
+        if (actionInProgress)
+            return;
+        needMoveToBattle = false;
         isAttack = true;
         actionInProgress = true;
         isCrit = IsCritical();
@@ -186,11 +189,16 @@ public class HeroControl : Subject
     {
         if(heroInfo.ultimate == null)
             return;
-        isUltimate = true;
+        if (actionInProgress) 
+            return;
         actionInProgress = true;
-        isCrit = IsCritical();
+        needMoveToBattle = false;
         BuildTargets(heroInfo.ultimate);
         distanceToTarget = GetAttackPosition(heroInfo.ultimate);
+        isUltimate = true;
+       
+        isCrit = IsCritical();
+  
         
     }
 
@@ -198,6 +206,9 @@ public class HeroControl : Subject
     {
         if(heroInfo.skill == null)
             return;
+        if (actionInProgress)
+            return;
+        needMoveToBattle = false;
         isSkill = true;
         actionInProgress = true;
         isCrit = IsCritical();
@@ -239,16 +250,16 @@ public class HeroControl : Subject
                 BuildTargetsNone();
                 break;
 
-                      case AbilityTargetingMode.Row:
+           case AbilityTargetingMode.Row:
                 {
                     // Ưu tiên hàng trước: Column 1 (slot 1/2/3).
                     // Nếu còn sống => random 1 con trong 1/2/3 rồi lấy CẢ row của nó (vd slot 2 => row (2,5)).
                     var aliveFront = GetAliveEnemiesInColumn(enemyTeam, 1);
-
+                    
                     if (aliveFront.Count > 0)
                     {
                         Transform chosen = aliveFront[Random.Range(0, aliveFront.Count)];
-
+                        Transform mainTarget = chosen;
                         if (BattlefieldRegistry.Instance.TryGetSlotIndex(chosen, out int slot))
                         {
                             int row = BattlefieldRegistry.SlotToRow(slot);
@@ -311,7 +322,13 @@ public class HeroControl : Subject
     }
     public Vector3 GetAttackPosition(AbilityInfo ability)
     {
-        Transform enemy = enemyTarget[0];
+        if (enemyTarget == null || enemyTarget.Count == 0)
+        {
+            Debug.Log("enemy target null or empty");
+            return transform.position;
+        }
+
+       
         Vector3 result = transform.position;
 
         switch (ability.positionAttack)
@@ -326,7 +343,9 @@ public class HeroControl : Subject
                 break;
 
             case PositionAttack.DistanceToTarget:
+                Transform enemy = enemyTarget[0];
                 // đứng trước enemy 1 khoảng = distance
+                Debug.Log(enemy.name + " position: " + enemy.position.x);
                 float dir = enemy.position.x > transform.position.x ? -1f : 1f;
 
                 result = enemy.position;
@@ -335,9 +354,7 @@ public class HeroControl : Subject
 
             case PositionAttack.MiddleRow:
                 {
-                    if (enemyTarget == null || enemyTarget.Count == 0)
-                        return transform.position;
-
+                    
                     if (enemyTarget.Count == 1)
                     {
                         // Nếu chỉ có 1 enemy thì đứng trước nó
@@ -352,13 +369,21 @@ public class HeroControl : Subject
                     // Lấy 2 enemy đầu trong row
                     Transform enemyA = enemyTarget[0];
                     Transform enemyB = enemyTarget[1];
-
+                    Debug.Log(enemyA.name + enemyA.position.x);
+                    Debug.Log(enemyB.name + enemyB.position.x);
+                    Debug.Log("Enemy world pos: " + enemyA.position.x);
+                    Debug.Log("Enemy local pos: " + enemyA.localPosition.x);
+                    Debug.Log("Enemy parent pos: " + enemyA.parent.position.x);
+                    Debug.Log("Enemy world pos: " + enemyB.position.x);
+                    Debug.Log("Enemy local pos: " + enemyB.localPosition.x);
+                    Debug.Log("Enemy parent pos: " + enemyB.parent.position.x);
                     // Tính trung điểm
                     float middleX = (enemyA.position.x + enemyB.position.x) / 2f;
+                    Debug.Log($"Middle X: {middleX}");
 
                     result = new Vector3(
                         middleX,
-                        transform.position.y,
+                        enemyA.position.y,
                         transform.position.z
                     );
 
@@ -589,7 +614,10 @@ public class HeroControl : Subject
     {
         NotifyObservers(data1);
     }
-
+    public void RefreshObservers(ModifyStatType type)
+    {
+        NotifyObservers(type);
+    }
     public void RefreshObservers(HeroNotifyType type, object data = null)
     {
         NotifyObservers(type, data);

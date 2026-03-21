@@ -25,4 +25,12 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 200
-  effects: []
+  effects:
+  - type: 0
+    timeToCall: 2
+    target: 1
+    chance: 1
+    statType: 4
+    canUpgrade: 0
+    modifyValue: 30
+    durationTurn: -1

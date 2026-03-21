@@ -26,6 +26,9 @@ public enum AbilityTarget
     DPSHeroAll = 9,         // tất cả đồng minh có hệ DPS
     TankHeroAll = 10,       // tất cả đồng minh có hệ Tank
     SupportHeroAll = 11,    // tất cả đồng minh có hệ Support
+    FrontHeroColumns = 12,     // cột đồng minh phía trước
+    BackHeroColumns = 13,      // cột đồng minh phía sau
+    HeroRow = 14,              // hàng đồng minh cùng row với hero
 }
 
 public enum ModifyStatType

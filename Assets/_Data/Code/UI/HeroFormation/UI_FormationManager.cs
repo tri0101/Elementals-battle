@@ -57,6 +57,18 @@ public class UI_FormationManager : MonoBehaviour
             if (formationHeroIds[i] == heroId) return true;
         return false;
     }
+    public bool CheckEmpty()
+    {
+        if (formationHeroIds == null || formationHeroIds.Length <= 1)
+            return true;
+
+        for (int i = 1; i <= MAX_SLOT && i < formationHeroIds.Length; i++)
+        {
+            if (formationHeroIds[i] != -1)
+                return false;
+        }
+        return true;
+    }
 
     public bool TryAddHero(UI_HeroChooseItem heroItem)
     {

@@ -22,32 +22,32 @@ public class HeroIdleState : HeroBaseState
         {
             hero.SwitchState(hero.runState);
         }
-        if (hero.HeroControl.IsAttack && !hero.HeroControl.IsPrepare)
+        else if (hero.HeroControl.IsAttack && !hero.HeroControl.IsPrepare)
         {
             hero.SwitchState(hero.runState);
             return;
         }
         
-        if (hero.HeroControl.IsSkill && !hero.HeroControl.IsPrepare)
+        else if (hero.HeroControl.IsSkill && !hero.HeroControl.IsPrepare)
         {
             hero.SwitchState(hero.runState);
             return;
         }
-        if (hero.HeroControl.IsUltimate && !hero.HeroControl.IsPrepare)
+        else if (hero.HeroControl.IsUltimate && !hero.HeroControl.IsPrepare)
         {
             hero.SwitchState(hero.runState);
             return;
         }
         
-        if (hero.HeroControl.IsTakeHit)
+        else if (hero.HeroControl.IsTakeHit)
         {
             hero.SwitchState(hero.takeHitState);
         }
-        if (hero.HeroControl.IsClear)
+        else if (hero.HeroControl.IsClear)
         {
             hero.SwitchState(hero.runState);
         }
-        if (hero.HeroControl.IsDead)
+        else if (hero.HeroControl.IsDead)
         {
             hero.SwitchState(hero.deathState);
         }

@@ -81,6 +81,16 @@ public class AbilityInfo : ScriptableObject
             .Where(e => e != null && e.timeToCall == TimesToCall.onStartBattle)
             .ToList();
     }
+    public List<AbilityEffect> GetEffectsOnAttack()
+    {
+        if (effects == null)
+            return null;
+
+        return effects
+            .Where(e => e != null && e.timeToCall == TimesToCall.onAttack)
+            .ToList();
+    }
+
     public List<AbilityEffect> GetEffectsStartTurn()
     {
         if (effects == null)

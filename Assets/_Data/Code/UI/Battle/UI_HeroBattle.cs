@@ -105,17 +105,15 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
         UpdateStar(data.instance.star);
         UpdateRankVisual(data.instance.rank);
 
-        SetHpBar(1f, true);
-        SetManaBar(0f, true);
+        
 
         if (button != null)
         {
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(OnClick);
-            button.interactable = true;
+            button.enabled = false;
         }
 
-        // Skill UI reset until we bind a heroControl
         lastCanSkill = false;
         SetSkillReadyVisual(false, true);
     }
@@ -131,6 +129,8 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
             lastCanSkill = heroControl.CanSkill;
             SetSkillReadyVisual(lastCanSkill, true);
         }
+        SetHpBar(1f, true);
+        SetManaBar(heroControl.HeroStatRuntime.CurrentMana / heroControl.HeroStatRuntime.MaxMana, true);
     }
 
     public void OnNotify(HeroNotifyType type, object value)

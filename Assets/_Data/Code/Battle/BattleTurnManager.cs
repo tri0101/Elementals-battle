@@ -56,12 +56,9 @@ public class BattleTurnManager : MonoBehaviour
         // initial wait for wave spawn ready
         while (battleManager == null || !battleManager.IsWaveReady)
             yield return null;
-        battleManager.SetActiveForUIBatle(true);
+       
         currentWave = 1;
-        yield return CoSoulBattlePhase();
-        yield return new WaitForSeconds(0.25f);
         yield return CoPassiveBattlePhase();
-        yield return new WaitForSeconds(0.25f);
         while (!isEnd)
         {
             heroTeamStarts = DecideHeroTeamStarts();
@@ -73,8 +70,11 @@ public class BattleTurnManager : MonoBehaviour
                     turnText.text = $"{turn}/20";
 
                 SetCanSkill();
-                yield return new WaitForSeconds(0.25f);
+ 
                 battleManager.SetActiveForUIBatle(true);
+                if(currentWave == 1 && turn == 1) yield return new WaitForSeconds(2f);
+                else if(turn == 1) yield return new WaitForSeconds(2f);
+                else yield return new WaitForSeconds(1f);
                 // Wave clear check at turn start
                 if (AreAllTeamDead(TeamEnemy))
                 {
@@ -98,6 +98,7 @@ public class BattleTurnManager : MonoBehaviour
                     yield return CoHandleWaveCleared();
                     break;
                 }
+             
             }
 
             // If we handled clear and loaded new wave, wait until ready then continue.
@@ -348,8 +349,22 @@ public class BattleTurnManager : MonoBehaviour
 
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
 
+           
+            List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
+                for (int i = 0; i < effectOnAttack.Count; i++)
+                {
+                    var effect = effectOnAttack[i];
+                    if (effect.type == AbilityEffectType.ModifyStat)
+                    {
+                        if(effect.target == AbilityTarget.HeroAll) 
+                            ApplyStatAllStartBattle(effect.statType, effect.modifyValue);
+                        else if(effect.target == AbilityTarget.Self)
+                            unit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue,false);
+                }
+                 
+                
+            }
             unit.SetUltimate();
-
             yield return new WaitUntil(() => unit.IsFinished);
 
             if (delayBetweenUltimates > 0f)
@@ -433,7 +448,7 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            unit.HeroStatRuntime.ApplyStatStartBattle(type, value);
+            unit.HeroStatRuntime.ApplyStats(type, value, true);
 
         }
     }

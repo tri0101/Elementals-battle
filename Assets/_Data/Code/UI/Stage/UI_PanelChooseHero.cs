@@ -125,6 +125,16 @@ public class UI_PanelChooseHero : MonoBehaviour
         GameManager.Instance.UnLoadAdditiveScene(SceneId.MapScene);
 
     }
-
+    private void Update()
+    {
+        if(formationManager.CheckEmpty())
+        {
+            buttonNext.interactable = false;
+        }
+        else
+        {
+            buttonNext.interactable = true;
+        }
+    }
     public void SetStageInt(int stageId) => currentStageId = stageId;
 }

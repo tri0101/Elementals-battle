@@ -14,16 +14,19 @@ public class HeroRunState : HeroBaseState
 
     public override void UpdateState(HeroStateManager hero)
     {
-       
-        if (Vector3.Distance(
-            hero.transform.position,
-            hero.HeroControl.BattleTarget) < 0.1f)
+        if (hero.HeroControl.NeedMoveToBattle)
         {
-            hero.HeroControl.HeroRun.FaceDefaultDirection();
-            hero.HeroControl.SetArrivedBattle();
-            hero.SwitchState(hero.idleState);
-            return;
+            if (Vector3.Distance(
+           hero.transform.position,
+           hero.HeroControl.BattleTarget) < 0.1f)
+            {
+                hero.HeroControl.HeroRun.FaceDefaultDirection();
+                hero.HeroControl.SetArrivedBattle();
+                hero.SwitchState(hero.idleState);
+                return;
+            }
         }
+       
 
 
         float dx = Mathf.Abs(

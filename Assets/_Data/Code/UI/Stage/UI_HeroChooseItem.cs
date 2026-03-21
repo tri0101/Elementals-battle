@@ -74,6 +74,7 @@ public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
         else
         {
             formationManager.RemoveHero(this, panelChooseHero.InventoryContent);
+            
         }
     }
 

@@ -1,8 +1,9 @@
 ﻿using System;
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
 public enum HPNotifyType
 {
     HPMinus, 
@@ -20,10 +21,13 @@ public class HeroUI : MonoBehaviour, IObserver
     [SerializeField] HeroControl heroControl;
 
     public HeroControl HeroControl => heroControl;
+    [Header("String pattern")]
+    private string critRatePattern = "Crit Rate Increased";
     [Header("Bars")]
     public Image hpBar;
     public Image manaBar;
     public TextMeshProUGUI damageTextPrefab;
+
     public Transform listDamage;
     // ===== Bar Animation =====
     [SerializeField] private float barAnimDuration = 0.25f;
@@ -36,7 +40,7 @@ public class HeroUI : MonoBehaviour, IObserver
     private Coroutine manaRoutine;
 
 
-    private void Awake()
+    private void Start()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
 
@@ -45,7 +49,16 @@ public class HeroUI : MonoBehaviour, IObserver
         manaBar = transform.Find("Mana").GetChild(1).GetComponent<Image>();
         listDamage = transform.Find("ListDamage");
         SetHpBar(1f, true);
-        SetManaBar(0f, true);
+        SetManaBar(heroControl.HeroStatRuntime.CurrentMana / heroControl.HeroStatRuntime.MaxMana, true);
+    }
+    public void OnNotify(ModifyStatType type)
+    {
+        switch (type)
+        {
+            case ModifyStatType.CritRate:
+                SpawnFloatingEffectText(type);
+                break;
+        }
     }
     public void OnNotify(HeroNotifyType type, object value)
     {
@@ -87,6 +100,23 @@ public class HeroUI : MonoBehaviour, IObserver
     }
 
     // ================= FLOATING TEXT =================
+    public void SpawnFloatingEffectText(ModifyStatType type)
+    {
+        if (damageTextPrefab == null || listDamage == null) return;
+
+        TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+
+        switch (type)
+        {
+            case ModifyStatType.CritRate:
+                text.text = critRatePattern;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text)); 
+                break;
+        }
+    }
     private void SpawnDamageText(int value, DamageType damageType)
     {
         if (damageTextPrefab == null || value <= 0) return;
@@ -117,7 +147,46 @@ public class HeroUI : MonoBehaviour, IObserver
 
         StartCoroutine(CoFloatAndFade(text));
     }
+    private IEnumerator CoShowAndFade(TextMeshProUGUI text)
+    {
+        if (text == null) yield break;
 
+        float yOffset = 0.35f;       // tăng lên bao nhiêu (tùy UI scale mà chỉnh)
+        float showDuration = 0.35f; // đứng yên, hiện full alpha
+        float fadeDuration = 1f;  // fade về 0 alpha
+
+        // đẩy lên cao 1 tí nhưng không animate
+        Vector3 p = text.transform.localPosition;
+        text.transform.localPosition = new Vector3(p.x, p.y + yOffset, p.z);
+
+        Color startColor = text.color;
+
+        // đảm bảo hiện rõ lúc bắt đầu
+        text.color = new Color(startColor.r, startColor.g, startColor.b, 1f);
+
+        // 1) đứng yên một chút
+        if (showDuration > 0f)
+            yield return new WaitForSeconds(showDuration);
+
+        // 2) fade-out không di chuyển
+        float t = 0f;
+        while (t < fadeDuration)
+        {
+            t += Time.deltaTime;
+            float lerp = Mathf.Clamp01(t / fadeDuration);
+
+            text.color = new Color(
+                startColor.r,
+                startColor.g,
+                startColor.b,
+                1f - lerp
+            );
+
+            yield return null;
+        }
+
+        Destroy(text.gameObject);
+    }
     private IEnumerator CoFloatAndFade(TextMeshProUGUI text)
     {
         float startY = 0.35f;
