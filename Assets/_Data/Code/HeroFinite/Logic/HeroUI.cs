@@ -23,6 +23,7 @@ public class HeroUI : MonoBehaviour, IObserver
     public HeroControl HeroControl => heroControl;
     [Header("String pattern")]
     private string critRatePattern = "Crit Rate Increased";
+    private string armorDecreased = "Armor Decreased";
     [Header("Bars")]
     public Image hpBar;
     public Image manaBar;
@@ -60,6 +61,9 @@ public class HeroUI : MonoBehaviour, IObserver
         switch (type)
         {
             case ModifyStatType.CritRate:
+                SpawnFloatingEffectText(type);
+                break;
+            case ModifyStatType.Armor:
                 SpawnFloatingEffectText(type);
                 break;
         }
@@ -114,6 +118,13 @@ public class HeroUI : MonoBehaviour, IObserver
         {
             case ModifyStatType.CritRate:
                 text.text = critRatePattern;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text)); 
+                break;
+            case ModifyStatType.Armor:
+                text.text = armorDecreased;
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;

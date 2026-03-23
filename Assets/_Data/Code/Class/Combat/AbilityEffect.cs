@@ -8,6 +8,7 @@ public enum AbilityEffectType
     ModifyStat = 0,         // Buff/Debuff generic (tăng/giảm stat)
     Burn = 1,                 // thiêu đốt
     // CC
+    Rooted = 19,            // trói chân
     Stun = 20,              // choáng
     Paralyze = 21           // tê liệt
 }
@@ -68,6 +69,7 @@ public class AbilityEffect
     [Header("Value")]
     public bool canUpgrade = false; // có thể nâng cấp hiệu ứng này khi nâng cấp kỹ năng hay không
     public float modifyValue = 0f; // giá trị tăng ( %)
+    public int stackCount = 1; // số stack của hiệu ứng ;
     [Header("Damage over Time( for burn")]
 
     [Header("Duration")]

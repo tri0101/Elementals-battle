@@ -57,16 +57,19 @@ public class Attack : Subject
             Debug.Log("Not enemy target");
             return;
         }
-        hero.ReceiveDamage(attackDamage, damageType);
-        ApplyEffect();
+        hero.ReceiveDamage(attackDamage, damageType, true, false);
+        if(heroControl.CurrentStringState == HeroStateManager.hero_Attack_1)
+            ApplyEffectUINormal();
+        else if(heroControl.CurrentStringState == HeroStateManager.hero_Skill)
+            ApplyEffectUISkill();
+        else if(heroControl.CurrentStringState == HeroStateManager.hero_Ultimate)
+            ApplyEffectUltimate();
         NotifyObservers(this);
     }
-    void ApplyEffect()
+    void ApplyEffectUltimate()
     {
         if (heroControl.CurrentStringState != HeroStateManager.hero_Ultimate)
             return;
-
-
         if (heroControl.HeroInfo == null)
         {
             Debug.LogError("HeroInfo NULL", this);
@@ -90,15 +93,87 @@ public class Attack : Subject
 
         foreach (var effect in effects)
         {
-          
 
             foreach (var target in heroControl.enemyTarget)
             {
                 HeroControl enemyControl = target.GetComponent<HeroControl>();
                 if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
-                Debug.Log("vo dc r");
                 int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
-                enemyControl.HeroStatRuntime.ApplyAES(effect.type, effect.durationTurn, damagePerTurn);
+                enemyControl.HeroStatRuntime.ApplyAES(effect.type, effect.durationTurn, damagePerTurn, effect.stackCount);
+            }
+        }
+    }
+    void ApplyEffectUISkill()
+    {
+        if (heroControl.CurrentStringState != HeroStateManager.hero_Skill)
+            return;
+        if (heroControl.HeroInfo == null)
+        {
+            Debug.LogError("HeroInfo NULL", this);
+            return;
+        }
+
+        if (heroControl.HeroInfo.skill == null)
+        {
+            Debug.LogError("HeroInfo.skill NULL", this);
+            return;
+        }
+
+        List<AbilityEffect> effects = heroControl.HeroInfo.skill.GetEffectsOnAttack();
+       
+
+        if (effects == null || effects.Count == 0)
+        {
+            Debug.LogWarning("No effects returned by GetEffectsOnAttack()", this);
+            return;
+        }
+
+        foreach (var effect in effects)
+        {
+
+            foreach (var target in heroControl.enemyTarget)
+            {
+                HeroControl enemyControl = target.GetComponent<HeroControl>();
+                if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
+                enemyControl.HeroStatRuntime.ApplyAES(effect.type, effect.durationTurn, damagePerTurn, effect.stackCount);
+            }
+        }
+    }
+    void ApplyEffectUINormal()
+    {
+        if (heroControl.CurrentStringState != HeroStateManager.hero_Attack_1)
+            return;
+        if (heroControl.HeroInfo == null)
+        {
+            Debug.LogError("HeroInfo NULL", this);
+            return;
+        }
+
+        if (heroControl.HeroInfo.normalAttack == null)
+        {
+            Debug.LogError("HeroInfo.normal NULL", this);
+            return;
+        }
+
+        List<AbilityEffect> effects = heroControl.HeroInfo.normalAttack.GetEffectsOnAttack();
+       
+
+        if (effects == null || effects.Count == 0)
+        {
+            Debug.Log("No effects returned by GetEffectsOnAttack()", this);
+            return;
+        }
+
+        foreach (var effect in effects)
+        {
+
+            foreach (var target in heroControl.enemyTarget)
+            {
+                HeroControl enemyControl = target.GetComponent<HeroControl>();
+                if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
+                enemyControl.HeroStatRuntime.ApplyAES(effect.type, effect.durationTurn, damagePerTurn, effect.stackCount);
             }
         }
     }

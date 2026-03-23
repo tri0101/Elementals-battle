@@ -13,6 +13,8 @@ public class HeroControl : Subject
     public SpriteRenderer SpriteRenderer => spriteRenderer;
     [SerializeField] private SpriteRenderer spriteEffect;
     public SpriteRenderer SpriteEffect => spriteEffect;
+    [SerializeField] private Transform listEffect;
+    public Transform ListEffect => listEffect;
 
     [SerializeField] private string fixedLayer;
     public string FixedLayer => fixedLayer;
@@ -137,8 +139,16 @@ public class HeroControl : Subject
     [SerializeField] private bool actionInProgress;
     public bool ActionInProgress => actionInProgress;
 
+
+    [SerializeField] private bool canAttackInBattle = true;
+    public bool CanAttackInBattle
+    {
+        get => canAttackInBattle;
+        set => canAttackInBattle = value;
+    }
     public void Start()
     {
+        canAttackInBattle = true;
         InitClearPosition();
     }
     void InitClearPosition()
@@ -508,7 +518,8 @@ public class HeroControl : Subject
         spriteRenderer = normalT.GetComponent<SpriteRenderer>();
         Transform spriteEffectT = transform.Find("SpriteEffect");
         spriteEffect = spriteEffectT.GetComponent<SpriteRenderer>();
-
+        Transform listEffectT = transform.Find("ListEffect");
+        listEffect = listEffectT;
         heroStatRuntime = GetComponent<HeroStatRuntime>();
         heroStateManager = GetComponent<HeroStateManager>();
         heroRun = GetComponent<HeroRun>();

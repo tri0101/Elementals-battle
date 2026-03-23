@@ -40,6 +40,15 @@ public class HeroEventt : MonoBehaviour
             {
                 if (effect.target == AbilityTarget.Self)
                     ShowUIEffect(effect.statType);
+                else if(effect.target == AbilityTarget.CurrentTarget)
+                {
+                    foreach (var target in heroControl.enemyTarget)
+                    {
+                        HeroControl enemyControl = target.GetComponent<HeroControl>();
+                        if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                        ShowUIEffect(effect.statType);
+                    }
+                }
             }
         }
     }
@@ -50,8 +59,21 @@ public class HeroEventt : MonoBehaviour
             case ModifyStatType.CritRate:
                 heroControl.RefreshObservers(ModifyStatType.CritRate);
                 break;
+            case ModifyStatType.Armor:
+                heroControl.RefreshObservers(ModifyStatType.Armor);
+                break;
         }
        
+    }
+    public void NotifyCanDead()
+    {
+        foreach (Transform enemy in heroControl.enemyTarget)
+        {
+            if (enemy == null) continue;
+            HeroControl heroC = enemy.GetComponent<HeroControl>();
+            if (heroC == null) continue;
+            heroC.HeroReceiveDamagee.SetCanDead();
+        }
     }
 
  

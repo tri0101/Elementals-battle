@@ -1259,12 +1259,41 @@ MonoBehaviour:
   maxHealth: 0
   mana: 0
   maxMana: 0
-  physicalArmor: 0
-  magicalArmor: 0
   durationFinalAttack: 0
   isHit: 0
   isStopAnim: 0
   isDead: 0
+--- !u!1 &8111074191905520545
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9067465332561723069}
+  m_Layer: 0
+  m_Name: ListEffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9067465332561723069
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8111074191905520545}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7205230705301659315}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8232387956193724849
 GameObject:
   m_ObjectHideFlags: 0
@@ -1379,6 +1408,7 @@ Transform:
   m_Children:
   - {fileID: 1295256055738644483}
   - {fileID: 5706756105154283077}
+  - {fileID: 9067465332561723069}
   - {fileID: 9039589988033556829}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1409,6 +1439,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   spriteEffect: {fileID: 0}
+  listEffect: {fileID: 0}
   fixedLayer: 
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
@@ -1431,6 +1462,7 @@ MonoBehaviour:
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
   actionInProgress: 0
+  canAttackInBattle: 1
 --- !u!114 &6502944681297443499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1516,6 +1548,7 @@ MonoBehaviour:
     power: 0
   currentHealth: 0
   currentMana: 0
+  aesDebug: []
 --- !u!50 &6719760526235559961
 Rigidbody2D:
   serializedVersion: 5

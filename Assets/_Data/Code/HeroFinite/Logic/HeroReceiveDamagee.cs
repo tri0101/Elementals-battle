@@ -30,16 +30,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     {
         get => maxMana; set => maxMana = value;
     }
-    [SerializeField] private float physicalArmor;
-    public float PhysicalArmor
-    {
-        get => physicalArmor; set => physicalArmor = value;
-    }
-    [SerializeField] private float magicalArmor;
-    public float MagicalArmor
-    {
-        get => magicalArmor; set => magicalArmor = value;
-    }
+
     
     [SerializeField] private float durationFinalAttack;
 
@@ -83,21 +74,40 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
 
 
-    public void ReceiveDamage(float damage, DamageType damageType)
+    public void ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
     {
 
-
-        heroControl.SetIsTakeHit();
-        heroControl.HeroStatRuntime.MinusHP((int)damage, damageType);
+        if(shouldTakeHit)
+            heroControl.SetIsTakeHit();
+        float finalDamage = GetDamageAfterArmor(damage);
+        heroControl.HeroStatRuntime.MinusHP((int)finalDamage, damageType);
         heroControl.HeroStatRuntime.GainMana(200);
+        if (heroControl.HeroStatRuntime.CurrentHealth <= 0)
+        {
+            if (canDead)
+            {
+                isDead = true;
+
+                heroControl.SetIsDead();
+            }
+        }
+        
+        
+    }
+    public void SetCanDead()
+    {
         if(heroControl.HeroStatRuntime.CurrentHealth <= 0)
         {
             isDead = true;
-           
             heroControl.SetIsDead();
         }
     }
-
+    public int GetDamageAfterArmor(float damage)
+    {
+        float finalDamage = damage;
+        finalDamage = damage * 100 / (100 + heroControl.HeroStatRuntime.Armor);
+        return Mathf.RoundToInt(finalDamage);
+    }
 
     public void CallStopAnim(float duration)
     {

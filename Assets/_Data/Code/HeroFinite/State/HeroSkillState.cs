@@ -26,6 +26,7 @@ public class HeroSkillState : HeroBaseState
         if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Skill, 1f, 1)))
         {
 
+            
             hero.HeroControl.GoBackBattleTarget();
 
             hero.SwitchState(hero.runState);

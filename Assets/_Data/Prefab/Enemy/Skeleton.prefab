@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &631446340497531064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8780659703490187306}
+  m_Layer: 0
+  m_Name: ListEffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8780659703490187306
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 631446340497531064}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8653002969089936374}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1458001984917653169
 GameObject:
   m_ObjectHideFlags: 0
@@ -216,6 +247,7 @@ Transform:
   m_Children:
   - {fileID: 7548597550359824972}
   - {fileID: 5330905444429403662}
+  - {fileID: 8780659703490187306}
   - {fileID: 6653886273326903764}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -246,6 +278,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   spriteEffect: {fileID: 0}
+  listEffect: {fileID: 0}
   fixedLayer: 
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
@@ -268,6 +301,7 @@ MonoBehaviour:
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
   actionInProgress: 0
+  canAttackInBattle: 1
 --- !u!114 &6043500118271729141
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,6 +387,7 @@ MonoBehaviour:
     power: 0
   currentHealth: 0
   currentMana: 0
+  aesDebug: []
 --- !u!50 &3527073344319168417
 Rigidbody2D:
   serializedVersion: 5
@@ -679,8 +714,6 @@ MonoBehaviour:
   maxHealth: 0
   mana: 0
   maxMana: 0
-  physicalArmor: 0
-  magicalArmor: 0
   durationFinalAttack: 0
   isHit: 0
   isStopAnim: 0

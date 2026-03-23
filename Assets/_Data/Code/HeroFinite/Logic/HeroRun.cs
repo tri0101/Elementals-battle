@@ -50,7 +50,7 @@ public class HeroRun : MonoBehaviour
                 step
             );
         }
-
+        next.z = next.y;
         transform.position = next;
     }
 
@@ -70,6 +70,7 @@ public class HeroRun : MonoBehaviour
   
     public void FaceDefaultDirection()
     {
+      
         Vector3 scale = transform.localScale;
 
         if (heroControl.CompareTag("Hero"))
@@ -84,5 +85,12 @@ public class HeroRun : MonoBehaviour
         }
 
         transform.localScale = scale;
+    }
+
+    public void SetZ() // dùng để hiển thị nhân vật tấn cong phía trước nhân vật khác, tránh bị che khuất
+    {
+        Vector3 position = transform.position;
+        position.z -= 0.01f;
+        transform.position = position;
     }
 }

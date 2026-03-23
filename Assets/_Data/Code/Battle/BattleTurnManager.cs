@@ -98,6 +98,7 @@ public class BattleTurnManager : MonoBehaviour
                     yield return CoHandleWaveCleared();
                     break;
                 }
+                yield return CoApplyEffect();
              
             }
 
@@ -302,6 +303,20 @@ public class BattleTurnManager : MonoBehaviour
             yield return CoTeamPassiveBattle(TeamHero);
         }
     }
+   
+    private IEnumerator CoApplyEffect()
+    {
+        if (heroTeamStarts)
+        {
+            yield return CoTeamApplyEffect(TeamHero);
+            yield return CoTeamApplyEffect(TeamEnemy);
+        }
+        else
+        {
+            yield return CoTeamApplyEffect(TeamEnemy);
+            yield return CoTeamApplyEffect(TeamHero);
+        }
+    }
     private IEnumerator CoUltimatePhase()
     {
         if (heroTeamStarts)
@@ -347,6 +362,7 @@ public class BattleTurnManager : MonoBehaviour
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
             if(reC.HeroInfo.ultimate == null) continue;
+            if (!reC.CanAttackInBattle) continue;
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
 
            
@@ -360,6 +376,16 @@ public class BattleTurnManager : MonoBehaviour
                             ApplyStatAllStartBattle(effect.statType, effect.modifyValue);
                         else if(effect.target == AbilityTarget.Self)
                             unit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue,false);
+                        else if(effect.target == AbilityTarget.CurrentTarget)
+                        {
+                            List<Transform> targets = reC.enemyTarget;
+                            for (int j = 0; j < targets.Count; j++)
+                            {
+                                var targetUnit = targets[j].GetComponent<HeroControl>();
+                                if (targetUnit == null) continue;
+                                targetUnit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue,false);
+                        }
+                    }
                 }
                  
                 
@@ -369,6 +395,45 @@ public class BattleTurnManager : MonoBehaviour
 
             if (delayBetweenUltimates > 0f)
                 yield return new WaitForSeconds(delayBetweenUltimates);
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
+        }
+
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
+    private IEnumerator CoTeamApplyEffect(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
+
+            var aesList = reC.HeroStatRuntime.GetAESSnapshot();
+
+            for (int i = 0; i < aesList.Count; i++)
+            {
+                var aes = aesList[i];
+                if (aes.remainingTurn <= 0) continue;
+
+                switch (aes.type)
+                {
+                    case AbilityEffectType.Burn:
+                        // mỗi stack trừ 1 lần => 2 stack sẽ trừ 2 lần
+                        bool shouldTakeHit = i == 0; // chỉ hiệu ứng đầu tiên mới gọi anim hit
+                        reC.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.normalDamage, shouldTakeHit, true);
+                        yield return new WaitForSeconds(0.1f);
+                        break;
+                }   
+            }
+
+            if (aesList.Count > 0)
+                reC.HeroStatRuntime.MinusRemainTurn();
 
             if (AreAllTeamDead(TeamEnemy))
                 yield break;
@@ -441,6 +506,7 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+    
     void ApplyStatAllStartBattle(ModifyStatType type, float  value)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -461,7 +527,7 @@ public class BattleTurnManager : MonoBehaviour
             if (IsDead(unit)) continue;
 
             unit.IsFinished = false;
-
+            if (!unit.CanAttackInBattle) continue;
             if (unit.CanSkill)
                 unit.SetSkill();
             else

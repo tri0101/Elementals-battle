@@ -25,6 +25,7 @@ public class HeroUltimateState : HeroBaseState
 
         if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Ultimate, 1f, 1)))
         {
+           
 
             hero.HeroControl.GoBackBattleTarget();
 

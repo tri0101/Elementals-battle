@@ -6,42 +6,114 @@ using UnityEngine;
 
 public sealed class HeroStatRuntime : MonoBehaviour
 {
-    private struct AbilityEffectState
+    [System.Serializable]
+    private struct AESStackState
     {
         public int remainingTurn;
         public int damagePerTurn;
 
-        public AbilityEffectState(int remainingTurn, int damagePerTurn)
+        public AESStackState(int remainingTurn, int damagePerTurn)
         {
             this.remainingTurn = remainingTurn;
             this.damagePerTurn = damagePerTurn;
         }
     }
-    private readonly Dictionary<AbilityEffectType, AbilityEffectState> dotByType =
-        new Dictionary<AbilityEffectType, AbilityEffectState>();
+    private readonly Dictionary<AbilityEffectType, List<AESStackState>> aesStacksByType =
+        new Dictionary<AbilityEffectType, List<AESStackState>>();
 
-    public bool HasAES(AbilityEffectType type) => dotByType.ContainsKey(type);
-
-    public void ApplyAES(AbilityEffectType type, int remainingTurn, int damagePerTurn)
+    public bool HasAES(AbilityEffectType type) =>
+        aesStacksByType.TryGetValue(type, out var list) && list != null && list.Count > 0;
+    public List<(AbilityEffectType type, int remainingTurn, int damagePerTurn)> GetAESSnapshot()
     {
-        Debug.Log("vo apply aes");
-        if (remainingTurn <= 0 || damagePerTurn < 0) return;
-        Debug.Log("qua dc check <=0");
-        // Only allow DOT-like types here (avoid ModifyStat, Stun...)
-        if (type != AbilityEffectType.Burn)
-            return;
-        ApplyUIEffect(type);
-        if (dotByType.TryGetValue(type, out var cur))
+        var result = new List<(AbilityEffectType, int, int)>(8);
+
+        foreach (var kv in aesStacksByType)
         {
-            // refresh rule: lấy duration lớn hơn + damage lớn hơn
-            cur.remainingTurn = Mathf.Max(cur.remainingTurn, remainingTurn);
-            cur.damagePerTurn = Mathf.Max(cur.damagePerTurn, damagePerTurn);
-            dotByType[type] = cur;
+            var stacks = kv.Value;
+            if (stacks == null) continue;
+
+            for (int i = 0; i < stacks.Count; i++)
+                result.Add((kv.Key, stacks[i].remainingTurn, stacks[i].damagePerTurn));
         }
-        else
+
+        return result;
+    }
+
+    public void MinusRemainTurn()
+    {
+        if (aesStacksByType.Count == 0) return;
+        var keys = new List<AbilityEffectType>(aesStacksByType.Keys);
+
+        for (int k = 0; k < keys.Count; k++)
         {
-            dotByType[type] = new AbilityEffectState(remainingTurn, damagePerTurn);
+            var type = keys[k];
+
+            if (!aesStacksByType.TryGetValue(type, out var stacks) || stacks == null || stacks.Count == 0)
+                continue;
+
+            // giảm remaining của từng stack (mỗi stack có remaining riêng)
+            for (int i = stacks.Count - 1; i >= 0; i--)
+            {
+                var s = stacks[i];
+                s.remainingTurn = Mathf.Max(0, s.remainingTurn - 1);
+
+                if (s.remainingTurn <= 0)
+                    stacks.RemoveAt(i);
+                else
+                    stacks[i] = s;
+            }
+
+            // nếu hết toàn bộ stack của type này => remove type + cancel UI effect
+            if (stacks.Count == 0)
+            {
+                aesStacksByType.Remove(type);
+
+                switch (type)
+                {
+                    case AbilityEffectType.Burn:
+                        CancelBurn();
+                        break;
+                    case AbilityEffectType.Rooted:
+                        heroControl.CanAttackInBattle = true;
+                        break;
+                }
+            }
         }
+
+        SyncAESDebug();
+    }
+    public void ApplyAES(AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
+    {
+        if (remainingTurn <= 0) return;
+        if (maxStacks <= 0) return;
+
+        if (type == AbilityEffectType.ModifyStat) return;
+
+
+        if (!aesStacksByType.TryGetValue(type, out var stacks) || stacks == null)
+        {
+            stacks = new List<AESStackState>(maxStacks);
+            aesStacksByType[type] = stacks;
+
+            ApplyUIEffect(type);
+        }
+
+        // nếu đã max stack: bỏ stack cũ nhất (thường rule: drop oldest)
+        while (stacks.Count >= maxStacks)
+            stacks.RemoveAt(0);
+        int finalDamagePerTurn = 0;
+        if (damagePerTurn != 0)
+        {
+            finalDamagePerTurn = heroControl.HeroReceiveDamagee.GetDamageAfterArmor(damagePerTurn);
+        }
+        
+        if(type == AbilityEffectType.Rooted)
+        {
+            heroControl.CanAttackInBattle = false;
+        }
+        stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));
+
+        SyncAESDebug();
     }
     [Header("Refs")]
     [SerializeField] private HeroControl heroControl;
@@ -137,7 +209,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 GainHPMax(value, instant);
                 break;
             case ModifyStatType.Armor:
-                
+                GainArmor(value);
                 break;
             case ModifyStatType.CritRate:
                 GainCritRate(value, instant);
@@ -159,6 +231,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
         float health01 = CurrentHealth / (float)MaxHealth;
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
 
+    }
+    public void GainArmor(float value)
+    {
+        finalStat.armor *= (1 + value/100);
     }
     public void GainCritRate(float value, bool instant = false)
     {
@@ -232,6 +308,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 ApplyBurn();
                 break;
         }
+        switch(effectType)
+        {
+            case AbilityEffectType.Rooted:
+                ApplyEartEffect();
+                break;
+        }
     }
     void ApplyBurn()
     {
@@ -241,8 +323,76 @@ public sealed class HeroStatRuntime : MonoBehaviour
             0f / 255f,
             150f / 255f
         );
-
+        ClearOldEffect(AbilityEffectType.Burn);
+        EffectManager.Instance.Spawn(
+            AbilityEffectType.Burn,
+            heroControl.SpriteEffect.transform
+        );
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
+    void ApplyEartEffect()
+    {
+        ClearOldEffect(AbilityEffectType.Rooted);
+        EffectManager.Instance.Spawn(
+            AbilityEffectType.Rooted,
+            heroControl.ListEffect.transform
+        );
+    }
+    void CancelBurn()
+    {
+        heroControl.SpriteEffect.gameObject.SetActive(false);
+    }
+    void ClearOldEffect(AbilityEffectType type)
+    {
+        foreach(Transform child in heroControl.SpriteEffect.transform)
+        {
+            Effect_Item effect_item = child.GetComponent<Effect_Item>();
+            if(effect_item != null && effect_item.GetAbilityType() == type)
+                Destroy(child.gameObject);
+        }
+    }
 
+    // ===================== Debug (Inspector) =====================
+    [System.Serializable]
+    private struct AESDebugItem
+    {
+        public AbilityEffectType type;
+
+        [Header("Stacks")]
+        public List<AESStackState> stacks;
+
+        public int TotalDamagePerTurn()
+        {
+            if (stacks == null) return 0;
+            int sum = 0;
+            for (int i = 0; i < stacks.Count; i++)
+                sum += stacks[i].damagePerTurn;
+            return sum;
+        }
+    }
+
+    [Header("Debug (Inspector)")]
+    [SerializeField] private List<AESDebugItem> aesDebug = new List<AESDebugItem>();
+
+    private void SyncAESDebug()
+    {
+        aesDebug.Clear();
+
+        foreach (var kv in aesStacksByType)
+        {
+            var stacks = kv.Value;
+            if (stacks == null) continue;
+
+            // NOTE: copy list để inspector hiển thị ổn định và tránh reference tới list runtime
+            var copy = new List<AESStackState>(stacks.Count);
+            for (int i = 0; i < stacks.Count; i++)
+                copy.Add(stacks[i]);
+
+            aesDebug.Add(new AESDebugItem
+            {
+                type = kv.Key,
+                stacks = copy
+            });
+        }
+    }
 }
