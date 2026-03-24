@@ -31,7 +31,7 @@ public class BattleTurnManager : MonoBehaviour
     private const string TeamHero = "Hero";
     private const string TeamEnemy = "Enemy";
 
-    private bool heroTeamStarts;
+    [SerializeField] private bool heroTeamStarts;
     private bool isEnd;
 
     private int currentWave = 1;
@@ -362,7 +362,11 @@ public class BattleTurnManager : MonoBehaviour
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
             if(reC.HeroInfo.ultimate == null) continue;
-            if (!reC.CanAttackInBattle) continue;
+            if (!reC.CanAttackInBattle)
+            {
+                continue;
+            }
+
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
 
            
@@ -432,8 +436,10 @@ public class BattleTurnManager : MonoBehaviour
                 }   
             }
 
+            if (teamTag == TeamEnemy && heroTeamStarts) reC.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
+            if (teamTag == TeamHero && !heroTeamStarts) reC.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
             if (aesList.Count > 0)
-                reC.HeroStatRuntime.MinusRemainTurn();
+                reC.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Burn);
 
             if (AreAllTeamDead(TeamEnemy))
                 yield break;

@@ -181,9 +181,10 @@
                 stat.speed *= (1f + percent);
                 break;
 
-            case ModifyStatType.Armor:
+            case ModifyStatType.ArmorIncreased or ModifyStatType.ArmorDecreased:
                 stat.armor *= (1f + percent);
                 break;
+          
         }
     }
 }

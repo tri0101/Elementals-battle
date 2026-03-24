@@ -1,15 +1,20 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine;
 [CreateAssetMenu(menuName = "hero/Normal Attack")]
+[System.Serializable]   
+public class TypeAndVector
+{
+    public int indexSpawn;
+    public AbilityEffectType type;
+    public Vector3 positionSpawn; // vị trí tương đối với hero spawn ra nó
+}
 public class LoadNormalAttack : ScriptableObject
 {
     public int numberOfAttack;
-    public Vector3 spawnRangedPosition;
-    public List<Vector3> Attacks = new List<Vector3>();
+    public List<TypeAndVector> dicSpawn;
+   
+
     
-    public void AddAttack(Vector3 attack)
-    {
-        Attacks.Add(attack);
-    }
+   
 }

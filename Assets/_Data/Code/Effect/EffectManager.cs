@@ -5,6 +5,8 @@ using UnityEngine;
 public class EffectManager : MonoBehaviour
 {
     public static EffectManager Instance { get; private set; }
+    [SerializeField] Transform listEffect;
+    public Transform ListEffect => listEffect;
 
     [Serializable]
     private sealed class EffectEntry
@@ -28,6 +30,7 @@ public class EffectManager : MonoBehaviour
         }
 
         Instance = this;
+        listEffect = transform.GetChild(0);
 
         prefabByType.Clear();
         for (int i = 0; i < effectPrefabs.Count; i++)
@@ -44,8 +47,8 @@ public class EffectManager : MonoBehaviour
         AbilityEffectType type,
         Transform parent,
         Vector3 localPosition,
-        Quaternion localRotation,
-        float destroyAfterSeconds = -1f
+        Quaternion localRotation,  
+        List<Transform> listTarget = null
     )
     {
         if (parent == null)
@@ -61,11 +64,20 @@ public class EffectManager : MonoBehaviour
         }
 
         var go = Instantiate(prefab, parent, false);
+        if(listTarget != null)
+        {
+            foreach (var target in listTarget)
+            {
+                var effectTarget = go.GetComponent<Effect_Item>();
+                if (effectTarget != null)
+                {
+                    effectTarget.SetTarget(target);
+                }
+            }
+        }
+       
         go.transform.localPosition = localPosition;
         go.transform.localRotation = localRotation;
-
-        if (destroyAfterSeconds > 0f)
-            Destroy(go, destroyAfterSeconds);
 
         return go;
     }
@@ -75,6 +87,18 @@ public class EffectManager : MonoBehaviour
         Transform parent
     )
     {
-        return Spawn(type, parent, Vector3.zero, Quaternion.identity);
+        Vector3 vector = new Vector3(0f, 0f, -1f);
+        return Spawn(type, parent, vector, Quaternion.identity);
+    }
+    public GameObject Spawn(
+        AbilityEffectType type,
+        Transform parent,
+        List<Transform> listTarget,
+        Vector3 localPosition
+    )
+    {
+        localPosition.z = -1f;
+        
+        return Spawn(type, parent, localPosition, Quaternion.identity,  listTarget);
     }
 }

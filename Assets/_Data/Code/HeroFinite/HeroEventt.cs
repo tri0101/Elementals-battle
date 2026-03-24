@@ -2,12 +2,13 @@
 using NUnit.Framework.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HeroEventt : MonoBehaviour
 {
-  
 
+    public LoadNormalAttack load;
     HeroControl heroControl;
 
     private void Awake()
@@ -46,21 +47,24 @@ public class HeroEventt : MonoBehaviour
                     {
                         HeroControl enemyControl = target.GetComponent<HeroControl>();
                         if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
-                        ShowUIEffect(effect.statType);
+                        enemyControl.HeroEventt.ShowUIEffect(effect.statType);
                     }
                 }
             }
         }
     }
-    void ShowUIEffect(ModifyStatType type)
+    public void ShowUIEffect(ModifyStatType type)
     {
         switch(type)
         {
             case ModifyStatType.CritRate:
                 heroControl.RefreshObservers(ModifyStatType.CritRate);
                 break;
-            case ModifyStatType.Armor:
-                heroControl.RefreshObservers(ModifyStatType.Armor);
+            case ModifyStatType.ArmorDecreased:
+                heroControl.RefreshObservers(ModifyStatType.ArmorDecreased);
+                break;
+            case ModifyStatType.ArmorIncreased:
+                heroControl.RefreshObservers(ModifyStatType.ArmorIncreased);
                 break;
         }
        
@@ -75,7 +79,26 @@ public class HeroEventt : MonoBehaviour
             heroC.HeroReceiveDamagee.SetCanDead();
         }
     }
+    public void SpawnObject(int index)
+    {
+        TypeAndVector typeAndvector = load.dicSpawn.Find(dic => dic.indexSpawn == index);
+        if(typeAndvector == null) return;
+        Vector3 newPos = heroControl.transform.position;
+        newPos.x += typeAndvector.positionSpawn.x;
+        newPos.y += typeAndvector.positionSpawn.y;
+        List<Transform> listEnemy = heroControl.enemyTarget;
+        EffectManager.Instance.Spawn(typeAndvector.type, EffectManager.Instance.ListEffect, listEnemy, newPos);
+    }
 
- 
+    public void CallStopAnim()
+    {
+        if(!heroControl.CanAttackInBattle)
+        heroControl.Animator.speed = 0f;
+    }
+    public void CallCancelStopAnim()
+    {
+        
+        heroControl.Animator.speed = 1f;    
+    }
     
 }

@@ -37,9 +37,10 @@ public enum ModifyStatType
     Damage = 0,       //tăng damage
     Health = 1,           //tăng hp
     Speed = 2,       // tăng speed
-    Armor = 3,       // tăng armor
-    CritRate = 4,    // tăng tỉ lệ chí mạng
-    CritDamage = 5,   // tăng tỉ lệ dame chí mạng
+    ArmorIncreased= 3,       // tăng armor
+    ArmorDecreased = 4,       // giảm armor
+    CritRate = 5,    // tăng tỉ lệ chí mạng
+    CritDamage = 6,   // tăng tỉ lệ dame chí mạng
 }
 public enum TimesToCall
 {

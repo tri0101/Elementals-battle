@@ -13,11 +13,7 @@ MonoBehaviour:
   m_Name: Load_Ground_Monk
   m_EditorClassIdentifier: 
   numberOfAttack: 3
-  spawnRangedPosition: {x: 2, y: -2.94, z: 0}
-  Attacks:
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 2, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 2, y: 0, z: 0}
+  dicSpawn:
+  - indexSpawn: 1
+    type: 19
+    positionSpawn: {x: 2.5, y: -0.85, z: 0}

@@ -261,6 +261,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   spriteEffect: {fileID: 0}
+  listEffect: {fileID: 0}
   fixedLayer: 
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
@@ -283,6 +284,7 @@ MonoBehaviour:
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
   actionInProgress: 0
+  canAttackInBattle: 1
 --- !u!114 &7455046504162736877
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -947,6 +949,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  load: {fileID: 11400000, guid: 6188cc13c9ab29048859ab98416c4942, type: 2}
 --- !u!1 &4843419229661344223
 GameObject:
   m_ObjectHideFlags: 0

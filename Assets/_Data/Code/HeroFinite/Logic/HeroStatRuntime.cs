@@ -39,10 +39,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
         return result;
     }
 
-    public void MinusRemainTurn()
+    public void MinusRemainTurn(AbilityEffectType types)
     {
         if (aesStacksByType.Count == 0) return;
-        var keys = new List<AbilityEffectType>(aesStacksByType.Keys);
+        if (!aesStacksByType.ContainsKey(types))
+            return;
+
+        var keys = new List<AbilityEffectType> { types };
 
         for (int k = 0; k < keys.Count; k++)
         {
@@ -67,13 +70,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
             if (stacks.Count == 0)
             {
                 aesStacksByType.Remove(type);
-
+                heroControl.RefreshObservers();
                 switch (type)
                 {
+
                     case AbilityEffectType.Burn:
                         CancelBurn();
                         break;
                     case AbilityEffectType.Rooted:
+                        heroControl.HeroEventt.CallCancelStopAnim();
                         heroControl.CanAttackInBattle = true;
                         break;
                 }
@@ -208,7 +213,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             case ModifyStatType.Health:
                 GainHPMax(value, instant);
                 break;
-            case ModifyStatType.Armor:
+            case ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased:
                 GainArmor(value);
                 break;
             case ModifyStatType.CritRate:
@@ -308,12 +313,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 ApplyBurn();
                 break;
         }
-        switch(effectType)
-        {
-            case AbilityEffectType.Rooted:
-                ApplyEartEffect();
-                break;
-        }
+        //switch(effectType)
+        //{
+        //    case AbilityEffectType.Rooted:
+        //        ApplyEartEffect();
+        //        break;
+        //}
     }
     void ApplyBurn()
     {

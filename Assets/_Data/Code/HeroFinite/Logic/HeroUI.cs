@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public enum HPNotifyType
 {
-    HPMinus, 
+    HPMinus,
     HPPlus
 }
 public enum DamageType // để phân biệt kiểu damage (normal, crit, block)
@@ -40,7 +40,6 @@ public class HeroUI : MonoBehaviour, IObserver
     private Coroutine hpRoutine;
     private Coroutine manaRoutine;
 
-
     private void Start()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
@@ -50,7 +49,7 @@ public class HeroUI : MonoBehaviour, IObserver
         manaBar = transform.Find("Mana").GetChild(1).GetComponent<Image>();
         listDamage = transform.Find("ListDamage");
         SetHpBar(1f, true);
-        if(heroControl.HeroInfo.ultimate == null)
+        if (heroControl.HeroInfo.ultimate == null)
         {
             manaBar.transform.parent.gameObject.SetActive(false);
         }
@@ -63,7 +62,7 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.CritRate:
                 SpawnFloatingEffectText(type);
                 break;
-            case ModifyStatType.Armor:
+            case (ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased) :
                 SpawnFloatingEffectText(type);
                 break;
         }
@@ -82,29 +81,23 @@ public class HeroUI : MonoBehaviour, IObserver
 
             case HeroNotifyType.Dead:
                 SetHpBar(0f, true);
-               
+
                 break;
 
             case HeroNotifyType.Revive:
                 SetHpBar(1f, true);
-                
+
                 break;
         }
-
-      
     }
-    public void OnNotify(HPNotifyType type, object value,DamageType damageType )
+    public void OnNotify(HPNotifyType type, object value, DamageType damageType)
     {
         switch (type)
         {
             case HPNotifyType.HPMinus:
                 SpawnDamageText((int)value, damageType);
                 break;
-
-            
         }
-
-      
     }
 
     // ================= FLOATING TEXT =================
@@ -121,14 +114,14 @@ public class HeroUI : MonoBehaviour, IObserver
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;
-                StartCoroutine(CoShowAndFade(text)); 
+                StartCoroutine(CoShowAndFade(text));
                 break;
-            case ModifyStatType.Armor:
+            case ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased:
                 text.text = armorDecreased;
-                text.color = new Color32(253, 255, 0, 255);
+                text.color = new Color32(211, 71, 35, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;
-                StartCoroutine(CoShowAndFade(text)); 
+                StartCoroutine(CoShowAndFade(text));
                 break;
         }
     }
@@ -138,9 +131,6 @@ public class HeroUI : MonoBehaviour, IObserver
 
         TextMeshProUGUI text =
             Instantiate(damageTextPrefab, listDamage);
-
-
-       
 
         switch (damageType)
         {
@@ -162,17 +152,24 @@ public class HeroUI : MonoBehaviour, IObserver
 
         StartCoroutine(CoFloatAndFade(text));
     }
+
     private IEnumerator CoShowAndFade(TextMeshProUGUI text)
     {
         if (text == null) yield break;
 
-        float yOffset = 0.35f;       // tăng lên bao nhiêu (tùy UI scale mà chỉnh)
+        float yOffset = 0.35f;      // tăng lên bao nhiêu (tùy UI scale mà chỉnh)
         float showDuration = 0.35f; // đứng yên, hiện full alpha
-        float fadeDuration = 1f;  // fade về 0 alpha
+        float fadeDuration = 1f;    // fade về 0 alpha
 
-        // đẩy lên cao 1 tí nhưng không animate
+        bool isEnemy =
+            transform.parent != null &&
+            transform.parent.CompareTag("Enemy");
+
+        float x = isEnemy ? 0.15f : -0.15f;
+
+        // set position: x theo enemy/hero, y tăng thêm yOffset
         Vector3 p = text.transform.localPosition;
-        text.transform.localPosition = new Vector3(p.x, p.y + yOffset, p.z);
+        text.transform.localPosition = new Vector3(x, p.y + yOffset, p.z);
 
         Color startColor = text.color;
 
@@ -202,6 +199,7 @@ public class HeroUI : MonoBehaviour, IObserver
 
         Destroy(text.gameObject);
     }
+
     private IEnumerator CoFloatAndFade(TextMeshProUGUI text)
     {
         float startY = 0.35f;
@@ -215,7 +213,7 @@ public class HeroUI : MonoBehaviour, IObserver
             transform.parent != null &&
             transform.parent.CompareTag("Enemy");
 
-        float x = isEnemy ? 0.1f : -0.1f;
+        float x = isEnemy ? 0.15f : -0.15f;
 
         while (t < duration)
         {
@@ -238,6 +236,7 @@ public class HeroUI : MonoBehaviour, IObserver
 
         Destroy(text.gameObject);
     }
+
     public void SetHpBar(float target01, bool instant = false)
     {
         if (hpBar == null) return;
