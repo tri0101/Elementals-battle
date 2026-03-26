@@ -40,20 +40,20 @@ public class HeroEventt : MonoBehaviour
             if (effect.type == AbilityEffectType.ModifyStat)
             {
                 if (effect.target == AbilityTarget.Self)
-                    ShowUIEffect(effect.statType);
+                    ShowTextEffect(effect.statType);
                 else if(effect.target == AbilityTarget.CurrentTarget)
                 {
                     foreach (var target in heroControl.enemyTarget)
                     {
                         HeroControl enemyControl = target.GetComponent<HeroControl>();
                         if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
-                        enemyControl.HeroEventt.ShowUIEffect(effect.statType);
+                        enemyControl.HeroEventt.ShowTextEffect(effect.statType);
                     }
                 }
             }
         }
     }
-    public void ShowUIEffect(ModifyStatType type)
+    public void ShowTextEffect(ModifyStatType type)
     {
         switch(type)
         {
@@ -69,6 +69,20 @@ public class HeroEventt : MonoBehaviour
         }
        
     }
+    public void ShowUIEffect(AbilityEffectType type)
+    {
+        switch(type)
+        {
+            case AbilityEffectType.Rooted:
+                foreach (var target in heroControl.enemyTarget)
+                {
+                    HeroControl enemyControl = target.GetComponent<HeroControl>();
+                    if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                    enemyControl.HeroStatRuntime.ApplyEartEffect();
+                }
+                break;
+        }
+    }
     public void NotifyCanDead()
     {
         foreach (Transform enemy in heroControl.enemyTarget)
@@ -77,6 +91,16 @@ public class HeroEventt : MonoBehaviour
             HeroControl heroC = enemy.GetComponent<HeroControl>();
             if (heroC == null) continue;
             heroC.HeroReceiveDamagee.SetCanDead();
+        }
+    }
+    public void NotifyCanShowTotalDmg()
+    {
+        foreach (Transform enemy in heroControl.enemyTarget)
+        {
+            if (enemy == null) continue;
+            HeroControl heroC = enemy.GetComponent<HeroControl>();
+            if (heroC == null) continue;
+            heroC.HeroReceiveDamagee.SetCanShowTotalDmg();
         }
     }
     public void SpawnObject(int index)

@@ -8,6 +8,7 @@ public class HeroUltimateState : HeroBaseState
         hero.HeroControl.IsUltimate = false;
         hero.HeroControl.ChangeAnimationState(HeroStateManager.hero_Ultimate);
         hero.HeroControl.HeroUltimate.ResetMana();
+        hero.HeroControl.HeroUltimate.RefreshTotalDmgOnTarget();
     }
 
     public override void ExitState(HeroStateManager hero)

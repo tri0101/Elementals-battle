@@ -24,6 +24,9 @@ public class HeroUI : MonoBehaviour, IObserver
     [Header("String pattern")]
     private string critRatePattern = "Crit Rate Increased";
     private string armorDecreased = "Armor Decreased";
+    private string rootedNotice = "Root";
+    private string burnNotice = "Burn";
+
     [Header("Bars")]
     public Image hpBar;
     public Image manaBar;
@@ -63,6 +66,18 @@ public class HeroUI : MonoBehaviour, IObserver
                 SpawnFloatingEffectText(type);
                 break;
             case (ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased) :
+                SpawnFloatingEffectText(type);
+                break;
+        }
+    }
+    public void OnNotify(AbilityEffectType type)
+    {
+        switch (type)
+        {
+            case AbilityEffectType.Burn:
+                SpawnFloatingEffectText(type);
+                break;
+            case AbilityEffectType.Rooted :
                 SpawnFloatingEffectText(type);
                 break;
         }
@@ -119,6 +134,30 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased:
                 text.text = armorDecreased;
                 text.color = new Color32(211, 71, 35, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+        }
+    }
+    public void SpawnFloatingEffectText(AbilityEffectType type)
+    {
+        if (damageTextPrefab == null || listDamage == null) return;
+
+        TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+
+        switch (type)
+        {
+            case AbilityEffectType.Burn:
+                text.text = burnNotice;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case AbilityEffectType.Rooted:
+                text.text = rootedNotice;
+                text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;
                 StartCoroutine(CoShowAndFade(text));

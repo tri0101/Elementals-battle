@@ -20,11 +20,11 @@ public class Effect_Item : MonoBehaviour, IObserver
     {
         return type;
     }
-    private void OnDestroy()
-    {
-        HeroControl heroC = target.GetComponent<HeroControl>();
-        heroC.RemoveObbserver(this);
-    }
+    //private void OnDestroy()
+    //{
+    //    HeroControl heroC = target.GetComponent<HeroControl>();
+    //    heroC.RemoveObbserver(this);
+    //}
     public void SetTarget(Transform target)// target mà hiệu ứng này đang áp dụng lên, có thể là hero hoặc enemy
     {
         HeroControl heroC = target.GetComponent<HeroControl>();

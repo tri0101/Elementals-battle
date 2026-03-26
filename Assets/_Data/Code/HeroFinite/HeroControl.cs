@@ -15,6 +15,8 @@ public class HeroControl : Subject
     public SpriteRenderer SpriteEffect => spriteEffect;
     [SerializeField] private Transform listEffect;
     public Transform ListEffect => listEffect;
+    [SerializeField] private UI_CanvasTotalDamage canvasTotalDamage;
+    public UI_CanvasTotalDamage CanvasTotalDamage => canvasTotalDamage;
 
     [SerializeField] private string fixedLayer;
     public string FixedLayer => fixedLayer;
@@ -520,6 +522,7 @@ public class HeroControl : Subject
         spriteEffect = spriteEffectT.GetComponent<SpriteRenderer>();
         Transform listEffectT = transform.Find("ListEffect");
         listEffect = listEffectT;
+        canvasTotalDamage = GameObject.Find("Canvas").GetComponent<UI_CanvasTotalDamage>();
         heroStatRuntime = GetComponent<HeroStatRuntime>();
         heroStateManager = GetComponent<HeroStateManager>();
         heroRun = GetComponent<HeroRun>();
@@ -632,6 +635,10 @@ public class HeroControl : Subject
         NotifyObservers(data1);
     }
     public void RefreshObservers(ModifyStatType type)
+    {
+        NotifyObservers(type);
+    }
+    public void RefreshObservers(AbilityEffectType type)
     {
         NotifyObservers(type);
     }

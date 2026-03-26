@@ -6,7 +6,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
 
     [SerializeField] HeroControl heroControl;
     public HeroControl HeroControl => heroControl;
-
+    [SerializeField] private int totalDmg;
 
     [Header("Attribute")]
     [SerializeField] private float health;
@@ -80,6 +80,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         if(shouldTakeHit)
             heroControl.SetIsTakeHit();
         float finalDamage = GetDamageAfterArmor(damage);
+        totalDmg += Mathf.RoundToInt(finalDamage);
         heroControl.HeroStatRuntime.MinusHP((int)finalDamage, damageType);
         heroControl.HeroStatRuntime.GainMana(200);
         if (heroControl.HeroStatRuntime.CurrentHealth <= 0)
@@ -87,18 +88,28 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
             if (canDead)
             {
                 isDead = true;
-
+                heroControl.HeroStatRuntime.ClearAllAES();
                 heroControl.SetIsDead();
             }
         }
         
         
     }
+    public void RefreshTotalDmg()
+    {
+        totalDmg = 0;
+    }
+    public void SetCanShowTotalDmg()
+    {
+        heroControl.CanvasTotalDamage.UpdateTotalDamage(totalDmg);
+        heroControl.CanvasTotalDamage.Show();
+    }
     public void SetCanDead()
     {
         if(heroControl.HeroStatRuntime.CurrentHealth <= 0)
         {
             isDead = true;
+            heroControl.HeroStatRuntime.ClearAllAES();
             heroControl.SetIsDead();
         }
     }

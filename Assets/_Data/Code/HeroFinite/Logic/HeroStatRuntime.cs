@@ -20,7 +20,22 @@ public sealed class HeroStatRuntime : MonoBehaviour
     }
     private readonly Dictionary<AbilityEffectType, List<AESStackState>> aesStacksByType =
         new Dictionary<AbilityEffectType, List<AESStackState>>();
+    public void ClearAllAES()
+    {
+        if (aesStacksByType.Count == 0)
+            return;
 
+        // Copy keys to avoid modifying while iterating
+        var keys = new List<AbilityEffectType>(aesStacksByType.Keys);
+        for (int i = 0; i < keys.Count; i++)
+        {
+            ClearOldEffect(keys[i]);
+        }
+
+        aesStacksByType.Clear();
+        SyncAESDebug();
+        heroControl.RefreshObservers();
+    }
     public bool HasAES(AbilityEffectType type) =>
         aesStacksByType.TryGetValue(type, out var list) && list != null && list.Count > 0;
     public List<(AbilityEffectType type, int remainingTurn, int damagePerTurn)> GetAESSnapshot()
@@ -101,6 +116,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             aesStacksByType[type] = stacks;
 
             ApplyUIEffect(type);
+            heroControl.RefreshObservers(type);
         }
 
         // nếu đã max stack: bỏ stack cũ nhất (thường rule: drop oldest)
@@ -313,12 +329,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 ApplyBurn();
                 break;
         }
-        //switch(effectType)
-        //{
-        //    case AbilityEffectType.Rooted:
-        //        ApplyEartEffect();
-        //        break;
-        //}
+       
     }
     void ApplyBurn()
     {
@@ -335,13 +346,17 @@ public sealed class HeroStatRuntime : MonoBehaviour
         );
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
-    void ApplyEartEffect()
+    public void ApplyEartEffect()
     {
-        ClearOldEffect(AbilityEffectType.Rooted);
-        EffectManager.Instance.Spawn(
-            AbilityEffectType.Rooted,
-            heroControl.ListEffect.transform
-        );
+        if (heroControl.SpriteRenderer.enabled)
+        {
+            heroControl.SpriteRenderer.enabled = false;
+        }
+        else
+        {
+            heroControl.SpriteRenderer.enabled = true;
+        }
+      
     }
     void CancelBurn()
     {

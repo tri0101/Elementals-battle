@@ -10,9 +10,9 @@ public class BattleTurnManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI turnText;
     [SerializeField] private GameObject clearImage;
     [SerializeField] private GameObject winExpPlusImage;
+
     [Header("Refs")]
     [SerializeField] private BattleManager battleManager;
-
 
     [Header("Turn Config")]
     [Min(1)] private int maxTurns = 20;
@@ -36,11 +36,16 @@ public class BattleTurnManager : MonoBehaviour
 
     private int currentWave = 1;
 
+    // Rooted: unit nào bị Rooted trong turn này sẽ skip cả turn (ultimate + normal)
+    private readonly HashSet<HeroControl> rootedSkipThisTurn = new HashSet<HeroControl>();
+
+    // Rooted: cuối turn mới trừ duration (để UI chỉ tắt/bật ở cuối turn)
+    private readonly HashSet<HeroControl> rootedConsumeAtEndOfTurn = new HashSet<HeroControl>();
+
     private void Awake()
     {
         if (battleManager == null)
             battleManager = GetComponent<BattleManager>();
-       
     }
 
     private void Start()
@@ -50,39 +55,33 @@ public class BattleTurnManager : MonoBehaviour
         StartCoroutine(CoBattleLoop());
     }
 
-  
     private IEnumerator CoBattleLoop()
     {
-        // initial wait for wave spawn ready
         while (battleManager == null || !battleManager.IsWaveReady)
             yield return null;
-       
+
         currentWave = 1;
+
         yield return CoPassiveBattlePhase();
+
         while (!isEnd)
         {
             heroTeamStarts = DecideHeroTeamStarts();
 
-            // ===== TURN LOOP FOR CURRENT WAVE =====
             for (int turn = 1; turn <= maxTurns; turn++)
             {
+                rootedSkipThisTurn.Clear();
+                rootedConsumeAtEndOfTurn.Clear();
+
                 if (turnText != null)
                     turnText.text = $"{turn}/20";
 
                 SetCanSkill();
- 
-                battleManager.SetActiveForUIBatle(true);
-                if(currentWave == 1 && turn == 1) yield return new WaitForSeconds(2f);
-                else if(turn == 1) yield return new WaitForSeconds(2f);
-                else yield return new WaitForSeconds(1f);
-                // Wave clear check at turn start
-                if (AreAllTeamDead(TeamEnemy))
-                {
-                    yield return CoHandleWaveCleared();
-                    break; // break turn loop, next wave (or end)
-                }
 
-                yield return CoUltimatePhase();
+                battleManager.SetActiveForUIBatle(true);
+                if (currentWave == 1 && turn == 1) yield return new WaitForSeconds(2f);
+                else if (turn == 1) yield return new WaitForSeconds(2f);
+                else yield return new WaitForSeconds(0.5f);
 
                 if (AreAllTeamDead(TeamEnemy))
                 {
@@ -90,48 +89,272 @@ public class BattleTurnManager : MonoBehaviour
                     break;
                 }
 
-                yield return CoNormalSkillPhase();
+                string firstTeam = heroTeamStarts ? TeamHero : TeamEnemy;
+                string secondTeam = heroTeamStarts ? TeamEnemy : TeamHero;
 
+                yield return CoTeamUltimate(firstTeam);
+                if (AreAllTeamDead(TeamEnemy))
+                {
+                    yield return CoHandleWaveCleared();
+                    yield return new WaitForSeconds(0.5f);
+                    break;
+                }
+                yield return new WaitForSeconds(0.5f);
+                yield return CoTeamNormalSkill(firstTeam);
                 if (AreAllTeamDead(TeamEnemy))
                 {
                     battleManager.SetActiveForUIBatle(false);
+                    yield return new WaitForSeconds(0.5f);
                     yield return CoHandleWaveCleared();
                     break;
                 }
-                yield return CoApplyEffect();
-             
+
+                yield return new WaitForSeconds(0.5f);
+
+                yield return CoTeamUltimate(secondTeam);
+                if (AreAllTeamDead(TeamEnemy))
+                {
+                    yield return new WaitForSeconds(0.5f);
+                    yield return CoHandleWaveCleared();
+                    break;
+                }
+                yield return new WaitForSeconds(0.5f);
+                yield return CoTeamNormalSkill(secondTeam);
+                if (AreAllTeamDead(TeamEnemy))
+                {
+                    battleManager.SetActiveForUIBatle(false);
+                    yield return new WaitForSeconds(0.5f);
+                    yield return CoHandleWaveCleared();
+                    break;
+                }
+
+                // DOT tick + giảm duration DOT ở cuối full round (2 team cùng lúc)
+                yield return CoApplyEffect(false);
+
+                // NEW: cuối turn mới trừ Rooted để UI chỉ cập nhật/tắt ở cuối turn
+                ConsumeRootedAtEndOfTurn();
             }
 
-            // If we handled clear and loaded new wave, wait until ready then continue.
-            // If no more waves, CoHandleWaveCleared() will break the outer loop.
             if (battleManager == null)
                 yield break;
 
-            // If battleManager just loaded a new wave, wait for ready
             while (!battleManager.IsWaveReady)
                 yield return null;
+        }
+    }
 
-            // If we reached maxTurns without clearing enemies, you can decide what to do:
-            // - fail, or
-            // - continue turns.
-            // Current behavior: continue waves loop; if enemies still alive, it will just run again.
+    private bool TrySkipActionIfRooted(HeroControl unit)
+    {
+        if (unit == null || unit.HeroStatRuntime == null)
+            return false;
+
+        // đã đánh dấu skip trong turn => mọi phase đều skip
+        if (rootedSkipThisTurn.Contains(unit))
+            return true;
+
+        // không rooted => không skip
+        if (!unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted))
+            return false;
+
+        // rooted => skip cả turn, và đánh dấu sẽ trừ ở cuối turn
+        rootedSkipThisTurn.Add(unit);
+        rootedConsumeAtEndOfTurn.Add(unit);
+        return true;
+    }
+
+    private void ConsumeRootedAtEndOfTurn()
+    {
+        if (rootedConsumeAtEndOfTurn.Count == 0)
+            return;
+
+        foreach (var unit in rootedConsumeAtEndOfTurn)
+        {
+            if (unit == null) continue;
+            if (unit.HeroStatRuntime == null) continue;
+            if (IsDead(unit)) continue;
+
+            // trừ ở cuối turn => nếu về 0 thì UI/cancel rooted xảy ra tại đây
+            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
+        }
+
+        rootedConsumeAtEndOfTurn.Clear();
+    }
+
+    private IEnumerator CoTeamUltimate(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+
+            unit.IsFinished = false;
+
+            if (TrySkipActionIfRooted(unit))
+                continue;
+
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
+            if (reC.HeroInfo.ultimate == null) continue;
+            if (!reC.CanAttackInBattle) continue;
+            if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
+
+            List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
+            for (int i = 0; i < effectOnAttack.Count; i++)
+            {
+                var effect = effectOnAttack[i];
+                if (effect.type == AbilityEffectType.ModifyStat)
+                {
+                    if (effect.target == AbilityTarget.HeroAll)
+                        ApplyStatAllStartBattle(effect.statType, effect.modifyValue);
+                    else if (effect.target == AbilityTarget.Self)
+                        unit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue, false);
+                    else if (effect.target == AbilityTarget.CurrentTarget)
+                    {
+                        List<Transform> targets = reC.enemyTarget;
+                        for (int j = 0; j < targets.Count; j++)
+                        {
+                            var targetUnit = targets[j].GetComponent<HeroControl>();
+                            if (targetUnit == null) continue;
+                            targetUnit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue, false);
+                        }
+                    }
+                }
+            }
+
+            unit.SetUltimate();
+            yield return new WaitUntil(() => unit.IsFinished);
+
+            if (delayBetweenUltimates > 0f)
+                yield return new WaitForSeconds(delayBetweenUltimates);
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
+        }
+
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
+
+    private IEnumerator CoTeamNormalSkill(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+
+            unit.IsFinished = false;
+
+            if (TrySkipActionIfRooted(unit))
+                continue;
+
+            if (!unit.CanAttackInBattle) continue;
+
+            if (unit.CanSkill)
+                unit.SetSkill();
+            else
+                unit.SetAttack();
+
+            yield return new WaitUntil(() => unit.IsFinished);
+
+            if (delayBetweenActions > 0f)
+                yield return new WaitForSeconds(delayBetweenActions);
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
+        }
+    }
+
+    private IEnumerator CoApplyEffect(bool checkAtStart)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var hero = GetUnitAtSlot(TeamHero, slot);
+            var enemy = GetUnitAtSlot(TeamEnemy, slot);
+
+            if (hero != null && !IsDead(hero))
+                yield return CoApplyEffectForUnit(hero, checkAtStart);
+
+            if (enemy != null && !IsDead(enemy))
+                yield return CoApplyEffectForUnit(enemy, checkAtStart);
+
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
+        }
+
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
+
+    private IEnumerator CoApplyEffectForUnit(HeroControl unit, bool checkAtStart)
+    {
+        if (unit == null) yield break;
+
+        var aesList = unit.HeroStatRuntime.GetAESSnapshot();
+
+        for (int i = 0; i < aesList.Count; i++)
+        {
+            var aes = aesList[i];
+            if (aes.remainingTurn <= 0) continue;
+
+            switch (aes.type)
+            {
+                case AbilityEffectType.Burn:
+                    bool shouldTakeHit = i == 0;
+                    unit.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.normalDamage, shouldTakeHit, true);
+                    if (delayBetweenActions > 0f)
+                        yield return new WaitForSeconds(0.1f);
+                    break;
+            }
+        }
+
+        if (aesList.Count > 0)
+            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Burn);
+    }
+
+    private IEnumerator CoSoulBattlePhase()
+    {
+        if (heroTeamStarts)
+        {
+            yield return CoTeamSoulBattle(TeamHero);
+            yield return CoTeamSoulBattle(TeamEnemy);
+        }
+        else
+        {
+            yield return CoTeamSoulBattle(TeamEnemy);
+            yield return CoTeamSoulBattle(TeamHero);
+        }
+    }
+
+    private IEnumerator CoPassiveBattlePhase()
+    {
+        if (heroTeamStarts)
+        {
+            yield return CoTeamPassiveBattle(TeamHero);
+            yield return CoTeamPassiveBattle(TeamEnemy);
+        }
+        else
+        {
+            yield return CoTeamPassiveBattle(TeamEnemy);
+            yield return CoTeamPassiveBattle(TeamHero);
         }
     }
 
     private IEnumerator CoHandleWaveCleared()
     {
-        // 1) Call SetClear() for all alive heroes
         if (currentWave >= battleManager.StageConfig.waveStage)
         {
             isEnd = true;
             Time.timeScale = 1f;
+
             for (int slot = 1; slot <= 6; slot++)
             {
                 var hero = GetUnitAtSlot(TeamHero, slot);
                 if (hero == null) continue;
+
                 if (IsDead(hero))
                 {
-                    
                     battleManager.BattleResult.SetList(slot, false);
                     battleManager.BattleResult.SetListByID(hero.HeroInfo.ID, false);
                 }
@@ -141,52 +364,47 @@ public class BattleTurnManager : MonoBehaviour
                     battleManager.BattleResult.SetList(slot, true);
                 }
             }
-            ProgressManager.Instance.UpdateStage(battleManager.StageConfig.stageID); // cập nhật stage
-            
-            battleManager.BattleResult.SetUIExpPlus(); // gán exp plus UI
-            battleManager.BattleResult.SetExpPlus(); // gán exp plus
-            battleManager.BattleResult.SetExpForPlayer(); // gán exp cho player
-            winExpPlusImage.SetActive(true); // hiện thị exp plus
-            battleManager.BattleResult.CheckHeroesLost(); // tính số sao nhận được 
-            battleManager.BattleResult.SetUpRollItems(); // tính toán rớt đồ
-            //battleManager.battleResult.uiStageReward.gameObject.SetActive(true);
+
+            ProgressManager.Instance.UpdateStage(battleManager.StageConfig.stageID);
+
+            battleManager.BattleResult.SetUIExpPlus();
+            battleManager.BattleResult.SetExpPlus();
+            battleManager.BattleResult.SetExpForPlayer();
+            winExpPlusImage.SetActive(true);
+            battleManager.BattleResult.CheckHeroesLost();
+            battleManager.BattleResult.SetUpRollItems();
             yield break;
         }
+
         for (int slot = 1; slot <= 6; slot++)
         {
             var hero = GetUnitAtSlot(TeamHero, slot);
             if (hero == null) continue;
             if (IsDead(hero)) continue;
 
-            
-                hero.SetClear();
+            hero.SetClear();
         }
-     
+
         if (afterClearDelay > 0f)
             yield return new WaitForSeconds(afterClearDelay);
-       
-        // 2) Wait until all alive heroes finished clear movement/animation (IsClear == false)
+
         yield return new WaitUntil(AllAliveHeroesClearFinished);
-        
+
         clearImage.SetActive(true);
         yield return new WaitForSeconds(0.5f);
-        // 3) Load next wave if exists
+
         if (battleManager == null || battleManager.StageConfig == null)
             yield break;
 
         int maxWave = Mathf.Max(1, battleManager.StageConfig.waveStage);
         if (currentWave >= maxWave)
-        {
-            // No more wave -> stop battle loop
             yield break;
-        }
 
         currentWave++;
 
-        // Important: BattleManager.LoadWave will destroy and respawn units.
-        // This coroutine will continue and wait for IsWaveReady at the top of loop.
         battleManager.LoadWave(currentWave);
-        turnText.text = $"1/20";
+        if (turnText != null)
+            turnText.text = $"1/20";
         clearImage.SetActive(false);
     }
 
@@ -198,7 +416,6 @@ public class BattleTurnManager : MonoBehaviour
             if (hero == null) continue;
             if (IsDead(hero)) continue;
 
-            // if any alive hero still clearing -> not finished
             if (hero.IsClear)
                 return false;
         }
@@ -277,177 +494,7 @@ public class BattleTurnManager : MonoBehaviour
 
         return sum;
     }
-    private IEnumerator CoSoulBattlePhase()
-    {
-        if (heroTeamStarts)
-        {
-            yield return CoTeamSoulBattle(TeamHero);
-            yield return CoTeamSoulBattle(TeamEnemy);
-        }
-        else
-        {
-            yield return CoTeamSoulBattle(TeamEnemy);
-            yield return CoTeamSoulBattle(TeamHero);
-        }
-    }
-    private IEnumerator CoPassiveBattlePhase()
-    {
-        if (heroTeamStarts)
-        {
-            yield return CoTeamPassiveBattle(TeamHero);
-            yield return CoTeamPassiveBattle(TeamEnemy);
-        }
-        else
-        {
-            yield return CoTeamPassiveBattle(TeamEnemy);
-            yield return CoTeamPassiveBattle(TeamHero);
-        }
-    }
-   
-    private IEnumerator CoApplyEffect()
-    {
-        if (heroTeamStarts)
-        {
-            yield return CoTeamApplyEffect(TeamHero);
-            yield return CoTeamApplyEffect(TeamEnemy);
-        }
-        else
-        {
-            yield return CoTeamApplyEffect(TeamEnemy);
-            yield return CoTeamApplyEffect(TeamHero);
-        }
-    }
-    private IEnumerator CoUltimatePhase()
-    {
-        if (heroTeamStarts)
-        {
-            yield return CoTeamUltimate(TeamHero);
-            yield return new WaitForSeconds(1f);
-            yield return CoTeamUltimate(TeamEnemy);
-        }
-        else
-        {
-            yield return CoTeamUltimate(TeamEnemy);
-            yield return new WaitForSeconds(1f);
-            yield return CoTeamUltimate(TeamHero);
-        }
-    }
 
-    private IEnumerator CoNormalSkillPhase()
-    {
-        if (heroTeamStarts)
-        {
-            yield return CoTeamNormalSkill(TeamHero);
-            yield return new WaitForSeconds(1f);
-            yield return CoTeamNormalSkill(TeamEnemy);
-        }
-        else
-        {
-            yield return CoTeamNormalSkill(TeamEnemy);
-            yield return new WaitForSeconds(1f);
-            yield return CoTeamNormalSkill(TeamHero);
-        }
-    }
-
-    private IEnumerator CoTeamUltimate(string teamTag)
-    {
-        for (int slot = 1; slot <= 6; slot++)
-        {
-            var unit = GetUnitAtSlot(teamTag, slot);
-            if (unit == null) continue;
-            if (IsDead(unit)) continue;
-
-            unit.IsFinished = false;
-
-            var reC = unit.GetComponent<HeroControl>();
-            if (reC == null) continue;
-            if(reC.HeroInfo.ultimate == null) continue;
-            if (!reC.CanAttackInBattle)
-            {
-                continue;
-            }
-
-            if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
-
-           
-            List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
-                for (int i = 0; i < effectOnAttack.Count; i++)
-                {
-                    var effect = effectOnAttack[i];
-                    if (effect.type == AbilityEffectType.ModifyStat)
-                    {
-                        if(effect.target == AbilityTarget.HeroAll) 
-                            ApplyStatAllStartBattle(effect.statType, effect.modifyValue);
-                        else if(effect.target == AbilityTarget.Self)
-                            unit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue,false);
-                        else if(effect.target == AbilityTarget.CurrentTarget)
-                        {
-                            List<Transform> targets = reC.enemyTarget;
-                            for (int j = 0; j < targets.Count; j++)
-                            {
-                                var targetUnit = targets[j].GetComponent<HeroControl>();
-                                if (targetUnit == null) continue;
-                                targetUnit.HeroStatRuntime.ApplyStats(effect.statType, effect.modifyValue,false);
-                        }
-                    }
-                }
-                 
-                
-            }
-            unit.SetUltimate();
-            yield return new WaitUntil(() => unit.IsFinished);
-
-            if (delayBetweenUltimates > 0f)
-                yield return new WaitForSeconds(delayBetweenUltimates);
-
-            if (AreAllTeamDead(TeamEnemy))
-                yield break;
-        }
-
-        if (delayBetweenActions > 0f)
-            yield return new WaitForSeconds(delayBetweenActions);
-    }
-    private IEnumerator CoTeamApplyEffect(string teamTag)
-    {
-        for (int slot = 1; slot <= 6; slot++)
-        {
-            var unit = GetUnitAtSlot(teamTag, slot);
-            if (unit == null) continue;
-            if (IsDead(unit)) continue;
-
-            var reC = unit.GetComponent<HeroControl>();
-            if (reC == null) continue;
-
-            var aesList = reC.HeroStatRuntime.GetAESSnapshot();
-
-            for (int i = 0; i < aesList.Count; i++)
-            {
-                var aes = aesList[i];
-                if (aes.remainingTurn <= 0) continue;
-
-                switch (aes.type)
-                {
-                    case AbilityEffectType.Burn:
-                        // mỗi stack trừ 1 lần => 2 stack sẽ trừ 2 lần
-                        bool shouldTakeHit = i == 0; // chỉ hiệu ứng đầu tiên mới gọi anim hit
-                        reC.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.normalDamage, shouldTakeHit, true);
-                        yield return new WaitForSeconds(0.1f);
-                        break;
-                }   
-            }
-
-            if (teamTag == TeamEnemy && heroTeamStarts) reC.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
-            if (teamTag == TeamHero && !heroTeamStarts) reC.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
-            if (aesList.Count > 0)
-                reC.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Burn);
-
-            if (AreAllTeamDead(TeamEnemy))
-                yield break;
-        }
-
-        if (delayBetweenActions > 0f)
-            yield return new WaitForSeconds(delayBetweenActions);
-    }
     private IEnumerator CoTeamSoulBattle(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -456,14 +503,16 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             unit.IsFinished = false;
+
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
             if (reC.HeroInfo.soulID == null) continue;
+
             HeroInstance instance = PlayerInventory.Instance.GetHeroInstance(reC.HeroInfo.ID);
             if (reC.HeroInfo.soulID == null || reC.HeroInfo.soulID.Count == 0)
                 continue;
 
-            int count = Mathf.Min(1, reC.HeroInfo.soulID.Count); // hiện tại vẫn giới hạn 1
+            int count = Mathf.Min(1, reC.HeroInfo.soulID.Count);
             for (int i = 0; i < count; i++)
             {
                 int soulId = reC.HeroInfo.soulID[i];
@@ -471,11 +520,12 @@ public class BattleTurnManager : MonoBehaviour
                 if (soul != null)
                     reC.HeroStatRuntime.GainValueBySoul(instance, soul);
             }
-
         }
+
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+
     private IEnumerator CoTeamPassiveBattle(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -497,13 +547,17 @@ public class BattleTurnManager : MonoBehaviour
                 var effect = effectBattle[i];
                 if (effect.type == AbilityEffectType.ModifyStat)
                 {
-                    if(effect.target == AbilityTarget.HeroAll) 
+                    if (effect.target == AbilityTarget.HeroAll)
                         ApplyStatAllStartBattle(effect.statType, effect.modifyValue);
+                    else if (effect.target == AbilityTarget.DPSHeroAll)
+                        ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.DPS);
+                    else if (effect.target == AbilityTarget.TankHeroAll)
+                        ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Tank);
+                    else if (effect.target == AbilityTarget.SupportHeroAll)
+                        ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Support);
+                    
                 }
             }
-
-            
-
 
             if (AreAllTeamDead(TeamEnemy))
                 yield break;
@@ -512,8 +566,8 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
-    
-    void ApplyStatAllStartBattle(ModifyStatType type, float  value)
+
+    void ApplyStatAllStartBattle(ModifyStatType type, float value)
     {
         for (int slot = 1; slot <= 6; slot++)
         {
@@ -521,34 +575,19 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             unit.HeroStatRuntime.ApplyStats(type, value, true);
-
         }
     }
-    private IEnumerator CoTeamNormalSkill(string teamTag)
+    void ApplyStatCertainRoleBattle(ModifyStatType type, float value, RoleHero role)
     {
         for (int slot = 1; slot <= 6; slot++)
         {
-            var unit = GetUnitAtSlot(teamTag, slot);
+            var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-
-            unit.IsFinished = false;
-            if (!unit.CanAttackInBattle) continue;
-            if (unit.CanSkill)
-                unit.SetSkill();
-            else
-                unit.SetAttack();
-
-            yield return new WaitUntil(() => unit.IsFinished);
-
-            if (delayBetweenActions > 0f)
-                yield return new WaitForSeconds(delayBetweenActions);
-
-            if (AreAllTeamDead(TeamEnemy))
-                yield break;
+            if(unit.HeroInfo.role != role) continue;
+            unit.HeroStatRuntime.ApplyStats(type, value, true);
         }
     }
-
     private static bool ShouldUseSkill(HeroControl unit)
     {
         if (unit == null || unit.HeroInfo == null || unit.HeroInfo.skill == null)
