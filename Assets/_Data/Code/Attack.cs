@@ -93,7 +93,9 @@ public class Attack : Subject
 
         foreach (var effect in effects)
         {
-
+            float chance = Mathf.Clamp01(effect.chance);
+            if (chance <= 0f) continue;
+            if (chance < 1f && Random.value > chance) continue;
             foreach (var target in heroControl.enemyTarget)
             {
                 HeroControl enemyControl = target.GetComponent<HeroControl>();
@@ -130,6 +132,9 @@ public class Attack : Subject
 
         foreach (var effect in effects)
         {
+            float chance = Mathf.Clamp01(effect.chance);
+            if (chance <= 0f) continue;
+            if (chance < 1f && Random.value > chance) continue;
 
             foreach (var target in heroControl.enemyTarget)
             {
@@ -167,6 +172,9 @@ public class Attack : Subject
 
         foreach (var effect in effects)
         {
+            float chance = Mathf.Clamp01(effect.chance);
+            if (chance <= 0f) continue;
+            if (chance < 1f && Random.value > chance) continue;
 
             foreach (var target in heroControl.enemyTarget)
             {

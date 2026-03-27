@@ -85,7 +85,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             if (stacks.Count == 0)
             {
                 aesStacksByType.Remove(type);
-                heroControl.RefreshObservers();
+              
                 switch (type)
                 {
 
@@ -93,6 +93,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                         CancelBurn();
                         break;
                     case AbilityEffectType.Rooted:
+                        heroControl.RefreshObservers("canDisappear", true);
                         heroControl.HeroEventt.CallCancelStopAnim();
                         heroControl.CanAttackInBattle = true;
                         break;
@@ -130,6 +131,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         
         if(type == AbilityEffectType.Rooted)
         {
+            heroControl.RefreshObservers("canDisappear", false);
             heroControl.CanAttackInBattle = false;
         }
         stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));

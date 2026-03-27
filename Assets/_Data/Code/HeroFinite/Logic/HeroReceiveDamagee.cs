@@ -6,7 +6,6 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
 
     [SerializeField] HeroControl heroControl;
     public HeroControl HeroControl => heroControl;
-    [SerializeField] private int totalDmg;
 
     [Header("Attribute")]
     [SerializeField] private float health;
@@ -80,7 +79,14 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         if(shouldTakeHit)
             heroControl.SetIsTakeHit();
         float finalDamage = GetDamageAfterArmor(damage);
-        totalDmg += Mathf.RoundToInt(finalDamage);
+        if (heroControl != null && heroControl.CanvasTotalDamage != null)
+        {
+            heroControl.CanvasTotalDamage.TotalDamage += Mathf.RoundToInt(finalDamage);
+
+            // NEW: nếu UI đang show thì mỗi hit update ngay (số chạy)
+            if (heroControl.CanvasTotalDamage.IsShowing)
+                heroControl.CanvasTotalDamage.UpdateTotalDamage();
+        }
         heroControl.HeroStatRuntime.MinusHP((int)finalDamage, damageType);
         heroControl.HeroStatRuntime.GainMana(200);
         if (heroControl.HeroStatRuntime.CurrentHealth <= 0)
@@ -97,11 +103,11 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
     public void RefreshTotalDmg()
     {
-        totalDmg = 0;
+        heroControl.CanvasTotalDamage.TotalDamage = 0;
     }
     public void SetCanShowTotalDmg()
     {
-        heroControl.CanvasTotalDamage.UpdateTotalDamage(totalDmg);
+        heroControl.CanvasTotalDamage.UpdateTotalDamage();
         heroControl.CanvasTotalDamage.Show();
     }
     public void SetCanDead()

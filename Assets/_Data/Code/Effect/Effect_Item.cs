@@ -31,9 +31,14 @@ public class Effect_Item : MonoBehaviour, IObserver
         heroC.AddObserver(this);
         this.target= target;
     }
-    public void OnNotify()
+    public void OnNotify(string name, bool value)
     {
         if (animator == null) return;
-        animator.Play("Disappear");
+        SetBool(name, value);
+    }
+    public void SetBool(string name, bool value)
+    {
+        if (animator == null) return;
+        animator.SetBool(name, value);
     }
 }

@@ -95,8 +95,9 @@ public class BattleTurnManager : MonoBehaviour
                 yield return CoTeamUltimate(firstTeam);
                 if (AreAllTeamDead(TeamEnemy))
                 {
+                    yield return new WaitForSeconds(1f);
                     yield return CoHandleWaveCleared();
-                    yield return new WaitForSeconds(0.5f);
+
                     break;
                 }
                 yield return new WaitForSeconds(0.5f);
@@ -114,7 +115,7 @@ public class BattleTurnManager : MonoBehaviour
                 yield return CoTeamUltimate(secondTeam);
                 if (AreAllTeamDead(TeamEnemy))
                 {
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(1f);
                     yield return CoHandleWaveCleared();
                     break;
                 }
@@ -203,6 +204,9 @@ public class BattleTurnManager : MonoBehaviour
             for (int i = 0; i < effectOnAttack.Count; i++)
             {
                 var effect = effectOnAttack[i];
+                float chance = Mathf.Clamp01(effect.chance);
+                if (chance <= 0f) continue;
+                if (chance < 1f && Random.value > chance) continue;
                 if (effect.type == AbilityEffectType.ModifyStat)
                 {
                     if (effect.target == AbilityTarget.HeroAll)

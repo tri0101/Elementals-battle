@@ -16,14 +16,8 @@ public class HeroUltimate : MonoBehaviour
     {
         heroControl.HeroStatRuntime.MinusMana(1000);
     }
-    public void RefreshTotalDmgOnTarget()
+    public void RefreshTotalDmg()
     {
-        foreach (Transform enemy in heroControl.enemyTarget)
-        {
-            if (enemy == null) continue;
-            HeroControl heroC = enemy.GetComponent<HeroControl>();
-            if (heroC == null) continue;
-            heroC.HeroReceiveDamagee.RefreshTotalDmg();
-        }
+        heroControl.HeroReceiveDamagee.RefreshTotalDmg();
     }
 }

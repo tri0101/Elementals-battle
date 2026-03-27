@@ -8,12 +8,12 @@ public class HeroUltimateState : HeroBaseState
         hero.HeroControl.IsUltimate = false;
         hero.HeroControl.ChangeAnimationState(HeroStateManager.hero_Ultimate);
         hero.HeroControl.HeroUltimate.ResetMana();
-        hero.HeroControl.HeroUltimate.RefreshTotalDmgOnTarget();
+        hero.HeroControl.HeroUltimate.RefreshTotalDmg();
     }
 
     public override void ExitState(HeroStateManager hero)
     {
-
+        hero.HeroControl.HeroEventt.NotifyCanHideTotalDmg();
     }
 
     public override void FixedUpdateState(HeroStateManager hero)
@@ -24,7 +24,7 @@ public class HeroUltimateState : HeroBaseState
     public override void UpdateState(HeroStateManager hero)
     {
 
-        if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Ultimate, 1f, 1)))
+        if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Ultimate, 0.98f, 1)))
         {
            
 

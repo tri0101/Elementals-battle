@@ -629,6 +629,10 @@ public class HeroControl : Subject
     {
         NotifyObservers();
     }
+    public void RefreshObservers(string name, bool value)
+    {
+        NotifyObservers(name, value);
+    }
 
     public void RefreshObservers(object data1)
     {

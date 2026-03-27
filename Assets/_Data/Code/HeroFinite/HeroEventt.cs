@@ -10,7 +10,7 @@ public class HeroEventt : MonoBehaviour
 
     public LoadNormalAttack load;
     HeroControl heroControl;
-
+    private Coroutine hideTotalDmgRoutine;
     private void Awake()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
@@ -102,6 +102,33 @@ public class HeroEventt : MonoBehaviour
             if (heroC == null) continue;
             heroC.HeroReceiveDamagee.SetCanShowTotalDmg();
         }
+    }
+    public void NotifyCanHideTotalDmg()
+    {
+        if (hideTotalDmgRoutine != null)
+            StopCoroutine(hideTotalDmgRoutine);
+
+        hideTotalDmgRoutine = StartCoroutine(CoHideTotalDmgAfterDelay(0.5f));
+    }
+
+    private IEnumerator CoHideTotalDmgAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        foreach (Transform enemy in heroControl.enemyTarget)
+        {
+            if (enemy == null) continue;
+
+            HeroControl heroC = enemy.GetComponent<HeroControl>();
+            if (heroC == null) continue;
+
+            var canvas = heroC.CanvasTotalDamage;
+            if (canvas == null) continue;
+
+            canvas.Hide();
+        }
+
+        hideTotalDmgRoutine = null;
     }
     public void SpawnObject(int index)
     {
