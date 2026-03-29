@@ -34,13 +34,14 @@ public enum AbilityTarget
 
 public enum ModifyStatType
 {
-    Damage = 0,       //tăng damage
-    Health = 1,           //tăng hp
-    Speed = 2,       // tăng speed
-    ArmorIncreased= 3,       // tăng armor
-    ArmorDecreased = 4,       // giảm armor
-    CritRate = 5,    // tăng tỉ lệ chí mạng
-    CritDamage = 6,   // tăng tỉ lệ dame chí mạng
+    Damage =0,
+    Health = 1,           
+    Speed = 2,       
+    Armor = 3,
+    CritRate =4,
+    CritDamage =5,
+    HealingRate = 6, // tỉ lệ hồi máu (áp dụng cho buff hồi máu)
+    HealthMax = 7, // tăng máu tối đa (áp dụng cho buff tăng máu tối đa)
 }
 public enum TimesToCall
 {
@@ -75,5 +76,19 @@ public class AbilityEffect
 
     [Header("Duration")]
     public int durationTurn = 1 ; // thời gian hiệu lực khống chế /buff/debuff (turn) , bằng - 1 = vĩnh viễn;
-   
+    public bool shouldPlus()
+    {
+        switch (statType)
+        {
+            case ModifyStatType.Damage:
+            case ModifyStatType.Speed:
+            case ModifyStatType.CritRate:
+            case ModifyStatType.CritDamage:
+                return false;
+            case ModifyStatType.Armor:
+                return true;
+            default:
+                return true;
+        }
+    }
 }

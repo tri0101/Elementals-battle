@@ -14,6 +14,13 @@ public class HeroUltimateState : HeroBaseState
     public override void ExitState(HeroStateManager hero)
     {
         hero.HeroControl.HeroEventt.NotifyCanHideTotalDmg();
+        if (hero.HeroControl.HeroInfo.ID == 4)
+        {
+            if (hero.HeroControl.CheckEnemyDead(1))
+            {
+                hero.HeroControl.HeroEventt.SetEffect();
+            }
+        }
     }
 
     public override void FixedUpdateState(HeroStateManager hero)

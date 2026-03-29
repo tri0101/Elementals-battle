@@ -24,7 +24,22 @@ public class HeroEventt : MonoBehaviour
  
     public void SetGainManaNormal()
     {
-        heroControl.HeroStatRuntime.GainMana(heroControl.HeroInfo.normalAttack.manaGain);
+        int manaGain = heroControl.HeroInfo.normalAttack.manaGain;
+        foreach (var soul in heroControl.HeroInfo.soulID)
+        {
+            if (soul == 4)
+            {
+                FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
+                if (soulInfo != null)
+                {
+                    HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
+                    int manaAdd = soulInfo.soulValueConfigs[heroInstance.GetLevelSoul(0) - 1].value;
+                    manaGain += manaAdd;
+                }
+            }
+           
+        }
+        heroControl.HeroStatRuntime.GainMana(manaGain);
     }
  
     public void SetGainManaSkill()
@@ -40,32 +55,30 @@ public class HeroEventt : MonoBehaviour
             if (effect.type == AbilityEffectType.ModifyStat)
             {
                 if (effect.target == AbilityTarget.Self)
-                    ShowTextEffect(effect.statType);
+                    ShowTextEffect(effect.statType,(int)effect.modifyValue);
                 else if(effect.target == AbilityTarget.CurrentTarget)
                 {
                     foreach (var target in heroControl.enemyTarget)
                     {
                         HeroControl enemyControl = target.GetComponent<HeroControl>();
                         if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
-                        enemyControl.HeroEventt.ShowTextEffect(effect.statType);
+                        enemyControl.HeroEventt.ShowTextEffect(effect.statType, (int)effect.modifyValue);
                     }
                 }
             }
         }
     }
-    public void ShowTextEffect(ModifyStatType type)
+    public void ShowTextEffect(ModifyStatType type, int value)
     {
         switch(type)
         {
             case ModifyStatType.CritRate:
-                heroControl.RefreshObservers(ModifyStatType.CritRate);
+                heroControl.RefreshObservers(ModifyStatType.CritRate, value);
                 break;
-            case ModifyStatType.ArmorDecreased:
-                heroControl.RefreshObservers(ModifyStatType.ArmorDecreased);
+            case ModifyStatType.Armor:
+                heroControl.RefreshObservers(ModifyStatType.Armor, value);
                 break;
-            case ModifyStatType.ArmorIncreased:
-                heroControl.RefreshObservers(ModifyStatType.ArmorIncreased);
-                break;
+
         }
        
     }
@@ -152,4 +165,29 @@ public class HeroEventt : MonoBehaviour
         heroControl.Animator.speed = 1f;    
     }
     
+
+
+    public void GainHPAllHero() // chỉ dành cho hero có id = 8
+    {
+        AbilityInfo abilityInfo = heroControl.HeroInfo.skill;
+        AbilityEffect abilityeffect = abilityInfo.effects[0];
+
+        float damage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
+            ModifyStatType.Damage,
+            heroControl.HeroStatRuntime.Damage
+        );
+
+        // modifyValue = 20 nghĩa là 20%
+        int hpGain = Mathf.RoundToInt(damage * (abilityeffect.modifyValue / 100f));
+
+        Debug.Log(hpGain);
+        foreach (Transform child in heroControl.transform.parent)
+        {
+            HeroControl heroC = child.GetComponent<HeroControl>();
+            if (heroC == null) continue;
+
+            heroC.HeroStatRuntime.GainHP(hpGain, DamageType.normalDamage);
+            
+        }
+    }
 }

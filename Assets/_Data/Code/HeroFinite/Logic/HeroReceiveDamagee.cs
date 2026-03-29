@@ -1,4 +1,5 @@
 ﻿using System.Net.Mail;
+using UnityEditor.Analytics;
 using UnityEngine;
 
 public class HeroReceiveDamagee : MonoBehaviour, IObserver
@@ -78,6 +79,8 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
 
         if(shouldTakeHit)
             heroControl.SetIsTakeHit();
+        float hpBefore = heroControl.HeroStatRuntime.CurrentHealth;
+        float maxHp = heroControl.HeroStatRuntime.MaxHealth;
         float finalDamage = GetDamageAfterArmor(damage);
         if (heroControl != null && heroControl.CanvasTotalDamage != null)
         {
@@ -88,7 +91,31 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
                 heroControl.CanvasTotalDamage.UpdateTotalDamage();
         }
         heroControl.HeroStatRuntime.MinusHP((int)finalDamage, damageType);
-        heroControl.HeroStatRuntime.GainMana(200);
+
+        
+        float hpAfter = heroControl.HeroStatRuntime.CurrentHealth;
+        float hpLost = Mathf.Max(0f, hpBefore - hpAfter);
+        float hpLost01 = (maxHp > 0f) ? Mathf.Clamp01(hpLost / maxHp) : 0f;
+
+        //mana nhận bằng hp đã mất * 2
+        int manaGain = Mathf.RoundToInt(hpLost01 * 2f * heroControl.HeroStatRuntime.MaxMana);
+        //nhận mana qua hồn
+        foreach (var soul in heroControl.HeroInfo.soulID)
+        {
+            if (soul ==2)
+            {
+                FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
+                if (soulInfo != null)
+                {
+                    HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
+                    int manaAdd = soulInfo.soulValueConfigs[heroInstance.GetLevelSoul(0) - 1].value;
+                    manaGain += manaAdd;
+                }
+            }
+           
+        }
+        if (manaGain > 0)
+            heroControl.HeroStatRuntime.GainMana(manaGain);
         if (heroControl.HeroStatRuntime.CurrentHealth <= 0)
         {
             if (canDead)
@@ -122,7 +149,9 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     public int GetDamageAfterArmor(float damage)
     {
         float finalDamage = damage;
-        finalDamage = damage * 100 / (100 + heroControl.HeroStatRuntime.Armor);
+        float amor = heroControl.HeroStatRuntime.Armor + heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Armor,
+                                                        heroControl.HeroStatRuntime.Armor);
+        finalDamage = damage * 100 / (100 + amor);
         return Mathf.RoundToInt(finalDamage);
     }
 

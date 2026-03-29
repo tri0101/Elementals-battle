@@ -30,8 +30,8 @@ public class Attack : Subject
             Debug.Log(other.tag);
             return;
         }
-        
-        attackDamage = attackInfo.mutiplerDamageSend * heroControl.HeroStatRuntime.Damage;
+        attackDamage = heroControl.HeroStatRuntime.Damage;
+        attackDamage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Damage, attackDamage);
         if (heroControl.IsCrit)
         {
             attackDamage *= (heroControl.HeroInfo.criticalDamageRate / 100);

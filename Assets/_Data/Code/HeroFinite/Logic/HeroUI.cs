@@ -24,6 +24,7 @@ public class HeroUI : MonoBehaviour, IObserver
     [Header("String pattern")]
     private string critRatePattern = "Crit Rate Increased";
     private string armorDecreased = "Armor Decreased";
+    private string armorIncreased = "Armor Increased";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
 
@@ -58,15 +59,62 @@ public class HeroUI : MonoBehaviour, IObserver
         }
         SetManaBar(heroControl.HeroStatRuntime.CurrentMana / heroControl.HeroStatRuntime.MaxMana, true);
     }
-    public void OnNotify(ModifyStatType type)
+
+    // ===== Flip helpers =====
+    private bool IsHeroFlippedX()
+    {
+        if (heroControl == null) return false;
+
+        // IMPORTANT: enemy mặc định scaleX đã âm. Nên phải check theo tag để biết "flip thật sự" hay chỉ là default.
+        // - Hero: default +X => flipped khi lossyScale.x < 0
+        // - Enemy: default -X => flipped khi lossyScale.x > 0
+        bool isEnemy = heroControl.transform != null && heroControl.transform.CompareTag("Enemy");
+        float x = heroControl.transform.lossyScale.x;
+
+        return isEnemy ? x > 0f : x < 0f;
+    }
+
+    private void ApplyFlipToFloatingText(Transform textTransform)
+    {
+        if (textTransform == null || heroControl == null)
+            return;
+
+        bool flipped = IsHeroFlippedX();
+
+        Vector3 s = textTransform.localScale;
+        s.x = Mathf.Abs(s.x) * (flipped ? -1f : 1f);
+        textTransform.localScale = s;
+    }
+
+    private IEnumerator CoKeepFlipSynced(TextMeshProUGUI text)
+    {
+        if (text == null) yield break;
+
+        bool lastFlip = IsHeroFlippedX();
+        ApplyFlipToFloatingText(text.transform);
+
+        while (text != null)
+        {
+            bool flip = IsHeroFlippedX();
+            if (flip != lastFlip)
+            {
+                lastFlip = flip;
+                ApplyFlipToFloatingText(text.transform);
+            }
+
+            yield return null;
+        }
+    }
+
+    public void OnNotify(ModifyStatType type, int value)
     {
         switch (type)
         {
             case ModifyStatType.CritRate:
-                SpawnFloatingEffectText(type);
+                SpawnFloatingEffectText(type, value);
                 break;
-            case (ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased) :
-                SpawnFloatingEffectText(type);
+            case ModifyStatType.Armor:
+                SpawnFloatingEffectText(type, value);
                 break;
         }
     }
@@ -77,7 +125,7 @@ public class HeroUI : MonoBehaviour, IObserver
             case AbilityEffectType.Burn:
                 SpawnFloatingEffectText(type);
                 break;
-            case AbilityEffectType.Rooted :
+            case AbilityEffectType.Rooted:
                 SpawnFloatingEffectText(type);
                 break;
         }
@@ -110,32 +158,46 @@ public class HeroUI : MonoBehaviour, IObserver
         switch (type)
         {
             case HPNotifyType.HPMinus:
-                SpawnDamageText((int)value, damageType);
+                SpawnDamageText(type , (int)value, damageType);
+                break;
+            case HPNotifyType.HPPlus:
+                SpawnDamageText(type, (int)value, damageType);
                 break;
         }
     }
 
     // ================= FLOATING TEXT =================
-    public void SpawnFloatingEffectText(ModifyStatType type)
+    public void SpawnFloatingEffectText(ModifyStatType type, int value)
     {
         if (damageTextPrefab == null || listDamage == null) return;
 
         TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+        StartCoroutine(CoKeepFlipSynced(text));
 
         switch (type)
         {
             case ModifyStatType.CritRate:
-                text.text = critRatePattern;
+                if (value > 0) text.text = critRatePattern;
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;
                 StartCoroutine(CoShowAndFade(text));
                 break;
-            case ModifyStatType.ArmorDecreased or ModifyStatType.ArmorIncreased:
-                text.text = armorDecreased;
-                text.color = new Color32(211, 71, 35, 255);
-                text.fontSize = 15;
-                text.fontSharedMaterial = critMaterial;
+            case ModifyStatType.Armor:
+                if (value < 0)
+                {
+                    text.text = armorDecreased;
+                    text.color = new Color32(211, 71, 35, 255);
+                    text.fontSize = 15;
+                    text.fontSharedMaterial = critMaterial;
+                }
+                else
+                {
+                    text.text = armorIncreased;
+                    text.color = new Color32(253, 255, 0, 255);
+                    text.fontSize = 15;
+                    text.fontSharedMaterial = critMaterial;
+                }
                 StartCoroutine(CoShowAndFade(text));
                 break;
         }
@@ -145,6 +207,7 @@ public class HeroUI : MonoBehaviour, IObserver
         if (damageTextPrefab == null || listDamage == null) return;
 
         TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+        StartCoroutine(CoKeepFlipSynced(text));
 
         switch (type)
         {
@@ -164,31 +227,42 @@ public class HeroUI : MonoBehaviour, IObserver
                 break;
         }
     }
-    private void SpawnDamageText(int value, DamageType damageType)
+    private void SpawnDamageText(HPNotifyType hpType, int value, DamageType damageType)
     {
         if (damageTextPrefab == null || value <= 0) return;
 
         TextMeshProUGUI text =
             Instantiate(damageTextPrefab, listDamage);
+        StartCoroutine(CoKeepFlipSynced(text));
 
-        switch (damageType)
+        if (hpType == HPNotifyType.HPPlus)
         {
-            case DamageType.critDamage:
-                text.text = "CRIT-" + value.ToString();
-                text.color = new Color32(253, 255, 0, 255);
-                text.fontSize = 15;
-                text.fontSharedMaterial = critMaterial;
-                break;
-
-            case DamageType.normalDamage:
-            default:
-                text.text = value.ToString();
-                text.color = new Color32(211, 71, 35, 255);
-                text.fontSize = 12;
-                text.fontSharedMaterial = normalMaterial;
-                break;
+            
+            text.text = value.ToString();
+            text.color = Color.green;
+            text.fontSize = 12;
+            text.fontSharedMaterial = normalMaterial;
         }
+        else {
+            switch (damageType)
+            {
+                case DamageType.critDamage:
+                    text.text = "CRIT-" + value.ToString();
+                    text.color = new Color32(253, 255, 0, 255);
+                    text.fontSize = 15;
+                    text.fontSharedMaterial = critMaterial;
+                    break;
 
+                case DamageType.normalDamage:
+                default:
+                    text.text = value.ToString();
+                    text.color = new Color32(211, 71, 35, 255);
+                    text.fontSize = 12;
+                    text.fontSharedMaterial = normalMaterial;
+                    break;
+            }
+
+        }
         StartCoroutine(CoFloatAndFade(text));
     }
 
@@ -196,9 +270,9 @@ public class HeroUI : MonoBehaviour, IObserver
     {
         if (text == null) yield break;
 
-        float yOffset = 0.35f;      // tăng lên bao nhiêu (tùy UI scale mà chỉnh)
-        float showDuration = 0.35f; // đứng yên, hiện full alpha
-        float fadeDuration = 1f;    // fade về 0 alpha
+        float yOffset = 0.35f;
+        float showDuration = 0.35f;
+        float fadeDuration = 1f;
 
         bool isEnemy =
             transform.parent != null &&
@@ -206,20 +280,15 @@ public class HeroUI : MonoBehaviour, IObserver
 
         float x = isEnemy ? 0.15f : -0.15f;
 
-        // set position: x theo enemy/hero, y tăng thêm yOffset
         Vector3 p = text.transform.localPosition;
         text.transform.localPosition = new Vector3(x, p.y + yOffset, p.z);
 
         Color startColor = text.color;
-
-        // đảm bảo hiện rõ lúc bắt đầu
         text.color = new Color(startColor.r, startColor.g, startColor.b, 1f);
 
-        // 1) đứng yên một chút
         if (showDuration > 0f)
             yield return new WaitForSeconds(showDuration);
 
-        // 2) fade-out không di chuyển
         float t = 0f;
         while (t < fadeDuration)
         {

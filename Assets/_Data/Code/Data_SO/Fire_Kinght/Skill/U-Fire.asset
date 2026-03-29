@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U-Fire
   m_EditorClassIdentifier: 
-  abilityName: 
+  abilityName: Fire_Knight_U
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -30,9 +30,9 @@ MonoBehaviour:
     timeToCall: 2
     target: 0
     chance: 1
-    statType: 0
+    statType: 3
     canUpgrade: 0
-    modifyValue: 50
+    modifyValue: -20
     stackCount: 3
     durationTurn: 2
   - type: 0
@@ -41,6 +41,6 @@ MonoBehaviour:
     chance: 1
     statType: 3
     canUpgrade: 0
-    modifyValue: -10
+    modifyValue: -20
     stackCount: 3
     durationTurn: 2

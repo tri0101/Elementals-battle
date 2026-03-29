@@ -65,6 +65,12 @@ public class HeroControl : Subject
         get => canSkill;
         set => canSkill = value;
     }
+    [SerializeField] private bool canBlock;
+    public bool CanBlock
+    {
+        get => canBlock;
+        set => canBlock = value;
+    }
     [SerializeField] private bool isTakeHit;
     public bool IsTakeHit
     {
@@ -76,6 +82,12 @@ public class HeroControl : Subject
     {
         get => isDead;
         set => isDead = value;
+    }
+    [SerializeField] private bool isBlock = false;
+    public bool IsBlock
+    {
+        get => isBlock;
+        set => isBlock = value;
     }
     [SerializeField] private bool isClear = false;
     public bool IsClear
@@ -181,8 +193,9 @@ public class HeroControl : Subject
     //tính tỉ lệ chí mạng
     public bool IsCritical()
     {
+        float totalCritRate = heroStatRuntime.CritRate + heroStatRuntime.GetTotalModifyPercent(ModifyStatType.CritRate);
         float randomValue = Random.Range(0f, 100f);
-        return randomValue < heroInfo.criticalRate;
+        return randomValue < totalCritRate;
     }
     public void SetAttack()
     {
@@ -226,10 +239,15 @@ public class HeroControl : Subject
         isSkill = true;
         actionInProgress = true;
         isCrit = IsCritical();
-        BuildTargets(heroInfo.skill);
+        if(heroInfo.ID != 8 ) BuildTargets(heroInfo.skill);
+
         distanceToTarget = GetAttackPosition(heroInfo.skill);
         
         
+    }
+    public void SetBlock()
+    {
+        isBlock = true;
     }
     public void SetIsTakeHit()
     {
@@ -338,7 +356,7 @@ public class HeroControl : Subject
     }
     public Vector3 GetAttackPosition(AbilityInfo ability)
     {
-        if (enemyTarget == null || enemyTarget.Count == 0)
+        if (heroInfo.ID != 8  && (enemyTarget == null || enemyTarget.Count == 0))
         {
             Debug.Log("enemy target null or empty");
             return transform.position;
@@ -357,7 +375,7 @@ public class HeroControl : Subject
                     transform.position.z
                 );
                 break;
-
+           
             case PositionAttack.DistanceToTarget:
                 Transform enemy = enemyTarget[0];
                 // đứng trước enemy 1 khoảng = distance
@@ -404,7 +422,8 @@ public class HeroControl : Subject
                     );
 
                     break;
-                }
+                 }
+            
 
         }
 
@@ -642,6 +661,10 @@ public class HeroControl : Subject
     {
         NotifyObservers(type);
     }
+    public void RefreshObservers(ModifyStatType type, int value)
+    {
+        NotifyObservers(type, value);
+    }
     public void RefreshObservers(AbilityEffectType type)
     {
         NotifyObservers(type);
@@ -673,6 +696,24 @@ public class HeroControl : Subject
     public void GoBackBattleTarget()
     {
         needMoveToBattle = true;
+    }
+    public bool CheckEnemyDead(int enemyAmount)
+    {
+        int deadCount = 0;
+        foreach (Transform enemy in enemyTarget)
+        {
+            if (enemy == null) continue;
+            HeroReceiveDamagee recv = enemy.GetComponentInChildren<HeroReceiveDamagee>();
+            if(recv != null && recv.IsDead)
+            {
+                deadCount++;
+            }
+        }
+        if(deadCount >= enemyAmount)
+        {
+            return true;
+        }
+        else return false;
     }
     void LateUpdate()
     {

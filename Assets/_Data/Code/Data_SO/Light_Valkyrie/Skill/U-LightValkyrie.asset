@@ -12,17 +12,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U-LightValkyrie
   m_EditorClassIdentifier: 
-  abilityName: Messi
+  abilityName: Light_Valkyrie_U
   type: 2
   animStateName: 
   icon: {fileID: 0}
   speedToEnemy: 150
   positionAttack: 1
   distance: 7
-  targetingMode: 14
+  targetingMode: 0
   rowIndex: 1
   column: 1
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 120
-  effects: []
+  effects:
+  - type: 0
+    timeToCall: 2
+    target: 1
+    chance: 1
+    statType: 3
+    canUpgrade: 0
+    modifyValue: 75
+    stackCount: 1
+    durationTurn: 1
