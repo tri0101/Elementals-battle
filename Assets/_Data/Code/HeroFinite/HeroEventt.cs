@@ -56,7 +56,29 @@ public class HeroEventt : MonoBehaviour
             {
                 if (effect.target == AbilityTarget.Self)
                     ShowTextEffect(effect.statType,(int)effect.modifyValue);
-                else if(effect.target == AbilityTarget.CurrentTarget)
+               
+            }
+        }
+    }
+    public void SetEffectToEnemy(TimesToCall timeTocall)
+    {
+        List<AbilityEffect> effects = null;
+        if (timeTocall == TimesToCall.onAttack)
+        {
+            effects = heroControl.HeroInfo.ultimate.GetEffectsOnAttack();
+        }
+        else if(timeTocall == TimesToCall.OnUse)
+        {
+            effects = heroControl.HeroInfo.ultimate.GetEffectsOnUse();
+
+        }
+            
+        for (int i = 0; i < effects.Count; i++)
+        {
+            var effect = effects[i];
+            if (effect.type == AbilityEffectType.ModifyStat)
+            {
+                if (effect.target == AbilityTarget.CurrentTarget)
                 {
                     foreach (var target in heroControl.enemyTarget)
                     {
@@ -77,6 +99,9 @@ public class HeroEventt : MonoBehaviour
                 break;
             case ModifyStatType.Armor:
                 heroControl.RefreshObservers(ModifyStatType.Armor, value);
+                break;
+            case ModifyStatType.HealingRate:
+                heroControl.RefreshObservers(ModifyStatType.HealingRate, value);
                 break;
 
         }

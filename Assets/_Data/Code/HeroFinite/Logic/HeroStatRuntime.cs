@@ -444,9 +444,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
     }
 
-    public void GainHP(int value, DamageType damageType ,bool instant = false)
+    public void GainHP(int value, DamageType damageType, bool instant = false)
     {
-        CurrentHealth += value;
+        // NEW: apply HealingRate (%)
+        // HealingRate is stored in modifyStatStacksByType as percent (20 = +20%).
+        float totalHealingRatePercent = GetTotalModifyPercent(ModifyStatType.HealingRate);
+        float scaledValueF = value * (1f + (totalHealingRatePercent / 100f));
+        int scaledValue = Mathf.RoundToInt(scaledValueF);
+
+        CurrentHealth += scaledValue;
         if (currentHealth >= MaxHealth)
         {
             currentHealth = MaxHealth;
@@ -455,8 +461,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         float health01 = CurrentHealth / (float)MaxHealth;
 
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
-        heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, (int)value);
+        heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, scaledValue);
     }
+
 
     public void MinusHP(int value, DamageType damageType, bool instant = false)
     {
@@ -554,7 +561,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public float GetFinalValueAfterModifyStat(ModifyStatType type, float baseValue)
     {
         float totalPercent = GetTotalModifyPercent(type);
-        return baseValue * (1f + totalPercent);
+        return baseValue * (1f + totalPercent / 100f);
     }
 
 

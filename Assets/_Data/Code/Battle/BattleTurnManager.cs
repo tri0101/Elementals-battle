@@ -192,7 +192,7 @@ public class BattleTurnManager : MonoBehaviour
             if (IsDead(unit)) continue;
 
             unit.IsFinished = false;
-
+            
             if (TrySkipActionIfRooted(unit))
                 continue;
 
@@ -201,47 +201,11 @@ public class BattleTurnManager : MonoBehaviour
             if (reC.HeroInfo.ultimate == null) continue;
             if (!reC.CanAttackInBattle) continue;
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
+            unit.SetTarget(unit.HeroInfo.ultimate);
             string skillName = reC.HeroInfo.ultimate.abilityName;
+            List<AbilityEffect> effectOnUse = reC.HeroInfo.ultimate.GetEffectsOnUse();
             List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
-            for (int i = 0; i < effectOnAttack.Count; i++)
-            {
-                var effect = effectOnAttack[i];
-                float chance = Mathf.Clamp01(effect.chance);
-                if (chance <= 0f) continue;
-                if (chance < 1f && Random.value > chance) continue;
-                if (effect.type == AbilityEffectType.ModifyStat)
-                {
-                    if (effect.target == AbilityTarget.HeroAll)
-                    {
-                        bool shouldPlus = checkShouldPlusTurn(teamTag);
-                        int duration = shouldPlus && effect.shouldPlus() ?
-                            effect.durationTurn + 1 : effect.durationTurn;
-                        ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
-                    }
-                      
-                    else if (effect.target == AbilityTarget.Self) {
-                        bool shouldPlus = checkShouldPlusTurn(teamTag);
-                        int duration = shouldPlus  && effect.shouldPlus() ? 
-                            effect.durationTurn + 1 : effect.durationTurn;
-                        
-                        unit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
-                    }
-                       
-                    else if (effect.target == AbilityTarget.CurrentTarget)
-                    {   
-                        List<Transform> targets = reC.enemyTarget;
-                        for (int j = 0; j < targets.Count; j++)
-                        {
-                            var targetUnit = targets[j].GetComponent<HeroControl>();
-                            if (targetUnit == null) continue;
-                            bool shouldPlus = checkShouldPlusTurn(teamTag);
-                            int duration = shouldPlus && !effect.shouldPlus() ?
-                                effect.durationTurn + 1 : effect.durationTurn;
-                            targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, effect.durationTurn, effect.modifyValue, effect.stackCount);
-                        }
-                    }
-                }
-            }
+            ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, reC);
 
             unit.SetUltimate();
             yield return new WaitUntil(() => unit.IsFinished);
@@ -255,16 +219,6 @@ public class BattleTurnManager : MonoBehaviour
 
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
-    }
-    bool checkShouldPlusTurn(string teamTag)
-    {
-        if (teamTag == TeamHero && !heroTeamStarts)
-            return true;
-        else if (teamTag == TeamEnemy && heroTeamStarts)
-             return true;
-        else
-            return false;
-       
     }
     private IEnumerator CoTeamNormalSkill(string teamTag)
     {
@@ -280,6 +234,24 @@ public class BattleTurnManager : MonoBehaviour
                 continue;
 
             if (!unit.CanAttackInBattle) continue;
+            if (unit.CanSkill)
+            {
+                unit.SetTarget(unit.HeroInfo.skill);
+                string skillName = unit.HeroInfo.skill.abilityName;
+                List<AbilityEffect> effectOnUse = unit.HeroInfo.skill.GetEffectsOnUse();
+                List<AbilityEffect> effectOnAttack = unit.HeroInfo.skill.GetEffectsOnAttack();
+                ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, unit);
+            }
+
+            else
+            {
+                unit.SetTarget(unit.HeroInfo.normalAttack);
+                string skillName = unit.HeroInfo.normalAttack.abilityName;
+                List<AbilityEffect> effectOnUse = unit.HeroInfo.normalAttack.GetEffectsOnUse();
+                List<AbilityEffect> effectOnAttack = unit.HeroInfo.normalAttack.GetEffectsOnAttack();
+                ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, unit);
+            }
+
 
             if (unit.CanSkill)
                 unit.SetSkill();
@@ -297,6 +269,101 @@ public class BattleTurnManager : MonoBehaviour
                 yield break;
         }
     }
+    bool checkShouldPlusTurn(string teamTag)
+    {
+        if (teamTag == TeamHero && !heroTeamStarts)
+            return true;
+        else if (teamTag == TeamEnemy && heroTeamStarts)
+             return true;
+        else
+            return false;
+       
+    }
+    void ApplyEffectOnUse(List<AbilityEffect> onUse, List<AbilityEffect> onAttack, string teamTag,string skillName, HeroControl unit)
+    {
+        List<AbilityEffect> effectOnUse = onUse;
+        List<AbilityEffect> effectOnAttack = onAttack;
+        for (int i = 0; i < effectOnAttack.Count; i++)
+        {
+            var effect = effectOnAttack[i];
+            bool shouldPlus = checkShouldPlusTurn(teamTag);
+            if (effect.statType == ModifyStatType.HealingRate)
+            {
+                unit.SetShouldPlus(false);
+            }
+            else
+            {
+                bool value = shouldPlus && effect.shouldPlus();
+                unit.SetShouldPlus(value);
+            }
+        }
+        for (int i = 0; i < effectOnUse.Count; i++)
+        {
+            var effect = effectOnUse[i];
+            float chance = Mathf.Clamp01(effect.chance);
+            if (chance <= 0f) continue;
+            if (chance < 1f && Random.value > chance) continue;
+            if (effect.type == AbilityEffectType.ModifyStat)
+            {
+                if (effect.target == AbilityTarget.HeroAll)
+                {
+                    bool shouldPlus = checkShouldPlusTurn(teamTag);
+                    int duration;
+                    if (effect.statType == ModifyStatType.HealingRate)
+                    {
+                        duration = effect.durationTurn;
+                    }
+                    else
+                    {
+                        duration = shouldPlus && effect.shouldPlus() ?
+                        effect.durationTurn + 1 : effect.durationTurn;
+                    }
+                    ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                }
+
+                else if (effect.target == AbilityTarget.Self)
+                {
+                    bool shouldPlus = checkShouldPlusTurn(teamTag);
+                    int duration;
+                    if (effect.statType == ModifyStatType.HealingRate)
+                    {
+                        duration = effect.durationTurn;
+                    }
+                    else
+                    {
+                        duration = shouldPlus && effect.shouldPlus() ?
+                        effect.durationTurn + 1 : effect.durationTurn;
+                    }
+
+                    unit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                }
+
+                else if (effect.target == AbilityTarget.CurrentTarget)
+                {
+
+                    bool shouldPlus = checkShouldPlusTurn(teamTag);
+                    int duration;
+                    if (effect.statType == ModifyStatType.HealingRate)
+                    {
+                        duration = effect.durationTurn;
+                    }
+                    else
+                    {
+                        duration = shouldPlus && effect.shouldPlus() ?
+                        effect.durationTurn + 1 : effect.durationTurn;
+                    }
+                    foreach (Transform enemy in unit.enemyTarget)
+                    {
+                        var targetUnit = enemy.GetComponent<HeroControl>();
+                        if (targetUnit == null) continue;
+                        targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                    }
+
+                }
+            }
+        }
+    }
+   
 
     private IEnumerator CoApplyEffect(bool checkAtStart)
     {

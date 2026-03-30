@@ -101,6 +101,12 @@ public class HeroControl : Subject
         get => isCrit;
         set => isCrit = value;
     }
+    [SerializeField] private bool shouldPlus = false; // dùng để check xem có thêm duration ko ( cân bằng cho hero đánh sau )
+    public bool ShouldPlus
+    {
+        get => shouldPlus;
+        set => shouldPlus = value;
+    }
 
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
@@ -203,13 +209,15 @@ public class HeroControl : Subject
             return;
         if (actionInProgress)
             return;
-        needMoveToBattle = false;
+     
         isAttack = true;
-        actionInProgress = true;
         isCrit = IsCritical();
-        BuildTargets(heroInfo.normalAttack);
-        distanceToTarget = GetAttackPosition(heroInfo.normalAttack);
+
         
+    }
+    public void SetShouldPlus(bool value)
+    {
+        shouldPlus = value;
     }
 
     public void SetUltimate()
@@ -218,16 +226,25 @@ public class HeroControl : Subject
             return;
         if (actionInProgress) 
             return;
-        actionInProgress = true;
-        needMoveToBattle = false;
-        BuildTargets(heroInfo.ultimate);
-        distanceToTarget = GetAttackPosition(heroInfo.ultimate);
         isUltimate = true;
-       
         isCrit = IsCritical();
   
         
     }
+    public void SetTarget(AbilityInfo info)
+    {
+        
+        if (actionInProgress)
+            return;
+        needMoveToBattle = false;
+        if (!(heroInfo.ID == 8 && info.type == AbilityType.Skill))
+            BuildTargets(info);
+        distanceToTarget = GetAttackPosition(info);
+
+
+
+    }
+
 
     public void SetSkill()
     {
@@ -235,13 +252,9 @@ public class HeroControl : Subject
             return;
         if (actionInProgress)
             return;
-        needMoveToBattle = false;
         isSkill = true;
-        actionInProgress = true;
         isCrit = IsCritical();
-        if(heroInfo.ID != 8 ) BuildTargets(heroInfo.skill);
 
-        distanceToTarget = GetAttackPosition(heroInfo.skill);
         
         
     }
@@ -342,16 +355,55 @@ public class HeroControl : Subject
                     break;
                 }
 
-            case AbilityTargetingMode.AoeAllEnemies:
+            case AbilityTargetingMode.HighestAttack:
                 {
-                    AddAliveEnemiesAll(enemyTeam);
+                    var aliveEnemies = AddAliveEnemiesAll(enemyTeam);
+
+                    Debug.Log($"[HighestAttack] Found {aliveEnemies.Count} alive enemies");
+
+                    if (aliveEnemies.Count == 0)
+                    {
+                        Debug.Log("[HighestAttack] No enemies found, building none");
+                        BuildTargetsNone();
+                        break;
+                    }
+
+                    Transform highestDamageEnemy = null;
+                    float maxDamage = -1f;
+
+                    foreach (Transform enemy in aliveEnemies)
+                    {
+                        HeroControl enemyControl = enemy.GetComponent<HeroControl>();
+                        if (enemyControl == null || enemyControl.HeroStatRuntime == null)
+                        {
+                            Debug.Log($"[HighestAttack] {enemy.name} - control or runtime null");
+                            continue;
+                        }
+
+                        float baseDamage = enemyControl.HeroStatRuntime.Damage;
+                        float totalDamage = enemyControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
+                            ModifyStatType.Damage,
+                            baseDamage
+                        );
+
+                        Debug.Log($"[HighestAttack] {enemy.name} - baseDamage={baseDamage}, totalDamage={totalDamage}");
+
+                        if (totalDamage > maxDamage)
+                        {
+                            maxDamage = totalDamage;
+                            highestDamageEnemy = enemy;
+                        }
+                    }
+
+                    Debug.Log($"[HighestAttack] Selected: {(highestDamageEnemy != null ? highestDamageEnemy.name : "NONE")}, maxDamage={maxDamage}");
+
+                    if (highestDamageEnemy != null)
+                        enemyTarget.Add(highestDamageEnemy);
+                    else
+                        BuildTargetsNone();
+
                     break;
                 }
-
-            default:
-
-                BuildTargetsNone();
-                break;
         }
     }
     public Vector3 GetAttackPosition(AbilityInfo ability)
@@ -457,8 +509,9 @@ public class HeroControl : Subject
             enemyTarget.Add(chosen);
     }
 
-    private void AddAliveEnemiesAll(string enemyTeam)
+    private List<Transform> AddAliveEnemiesAll(string enemyTeam)
     {
+        var result = new List<Transform>(6);
         var roots = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
         for (int i = 0; i < roots.Count; i++)
         {
@@ -468,8 +521,9 @@ public class HeroControl : Subject
             var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
             if (recv != null && recv.IsDead) continue;
 
-            enemyTarget.Add(root);
+            result.Add(root);
         }
+        return result;
     }
 
     private void AddAliveEnemiesInRow(string enemyTeam, int rowIndex1To3)

@@ -25,6 +25,8 @@ public class HeroUI : MonoBehaviour, IObserver
     private string critRatePattern = "Crit Rate Increased";
     private string armorDecreased = "Armor Decreased";
     private string armorIncreased = "Armor Increased";
+    private string healRateIncreased = "Heaing Rate Increased";
+    private string healRateDecreased = "Heaing Rate Decreased";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
 
@@ -116,6 +118,9 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.Armor:
                 SpawnFloatingEffectText(type, value);
                 break;
+            case ModifyStatType.HealingRate:
+                SpawnFloatingEffectText(type, value);
+                break;
         }
     }
     public void OnNotify(AbilityEffectType type)
@@ -173,31 +178,33 @@ public class HeroUI : MonoBehaviour, IObserver
 
         TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
         StartCoroutine(CoKeepFlipSynced(text));
-
+        if(value > 0)
+        {
+            text.color = new Color32(253, 255, 0, 255);
+            text.fontSize = 12;
+            text.fontSharedMaterial = critMaterial;
+        }
+        else
+        {
+            text.color = new Color32(211, 71, 35, 255);
+            text.fontSize = 12;
+            text.fontSharedMaterial = critMaterial;
+        }
         switch (type)
         {
+
             case ModifyStatType.CritRate:
                 if (value > 0) text.text = critRatePattern;
-                text.color = new Color32(253, 255, 0, 255);
-                text.fontSize = 15;
-                text.fontSharedMaterial = critMaterial;
                 StartCoroutine(CoShowAndFade(text));
                 break;
             case ModifyStatType.Armor:
-                if (value < 0)
-                {
-                    text.text = armorDecreased;
-                    text.color = new Color32(211, 71, 35, 255);
-                    text.fontSize = 15;
-                    text.fontSharedMaterial = critMaterial;
-                }
-                else
-                {
-                    text.text = armorIncreased;
-                    text.color = new Color32(253, 255, 0, 255);
-                    text.fontSize = 15;
-                    text.fontSharedMaterial = critMaterial;
-                }
+                if (value < 0) text.text = armorDecreased;
+                else text.text = armorIncreased;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case ModifyStatType.HealingRate:
+                if (value > 0) text.text = healRateIncreased;
+                else text.text = healRateDecreased;
                 StartCoroutine(CoShowAndFade(text));
                 break;
         }

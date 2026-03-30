@@ -148,10 +148,12 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
     public int GetDamageAfterArmor(float damage)
     {
-        float finalDamage = damage;
-        float amor = heroControl.HeroStatRuntime.Armor + heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Armor,
-                                                        heroControl.HeroStatRuntime.Armor);
-        finalDamage = damage * 100 / (100 + amor);
+        float armor = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
+            ModifyStatType.Armor,
+            heroControl.HeroStatRuntime.Armor
+        );
+
+        float finalDamage = damage * 100f / (100f + armor);
         return Mathf.RoundToInt(finalDamage);
     }
 

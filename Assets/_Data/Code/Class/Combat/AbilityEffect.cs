@@ -49,6 +49,7 @@ public enum TimesToCall
     onStartTurn = 1,    //gọi khi bắt đầu lượt của hero
     onAttack = 2,       //gọi khi hero tấn công
     onAttacked = 3,     //gọi khi hero bị tấn công
+    OnUse = 4,         //gọi khi sử dụng kỹ năng (áp dụng cho hiệu ứng của kỹ năng, không áp dụng cho hiệu ứng của đòn đánh thường)
 }
 [Serializable]
 public class AbilityEffect
@@ -76,7 +77,7 @@ public class AbilityEffect
 
     [Header("Duration")]
     public int durationTurn = 1 ; // thời gian hiệu lực khống chế /buff/debuff (turn) , bằng - 1 = vĩnh viễn;
-    public bool shouldPlus()
+    public bool shouldPlus() // nên tăng duration để cân bằng cho các hero đánh sau ko
     {
         switch (statType)
         {
