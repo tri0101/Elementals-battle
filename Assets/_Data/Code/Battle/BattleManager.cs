@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 public class BattleManager : MonoBehaviour
 {
+    public static BattleManager Instance { get; private set; }
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI waveText;
 
@@ -11,6 +13,8 @@ public class BattleManager : MonoBehaviour
     [Header("Stage")]
     [SerializeField] private StageConfig stageConfig;
     public StageConfig StageConfig => stageConfig;
+    [SerializeField] private SpriteRenderer backGround;
+    public SpriteRenderer BackGround => backGround;
 
     [Header("Formation (scene setup)")]
     [SerializeField] private BattleFormation formation;
@@ -40,9 +44,18 @@ public class BattleManager : MonoBehaviour
 
     void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
         stageConfig = StageContext.selectedStage;
         if (battleResult == null)
             battleResult = GetComponent<BattleResult>();
+
+        backGround.sprite = stageConfig.background;
+
     }
 
     void Start()

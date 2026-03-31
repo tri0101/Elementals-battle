@@ -21,7 +21,14 @@ public class HeroEventt : MonoBehaviour
         heroControl.IsFinished = true;
         heroControl.NotifyActionFinished();
     }
- 
+    
+    public void ChangeBackGround()
+    {
+        if (heroControl.HeroInfo.ultimate.isChangeBackGround)
+        {
+            BattleManager.Instance.BackGround.sprite = heroControl.HeroInfo.ultimate.backgroundChange;
+        }
+    }
     public void SetGainManaNormal()
     {
         int manaGain = heroControl.HeroInfo.normalAttack.manaGain;

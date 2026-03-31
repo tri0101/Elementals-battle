@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 public enum StageCondition
 {
     HeroLost = 0
@@ -25,5 +26,6 @@ public class StageConfig : ScriptableObject
     [Header("Drop Items")]
     public List<DropItemData> dropItems;
 
+    public Sprite background; // background của stage
     public int powerRecommend;
 }

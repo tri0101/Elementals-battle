@@ -42,6 +42,7 @@ public enum ModifyStatType
     CritDamage =5,
     HealingRate = 6, // tỉ lệ hồi máu (áp dụng cho buff hồi máu)
     HealthMax = 7, // tăng máu tối đa (áp dụng cho buff tăng máu tối đa)
+    ManaRecovery = 8, // tốc độ hồi mana (áp dụng cho buff hồi mana)
 }
 public enum TimesToCall
 {

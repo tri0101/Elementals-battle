@@ -190,10 +190,13 @@ MonoBehaviour:
   isSkill: 0
   isFinished: 0
   canSkill: 0
+  canBlock: 0
   isTakeHit: 0
   isDead: 0
+  isBlock: 0
   isClear: 0
   isCrit: 0
+  shouldPlus: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -301,6 +304,8 @@ MonoBehaviour:
   currentHealth: 0
   currentMana: 0
   aesDebug: []
+  modifyStatDebug: []
+  onStartBattleDebug: []
 --- !u!50 &7706395939298172698
 Rigidbody2D:
   serializedVersion: 5

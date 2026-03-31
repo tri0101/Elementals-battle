@@ -438,6 +438,16 @@ public class BattleTurnManager : MonoBehaviour
             yield return CoTeamPassiveBattle(TeamEnemy);
             yield return CoTeamPassiveBattle(TeamHero);
         }
+        if (heroTeamStarts)
+        {
+            yield return CoApplyPassiveBattle(TeamHero);
+            yield return CoApplyPassiveBattle(TeamEnemy);
+        }
+        else
+        {
+            yield return CoApplyPassiveBattle(TeamEnemy);
+            yield return CoApplyPassiveBattle(TeamHero);
+        }
     }
 
     private IEnumerator CoHandleWaveCleared()
@@ -624,7 +634,29 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
-
+    private IEnumerator CoApplyPassiveBattle(string teamTag)
+    { 
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            unit.IsFinished = false;
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
+            Dictionary<ModifyStatType, int> dict = reC.HeroStatRuntime.GetDicOnStartBattle();
+            foreach(var key in dict.Keys)
+            {
+                int value = dict[key];
+                if (value != 0)
+                    reC.HeroStatRuntime.ApplyStats(key, value, true);
+            }
+            if (AreAllTeamDead(TeamEnemy))
+                yield break;
+        }
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
     private IEnumerator CoTeamPassiveBattle(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -673,7 +705,8 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            unit.HeroStatRuntime.ApplyStats(type, value, true);
+            //unit.HeroStatRuntime.ApplyStats(type, value, true);
+            unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
     void ApplyModifyStatAll(string nameAbility, ModifyStatType type, int turns, float value, int maxStack)
@@ -694,7 +727,7 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             if(unit.HeroInfo.role != role) continue;
-            unit.HeroStatRuntime.ApplyStats(type, value, true);
+            unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
     private void ConsumeModifyStatForTeam(string teamTag)

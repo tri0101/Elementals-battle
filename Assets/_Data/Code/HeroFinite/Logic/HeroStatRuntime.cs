@@ -39,6 +39,11 @@ public sealed class HeroStatRuntime : MonoBehaviour
     private readonly Dictionary<ModifyStatType, Dictionary<string, List<ModifyStatStackState>>> modifyStatStacksByType =
         new Dictionary<ModifyStatType, Dictionary<string, List<ModifyStatStackState>>>();
 
+    Dictionary<ModifyStatType, int> dicOnStartBattle = new Dictionary<ModifyStatType, int>();
+    public Dictionary<ModifyStatType, int> GetDicOnStartBattle()
+    {
+        return dicOnStartBattle;
+    }
     public void ClearAllAES()
     {
         if (aesStacksByType.Count == 0)
@@ -287,7 +292,16 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         SyncModifyStatDebug();
     }
+    public void ApplyStatOnStartBattle(ModifyStatType type, int value)
+    {
+        // cộng dồn nếu đã có key, còn không thì add mới
+        if (dicOnStartBattle.TryGetValue(type, out int current))
+            dicOnStartBattle[type] = current + value;
+        else
+            dicOnStartBattle.Add(type, value);
 
+        SyncOnStartBattleDebug();
+    }
     [Header("Refs")]
     [SerializeField] private HeroControl heroControl;
 
@@ -325,6 +339,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         if (heroControl == null)
             heroControl = GetComponent<HeroControl>();
         baseInfo = heroControl != null ? heroControl.HeroInfo : null;
+        dicOnStartBattle.Clear();
     }
 
     public void Init(HeroInfo info, HeroInstance instance, HeroGrowthConfig growth)
@@ -397,7 +412,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     public void GainHPMax(float value, bool instant = false)
     {
-        finalStat.health *= (1 + value);
+        finalStat.health *= (1 + value / 100);
         currentHealth = finalStat.health;
         if (instant) return;
         float health01 = CurrentHealth / (float)MaxHealth;
@@ -417,7 +432,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     public void GainDamage(float value)
     {
-        finalStat.damage *= (1 + value);
+        finalStat.damage *= (1 + value / 100);
     }
 
     public void GainMana(int value, bool instant = false)
@@ -649,6 +664,28 @@ public sealed class HeroStatRuntime : MonoBehaviour
                     stacks = copy
                 });
             }
+        }
+    }
+    [System.Serializable]
+    private struct StartBattleStatDebugItem
+    {
+        public ModifyStatType type;
+        public int value;
+    }
+
+    [Header("Debug OnStartBattle (Inspector)")]
+    [SerializeField] private List<StartBattleStatDebugItem> onStartBattleDebug = new List<StartBattleStatDebugItem>();
+
+    private void SyncOnStartBattleDebug()
+    {
+        onStartBattleDebug.Clear();
+        foreach (var kv in dicOnStartBattle)
+        {
+            onStartBattleDebug.Add(new StartBattleStatDebugItem
+            {
+                type = kv.Key,
+                value = kv.Value
+            });
         }
     }
 }

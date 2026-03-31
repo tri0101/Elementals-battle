@@ -68,7 +68,8 @@ public class AbilityInfo : ScriptableObject
     [Header("Mana (used by caster)")]
     public bool grantManaOnUse = true;
     [Min(0)] public int manaGain;
-
+    public bool isChangeBackGround = false; // có đổi background khi dùng kỹ năng này hay không (áp dụng cho ultimate của hero, không áp dụng cho kỹ năng của đòn đánh thường)
+    public Sprite backgroundChange; // background sẽ đổi thành khi dùng 
     [Header("Effects (executed in order)")]
     public List<AbilityEffect> effects = new List<AbilityEffect>();
 
