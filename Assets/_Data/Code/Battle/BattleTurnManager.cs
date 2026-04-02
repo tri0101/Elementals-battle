@@ -136,6 +136,7 @@ public class BattleTurnManager : MonoBehaviour
 
                 // NEW: cuối turn mới trừ Rooted để UI chỉ cập nhật/tắt ở cuối turn
                 ConsumeRootedAtEndOfTurn();
+              
             }
 
             if (battleManager == null)
@@ -305,35 +306,26 @@ public class BattleTurnManager : MonoBehaviour
             if (chance < 1f && Random.value > chance) continue;
             if (effect.type == AbilityEffectType.ModifyStat)
             {
+                bool shouldPlus = checkShouldPlusTurn(teamTag);
+                int duration;
+                if (effect.statType == ModifyStatType.HealingRate)
+                {
+                    duration = effect.durationTurn;
+                }
+                else
+                {
+                    duration = shouldPlus && effect.shouldPlus() ?
+                    effect.durationTurn + 1 : effect.durationTurn;
+                }
                 if (effect.target == AbilityTarget.HeroAll)
                 {
-                    bool shouldPlus = checkShouldPlusTurn(teamTag);
-                    int duration;
-                    if (effect.statType == ModifyStatType.HealingRate)
-                    {
-                        duration = effect.durationTurn;
-                    }
-                    else
-                    {
-                        duration = shouldPlus && effect.shouldPlus() ?
-                        effect.durationTurn + 1 : effect.durationTurn;
-                    }
+                    
                     ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
                 }
 
                 else if (effect.target == AbilityTarget.Self)
                 {
-                    bool shouldPlus = checkShouldPlusTurn(teamTag);
-                    int duration;
-                    if (effect.statType == ModifyStatType.HealingRate)
-                    {
-                        duration = effect.durationTurn;
-                    }
-                    else
-                    {
-                        duration = shouldPlus && effect.shouldPlus() ?
-                        effect.durationTurn + 1 : effect.durationTurn;
-                    }
+                    
 
                     unit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
                 }
@@ -341,17 +333,7 @@ public class BattleTurnManager : MonoBehaviour
                 else if (effect.target == AbilityTarget.CurrentTarget)
                 {
 
-                    bool shouldPlus = checkShouldPlusTurn(teamTag);
-                    int duration;
-                    if (effect.statType == ModifyStatType.HealingRate)
-                    {
-                        duration = effect.durationTurn;
-                    }
-                    else
-                    {
-                        duration = shouldPlus && effect.shouldPlus() ?
-                        effect.durationTurn + 1 : effect.durationTurn;
-                    }
+                   
                     foreach (Transform enemy in unit.enemyTarget)
                     {
                         var targetUnit = enemy.GetComponent<HeroControl>();
@@ -360,6 +342,21 @@ public class BattleTurnManager : MonoBehaviour
                     }
 
                 }
+                //else if (effect.target == AbilityTarget.EnemyAll)
+                //{
+                    
+                //    string enemyTeam = (teamTag == TeamHero) ? TeamEnemy : TeamHero;
+
+                    
+                //    for (int slot = 1; slot <= 6; slot++)
+                //    {
+                //        var enemy = GetUnitAtSlot(enemyTeam, slot);
+                //        if (enemy == null) continue;
+                //        if (IsDead(enemy)) continue;
+
+                //        enemy.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                //    }
+                //}
             }
         }
     }

@@ -13,6 +13,7 @@ public class BattleManager : MonoBehaviour
     [Header("Stage")]
     [SerializeField] private StageConfig stageConfig;
     public StageConfig StageConfig => stageConfig;
+
     [SerializeField] private SpriteRenderer backGround;
     public SpriteRenderer BackGround => backGround;
 
@@ -444,4 +445,224 @@ public class BattleManager : MonoBehaviour
     {
         ClearSpawnedHeroes();
     }
+    // ========== sàn đấu (Arena)
+    [System.Serializable]
+    private struct Arena
+    {
+        public string skillApply;
+        public string nameHero; // tên hero
+        public int heroId; // NEW: id của hero
+        public int order; // dùng để biết độ ưu tiên của sàn
+        public Sprite arenaSprite;
+
+        public Arena(string skillApply, string nameHero, int heroId, int order, Sprite sprite = null)
+        {
+            this.skillApply = skillApply;
+            this.nameHero = nameHero;
+            this.heroId = heroId;
+            this.order = order;
+            this.arenaSprite = sprite;
+        }
+    }
+
+    private Stack<Arena> stack = new Stack<Arena>();
+
+    public void PutArenaOnStack(string skillName, string nameHero, int heroId, int order, Sprite arenaSprite = null)
+    {
+        if (string.IsNullOrEmpty(skillName) || string.IsNullOrEmpty(nameHero) || heroId <= 0) return;
+
+        Arena newArena = new Arena(skillName, nameHero, heroId, order, arenaSprite);
+
+        // Nếu stack rỗng => thêm trực tiếp
+        if (stack.Count == 0)
+        {
+            stack.Push(newArena);
+            UpdateBackgroundSprite();
+            SyncArenaDebug();
+            Debug.Log($"[Arena] Thêm arena mới: {skillName} của hero {nameHero} (id={heroId}, order={order})");
+            return;
+        }
+
+        // Peek arena hiện tại (không lấy ra)
+        Arena currentArena = stack.Peek();
+
+        // Nếu order của arena hiện tại > order mới => đặt arena mới PHÍA SAU (pop rồi push lại)
+        if (currentArena.order > newArena.order)
+        {
+            stack.Pop();
+            stack.Push(newArena);
+            stack.Push(currentArena);
+
+            UpdateBackgroundSprite();
+            SyncArenaDebug();
+            Debug.Log($"[Arena] Arena mới '{skillName}' của {nameHero} được đặt TRƯỚC arena hiện tại '{currentArena.skillApply}' (order: {newArena.order} < {currentArena.order})");
+        }
+        else
+        {
+            var temp = new List<Arena>();
+            while (stack.Count > 0)
+                temp.Add(stack.Pop());
+
+            stack.Push(newArena);
+
+            for (int i = temp.Count - 1; i >= 0; i--)
+                stack.Push(temp[i]);
+
+            Debug.Log($"[Arena] Arena mới '{skillName}' của {nameHero} được đặt SAU arena hiện tại '{currentArena.skillApply}' (order: {newArena.order} >= {currentArena.order})");
+        }
+    }
+
+    // NEW: Xóa arena theo nameHero
+    public void RemoveArenaByHeroName(string nameHero)
+    {
+        if (string.IsNullOrEmpty(nameHero) || stack.Count == 0) return;
+
+        bool isCurrentArenaRemoved = false;
+        Arena currentArena = stack.Peek();
+
+        // Check xem arena đỉnh stack (đang apply) có phải của hero này không
+        if (currentArena.nameHero == nameHero)
+        {
+            isCurrentArenaRemoved = true;
+            stack.Pop();
+            Debug.Log($"[Arena] Xóa arena đang apply '{currentArena.skillApply}' của hero {nameHero}");
+        }
+
+        // Xóa tất cả arena khác của hero này
+        var tempList = new List<Arena>();
+        while (stack.Count > 0)
+        {
+            var arena = stack.Pop();
+            if (arena.nameHero != nameHero)
+            {
+                tempList.Add(arena);
+            }
+            else
+            {
+                Debug.Log($"[Arena] Xóa arena '{arena.skillApply}' của hero {nameHero} từ stack");
+            }
+        }
+
+        // Push lại các arena còn lại
+        for (int i = tempList.Count - 1; i >= 0; i--)
+            stack.Push(tempList[i]);
+
+        // Nếu xóa arena đang apply, update background
+        if (isCurrentArenaRemoved)
+        {
+            UpdateBackgroundSprite();
+        }
+
+        SyncArenaDebug();
+        Debug.Log($"[Arena] Sau khi xóa arena của {nameHero}, arena hiện tại: {(stack.Count > 0 ? stack.Peek().skillApply : "Không có")}");
+    }
+
+    // NEW: Xóa arena theo heroId
+    public void RemoveArenaByHeroId(int heroId)
+    {
+        if (heroId <= 0 || stack.Count == 0) return;
+
+        bool isCurrentArenaRemoved = false;
+        Arena currentArena = stack.Peek();
+
+        // Check xem arena đỉnh stack (đang apply) có phải của hero này không
+        if (currentArena.heroId == heroId)
+        {
+            isCurrentArenaRemoved = true;
+            stack.Pop();
+            Debug.Log($"[Arena] Xóa arena đang apply '{currentArena.skillApply}' của hero {heroId}");
+        }
+
+        // Xóa tất cả arena khác của hero này
+        var tempList = new List<Arena>();
+        while (stack.Count > 0)
+        {
+            var arena = stack.Pop();
+            if (arena.heroId != heroId)
+            {
+                tempList.Add(arena);
+            }
+            else
+            {
+                Debug.Log($"[Arena] Xóa arena '{arena.skillApply}' của hero {heroId} từ stack");
+            }
+        }
+
+        // Push lại các arena còn lại
+        for (int i = tempList.Count - 1; i >= 0; i--)
+            stack.Push(tempList[i]);
+
+        // Nếu xóa arena đang apply, update background
+        if (isCurrentArenaRemoved)
+        {
+            UpdateBackgroundSprite();
+        }
+
+        SyncArenaDebug();
+        Debug.Log($"[Arena] Sau khi xóa arena của hero {heroId}, arena hiện tại: {(stack.Count > 0 ? stack.Peek().skillApply : "Không có")}");
+    }
+
+    // NEW: update background sprite dựa trên arena hiện tại
+    private void UpdateBackgroundSprite()
+    {
+        if (backGround == null) return;
+
+        if (stack.Count > 0)
+        {
+            Arena currentArena = stack.Peek();
+            if (currentArena.arenaSprite != null)
+            {
+                backGround.sprite = currentArena.arenaSprite;
+                Debug.Log($"[Arena] Background thay đổi thành: {currentArena.arenaSprite.name}");
+            }
+            else
+            {
+                backGround.sprite = stageConfig.background;
+                Debug.Log("[Arena] Arena không có sprite, dùng stage background");
+            }
+        }
+        else
+        {
+            backGround.sprite = stageConfig.background;
+            Debug.Log("[Arena] Stack rỗng, quay về stage background");
+        }
+    }
+
+    // ========== sàn đấu (Arena) - DEBUG
+    [System.Serializable]
+    private struct ArenaDebugItem
+    {
+        public string skillApply;
+        public string nameHero; // NEW
+        public int heroId; // NEW
+        public int order;
+        public string spriteeName;
+    }
+
+    [Header("Debug Arena (Inspector)")]
+    [SerializeField] private List<ArenaDebugItem> arenaDebug = new List<ArenaDebugItem>();
+
+    private void SyncArenaDebug()
+    {
+        arenaDebug.Clear();
+
+        if (stack.Count == 0)
+            return;
+
+        var stackList = new List<Arena>(stack);
+
+        for (int i = 0; i < stackList.Count; i++)
+        {
+            var arena = stackList[i];
+            arenaDebug.Add(new ArenaDebugItem
+            {
+                skillApply = arena.skillApply,
+                nameHero = arena.nameHero,
+                heroId = arena.heroId,
+                order = arena.order,
+                spriteeName = arena.arenaSprite != null ? arena.arenaSprite.name : "None"
+            });
+        }
+    }
+
 }

@@ -26,7 +26,46 @@ public class HeroEventt : MonoBehaviour
     {
         if (heroControl.HeroInfo.ultimate.isChangeBackGround)
         {
-            BattleManager.Instance.BackGround.sprite = heroControl.HeroInfo.ultimate.backgroundChange;
+            BattleManager.Instance.PutArenaOnStack(heroControl.HeroInfo.ultimate.abilityName,
+                heroControl.HeroInfo.name, heroControl.HeroInfo.ID, heroControl.HeroInfo.ultimate.order,
+                heroControl.HeroInfo.ultimate.backgroundChange);
+        }
+    }
+    public void RemoveArena() // sử dụng khi hero có sàn
+    {
+        BattleManager.Instance.RemoveArenaByHeroId(heroControl.HeroInfo.ID);
+        RemoveEffectFromArena();
+        
+    }
+    void RemoveEffectFromArena()
+    {
+        string skillName = heroControl.HeroInfo.ultimate.abilityName;
+        ModifyStatType statType = heroControl.HeroInfo.ultimate.effects[0].statType;
+
+        switch (heroControl.HeroInfo.ultimate.effects[0].target)
+        {
+            case AbilityTarget.EnemyAll:
+                if (BattlefieldRegistry.Instance == null)
+                    return;
+
+
+                string enemyTeam = heroControl.CompareTag("Hero") ? "Enemy" : "Hero";
+
+                var enemies = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
+                for (int i = 0; i < enemies.Count; i++)
+                {
+                    var enemyRoot = enemies[i];
+                    if (enemyRoot == null) continue;
+
+                    HeroControl enemyControl = enemyRoot.GetComponent<HeroControl>();
+                    if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+
+                    var recv = enemyRoot.GetComponentInChildren<HeroReceiveDamagee>();
+                    if (recv != null && recv.IsDead) continue;
+
+                    enemyControl.HeroStatRuntime.RemoveModifyStatBySkill(skillName, statType);
+                }
+                break;
         }
     }
     public void SetGainManaNormal()
@@ -94,6 +133,27 @@ public class HeroEventt : MonoBehaviour
                         enemyControl.HeroEventt.ShowTextEffect(effect.statType, (int)effect.modifyValue);
                     }
                 }
+                else if (effect.target == AbilityTarget.EnemyAll)
+                {
+                    ModifyStatType statType = heroControl.HeroInfo.ultimate.effects[0].statType;
+                    int value = (int)heroControl.HeroInfo.ultimate.effects[0].modifyValue;
+                    string enemyTeam = heroControl.CompareTag("Hero") ? "Enemy" : "Hero";
+
+                    var enemies = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
+                    for (int j = 0; j < enemies.Count; j++)
+                    {
+                        var enemyRoot = enemies[j];
+                        if (enemyRoot == null) continue;
+
+                        HeroControl enemyControl = enemyRoot.GetComponent<HeroControl>();
+                        if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+
+                        var recv = enemyRoot.GetComponentInChildren<HeroReceiveDamagee>();
+                        if (recv != null && recv.IsDead) continue;
+
+                        enemyControl.HeroEventt.ShowTextEffect(statType, value);
+                    }
+                }
             }
         }
     }
@@ -109,6 +169,9 @@ public class HeroEventt : MonoBehaviour
                 break;
             case ModifyStatType.HealingRate:
                 heroControl.RefreshObservers(ModifyStatType.HealingRate, value);
+                break;
+            case ModifyStatType.ManaRecovery:
+                heroControl.RefreshObservers(ModifyStatType.ManaRecovery, value);
                 break;
 
         }

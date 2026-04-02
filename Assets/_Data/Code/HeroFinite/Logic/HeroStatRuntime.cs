@@ -216,7 +216,30 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         SyncModifyStatDebug();
     }
+   
+    public void RemoveModifyStatBySkill(string sourceAbilityName, ModifyStatType type)
+    {
+        if (string.IsNullOrEmpty(sourceAbilityName)) return;
 
+        if (!modifyStatStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
+            return;
+
+        if (bySkill.TryGetValue(sourceAbilityName, out var stacks) && stacks != null)
+        {
+            // Xóa toàn bộ stacks của skill này cho type này
+            bySkill.Remove(sourceAbilityName);
+            Debug.Log($"[ModifyStat] Removed {sourceAbilityName} for type {type}");
+
+            // Nếu type này không còn skill nào, xóa luôn type
+            if (bySkill.Count == 0)
+            {
+                modifyStatStacksByType.Remove(type);
+                Debug.Log($"[ModifyStat] Type {type} is now empty, removing it");
+            }
+
+            SyncModifyStatDebug();
+        }
+    }
     public void ApplyAES(AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
     {
         if (remainingTurn <= 0) return;
@@ -437,11 +460,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     public void GainMana(int value, bool instant = false)
     {
-        currentMana += value;
+        int finalValue = (int)GetFinalValueAfterModifyStat(ModifyStatType.ManaRecovery, value);
+        currentMana += finalValue;
         if (currentMana >= 1000)
         {
             currentMana = 1000;
         }
+
         if (instant) return;
         float mana01 = currentMana / (float)MaxMana;
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
