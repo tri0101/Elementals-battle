@@ -10,7 +10,9 @@ public enum AbilityEffectType
     // CC
     Rooted = 19,            // trói chân
     Stun = 20,              // choáng
-    Paralyze = 21           // tê liệt
+    Paralyze = 21,           // tê liệt
+    Sleep = 22,              // ngủ
+    Freeze = 23,             // đóng băng
 }
 
 public enum AbilityTarget
@@ -43,6 +45,7 @@ public enum ModifyStatType
     HealingRate = 6, // tỉ lệ hồi máu (áp dụng cho buff hồi máu)
     HealthMax = 7, // tăng máu tối đa (áp dụng cho buff tăng máu tối đa)
     ManaRecovery = 8, // tốc độ hồi mana (áp dụng cho buff hồi mana)
+    LifeSteal = 9, // tỉ lệ hút máu (áp dụng cho buff hút máu)
 }
 public enum TimesToCall
 {
@@ -86,6 +89,7 @@ public class AbilityEffect
             case ModifyStatType.Speed:
             case ModifyStatType.CritRate:
             case ModifyStatType.CritDamage:
+            case ModifyStatType.LifeSteal:
                 return false;
             case ModifyStatType.Armor:
                 return true;

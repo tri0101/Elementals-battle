@@ -466,7 +466,25 @@ public class BattleManager : MonoBehaviour
     }
 
     private Stack<Arena> stack = new Stack<Arena>();
+    public bool HasArenaWithSkill(string skillName)
+    {
+        if (string.IsNullOrEmpty(skillName) || stack.Count == 0)
+            return false;
 
+        var stackList = new List<Arena>(stack);
+
+        for (int i = 0; i < stackList.Count; i++)
+        {
+            if (stackList[i].skillApply == skillName)
+            {
+                Debug.Log($"[Arena] Found existing arena with skill: {skillName}");
+                return true;
+            }
+        }
+
+        Debug.Log($"[Arena] No arena found with skill: {skillName}");
+        return false;
+    }
     public void PutArenaOnStack(string skillName, string nameHero, int heroId, int order, Sprite arenaSprite = null)
     {
         if (string.IsNullOrEmpty(skillName) || string.IsNullOrEmpty(nameHero) || heroId <= 0) return;

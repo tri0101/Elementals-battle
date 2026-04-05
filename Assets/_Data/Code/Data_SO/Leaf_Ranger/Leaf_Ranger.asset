@@ -12,11 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5778393a6ad6a424fa917611adfe4062, type: 3}
   m_Name: Leaf_Ranger
   m_EditorClassIdentifier: 
-  health: 500
-  moveSpeed: 10
-  jumpForce: 10
-  airWalkSpeed: 7
-  rollPower: 20
-  rollDuration: 0.45
+  ID: 10
+  Name: Leaf Ranger
+  role: 1
+  normalAttack: {fileID: 11400000, guid: fbc31d11a6f004144852ce87a82a592b, type: 2}
+  skill: {fileID: 11400000, guid: 30222a4067fd3d94e9eb619d079adfd0, type: 2}
+  skillChance: 1
+  ultimate: {fileID: 11400000, guid: 4fb0f684c33995544a3da29904e8c384, type: 2}
+  passive: {fileID: 11400000, guid: 211e9b52ad0e36c42a38eb32029df574, type: 2}
+  damage: 77
+  health: 777
+  armor: 25
+  criticalRate: 5
+  criticalDamageRate: 150
+  lifeSteal: 15
+  speed: 55
+  speedFoodList: 
   durationA1: 0.7
   durationA2: 0.7
+  iconFace: {fileID: 5556479053715506799, guid: 893d907e645aeea4e9a2acbae402ebc6, type: 3}
+  soulID: 040000000500000006000000
+  HeroPreviewPrefabs: {fileID: 3368153954216697551, guid: 62e3e587b8d31f849860d1bf1e618d2f, type: 3}
+  HeroPrefab: {fileID: 5340313440401846756, guid: 87f7e4f0fe505694296dcf50a882acf4, type: 3}

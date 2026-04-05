@@ -7,6 +7,8 @@ using System.Collections.Generic;
 public class HeroControl : Subject
 {
     [Header("Attribute")]
+    [SerializeField] CapsuleCollider2D capsuleCollider2D;
+    public CapsuleCollider2D CapsuleCollider2D => capsuleCollider2D;
     [SerializeField] private Animator animator;
     public Animator Animator => animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
@@ -65,11 +67,11 @@ public class HeroControl : Subject
         get => canSkill;
         set => canSkill = value;
     }
-    [SerializeField] private bool canBlock;
-    public bool CanBlock
+    [SerializeField] private bool canDodge;
+    public bool CanDodge
     {
-        get => canBlock;
-        set => canBlock = value;
+        get => canDodge;
+        set => canDodge = value;
     }
     [SerializeField] private bool isTakeHit;
     public bool IsTakeHit
@@ -83,11 +85,11 @@ public class HeroControl : Subject
         get => isDead;
         set => isDead = value;
     }
-    [SerializeField] private bool isBlock = false;
-    public bool IsBlock
+    [SerializeField] private bool isDodge = false;
+    public bool IsDodge
     {
-        get => isBlock;
-        set => isBlock = value;
+        get => isDodge;
+        set => isDodge = value;
     }
     [SerializeField] private bool isClear = false;
     public bool IsClear
@@ -146,6 +148,8 @@ public class HeroControl : Subject
 
     HeroEventt heroEventt;
     public HeroEventt HeroEventt => heroEventt;
+    HeroDodge heroDodge;
+    public HeroDodge HeroDodge => heroDodge;
 
     [Header("ScriptableObject")]
     [SerializeField] private HeroInfo heroInfo;
@@ -219,7 +223,11 @@ public class HeroControl : Subject
     {
         shouldPlus = value;
     }
-
+    public void SetCanDodge()
+    {
+        canDodge = true;
+        
+    }
     public void SetUltimate()
     {
         if(heroInfo.ultimate == null)
@@ -258,13 +266,19 @@ public class HeroControl : Subject
         
         
     }
-    public void SetBlock()
+    public void SetDodge()
     {
-        isBlock = true;
+        isDodge = true;
     }
     public void SetIsTakeHit()
     {
-        isTakeHit = true;
+        if(heroStatRuntime.HasAES(AbilityEffectType.Rooted)
+            || heroStatRuntime.HasAES(AbilityEffectType.Stun))
+        {
+            return;
+        }
+        if (canDodge) isDodge = true;
+        else isTakeHit = true;
 
     }
     public void SetIsDead()
@@ -601,12 +615,13 @@ public class HeroControl : Subject
         heroRun = GetComponent<HeroRun>();
 
         heroAttackk = GetComponent<HeroAttackk>();
-
+        heroDodge = GetComponent<HeroDodge>();
         heroIdle = GetComponent<HeroIdle>();
         heroSkilll = GetComponent<HeroSkilll>();
         heroUltimate = GetComponent<HeroUltimate>();
 
         heroReceiveDamagee = transform.GetChild(0).Find("ColliderReceive").GetComponent<HeroReceiveDamagee>();
+        capsuleCollider2D = heroReceiveDamagee.GetComponent<CapsuleCollider2D>();
         heroEventt = transform.GetChild(0).GetComponent<HeroEventt>();
     }
 

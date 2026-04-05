@@ -36,11 +36,11 @@ public class BattleTurnManager : MonoBehaviour
 
     private int currentWave = 1;
 
-    // Rooted: unit nào bị Rooted trong turn này sẽ skip cả turn (ultimate + normal)
-    private readonly HashSet<HeroControl> rootedSkipThisTurn = new HashSet<HeroControl>();
+    // Skip turn effects: unit nào bị effect cấm đánh trong turn này sẽ skip cả turn (ultimate + normal)
+    private readonly HashSet<HeroControl> skipThisTurn = new HashSet<HeroControl>();
 
-    // Rooted: cuối turn mới trừ duration (để UI chỉ tắt/bật ở cuối turn)
-    private readonly HashSet<HeroControl> rootedConsumeAtEndOfTurn = new HashSet<HeroControl>();
+    // Skip turn effects: cuối turn mới trừ duration (để UI chỉ tắt/bật ở cuối turn)
+    private readonly HashSet<HeroControl> consumeSkipAtEndOfTurn = new HashSet<HeroControl>();
 
     private void Awake()
     {
@@ -70,8 +70,8 @@ public class BattleTurnManager : MonoBehaviour
 
             for (int turn = 1; turn <= maxTurns; turn++)
             {
-                rootedSkipThisTurn.Clear();
-                rootedConsumeAtEndOfTurn.Clear();
+                skipThisTurn.Clear();
+                consumeSkipAtEndOfTurn.Clear();
 
                 if (turnText != null)
                     turnText.text = $"{turn}/20";
@@ -102,7 +102,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 yield return new WaitForSeconds(0.5f);
                 yield return CoTeamNormalSkill(firstTeam);
-               
+
                 if (AreAllTeamDead(TeamEnemy))
                 {
                     battleManager.SetActiveForUIBatle(false);
@@ -134,9 +134,9 @@ public class BattleTurnManager : MonoBehaviour
                 // DOT tick + giảm duration DOT ở cuối full round (2 team cùng lúc)
                 yield return CoApplyEffect(false);
 
-                // NEW: cuối turn mới trừ Rooted để UI chỉ cập nhật/tắt ở cuối turn
-                ConsumeRootedAtEndOfTurn();
-              
+                // NEW: cuối turn mới trừ skip effects để UI chỉ cập nhật/tắt ở cuối turn
+                ConsumeSkipEffectsAtEndOfTurn();
+
             }
 
             if (battleManager == null)
@@ -147,41 +147,54 @@ public class BattleTurnManager : MonoBehaviour
         }
     }
 
-    private bool TrySkipActionIfRooted(HeroControl unit)
+    private bool TrySkipActionIfDisabled(HeroControl unit)
     {
         if (unit == null || unit.HeroStatRuntime == null)
             return false;
 
         // đã đánh dấu skip trong turn => mọi phase đều skip
-        if (rootedSkipThisTurn.Contains(unit))
+        if (skipThisTurn.Contains(unit))
             return true;
 
-        // không rooted => không skip
-        if (!unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted))
-            return false;
-
-        // rooted => skip cả turn, và đánh dấu sẽ trừ ở cuối turn
-        rootedSkipThisTurn.Add(unit);
-        rootedConsumeAtEndOfTurn.Add(unit);
-        return true;
-    }
-
-    private void ConsumeRootedAtEndOfTurn()
-    {
-        if (rootedConsumeAtEndOfTurn.Count == 0)
-            return;
-
-        foreach (var unit in rootedConsumeAtEndOfTurn)
+        // Kiểm tra tất cả effect cấm đánh
+        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted) ||
+            unit.HeroStatRuntime.HasAES(AbilityEffectType.Stun) ||
+            unit.HeroStatRuntime.HasAES(AbilityEffectType.Sleep) ||
+            unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze))
         {
-            if (unit == null) continue;
-            if (unit.HeroStatRuntime == null) continue;
-            if (IsDead(unit)) continue;
-
-            // trừ ở cuối turn => nếu về 0 thì UI/cancel rooted xảy ra tại đây
-            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
+            skipThisTurn.Add(unit);
+            consumeSkipAtEndOfTurn.Add(unit);
+            return true;
         }
 
-        rootedConsumeAtEndOfTurn.Clear();
+        return false;
+    }
+
+    private void ConsumeSkipEffectsAtEndOfTurn()
+    {
+        if (consumeSkipAtEndOfTurn.Count == 0)
+            return;
+
+        foreach (var unit in consumeSkipAtEndOfTurn)
+        {
+            if (unit == null || unit.HeroStatRuntime == null || IsDead(unit))
+                continue;
+
+            // Trừ tất cả effect cấm đánh
+            if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted))
+                unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
+
+            if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Stun))
+                unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Stun);
+
+            if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Sleep))
+                unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Sleep);
+
+            if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze))
+                unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Freeze);
+        }
+
+        consumeSkipAtEndOfTurn.Clear();
     }
 
     private IEnumerator CoTeamUltimate(string teamTag)
@@ -193,8 +206,8 @@ public class BattleTurnManager : MonoBehaviour
             if (IsDead(unit)) continue;
 
             unit.IsFinished = false;
-            
-            if (TrySkipActionIfRooted(unit))
+
+            if (TrySkipActionIfDisabled(unit))
                 continue;
 
             var reC = unit.GetComponent<HeroControl>();
@@ -221,6 +234,7 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+
     private IEnumerator CoTeamNormalSkill(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -231,7 +245,7 @@ public class BattleTurnManager : MonoBehaviour
 
             unit.IsFinished = false;
 
-            if (TrySkipActionIfRooted(unit))
+            if (TrySkipActionIfDisabled(unit))
                 continue;
 
             if (!unit.CanAttackInBattle) continue;
@@ -243,7 +257,6 @@ public class BattleTurnManager : MonoBehaviour
                 List<AbilityEffect> effectOnAttack = unit.HeroInfo.skill.GetEffectsOnAttack();
                 ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, unit);
             }
-
             else
             {
                 unit.SetTarget(unit.HeroInfo.normalAttack);
@@ -253,14 +266,11 @@ public class BattleTurnManager : MonoBehaviour
                 ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, unit);
             }
 
-
             if (unit.CanSkill)
                 unit.SetSkill();
             else
                 unit.SetAttack();
 
-            //if(unit.CanBlock)
-            //    unit.SetBlock();
             yield return new WaitUntil(() => unit.IsFinished);
 
             if (delayBetweenActions > 0f)
@@ -270,17 +280,18 @@ public class BattleTurnManager : MonoBehaviour
                 yield break;
         }
     }
+
     bool checkShouldPlusTurn(string teamTag)
     {
         if (teamTag == TeamHero && !heroTeamStarts)
             return true;
         else if (teamTag == TeamEnemy && heroTeamStarts)
-             return true;
+            return true;
         else
             return false;
-       
     }
-    void ApplyEffectOnUse(List<AbilityEffect> onUse, List<AbilityEffect> onAttack, string teamTag,string skillName, HeroControl unit)
+
+    void ApplyEffectOnUse(List<AbilityEffect> onUse, List<AbilityEffect> onAttack, string teamTag, string skillName, HeroControl unit)
     {
         List<AbilityEffect> effectOnUse = onUse;
         List<AbilityEffect> effectOnAttack = onAttack;
@@ -319,48 +330,24 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 if (effect.target == AbilityTarget.HeroAll)
                 {
-                    
                     ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
                 }
-
                 else if (effect.target == AbilityTarget.Self)
                 {
-                    
-
                     unit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
                 }
-
                 else if (effect.target == AbilityTarget.CurrentTarget)
                 {
-
-                   
                     foreach (Transform enemy in unit.enemyTarget)
                     {
                         var targetUnit = enemy.GetComponent<HeroControl>();
                         if (targetUnit == null) continue;
                         targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
                     }
-
                 }
-                //else if (effect.target == AbilityTarget.EnemyAll)
-                //{
-                    
-                //    string enemyTeam = (teamTag == TeamHero) ? TeamEnemy : TeamHero;
-
-                    
-                //    for (int slot = 1; slot <= 6; slot++)
-                //    {
-                //        var enemy = GetUnitAtSlot(enemyTeam, slot);
-                //        if (enemy == null) continue;
-                //        if (IsDead(enemy)) continue;
-
-                //        enemy.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
-                //    }
-                //}
             }
         }
     }
-   
 
     private IEnumerator CoApplyEffect(bool checkAtStart)
     {
@@ -631,8 +618,9 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+
     private IEnumerator CoApplyPassiveBattle(string teamTag)
-    { 
+    {
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(teamTag, slot);
@@ -642,7 +630,7 @@ public class BattleTurnManager : MonoBehaviour
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
             Dictionary<ModifyStatType, int> dict = reC.HeroStatRuntime.GetDicOnStartBattle();
-            foreach(var key in dict.Keys)
+            foreach (var key in dict.Keys)
             {
                 int value = dict[key];
                 if (value != 0)
@@ -654,6 +642,7 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+
     private IEnumerator CoTeamPassiveBattle(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -683,7 +672,6 @@ public class BattleTurnManager : MonoBehaviour
                         ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Tank);
                     else if (effect.target == AbilityTarget.SupportHeroAll)
                         ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Support);
-                    
                 }
             }
 
@@ -702,10 +690,10 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            //unit.HeroStatRuntime.ApplyStats(type, value, true);
             unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
+
     void ApplyModifyStatAll(string nameAbility, ModifyStatType type, int turns, float value, int maxStack)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -716,6 +704,7 @@ public class BattleTurnManager : MonoBehaviour
             unit.HeroStatRuntime.ApplyModifyStat(nameAbility, type, turns, value, maxStack);
         }
     }
+
     void ApplyStatCertainRoleBattle(ModifyStatType type, float value, RoleHero role)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -723,10 +712,11 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            if(unit.HeroInfo.role != role) continue;
+            if (unit.HeroInfo.role != role) continue;
             unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
+
     private void ConsumeModifyStatForTeam(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -739,6 +729,7 @@ public class BattleTurnManager : MonoBehaviour
             unit.HeroStatRuntime.MinusAllModifyStatRemainTurn();
         }
     }
+
     private static bool ShouldUseSkill(HeroControl unit)
     {
         if (unit == null || unit.HeroInfo == null || unit.HeroInfo.skill == null)

@@ -20,10 +20,10 @@ public class HeroStateManager : MonoBehaviour
   
     public HeroSkillState skillState = new HeroSkillState();
     public HeroUltimateState ultimateState = new HeroUltimateState();
-
+    
     public HeroTakeHitState takeHitState = new HeroTakeHitState();
     public HeroDeathState deathState = new HeroDeathState();
-    public HeroBlockState blockState = new HeroBlockState();
+    public HeroDodgeState dodgeState = new HeroDodgeState();
 
     //List các state normal
     public const string hero_Idle = "Idle";
@@ -32,8 +32,7 @@ public class HeroStateManager : MonoBehaviour
     public const string hero_Skill = "Attack_2";
     public const string hero_Ultimate = "Skill";
     public const string hero_Take_Hit = "Take_hit";
-    public const string hero_Block_Start = "block_start";
-    public const string hero_Block_End = "block_end";
+    public const string hero_Dodge = "Dodge";
     public const string hero_Dead = "death";
     //List các state transform
  

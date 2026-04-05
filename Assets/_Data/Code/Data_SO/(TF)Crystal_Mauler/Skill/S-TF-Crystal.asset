@@ -25,4 +25,16 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 100
-  effects: []
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
+  effects:
+  - type: 20
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 0
+    canUpgrade: 0
+    modifyValue: 0
+    stackCount: 2
+    durationTurn: 1

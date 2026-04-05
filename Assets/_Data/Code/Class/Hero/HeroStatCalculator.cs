@@ -92,6 +92,10 @@
     {
         return info.criticalDamageRate;
     }
+    public static float CalculateLifeSteal(HeroInfo info)
+    {
+        return info.lifeSteal;
+    }
 
     // =========================
     // POWER CALCULATION
@@ -104,6 +108,7 @@
             stat.armor * 0.6f +
             stat.critRate * 50f +
             stat.critDamage * 30f +
+            stat.lifeSteal * 40f +
             stat.speed * 10f;
     }
 
@@ -123,6 +128,7 @@
             armor = CalculateArmor(info, instance, growth),
             critRate = CalculateCritRate(info),
             critDamage = CalculateCritDamage(info),
+            lifeSteal = CalculateLifeSteal(info),
             speed = CalculateSpeed(info, instance)
         };
 

@@ -51,10 +51,10 @@ public class HeroIdleState : HeroBaseState
         {
             hero.SwitchState(hero.deathState);
         }
-        //else if (hero.HeroControl.IsBlock) 
-        //{
-        //    hero.SwitchState(hero.blockState);
-        //}
+        else if (hero.HeroControl.IsDodge)
+        {
+            hero.SwitchState(hero.dodgeState);
+        }
     }
     public override void FixedUpdateState(HeroStateManager hero)
     {

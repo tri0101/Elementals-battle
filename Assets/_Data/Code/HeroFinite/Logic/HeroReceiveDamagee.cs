@@ -74,7 +74,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
 
 
-    public void ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
+    public float ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
     {
 
         if(shouldTakeHit)
@@ -116,7 +116,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         }
         if (manaGain > 0)
             heroControl.HeroStatRuntime.GainMana(manaGain);
-        if (heroControl.HeroStatRuntime.CurrentHealth <= 0)
+        if (heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
         {
             if (canDead)
             {
@@ -125,6 +125,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
                 heroControl.SetIsDead();
             }
         }
+        return finalDamage;
         
         
     }
@@ -139,7 +140,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
     public void SetCanDead()
     {
-        if(heroControl.HeroStatRuntime.CurrentHealth <= 0)
+        if(heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
         {
             isDead = true;
             heroControl.HeroStatRuntime.ClearAllAES();

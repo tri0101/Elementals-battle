@@ -24,11 +24,14 @@ public class HeroEventt : MonoBehaviour
     
     public void ChangeBackGround()
     {
+        if(BattleManager.Instance.HasArenaWithSkill(heroControl.HeroInfo.ultimate.abilityName))
+            return;
         if (heroControl.HeroInfo.ultimate.isChangeBackGround)
         {
             BattleManager.Instance.PutArenaOnStack(heroControl.HeroInfo.ultimate.abilityName,
                 heroControl.HeroInfo.name, heroControl.HeroInfo.ID, heroControl.HeroInfo.ultimate.order,
                 heroControl.HeroInfo.ultimate.backgroundChange);
+            SetEffectToEnemy(TimesToCall.OnUse);
         }
     }
     public void RemoveArena() // sử dụng khi hero có sàn
@@ -237,6 +240,10 @@ public class HeroEventt : MonoBehaviour
         }
 
         hideTotalDmgRoutine = null;
+    }
+    public void SpawnObjectSpawnPoint(string nameObject)
+    {
+        ObjectSpawnPoint.instance.SpawnObjectAtPosition(transform, nameObject);
     }
     public void SpawnObject(int index)
     {

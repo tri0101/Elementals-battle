@@ -162,6 +162,11 @@ public sealed class HeroStatRuntime : MonoBehaviour
                         heroControl.HeroEventt.CallCancelStopAnim();
                         heroControl.CanAttackInBattle = true;
                         break;
+                    case AbilityEffectType.Stun:
+                        CancelStun();
+                        heroControl.HeroEventt.CallCancelStopAnim();
+                        heroControl.CanAttackInBattle = true;
+                        break;
                 }
             }
         }
@@ -271,8 +276,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
             heroControl.RefreshObservers("canDisappear", false);
             heroControl.CanAttackInBattle = false;
         }
+        else if (type == AbilityEffectType.Stun)
+        {
+            heroControl.CanAttackInBattle = false;
+        }
 
-        stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));
+            stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));
 
         SyncAESDebug();
     }
@@ -354,7 +363,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     public float CritRate => finalStat != null ? finalStat.critRate : 0f;
     public float CritDamage => finalStat != null ? finalStat.critDamage : 0f;
-
+    public float LifeSteal => finalStat != null ? finalStat.lifeSteal : 0f;
     public float Speed => finalStat != null ? finalStat.speed : 0f;
 
     private void Awake()
@@ -391,6 +400,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 armor = baseInfo.armor,
                 critRate = baseInfo.criticalRate,
                 critDamage = baseInfo.criticalDamageRate,
+                lifeSteal = baseInfo.lifeSteal,
                 speed = baseInfo.speed,
                 power = 0f
             };
@@ -504,10 +514,36 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, scaledValue);
     }
 
+    //hàm tính toán giá trị hút máu
+    //value truyền vào là finalDamage đã gây ra cho enemy
+    //chỉ việc tính toán % hút máu rồi cộng vào hp hiện tại
+    public void LifeStealHP(int value, DamageType damageType, bool instant = false)
+    {
+        float percentLifeSteal = GetTotalModifyPercent(ModifyStatType.LifeSteal) + LifeSteal;
+        if (percentLifeSteal <= 0) return;
+        int hpLifeSteal = (int)(value * (percentLifeSteal / 100f));
+        if(hpLifeSteal <= 0) return;
+        CurrentHealth += hpLifeSteal;
+        if (currentHealth >= MaxHealth)
+        {
+            currentHealth = MaxHealth;
+        }
+        if (instant) return;
+        float health01 = CurrentHealth / (float)MaxHealth;
+
+        heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
+        heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, hpLifeSteal);
+    }
 
     public void MinusHP(int value, DamageType damageType, bool instant = false)
     {
+        if (heroControl.CanDodge) return;
         CurrentHealth -= value;
+        if(heroControl.HeroInfo.ID == 57 && currentHealth > 0 && currentHealth/MaxHealth < 0.2f
+            &&heroControl.HeroDodge.CountDodge <= 2)
+        {
+            heroControl.SetCanDodge();
+        }
         if (currentHealth <= 0)
         {
             currentHealth = 0;
@@ -525,6 +561,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         {
             case AbilityEffectType.Burn:
                 ApplyBurn();
+                break;
+            case AbilityEffectType.Stun:
+                ApplyStun();
                 break;
         }
     }
@@ -544,7 +583,37 @@ public sealed class HeroStatRuntime : MonoBehaviour
         );
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
+    void ApplyStun()
+    {
+        ClearOldEffect(AbilityEffectType.Stun);
 
+        GameObject stunEffect = EffectManager.Instance.Spawn(
+            AbilityEffectType.Stun,
+            heroControl.transform
+        );
+
+        if (stunEffect != null)
+        {
+            
+            Transform effectTransform = stunEffect.transform;
+            Vector3 heroScale = heroControl.transform.localScale;
+            Vector3 effectScale = effectTransform.localScale;
+
+            effectTransform.localScale = new Vector3(
+                effectScale.x / heroScale.x,
+                effectScale.y / heroScale.y,
+                1
+            );
+
+            
+            Vector3 effectPos = effectTransform.position;
+            effectTransform.localPosition = new Vector3(
+                0,
+                0.5f,
+                -0.1f
+            );
+        }
+    }
     public void ApplyEartEffect()
     {
         if (heroControl.SpriteRenderer.enabled)
@@ -561,7 +630,19 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         heroControl.SpriteEffect.gameObject.SetActive(false);
     }
-
+    void CancelStun()
+    {
+        ClearOldEffectInHeroControl(AbilityEffectType.Stun);
+    }
+    void ClearOldEffectInHeroControl(AbilityEffectType type)
+    {
+        foreach (Transform child in heroControl.transform)
+        {
+            Effect_Item effect_item = child.GetComponent<Effect_Item>();
+            if (effect_item != null && effect_item.GetAbilityType() == type)
+                Destroy(child.gameObject);
+        }
+    }
     void ClearOldEffect(AbilityEffectType type)
     {
         foreach (Transform child in heroControl.SpriteEffect.transform)
@@ -601,6 +682,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public float GetFinalValueAfterModifyStat(ModifyStatType type, float baseValue)
     {
         float totalPercent = GetTotalModifyPercent(type);
+        switch (type)
+        {
+            case ModifyStatType.CritRate:
+                totalPercent += CritRate; // cộng thêm %hiện tại của hero 
+                break;
+            case ModifyStatType.LifeSteal:
+                totalPercent += LifeSteal; 
+                break;
+        }
         return baseValue * (1f + totalPercent / 100f);
     }
 

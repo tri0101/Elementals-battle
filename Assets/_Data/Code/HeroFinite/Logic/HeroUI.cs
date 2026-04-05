@@ -31,6 +31,7 @@ public class HeroUI : MonoBehaviour, IObserver
     private string manaRecoveryIncreased = "Mana Recovery Increased";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
+    private string sturnNotice = "Stun";
 
     [Header("Bars")]
     public Image hpBar;
@@ -138,6 +139,9 @@ public class HeroUI : MonoBehaviour, IObserver
             case AbilityEffectType.Rooted:
                 SpawnFloatingEffectText(type);
                 break;
+            case AbilityEffectType.Stun:
+                SpawnFloatingEffectText(type);
+                break;
         }
     }
     public void OnNotify(HeroNotifyType type, object value)
@@ -237,6 +241,13 @@ public class HeroUI : MonoBehaviour, IObserver
                 break;
             case AbilityEffectType.Rooted:
                 text.text = rootedNotice;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case AbilityEffectType.Stun:
+                text.text = sturnNotice;
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;

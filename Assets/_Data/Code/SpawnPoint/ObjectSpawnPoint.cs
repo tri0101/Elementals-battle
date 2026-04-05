@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditorInternal;
@@ -11,38 +10,31 @@ public class ObjectSpawnPoint : MonoBehaviour
     [SerializeField] private List<GameObject> poolObject;
     private Transform holder;
     public static ObjectSpawnPoint instance;
+
     private void Awake()
     {
         instance = this;
-        holder = transform.GetChild(1);
-        AddPrefabs();
-      
+        holder = transform.GetChild(0);
     }
-    private void AddPrefabs()
-    {
-        foreach (Transform chill in transform.GetChild(0))
-        {
-            spawnPoints.Add(chill.gameObject);
-        }
-    }
-  
+
+   
     public GameObject BrowseList(string nameObject)
     {
-        foreach (Transform chill in transform.GetChild(0))
+        foreach (GameObject chill in spawnPoints)
         {
             if (chill.name == nameObject)
             {
-                return chill.gameObject;
+                return chill;
             }
-
         }
         return null;
     }
+
     private GameObject GetObjectFromPool(GameObject gameObject)
     {
-        foreach(GameObject obj in poolObject)
+        foreach (GameObject obj in poolObject)
         {
-            if(obj.name == gameObject.name)
+            if (obj.name == gameObject.name)
             {
                 poolObject.Remove(obj);
                 return obj;
@@ -52,40 +44,37 @@ public class ObjectSpawnPoint : MonoBehaviour
         tmpSpawwn.name = gameObject.name;
         return tmpSpawwn;
     }
-    public void SpawnObjectAtPosition(string objName, Transform heroSpawnPos, string heroSpawnTag)
+
+    public void SpawnObjectAtPosition(Transform unitTransform, string nameObjectSpawn)
     {
-        GameObject objSpawn = BrowseList(objName);
-        if(objSpawn == null)
+        if (unitTransform == null)
+            return;
+
+        GameObject prefab = BrowseList(nameObjectSpawn);
+        if (prefab == null)
+            return;
+
+        GameObject spawned = Instantiate(prefab);
+        spawned.name = prefab.name;
+
+        if (holder != null)
+            spawned.transform.SetParent(holder, false);
+
+        ObjectSpawnPointController controller = spawned.GetComponent<ObjectSpawnPointController>();
+        if (controller == null || controller.ObjectSpawnPointSO == null)
         {
-            Debug.LogWarning("Object không có trong list");
+            spawned.transform.position = unitTransform.position;
             return;
         }
-        ObjectSpawnPointController obc = objSpawn.GetComponent<ObjectSpawnPointController>();
-        Vector3 spawnPoint = obc.ObjectSpawnPointSO.spawnPosition;
-        GameObject tmpSpawwn = GetObjectFromPool(objSpawn);
-        tmpSpawwn.tag = heroSpawnTag;
-        tmpSpawwn.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.layer = LayerMask.NameToLayer(heroSpawnTag);
 
-        //Tính giá tr? cu?i cùng c?a obj khi spawn ra v?i y default 
-        Vector3 finalSpawnPoint = new Vector3(0, 0, 0);
-        if (heroSpawnPos.parent.localScale.x > 0)
+        spawned.transform.position = unitTransform.position + controller.ObjectSpawnPointSO.positionSpawn;
+
+        if (controller.ObjectSpawnPointSO.canFly && controller.ObjectSpawnPointFly != null)
         {
-            finalSpawnPoint = heroSpawnPos.position + new Vector3(spawnPoint.x, 0, 0);
+            controller.ObjectSpawnPointFly.SetDirectionFromUnitScale(unitTransform.localScale.x);
+            controller.ObjectSpawnPointFly.Fly();
         }
-        else
-        {
-            finalSpawnPoint = heroSpawnPos.position + new Vector3(-spawnPoint.x, 0, 0);
-
-        }
-        finalSpawnPoint.y = spawnPoint.y;
-        tmpSpawwn.transform.position = finalSpawnPoint;
-
-
-        tmpSpawwn.SetActive(true);
-        tmpSpawwn.transform.SetParent(holder);
     }
-
-
 
     public void AddToPool(GameObject obj)
     {

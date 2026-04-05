@@ -31,6 +31,7 @@ public class Attack : Subject
             return;
         }
         attackDamage = heroControl.HeroStatRuntime.Damage;
+        attackDamage *= attackInfo.mutiplerDamageSend;
         attackDamage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Damage, attackDamage);
         if (heroControl.IsCrit)
         {
@@ -57,8 +58,9 @@ public class Attack : Subject
             Debug.Log("Not enemy target");
             return;
         }
-        hero.ReceiveDamage(attackDamage, damageType, true, false);
-        if(heroControl.CurrentStringState == HeroStateManager.hero_Attack_1)
+        float finalDamage = hero.ReceiveDamage(attackDamage, damageType, true, false);
+        heroControl.HeroStatRuntime.LifeStealHP((int)finalDamage, DamageType.normalDamage);
+        if (heroControl.CurrentStringState == HeroStateManager.hero_Attack_1)
             ApplyEffectUINormal();
         else if(heroControl.CurrentStringState == HeroStateManager.hero_Skill)
             ApplyEffectUISkill();

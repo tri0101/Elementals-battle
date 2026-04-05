@@ -6,6 +6,7 @@ public class HeroStat
     public float armor;
     public float critRate;
     public float critDamage;
+    public float lifeSteal;
     public float speed;
     public float power;
 }

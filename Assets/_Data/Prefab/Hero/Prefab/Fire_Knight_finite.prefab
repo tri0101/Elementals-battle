@@ -421,6 +421,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  load: {fileID: 0}
 --- !u!1 &3506804413016342932
 GameObject:
   m_ObjectHideFlags: 0
@@ -617,6 +618,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   spriteEffect: {fileID: 0}
   listEffect: {fileID: 0}
+  canvasTotalDamage: {fileID: 0}
   fixedLayer: 
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
@@ -627,10 +629,13 @@ MonoBehaviour:
   isSkill: 0
   isFinished: 0
   canSkill: 0
+  canBlock: 0
   isTakeHit: 0
   isDead: 0
+  isBlock: 0
   isClear: 0
   isCrit: 0
+  shouldPlus: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -726,6 +731,8 @@ MonoBehaviour:
   currentHealth: 0
   currentMana: 0
   aesDebug: []
+  modifyStatDebug: []
+  onStartBattleDebug: []
 --- !u!114 &-9054127923660059671
 MonoBehaviour:
   m_ObjectHideFlags: 0
