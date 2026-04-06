@@ -204,7 +204,7 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-
+            if(IsLeftBattle(unit)) continue;
             unit.IsFinished = false;
 
             if (TrySkipActionIfDisabled(unit))
@@ -242,7 +242,7 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-
+            if(IsLeftBattle(unit)) continue;
             unit.IsFinished = false;
 
             if (TrySkipActionIfDisabled(unit))
@@ -744,7 +744,10 @@ public class BattleTurnManager : MonoBehaviour
         var recv = unit != null ? unit.GetComponentInChildren<HeroReceiveDamagee>() : null;
         return recv != null && recv.IsDead;
     }
-
+    private static bool IsLeftBattle(HeroControl unit)
+    {
+        return unit != null && unit.LeftBattle;
+    }
     private bool AreAllTeamDead(string teamTag)
     {
         bool anyUnit = false;

@@ -9,6 +9,7 @@ public class HeroDodgeState : HeroBaseState
     {
 
         hero.HeroControl.IsDodge = false;
+        hero.HeroControl.LeftBattle = true;
         hero.HeroControl.HeroDodge.IncreaseDodgeCount();
         hero.HeroControl.ChangeAnimationState(HeroStateManager.hero_Dodge);
     }

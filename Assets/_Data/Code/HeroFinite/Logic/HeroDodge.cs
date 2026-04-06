@@ -14,7 +14,7 @@ public class HeroDodge : MonoBehaviour
     public void IncreaseDodgeCount()
     {
         countDodge++;
-        if(countDodge > 2)
+        if(countDodge > 0)
         {
             heroControl.CanDodge = false;
         }

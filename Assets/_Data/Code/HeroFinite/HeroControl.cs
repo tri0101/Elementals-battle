@@ -3,6 +3,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.UIElements;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Serialization;
 
 public class HeroControl : Subject
 {
@@ -108,6 +109,12 @@ public class HeroControl : Subject
     {
         get => shouldPlus;
         set => shouldPlus = value;
+    }
+    [SerializeField] private bool leftBattle = false;// trốn khỏi battle
+    public bool LeftBattle
+    {
+        get => leftBattle;
+        set => leftBattle = value;
     }
 
     [SerializeField] private Vector3 battleTarget;
@@ -531,7 +538,8 @@ public class HeroControl : Subject
         {
             var root = roots[i];
             if (root == null) continue;
-
+            var heroControl = root.GetComponent<HeroControl>();
+            if (heroControl != null && heroControl.LeftBattle) continue;
             var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
             if (recv != null && recv.IsDead) continue;
 
@@ -550,7 +558,8 @@ public class HeroControl : Subject
 
             if (!BattlefieldRegistry.Instance.TryGetSlotIndex(root, out int slot)) continue;
             if (BattlefieldRegistry.SlotToRow(slot) != rowIndex1To3) continue;
-
+            var heroControl = root.GetComponent<HeroControl>();
+            if (heroControl != null && heroControl.LeftBattle) continue;
             var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
             if (recv != null && recv.IsDead) continue;
 
@@ -568,7 +577,8 @@ public class HeroControl : Subject
 
             if (!BattlefieldRegistry.Instance.TryGetSlotIndex(root, out int slot)) continue;
             if (BattlefieldRegistry.SlotToColumn(slot) != columnIndex1To2) continue;
-
+            var heroControl = root.GetComponent<HeroControl>();
+            if (heroControl != null && heroControl.LeftBattle) continue;
             var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
             if (recv != null && recv.IsDead) continue;
 
@@ -588,10 +598,11 @@ public class HeroControl : Subject
 
             if (!BattlefieldRegistry.Instance.TryGetSlotIndex(root, out int slot)) continue;
             if (BattlefieldRegistry.SlotToColumn(slot) != columnIndex) continue;
-
+            var heroControl = root.GetComponent<HeroControl>();
+            if(heroControl != null && heroControl.LeftBattle) continue;
             var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
             if (recv != null && recv.IsDead) continue;
-
+            
             result.Add(root);
         }
 

@@ -20,6 +20,8 @@ public class HeroEventt : MonoBehaviour
     {
         heroControl.IsFinished = true;
         heroControl.NotifyActionFinished();
+       
+
     }
     
     public void ChangeBackGround()
@@ -201,6 +203,7 @@ public class HeroEventt : MonoBehaviour
             if (enemy == null) continue;
             HeroControl heroC = enemy.GetComponent<HeroControl>();
             if (heroC == null) continue;
+            
             heroC.HeroReceiveDamagee.SetCanDead();
         }
     }
@@ -258,7 +261,7 @@ public class HeroEventt : MonoBehaviour
 
     public void CallStopAnim()
     {
-        if(!heroControl.CanAttackInBattle)
+        if(heroControl.CanDodge)
         heroControl.Animator.speed = 0f;
     }
     public void CallCancelStopAnim()
