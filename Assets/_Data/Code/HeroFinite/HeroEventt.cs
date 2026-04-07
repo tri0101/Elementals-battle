@@ -90,12 +90,12 @@ public class HeroEventt : MonoBehaviour
             }
            
         }
-        heroControl.HeroStatRuntime.GainMana(manaGain);
+        heroControl.HeroStatRuntime.GainMana(manaGain,true);
     }
  
     public void SetGainManaSkill()
     {
-        heroControl.HeroStatRuntime.GainMana(heroControl.HeroInfo.skill.manaGain);
+        heroControl.HeroStatRuntime.GainMana(heroControl.HeroInfo.skill.manaGain, true);
     }
     public void SetEffect()
     {
@@ -261,7 +261,7 @@ public class HeroEventt : MonoBehaviour
 
     public void CallStopAnim()
     {
-        if(heroControl.CanDodge)
+        
         heroControl.Animator.speed = 0f;
     }
     public void CallCancelStopAnim()

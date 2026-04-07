@@ -13,6 +13,7 @@ public class HeroDodge : MonoBehaviour
     }
     public void IncreaseDodgeCount()
     {
+        
         countDodge++;
         if(countDodge > 0)
         {

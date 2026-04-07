@@ -13,6 +13,7 @@ public enum AbilityEffectType
     Paralyze = 21,           // tê liệt
     Sleep = 22,              // ngủ
     Freeze = 23,             // đóng băng
+    Unleash = 24,             // giải phóng điện ( hero id = 54)
 }
 
 public enum AbilityTarget
@@ -46,6 +47,7 @@ public enum ModifyStatType
     HealthMax = 7, // tăng máu tối đa (áp dụng cho buff tăng máu tối đa)
     ManaRecovery = 8, // tốc độ hồi mana (áp dụng cho buff hồi mana)
     LifeSteal = 9, // tỉ lệ hút máu (áp dụng cho buff hút máu)
+    Mana = 10, // mana (áp dụng cho buff tăng mana)
 }
 public enum TimesToCall
 {

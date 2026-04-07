@@ -12,12 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73840c30afedd3e498b1df9b775b0d8c, type: 3}
   m_Name: Load_Lightning_Ronin
   m_EditorClassIdentifier: 
-  numberOfAttack: 3
-  spawnRangedPosition: {x: 2, y: -2.94, z: 0}
-  Attacks:
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 2, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 1, y: 0, z: 0}
-  - {x: 2, y: 0, z: 0}
+  numberOfAttack: 1
+  dicSpawn:
+  - indexSpawn: 1
+    type: 24
+    positionSpawn: {x: 0, y: -30, z: 0}

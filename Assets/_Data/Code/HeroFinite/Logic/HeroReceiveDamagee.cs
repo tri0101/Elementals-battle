@@ -115,7 +115,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
            
         }
         if (manaGain > 0)
-            heroControl.HeroStatRuntime.GainMana(manaGain);
+            heroControl.HeroStatRuntime.GainMana(manaGain, true);
         if (heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
         {
             if (canDead)

@@ -429,6 +429,10 @@ public class HeroControl : Subject
     }
     public Vector3 GetAttackPosition(AbilityInfo ability)
     {
+        if(enemyTarget.Count == 0)
+        {
+            isFinished = true;
+        }
         if (heroInfo.ID != 8  && (enemyTarget == null || enemyTarget.Count == 0))
         {
             Debug.Log("enemy target null or empty");

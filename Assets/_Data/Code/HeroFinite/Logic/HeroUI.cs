@@ -29,6 +29,7 @@ public class HeroUI : MonoBehaviour, IObserver
     private string healRateDecreased = "Heaing Rate Decreased";
     private string manaRecoveryDecreased = "Mana Recovery Decreased";
     private string manaRecoveryIncreased = "Mana Recovery Increased";
+    private string manaRestoration = "Mana Restoration";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
     private string sturnNotice = "Stun";
@@ -127,6 +128,9 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.ManaRecovery:
                 SpawnFloatingEffectText(type, value);
                 break;
+            case ModifyStatType.Mana:
+                SpawnFloatingEffectText(type, value);
+                break;
         }
     }
     public void OnNotify(AbilityEffectType type)
@@ -153,6 +157,7 @@ public class HeroUI : MonoBehaviour, IObserver
                 break;
 
             case HeroNotifyType.ManaChanged:
+                
                 SetManaBar((float)value);
                 break;
 
@@ -219,6 +224,11 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.ManaRecovery:
                 if (value > 0) text.text = manaRecoveryIncreased;
                 else text.text = manaRecoveryDecreased;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case ModifyStatType:
+                if (value > 0) text.text = manaRestoration;
+                else text.text = manaRestoration;
                 StartCoroutine(CoShowAndFade(text));
                 break;
         }

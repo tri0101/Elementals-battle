@@ -30,6 +30,10 @@ public class UI_PanelPause : MonoBehaviour
     }
     private void OnExit()
     {
-
+        Time.timeScale = 1f;
+        panelPause.gameObject.SetActive(false);
+        GameManager.Instance.LoadAdditiveScene(SceneId.MapScene);
+        GameManager.Instance.SetCameraActive(true);
+        GameManager.Instance.UnLoadAdditiveScene(SceneId.BattleScene);
     }
 }

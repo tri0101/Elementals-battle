@@ -477,9 +477,11 @@ public sealed class HeroStatRuntime : MonoBehaviour
             currentMana = 1000;
         }
 
-        if (instant) return;
+        
         float mana01 = currentMana / (float)MaxMana;
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
+        if (instant) return;
+        heroControl.RefreshObservers(ModifyStatType.Mana, finalValue);
     }
 
     public void MinusMana(int value)
@@ -540,7 +542,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         if (heroControl.CanDodge) return;
         CurrentHealth -= value;
         if(heroControl.HeroInfo.ID == 57 && currentHealth > 0 && currentHealth/MaxHealth < 0.2f
-            &&heroControl.HeroDodge.CountDodge <= 2)
+            &&heroControl.HeroDodge.CountDodge < 1)
         {
             heroControl.SetCanDodge();
         }

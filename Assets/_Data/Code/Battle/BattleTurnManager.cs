@@ -10,7 +10,8 @@ public class BattleTurnManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI turnText;
     [SerializeField] private GameObject clearImage;
     [SerializeField] private GameObject winExpPlusImage;
-
+    [Header("Defeat UI")]
+    [SerializeField] private GameObject panelDefeat;
     [Header("Refs")]
     [SerializeField] private BattleManager battleManager;
 
@@ -75,15 +76,19 @@ public class BattleTurnManager : MonoBehaviour
 
                 if (turnText != null)
                     turnText.text = $"{turn}/20";
-
+                yield return CoSetUpStartTurn();
                 SetCanSkill();
 
                 battleManager.SetActiveForUIBatle(true);
                 if (currentWave == 1 && turn == 1) yield return new WaitForSeconds(2f);
                 else if (turn == 1) yield return new WaitForSeconds(2f);
                 else yield return new WaitForSeconds(0.5f);
-
-                if (AreAllTeamDead(TeamEnemy))
+                if (AreAllTeamDead(TeamHero))
+                {
+                    HandleDefeat();
+                    yield break;
+                }
+                else if (AreAllTeamDead(TeamEnemy))
                 {
                     yield return CoHandleWaveCleared();
                     break;
@@ -93,7 +98,12 @@ public class BattleTurnManager : MonoBehaviour
                 string secondTeam = heroTeamStarts ? TeamEnemy : TeamHero;
 
                 yield return CoTeamUltimate(firstTeam);
-                if (AreAllTeamDead(TeamEnemy))
+                if (AreAllTeamDead(TeamHero))
+                {
+                    HandleDefeat();
+                    yield break;
+                }
+                else if (AreAllTeamDead(TeamEnemy))
                 {
                     yield return new WaitForSeconds(1f);
                     yield return CoHandleWaveCleared();
@@ -102,8 +112,12 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 yield return new WaitForSeconds(0.5f);
                 yield return CoTeamNormalSkill(firstTeam);
-
-                if (AreAllTeamDead(TeamEnemy))
+                if (AreAllTeamDead(TeamHero))
+                {
+                    HandleDefeat();
+                    yield break;
+                }
+                else if (AreAllTeamDead(TeamEnemy))
                 {
                     battleManager.SetActiveForUIBatle(false);
                     yield return new WaitForSeconds(0.5f);
@@ -122,7 +136,12 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 yield return new WaitForSeconds(0.5f);
                 yield return CoTeamNormalSkill(secondTeam);
-                if (AreAllTeamDead(TeamEnemy))
+                if (AreAllTeamDead(TeamHero))
+                {
+                    HandleDefeat();
+                    yield break;
+                }
+                else if (AreAllTeamDead(TeamEnemy))
                 {
                     battleManager.SetActiveForUIBatle(false);
                     yield return new WaitForSeconds(0.5f);
@@ -216,6 +235,7 @@ public class BattleTurnManager : MonoBehaviour
             if (!reC.CanAttackInBattle) continue;
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
             unit.SetTarget(unit.HeroInfo.ultimate);
+            if (unit.IsFinished) continue;
             string skillName = reC.HeroInfo.ultimate.abilityName;
             List<AbilityEffect> effectOnUse = reC.HeroInfo.ultimate.GetEffectsOnUse();
             List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
@@ -226,7 +246,10 @@ public class BattleTurnManager : MonoBehaviour
 
             if (delayBetweenUltimates > 0f)
                 yield return new WaitForSeconds(delayBetweenUltimates);
-
+            if(AreAllTeamDead(TeamHero))
+                yield break;
+            
+            else
             if (AreAllTeamDead(TeamEnemy))
                 yield break;
         }
@@ -252,6 +275,7 @@ public class BattleTurnManager : MonoBehaviour
             if (unit.CanSkill)
             {
                 unit.SetTarget(unit.HeroInfo.skill);
+                if (unit.IsFinished) continue;
                 string skillName = unit.HeroInfo.skill.abilityName;
                 List<AbilityEffect> effectOnUse = unit.HeroInfo.skill.GetEffectsOnUse();
                 List<AbilityEffect> effectOnAttack = unit.HeroInfo.skill.GetEffectsOnAttack();
@@ -260,6 +284,7 @@ public class BattleTurnManager : MonoBehaviour
             else
             {
                 unit.SetTarget(unit.HeroInfo.normalAttack);
+                if (unit.IsFinished) continue;
                 string skillName = unit.HeroInfo.normalAttack.abilityName;
                 List<AbilityEffect> effectOnUse = unit.HeroInfo.normalAttack.GetEffectsOnUse();
                 List<AbilityEffect> effectOnAttack = unit.HeroInfo.normalAttack.GetEffectsOnAttack();
@@ -276,6 +301,10 @@ public class BattleTurnManager : MonoBehaviour
             if (delayBetweenActions > 0f)
                 yield return new WaitForSeconds(delayBetweenActions);
 
+            if (AreAllTeamDead(TeamHero))
+                yield break;
+
+            else
             if (AreAllTeamDead(TeamEnemy))
                 yield break;
         }
@@ -409,7 +438,13 @@ public class BattleTurnManager : MonoBehaviour
             yield return CoTeamSoulBattle(TeamHero);
         }
     }
-
+    private IEnumerator CoSetUpStartTurn()
+    {
+       
+        yield return SetUpStartTurn(TeamHero);
+        yield return SetUpStartTurn(TeamEnemy);
+        
+    }
     private IEnumerator CoPassiveBattlePhase()
     {
         if (heroTeamStarts)
@@ -433,6 +468,7 @@ public class BattleTurnManager : MonoBehaviour
             yield return CoApplyPassiveBattle(TeamHero);
         }
     }
+    
 
     private IEnumerator CoHandleWaveCleared()
     {
@@ -618,6 +654,26 @@ public class BattleTurnManager : MonoBehaviour
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);
     }
+    private IEnumerator SetUpStartTurn(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(teamTag, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            unit.IsFinished = false;
+            var reC = unit.GetComponent<HeroControl>();
+            if (reC == null) continue;
+            if (reC.LeftBattle)
+            {
+                reC.HeroEventt.CallCancelStopAnim();
+                reC.LeftBattle = false;
+                reC.HeroStatRuntime.GainMana(1000);
+            }
+        }
+        if (delayBetweenActions > 0f)
+            yield return new WaitForSeconds(delayBetweenActions);
+    }
 
     private IEnumerator CoApplyPassiveBattle(string teamTag)
     {
@@ -761,6 +817,8 @@ public class BattleTurnManager : MonoBehaviour
 
             if (!IsDead(unit))
                 return false;
+            if(IsLeftBattle(unit))
+                return false;
         }
 
         return anyUnit;
@@ -784,5 +842,22 @@ public class BattleTurnManager : MonoBehaviour
         }
 
         return null;
+    }
+    private void HandleDefeat()
+    {
+        isEnd = true;
+        Time.timeScale = 1f;
+
+        //if (battleManager != null)
+        //    battleManager.SetActiveForUIBatle(false);
+
+        //if (clearImage != null)
+        //    clearImage.SetActive(false);
+
+        //if (winExpPlusImage != null)
+        //    winExpPlusImage.SetActive(false);
+
+        if (panelDefeat != null)
+            panelDefeat.SetActive(true);
     }
 }
