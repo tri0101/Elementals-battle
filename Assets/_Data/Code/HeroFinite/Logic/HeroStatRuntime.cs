@@ -567,6 +567,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
             case AbilityEffectType.Stun:
                 ApplyStun();
                 break;
+            case AbilityEffectType.Charge:
+                ApplyCharge();
+                break;
         }
     }
 
@@ -612,6 +615,46 @@ public sealed class HeroStatRuntime : MonoBehaviour
             effectTransform.localPosition = new Vector3(
                 0,
                 0.5f,
+                -0.1f
+            );
+        }
+    }
+    public void ApplyUnleashChargeEffect(int damageUnleash)
+    {
+        if (HasAES(AbilityEffectType.Charge))
+        {
+            
+            ClearOldEffect(AbilityEffectType.Charge);
+            heroControl.HeroReceiveDamagee.ReceiveDamage(damageUnleash, DamageType.normalDamage,true,true);
+        }
+    }
+    void ApplyCharge()
+    {
+        ClearOldEffect(AbilityEffectType.Charge);
+
+        GameObject chargeEffect = EffectManager.Instance.Spawn(
+            AbilityEffectType.Charge,
+            heroControl.transform
+        );
+
+        if (chargeEffect != null)
+        {
+
+            Transform effectTransform = chargeEffect.transform;
+            Vector3 heroScale = heroControl.transform.localScale;
+            Vector3 effectScale = effectTransform.localScale;
+
+            effectTransform.localScale = new Vector3(
+                effectScale.x / heroScale.x,
+                effectScale.y / heroScale.y,
+                1
+            );
+
+
+            Vector3 effectPos = effectTransform.position;
+            effectTransform.localPosition = new Vector3(
+                0,
+                0.25f,
                 -0.1f
             );
         }

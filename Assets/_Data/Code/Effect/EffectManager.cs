@@ -66,14 +66,12 @@ public class EffectManager : MonoBehaviour
         var go = Instantiate(prefab, parent, false);
         if(listTarget != null)
         {
-            foreach (var target in listTarget)
-            {
-                var effectTarget = go.GetComponent<Effect_Item>();
-                if (effectTarget != null)
-                {
-                    effectTarget.SetTarget(target);
-                }
-            }
+           
+            var effectTarget = go.GetComponent<Effect_Item>();
+            if (effectTarget != null)
+                effectTarget.SetTarget(listTarget);
+                
+            
         }
        
         go.transform.localPosition = localPosition;
@@ -93,8 +91,9 @@ public class EffectManager : MonoBehaviour
     public GameObject Spawn(
         AbilityEffectType type,
         Transform parent,
-        List<Transform> listTarget,
-        Vector3 localPosition
+        
+        Vector3 localPosition,
+        List<Transform> listTarget = null
     )
     {
         localPosition.z = -1f;

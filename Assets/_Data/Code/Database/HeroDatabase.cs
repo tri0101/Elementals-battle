@@ -8,6 +8,11 @@ public class HeroDatabase : ScriptableObject
 
     private Dictionary<int, HeroInfo> heroDict;
 
+    private void OnEnable()
+    {
+        Init();
+    }
+    
     public void Init()
     {
         heroDict = new Dictionary<int, HeroInfo>();

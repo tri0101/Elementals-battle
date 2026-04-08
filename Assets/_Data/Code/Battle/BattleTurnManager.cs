@@ -76,6 +76,7 @@ public class BattleTurnManager : MonoBehaviour
 
                 if (turnText != null)
                     turnText.text = $"{turn}/20";
+                yield return new WaitForSeconds(0.5f);
                 yield return CoSetUpStartTurn();
                 SetCanSkill();
 

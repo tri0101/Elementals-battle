@@ -14,6 +14,8 @@ public enum AbilityEffectType
     Sleep = 22,              // ngủ
     Freeze = 23,             // đóng băng
     Unleash = 24,             // giải phóng điện ( hero id = 54)
+    Unleash2 = 25,             // giải phóng sét ( hero id = 54)
+    Charge =  26,             // tích điện ( hero id = 54)
 }
 
 public enum AbilityTarget

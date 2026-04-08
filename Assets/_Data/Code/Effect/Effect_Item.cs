@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Effect_Item : MonoBehaviour, IObserver
 {
     [SerializeField] private AbilityEffectType type;
-    [SerializeField] private Transform target;
+    [SerializeField] private List<Transform> target = new List<Transform>();
     [Header("Other script")]
     [SerializeField] private Animator animator;
     [SerializeField] private Effect_ItemEvent effectEvent;
@@ -25,10 +26,14 @@ public class Effect_Item : MonoBehaviour, IObserver
     //    HeroControl heroC = target.GetComponent<HeroControl>();
     //    heroC.RemoveObbserver(this);
     //}
-    public void SetTarget(Transform target)// target mà hiệu ứng này đang áp dụng lên, có thể là hero hoặc enemy
+    public void SetTarget(List<Transform> target)// target mà hiệu ứng này đang áp dụng lên, có thể là hero hoặc enemy
     {
-        HeroControl heroC = target.GetComponent<HeroControl>();
-        heroC.AddObserver(this);
+        foreach(Transform t in target)
+        {
+            HeroControl heroC = t.GetComponent<HeroControl>();
+            heroC.AddObserver(this);
+        }
+        
         this.target= target;
     }
     public void OnNotify(string name, bool value)

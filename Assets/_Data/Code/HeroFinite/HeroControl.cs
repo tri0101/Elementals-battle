@@ -233,7 +233,8 @@ public class HeroControl : Subject
     public void SetCanDodge()
     {
         canDodge = true;
-        
+        IsDodge = true;
+        leftBattle = true;
     }
     public void SetUltimate()
     {
@@ -273,10 +274,7 @@ public class HeroControl : Subject
         
         
     }
-    public void SetDodge()
-    {
-        isDodge = true;
-    }
+  
     public void SetIsTakeHit()
     {
         if(heroStatRuntime.HasAES(AbilityEffectType.Rooted)
@@ -284,8 +282,7 @@ public class HeroControl : Subject
         {
             return;
         }
-        if (canDodge) isDodge = true;
-        else isTakeHit = true;
+        isTakeHit = true;
 
     }
     public void SetIsDead()
@@ -367,6 +364,19 @@ public class HeroControl : Subject
                     BuildTargetsNone();
                     break;
                 }
+            case AbilityTargetingMode.AoeAllEnemies:
+                {
+                    // FIX: AoE lấy toàn bộ enemy còn sống
+                    var aliveEnemies = AddAliveEnemiesAll(enemyTeam);
+
+                    // AddAliveEnemiesAll currently returns a list but doesn't push into enemyTarget.
+                    // So we add them into enemyTarget here.
+                    for (int i = 0; i < aliveEnemies.Count; i++)
+                        enemyTarget.Add(aliveEnemies[i]);
+
+                    break;
+                }
+
 
             case AbilityTargetingMode.Column:
                 {

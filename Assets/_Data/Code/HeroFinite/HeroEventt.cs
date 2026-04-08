@@ -256,7 +256,7 @@ public class HeroEventt : MonoBehaviour
         newPos.x += typeAndvector.positionSpawn.x;
         newPos.y += typeAndvector.positionSpawn.y;
         List<Transform> listEnemy = heroControl.enemyTarget;
-        EffectManager.Instance.Spawn(typeAndvector.type, EffectManager.Instance.ListEffect, listEnemy, newPos);
+        EffectManager.Instance.Spawn(typeAndvector.type, EffectManager.Instance.ListEffect, newPos,listEnemy);
     }
 
     public void CallStopAnim()
@@ -271,7 +271,18 @@ public class HeroEventt : MonoBehaviour
     }
     
 
-
+    public void UnLeashCharge() //chỉ dành cho hero có id = 54
+    {
+        int damageUnleash = (int)( 0.5f * heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
+            ModifyStatType.Damage, heroControl.HeroStatRuntime.Damage));
+        foreach(Transform enemy in heroControl.enemyTarget)
+        {
+            if (enemy == null) continue;
+            HeroControl heroC = enemy.GetComponent<HeroControl>();
+            if (heroC == null) continue;
+            heroC.HeroStatRuntime.ApplyUnleashChargeEffect(damageUnleash);
+        }
+    }
     public void GainHPAllHero() // chỉ dành cho hero có id = 8
     {
         AbilityInfo abilityInfo = heroControl.HeroInfo.skill;
