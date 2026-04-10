@@ -27,9 +27,10 @@ public class HeroDeathState : HeroBaseState
     public override void UpdateState(HeroStateManager hero)
     {
 
+        
         if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Dead, 1f, 1)))
         {
-
+            //if (hero.HeroControl.HeroInfo.ID == 58) return;
             hero.HeroControl.gameObject.SetActive(false);
         }
     }

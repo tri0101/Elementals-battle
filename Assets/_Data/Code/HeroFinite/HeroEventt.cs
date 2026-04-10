@@ -204,7 +204,7 @@ public class HeroEventt : MonoBehaviour
             HeroControl heroC = enemy.GetComponent<HeroControl>();
             if (heroC == null) continue;
             
-            heroC.HeroReceiveDamagee.SetCanDead();
+            heroC.HeroReceiveDamagee.SetCanDead(heroControl);
         }
     }
     public void NotifyCanShowTotalDmg()

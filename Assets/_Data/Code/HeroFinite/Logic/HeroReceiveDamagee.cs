@@ -1,9 +1,15 @@
-﻿using System.Net.Mail;
+﻿using NUnit.Framework;
+using System.Collections.Generic;
+using System.Net.Mail;
 using UnityEditor.Analytics;
+using UnityEditor.MPE;
 using UnityEngine;
 
 public class HeroReceiveDamagee : MonoBehaviour, IObserver
 {
+  
+    protected List<string> nameObjectEffect = new List<string>();
+    
 
     [SerializeField] HeroControl heroControl;
     public HeroControl HeroControl => heroControl;
@@ -74,7 +80,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
 
 
-    public float ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
+    public virtual float ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead, HeroControl attacker = null) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
     {
 
         if(shouldTakeHit)
@@ -116,15 +122,21 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         }
         if (manaGain > 0)
             heroControl.HeroStatRuntime.GainMana(manaGain, true);
-        if (heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
+        if(attacker == null)// khi bị cháy
         {
-            if (canDead)
+            if (heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
             {
-                isDead = true;
-                heroControl.HeroStatRuntime.ClearAllAES();
-                heroControl.SetIsDead();
+
+                if (canDead)
+                {
+
+                    HandleDead(attacker);
+                    heroControl.HeroStatRuntime.ClearAllAES();
+                    heroControl.SetIsDead();
+                }
             }
         }
+        
         return finalDamage;
         
         
@@ -138,15 +150,17 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         heroControl.CanvasTotalDamage.UpdateTotalDamage();
         heroControl.CanvasTotalDamage.Show();
     }
-    public void SetCanDead()
+    public void SetCanDead(HeroControl attacker)
     {
         if(heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
         {
-            isDead = true;
+            HandleDead(attacker);
+            
             heroControl.HeroStatRuntime.ClearAllAES();
             heroControl.SetIsDead();
         }
     }
+    
     public int GetDamageAfterArmor(float damage)
     {
         float armor = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
@@ -160,8 +174,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
 
     public void CallStopAnim(float duration)
     {
-        //isStopAnim = true;
-        //stop anim trong vong duration
+        
         DurationFinalAttack = duration;
     }
    
@@ -177,9 +190,57 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     {
 
     }
+    //==Effect riêng cho từng hero
+    protected virtual void ApplyEffectForHero()
+    {
+        CallSpawnEffectHero(null, new Vector3(0,0,0));
+    }
 
-   
-   
+    protected virtual void HandleDead(HeroControl attacker = null)
+    {
+        isDead = true;
+    }
+    public virtual void CallSpawnEffectHero(string nameObject, Vector3 positionSpawn)
+    {
+        if (nameObjectEffect.Contains(nameObject))
+            return;
+        GameObject spawnEffect = EffectManager.Instance.Spawn(
+              nameObject,
+              HeroControl.ListEffect.transform
+          );
+        spawnEffect.name = nameObject;
+        if (spawnEffect != null)
+        {
+
+            Transform effectTransform = spawnEffect.transform;
+            Vector3 heroScale = HeroControl.transform.localScale;
+            Vector3 effectScale = effectTransform.localScale;
+
+            effectTransform.localScale = new Vector3(
+                effectScale.x / heroScale.x,
+                effectScale.y / heroScale.y,
+                1
+            );
+
+
+            Vector3 effectPos = effectTransform.position;
+            effectTransform.localPosition = positionSpawn;
+        }
+        nameObjectEffect.Add(nameObject);
+    }
+
+    public void ClearEffectByName(string nameObject)
+    {
+        nameObjectEffect.Remove(nameObject);
+        foreach (Transform child in HeroControl.ListEffect.transform)
+        {
+            if (child.name == nameObject)
+            {
+                Destroy(child.gameObject);
+                break;
+            }
+        }
+    }
 
 
 }

@@ -58,7 +58,7 @@ public class Attack : Subject
             Debug.Log("Not enemy target");
             return;
         }
-        float finalDamage = hero.ReceiveDamage(attackDamage, damageType, true, false);
+        float finalDamage = hero.ReceiveDamage(attackDamage, damageType, true, false, heroControl);
         heroControl.HeroStatRuntime.LifeStealHP((int)finalDamage, DamageType.normalDamage);
         if (heroControl.CurrentStringState == HeroStateManager.hero_Attack_1)
             ApplyEffectUINormal();

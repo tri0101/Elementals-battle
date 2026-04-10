@@ -116,7 +116,12 @@ public class HeroControl : Subject
         get => leftBattle;
         set => leftBattle = value;
     }
-
+    [SerializeField] private bool isTransform;
+    public bool IsTransform
+    {
+        get => isTransform;
+        set => isTransform = value;
+    }
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
 
@@ -157,7 +162,8 @@ public class HeroControl : Subject
     public HeroEventt HeroEventt => heroEventt;
     HeroDodge heroDodge;
     public HeroDodge HeroDodge => heroDodge;
-
+    HeroTransform heroTransform;
+    public HeroTransform HeroTransform => heroTransform;
     [Header("ScriptableObject")]
     [SerializeField] private HeroInfo heroInfo;
     public HeroInfo HeroInfo => heroInfo;
@@ -207,6 +213,10 @@ public class HeroControl : Subject
         distanceToTarget = clearPosition.position;
     }
 
+    public void SetTransform()
+    {
+        isTransform = true;
+    }
     //tính tỉ lệ chí mạng
     public bool IsCritical()
     {
@@ -287,7 +297,12 @@ public class HeroControl : Subject
     }
     public void SetIsDead()
     {
-        isDead = true;
+        if (heroInfo.ID == 58)
+        {
+            isDead = false;
+        }
+        else isDead = true;
+        
 
     }
     
@@ -638,7 +653,7 @@ public class HeroControl : Subject
         heroStatRuntime = GetComponent<HeroStatRuntime>();
         heroStateManager = GetComponent<HeroStateManager>();
         heroRun = GetComponent<HeroRun>();
-
+        heroTransform = GetComponent<HeroTransform>();
         heroAttackk = GetComponent<HeroAttackk>();
         heroDodge = GetComponent<HeroDodge>();
         heroIdle = GetComponent<HeroIdle>();

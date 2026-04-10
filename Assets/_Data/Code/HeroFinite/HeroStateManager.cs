@@ -24,7 +24,7 @@ public class HeroStateManager : MonoBehaviour
     public HeroTakeHitState takeHitState = new HeroTakeHitState();
     public HeroDeathState deathState = new HeroDeathState();
     public HeroDodgeState dodgeState = new HeroDodgeState();
-
+    public HeroTransformState transformState = new HeroTransformState();
     //List các state normal
     public const string hero_Idle = "Idle";
     public const string hero_Run = "Run";
@@ -34,8 +34,9 @@ public class HeroStateManager : MonoBehaviour
     public const string hero_Take_Hit = "Take_hit";
     public const string hero_Dodge = "Dodge";
     public const string hero_Dead = "death";
+    public const string hero_Transform = "Transform";
     //List các state transform
- 
+
 
 
     private void Awake()

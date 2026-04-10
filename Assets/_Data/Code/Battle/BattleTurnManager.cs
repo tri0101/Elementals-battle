@@ -76,14 +76,16 @@ public class BattleTurnManager : MonoBehaviour
 
                 if (turnText != null)
                     turnText.text = $"{turn}/20";
-                yield return new WaitForSeconds(0.5f);
-                yield return CoSetUpStartTurn();
+                
+               
                 SetCanSkill();
 
                 battleManager.SetActiveForUIBatle(true);
                 if (currentWave == 1 && turn == 1) yield return new WaitForSeconds(2f);
                 else if (turn == 1) yield return new WaitForSeconds(2f);
-                else yield return new WaitForSeconds(0.5f);
+                else yield return new WaitForSeconds(1f);
+                
+               
                 if (AreAllTeamDead(TeamHero))
                 {
                     HandleDefeat();
@@ -98,6 +100,9 @@ public class BattleTurnManager : MonoBehaviour
                 string firstTeam = heroTeamStarts ? TeamHero : TeamEnemy;
                 string secondTeam = heroTeamStarts ? TeamEnemy : TeamHero;
 
+
+
+                yield return SetUpStartTurn(firstTeam);
                 yield return CoTeamUltimate(firstTeam);
                 if (AreAllTeamDead(TeamHero))
                 {
@@ -127,7 +132,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
 
                 yield return new WaitForSeconds(0.5f);
-
+                yield return SetUpStartTurn(secondTeam);
                 yield return CoTeamUltimate(secondTeam);
                 if (AreAllTeamDead(TeamEnemy))
                 {
@@ -657,6 +662,7 @@ public class BattleTurnManager : MonoBehaviour
     }
     private IEnumerator SetUpStartTurn(string teamTag)
     {
+       
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(teamTag, slot);
@@ -665,12 +671,42 @@ public class BattleTurnManager : MonoBehaviour
             unit.IsFinished = false;
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
-            if (reC.LeftBattle)
+            if (reC.HeroInfo.ID == 57)
             {
-                reC.HeroEventt.CallCancelStopAnim();
-                reC.LeftBattle = false;
-                reC.HeroStatRuntime.GainMana(1000);
+                if (reC.LeftBattle)
+                {
+
+                    reC.HeroEventt.CallCancelStopAnim();
+                    reC.LeftBattle = false;
+                    reC.HeroStatRuntime.GainMana(1000);
+                }
             }
+            else if (reC.HeroInfo.ID == 58)
+            {
+                Hero58ReceiveDamage hero58 = reC.HeroReceiveDamagee as Hero58ReceiveDamage;
+                if (hero58.IsDiabolicPact)
+                {
+                    hero58.HasBeenUsed = true;
+                    hero58.IsDiabolicPact = false;
+                    hero58.ClearEffect();
+                    reC.HeroStatRuntime.GainHP((int)(0.25f * reC.HeroStatRuntime.MaxHealth), DamageType.normalDamage);
+                    AbilityInfo passiveSkill  = reC.HeroInfo.passive;
+                    List<AbilityEffect> effects = passiveSkill.GetEffectsOnSpecial();
+                    string nameAbility = passiveSkill.abilityName;
+                   foreach(var effect in effects)
+                    {
+                        if (effect.type == AbilityEffectType.ModifyStat)
+                        {
+                            reC.HeroStatRuntime.ApplyModifyStat(nameAbility, effect.statType,
+                                effect.durationTurn, effect.modifyValue, effect.stackCount);
+                        }
+                    }
+
+
+                }
+            }
+
+
         }
         if (delayBetweenActions > 0f)
             yield return new WaitForSeconds(delayBetweenActions);

@@ -16,6 +16,7 @@ public enum AbilityEffectType
     Unleash = 24,             // giải phóng điện ( hero id = 54)
     Unleash2 = 25,             // giải phóng sét ( hero id = 54)
     Charge =  26,             // tích điện ( hero id = 54)
+    Revive = 27,             // hồi sinh (áp dụng cho buff hồi sinh)
 }
 
 public enum AbilityTarget
@@ -58,6 +59,7 @@ public enum TimesToCall
     onAttack = 2,       //gọi khi hero tấn công
     onAttacked = 3,     //gọi khi hero bị tấn công
     OnUse = 4,         //gọi khi sử dụng kỹ năng (áp dụng cho hiệu ứng của kỹ năng, không áp dụng cho hiệu ứng của đòn đánh thường)
+    Special = 5,       // gọi khi điều kiện đặc biệt được đáp ứng (ví dụ: HP dưới 30%, hoặc sau khi sử dụng kỹ năng 3 lần)
 }
 [Serializable]
 public class AbilityEffect

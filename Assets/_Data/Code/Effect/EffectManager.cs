@@ -17,9 +17,12 @@ public class EffectManager : MonoBehaviour
 
     [Header("Registry (assign in Inspector)")]
     [SerializeField] private List<EffectEntry> effectPrefabs = new List<EffectEntry>();
+    [SerializeField] private List<GameObject> effectPrefabsByName = new List<GameObject>();
 
     private readonly Dictionary<AbilityEffectType, GameObject> prefabByType =
         new Dictionary<AbilityEffectType, GameObject>();
+    private readonly Dictionary<string, GameObject> prefabByName =
+        new Dictionary<string, GameObject>();
 
     private void Awake()
     {
@@ -40,6 +43,12 @@ public class EffectManager : MonoBehaviour
 
             // nếu trùng key thì thằng sau ghi đè
             prefabByType[e.type] = e.prefab;
+        }
+        prefabByName.Clear();
+        for (int i = 0; i < effectPrefabsByName.Count; i++)
+        {
+            prefabByName.Add(effectPrefabsByName[i].name, effectPrefabsByName[i]);
+            
         }
     }
 
@@ -79,6 +88,34 @@ public class EffectManager : MonoBehaviour
 
         return go;
     }
+    public GameObject Spawn(
+        String nameObject,
+        Transform parent,
+        Vector3 localPosition,
+        Quaternion localRotation,  
+        List<Transform> listTarget = null
+    )
+    {
+        if (parent == null)
+        {
+            Debug.LogWarning("[EffectManager] Spawn failed: parent is NULL.");
+            return null;
+        }
+
+        if (!prefabByName.TryGetValue(nameObject, out var prefab) || prefab == null)
+        {
+            Debug.LogWarning($"[EffectManager] No prefab registered for effect name: {nameObject}");
+            return null;
+        }
+
+        var go = Instantiate(prefab, parent, false);
+        
+       
+        go.transform.localPosition = localPosition;
+        go.transform.localRotation = localRotation;
+
+        return go;
+    }
 
     public GameObject Spawn(
         AbilityEffectType type,
@@ -87,6 +124,14 @@ public class EffectManager : MonoBehaviour
     {
         Vector3 vector = new Vector3(0f, 0f, -1f);
         return Spawn(type, parent, vector, Quaternion.identity);
+    }
+    public GameObject Spawn(
+        string nameObject,
+        Transform parent
+    )
+    {
+        Vector3 vector = new Vector3(0f, 0f, -1f);
+        return Spawn(nameObject, parent, vector, Quaternion.identity);
     }
     public GameObject Spawn(
         AbilityEffectType type,

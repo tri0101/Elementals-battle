@@ -262,6 +262,7 @@ GameObject:
   - component: {fileID: 2588761667550972326}
   - component: {fileID: 3892625558439912865}
   - component: {fileID: 884114417685160567}
+  - component: {fileID: 1532596183450051826}
   m_Layer: 0
   m_Name: (TF)Shadow_Stalker_finite
   m_TagString: Player2
@@ -336,6 +337,7 @@ MonoBehaviour:
   isCrit: 0
   shouldPlus: 0
   leftBattle: 0
+  isTransform: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -473,6 +475,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1532596183450051826
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2419364011399751626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdfb60f7a2e307d4593dc0b89ca21325, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2558880497791227231
 GameObject:
   m_ObjectHideFlags: 0
@@ -1048,7 +1062,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9074521527074558645}
   - component: {fileID: 5816750380737729834}
-  - component: {fileID: 1945490301874279247}
+  - component: {fileID: 1933562869722393978}
   m_Layer: 9
   m_Name: ColliderReceive
   m_TagString: ReceiveField
@@ -1109,7 +1123,7 @@ CapsuleCollider2D:
   m_Offset: {x: -0.0075693014, y: 0.23461895}
   m_Size: {x: 0.20432489, y: 0.455878}
   m_Direction: 0
---- !u!114 &1945490301874279247
+--- !u!114 &1933562869722393978
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1118,7 +1132,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4741663830266554928}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9d20c74b7f5546428eeab1e6c131081, type: 3}
+  m_Script: {fileID: 11500000, guid: fa3a6bfa212a89148b95a9c3bc75704a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   heroControl: {fileID: 0}
@@ -1130,6 +1144,7 @@ MonoBehaviour:
   isHit: 0
   isStopAnim: 0
   isDead: 0
+  attacker: {fileID: 0}
 --- !u!1 &5563348744494379968
 GameObject:
   m_ObjectHideFlags: 0

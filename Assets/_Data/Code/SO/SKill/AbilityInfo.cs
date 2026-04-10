@@ -101,6 +101,15 @@ public class AbilityInfo : ScriptableObject
             .Where(e => e != null && e.timeToCall == TimesToCall.OnUse)
             .ToList();
     }
+    public List<AbilityEffect> GetEffectsOnSpecial()
+    {
+        if (effects == null)
+            return null;
+
+        return effects
+            .Where(e => e != null && e.timeToCall == TimesToCall.Special)
+            .ToList();
+    }
 
     public List<AbilityEffect> GetEffectsStartTurn()
     {

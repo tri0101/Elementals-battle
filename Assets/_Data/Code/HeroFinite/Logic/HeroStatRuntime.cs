@@ -628,6 +628,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             heroControl.HeroReceiveDamagee.ReceiveDamage(damageUnleash, DamageType.normalDamage,true,true);
         }
     }
+    
     void ApplyCharge()
     {
         ClearOldEffect(AbilityEffectType.Charge);
