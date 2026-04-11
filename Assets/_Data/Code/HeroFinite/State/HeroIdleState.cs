@@ -33,7 +33,7 @@ public class HeroIdleState : HeroBaseState
             hero.SwitchState(hero.runState);
             return;
         }
-        else if (hero.HeroControl.IsUltimate && !hero.HeroControl.IsPrepare)
+        else if ((hero.HeroControl.IsUltimate && !hero.HeroControl.IsPrepare)  || (hero.HeroControl.IsUltimateSpecial && !hero.HeroControl.IsPrepare))
         {
             hero.SwitchState(hero.runState);
             return;

@@ -48,7 +48,7 @@ public class HeroRunState : HeroBaseState
             hero.SwitchState(hero.skillState);
             return;
         }
-        if (hero.HeroControl.IsUltimate && dx <= 0.1f)
+        if ((hero.HeroControl.IsUltimate || hero.HeroControl.IsUltimateSpecial) && dx <= 0.1f)
         {
             hero.HeroControl.HeroRun.SetZ();
             hero.HeroControl.HeroRun.FaceDefaultDirection();
@@ -84,7 +84,7 @@ public class HeroRunState : HeroBaseState
             hero.HeroControl.HeroRun.MoveTo(
                 hero.HeroControl.distanceToTarget, hero.HeroControl.HeroInfo.skill.speedToEnemy);
         }
-        else if (hero.HeroControl.IsUltimate)
+        else if (hero.HeroControl.IsUltimate || hero.HeroControl.IsUltimateSpecial)
         {
             hero.HeroControl.HeroRun.MoveTo(
                 hero.HeroControl.distanceToTarget, hero.HeroControl.HeroInfo.ultimate.speedToEnemy);

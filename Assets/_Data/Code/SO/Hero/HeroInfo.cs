@@ -43,6 +43,8 @@ public class HeroInfo : ScriptableObject
     [Range(0f, 1f)] public float skillChance = 1f;
     public AbilityInfo ultimate;
     public AbilityInfo passive;
+    [Header("Special Abilities")]
+    public AbilityInfo ultimateSpecial;
     [Header("Attribute Gereral")]
     public float damage;
     public float health;

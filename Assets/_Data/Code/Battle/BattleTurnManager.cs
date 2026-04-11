@@ -224,6 +224,7 @@ public class BattleTurnManager : MonoBehaviour
 
     private IEnumerator CoTeamUltimate(string teamTag)
     {
+        
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(teamTag, slot);
@@ -240,14 +241,26 @@ public class BattleTurnManager : MonoBehaviour
             if (reC.HeroInfo.ultimate == null) continue;
             if (!reC.CanAttackInBattle) continue;
             if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
-            unit.SetTarget(unit.HeroInfo.ultimate);
+            unit.CheckCanSpecial();
+            if (unit.CanUltimateSpecial)
+            {
+                unit.SetTarget(unit.HeroInfo.ultimateSpecial);
+            }
+            else
+            {
+                unit.SetTarget(unit.HeroInfo.ultimate);
+            }
+
             if (unit.IsFinished) continue;
             string skillName = reC.HeroInfo.ultimate.abilityName;
             List<AbilityEffect> effectOnUse = reC.HeroInfo.ultimate.GetEffectsOnUse();
             List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
             ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, reC);
-
-            unit.SetUltimate();
+            
+            if(unit.CanUltimateSpecial)
+                unit.SetUltimateSpecial();
+            else
+                unit.SetUltimate();
             yield return new WaitUntil(() => unit.IsFinished);
 
             if (delayBetweenUltimates > 0f)
@@ -841,6 +854,62 @@ public class BattleTurnManager : MonoBehaviour
     {
         return unit != null && unit.LeftBattle;
     }
+    public Transform GetHeroTransformWithLowestHpPercent()
+    {
+        if (BattlefieldRegistry.Instance == null)
+            return null;
+
+        Transform best = null;
+        float bestHp01 = float.PositiveInfinity;
+
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var hero = GetUnitAtSlot(TeamHero, slot);
+            if (hero == null) continue;
+            if (IsDead(hero)) continue;
+            if (IsLeftBattle(hero)) continue;
+            if (hero.HeroStatRuntime == null) continue;
+
+            float maxHp = hero.HeroStatRuntime.MaxHealth;
+            if (maxHp <= 0f) continue;
+
+            float hp01 = hero.HeroStatRuntime.CurrentHealth / maxHp;
+
+            if (hp01 < bestHp01)
+            {
+                bestHp01 = hp01;
+                best = hero.transform;
+            }
+        }
+
+        return best;
+    }
+    public bool HasAnyHeroHpPercentBelow(float value)
+    {
+        if (BattlefieldRegistry.Instance == null)
+            return false;
+
+        float threshold = Mathf.Clamp01(value);
+
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var hero = GetUnitAtSlot(TeamHero, slot);
+            if (hero == null) continue;
+            if (IsDead(hero)) continue;
+            if (IsLeftBattle(hero)) continue;
+            if (hero.HeroStatRuntime == null) continue;
+
+            float maxHp = hero.HeroStatRuntime.MaxHealth;
+            if (maxHp <= 0f) continue;
+
+            float hp01 = hero.HeroStatRuntime.CurrentHealth / maxHp;
+            if (hp01 < threshold)
+                return true;
+        }
+
+        return false;
+    }
+
     private bool AreAllTeamDead(string teamTag)
     {
         bool anyUnit = false;

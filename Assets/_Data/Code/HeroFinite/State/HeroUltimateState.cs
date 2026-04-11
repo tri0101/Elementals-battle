@@ -5,8 +5,20 @@ public class HeroUltimateState : HeroBaseState
     public override void EnterState(HeroStateManager hero)
     {
 
-        hero.HeroControl.IsUltimate = false;
-        hero.HeroControl.ChangeAnimationState(HeroStateManager.hero_Ultimate);
+      
+        if (hero.HeroControl.IsUltimate)
+        {
+            hero.HeroControl.IsUltimate = false;
+            hero.HeroControl.ChangeAnimationState(HeroStateManager.hero_Ultimate);
+
+        }
+        else
+        {
+            hero.HeroControl.IsUltimateSpecial = false;
+            hero.HeroControl.CanUltimateSpecial = false;
+            hero.HeroControl.ChangeAnimationState(HeroStateManager.hero_Ultimate_Special);
+        }
+
         hero.HeroControl.HeroUltimate.ResetMana();
         hero.HeroControl.HeroUltimate.RefreshTotalDmg();
     }
@@ -31,7 +43,8 @@ public class HeroUltimateState : HeroBaseState
     public override void UpdateState(HeroStateManager hero)
     {
 
-        if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Ultimate, 0.98f, 1)))
+        if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Ultimate, 0.98f, 1))
+            || hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Ultimate_Special, 0.98f,1))
         {
            
 
@@ -39,6 +52,7 @@ public class HeroUltimateState : HeroBaseState
 
             hero.SwitchState(hero.runState);
         }
+
 
     }
     public override void LateUpdateState(HeroStateManager hero)

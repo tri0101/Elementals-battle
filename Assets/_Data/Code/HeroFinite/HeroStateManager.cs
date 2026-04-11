@@ -31,6 +31,7 @@ public class HeroStateManager : MonoBehaviour
     public const string hero_Attack_1 = "Attack_1";
     public const string hero_Skill = "Attack_2";
     public const string hero_Ultimate = "Skill";
+    public const string hero_Ultimate_Special = "Skill_Special";
     public const string hero_Take_Hit = "Take_hit";
     public const string hero_Dodge = "Dodge";
     public const string hero_Dead = "death";

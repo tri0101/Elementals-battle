@@ -49,7 +49,18 @@ public class HeroControl : Subject
         get => isUltimate;
         set => isUltimate = value;
     }
-
+    [SerializeField] private bool isUltimateSpecial;
+    public bool IsUltimateSpecial
+    {
+        get => isUltimateSpecial;
+        set => isUltimateSpecial = value;
+    }
+    [SerializeField] bool canUltimateSpecial;
+    public bool CanUltimateSpecial
+    {
+        get => canUltimateSpecial;
+        set => canUltimateSpecial = value;
+    }
     [SerializeField] private bool isSkill;
     public bool IsSkill
     {
@@ -257,6 +268,19 @@ public class HeroControl : Subject
   
         
     }
+    
+    public void SetUltimateSpecial()
+    {
+        if(heroInfo.ultimateSpecial == null)
+            return;
+        if (actionInProgress) 
+            return;
+        isUltimateSpecial = true;
+        isCrit = IsCritical();
+  
+        
+    }
+    
     public void SetTarget(AbilityInfo info)
     {
         
@@ -284,6 +308,7 @@ public class HeroControl : Subject
         
         
     }
+    
   
     public void SetIsTakeHit()
     {
@@ -305,7 +330,15 @@ public class HeroControl : Subject
         
 
     }
-    
+    public void CheckCanSpecial()
+    {
+        if(heroInfo.ID == 5)
+        {
+            canUltimateSpecial = (HasAnyEnemyHpPercentBelow(0.25f)); 
+           
+        }
+       
+    }
     private void BuildTargets(AbilityInfo ability)
     {
         enemyTarget.Clear();
@@ -328,6 +361,10 @@ public class HeroControl : Subject
             
             case AbilityTargetingMode.None:
                 BuildTargetsNone();
+                break;
+            case AbilityTargetingMode.LowestHp:
+                
+                BuildTargetLowestHP();
                 break;
 
            case AbilityTargetingMode.Row:
@@ -531,6 +568,14 @@ public class HeroControl : Subject
 
         return result;
     }
+    private void BuildTargetLowestHP()
+    {
+        Transform enemyTeam = GetEnemyTransformWithLowestHpPercent();
+        if(enemyTeam != null)
+        {
+            enemyTarget.Add(enemyTeam);
+        }
+    }
     private void BuildTargetsNone()
     {
         enemyTarget.Clear();
@@ -636,6 +681,75 @@ public class HeroControl : Subject
         }
 
         return result;
+    }
+    public bool HasAnyEnemyHpPercentBelow(float value)
+    {
+        if (BattlefieldRegistry.Instance == null || HeroStatRuntime == null)
+            return false;
+
+        float threshold = Mathf.Clamp01(value);
+        string teamTag = CompareTag("Hero") ? "Enemy" : "Hero";
+
+        var allies = BattlefieldRegistry.Instance.GetUnitsByTeam(teamTag);
+        for (int i = 0; i < allies.Count; i++)
+        {
+            var root = allies[i];
+            if (root == null) continue;
+
+            var ally = root.GetComponent<HeroControl>();
+            if (ally == null) continue;
+            if (ally.LeftBattle) continue;
+
+            var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+            if (recv != null && recv.IsDead) continue;
+
+            if (ally.HeroStatRuntime == null) continue;
+            float maxHp = ally.HeroStatRuntime.MaxHealth;
+            if (maxHp <= 0f) continue;
+
+            float hp01 = ally.HeroStatRuntime.CurrentHealth / maxHp;
+            if (hp01 < threshold)
+                return true;
+        }
+
+        return false;
+    }
+    public Transform GetEnemyTransformWithLowestHpPercent()
+    {
+        if (BattlefieldRegistry.Instance == null)
+            return null;
+
+        string teamTag = CompareTag("Hero") ? "Enemy" : "Hero";
+        var allies = BattlefieldRegistry.Instance.GetUnitsByTeam(teamTag);
+
+        Transform best = null;
+        float bestHp01 = float.PositiveInfinity;
+
+        for (int i = 0; i < allies.Count; i++)
+        {
+            var root = allies[i];
+            if (root == null) continue;
+
+            var ally = root.GetComponent<HeroControl>();
+            if (ally == null) continue;
+            if (ally.LeftBattle) continue;
+
+            var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+            if (recv != null && recv.IsDead) continue;
+
+            if (ally.HeroStatRuntime == null) continue;
+            float maxHp = ally.HeroStatRuntime.MaxHealth;
+            if (maxHp <= 0f) continue;
+
+            float hp01 = ally.HeroStatRuntime.CurrentHealth / maxHp;
+            if (hp01 < bestHp01)
+            {
+                bestHp01 = hp01;
+                best = root.transform;
+            }
+        }
+
+        return best;
     }
 
     private void Awake()

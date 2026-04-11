@@ -52,6 +52,10 @@ public class GameManager : MonoBehaviour
     }
     public void LoadAdditiveScene(SceneId sceneLoad)
     {
+        if(sceneLoad == SceneId.BattleScene)
+        {
+            UI_ShowResource.Instance.gameObject.SetActive(false);
+        }
         SceneManager.LoadScene(sceneLoad.ToString(), LoadSceneMode.Additive);
         if(sceneLoad == SceneId.BattleScene)
         {
@@ -60,6 +64,10 @@ public class GameManager : MonoBehaviour
     }
     public void UnLoadAdditiveScene(SceneId sceneLoad)
     {
+        if(sceneLoad == SceneId.BattleScene)
+        {
+            UI_ShowResource.Instance.gameObject.SetActive(true);
+        }
         SceneManager.UnloadSceneAsync(sceneLoad.ToString());
     }
 

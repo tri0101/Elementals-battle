@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
+  m_Name: US-Ronin
+  m_EditorClassIdentifier: 
+  abilityName: Lighting_Ronin_U_S
+  type: 2
+  animStateName: 
+  icon: {fileID: 0}
+  speedToEnemy: 150
+  positionAttack: 1
+  distance: 2.2
+  targetingMode: 13
+  rowIndex: 1
+  column: 2
+  randomCount: 1
+  grantManaOnUse: 1
+  manaGain: 200
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
+  effects:
+  - type: 0
+    timeToCall: 4
+    target: 1
+    chance: 1
+    statType: 4
+    canUpgrade: 0
+    modifyValue: 95
+    stackCount: 1
+    durationTurn: 2
