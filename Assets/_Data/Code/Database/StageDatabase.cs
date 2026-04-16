@@ -7,6 +7,10 @@ public class StageDatabase : ScriptableObject
     public List<StageConfig> stages;
 
     private Dictionary<int, StageConfig> stageDict;
+    private void OnEnable()
+    {
+        Init();
+    }
     public void Init()
     {
         stageDict = new Dictionary<int, StageConfig>();

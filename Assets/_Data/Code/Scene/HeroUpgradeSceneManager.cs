@@ -7,9 +7,11 @@ public class HeroUpgradeSceneManager : MonoBehaviour
     [SerializeField] Transform panelSkill;
     [SerializeField] Transform panelStar;
     [SerializeField] Transform panelFightSoul;
+    [SerializeField] Transform panelInfoUpgrade;
     [SerializeField] Transform barLevel;
     [SerializeField] Transform barStar;
 
+   
     public void LoadPanelRank()
     {
         barLevel.gameObject.SetActive(true);
@@ -19,6 +21,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelSkill.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
         panelFightSoul.gameObject.SetActive(false);
+        panelInfoUpgrade.gameObject.SetActive(false);
     }
     public void LoadPanelLevel()
     {
@@ -29,6 +32,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelSkill.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
         panelFightSoul.gameObject.SetActive(false);
+        panelInfoUpgrade.gameObject.SetActive(false);
     }
     public void LoadPanelSKill()
     {
@@ -38,6 +42,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelLevel.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
         panelFightSoul.gameObject.SetActive(false);
+        panelInfoUpgrade.gameObject.SetActive(false);
     }
     public void LoadPanelStar()
     {
@@ -48,6 +53,7 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelLevel.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(true);
         panelFightSoul.gameObject.SetActive(false);
+        panelInfoUpgrade.gameObject.SetActive(false);
     }
 
     public void LoadPanelFightSoul()
@@ -57,6 +63,16 @@ public class HeroUpgradeSceneManager : MonoBehaviour
         panelRank.gameObject.SetActive(false);
         panelLevel.gameObject.SetActive(false);
         panelStar.gameObject.SetActive(false);
+        panelInfoUpgrade.gameObject.SetActive(false);
 
+    }
+    public void LoadPanelInfoUpgrade()
+    {
+        panelInfoUpgrade.gameObject.SetActive(true);
+        panelFightSoul.gameObject.SetActive(false);
+        panelSkill.gameObject.SetActive(false);
+        panelRank.gameObject.SetActive(false);
+        panelLevel.gameObject.SetActive(false);
+        panelStar.gameObject.SetActive(false);
     }
 }

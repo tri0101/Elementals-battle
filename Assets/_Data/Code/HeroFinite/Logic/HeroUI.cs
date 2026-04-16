@@ -7,7 +7,8 @@ using UnityEngine.UI;
 public enum HPNotifyType
 {
     HPMinus,
-    HPPlus
+    HPPlus,
+    ArmorMinus,
 }
 public enum DamageType // để phân biệt kiểu damage (normal, crit, block)
 {
@@ -32,11 +33,13 @@ public class HeroUI : MonoBehaviour, IObserver
     private string manaRestoration = "Mana Restoration";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
-    private string sturnNotice = "Stun";
+    private string stunNotice = "Stun";
+    private string paralysisNotice = "Paralysis";
 
     [Header("Bars")]
     public Image hpBar;
     public Image manaBar;
+    public Image shieldBar;
     public TextMeshProUGUI damageTextPrefab;
 
     public Transform listDamage;
@@ -44,26 +47,43 @@ public class HeroUI : MonoBehaviour, IObserver
     [SerializeField] private float barAnimDuration = 0.25f;
     [SerializeField] private Material normalMaterial;
     [SerializeField] private Material critMaterial;
+    private float currentShield01 = -1f;
     private float currentHp01 = -1f;
     private float currentMana01 = -1f;
 
     private Coroutine hpRoutine;
     private Coroutine manaRoutine;
-
+    private Coroutine shieldRoutine;
     private void Start()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
-
+        if (heroControl != null && heroControl.transform != null)
+        {
+            Vector3 s = transform.localScale;
+            s.x = heroControl.transform.CompareTag("Enemy") ? -Mathf.Abs(s.x) : Mathf.Abs(s.x);
+            transform.localScale = s;
+        }
         heroControl.AddObserver(this);
         hpBar = transform.Find("HP").GetChild(1).GetComponent<Image>();
         manaBar = transform.Find("Mana").GetChild(1).GetComponent<Image>();
+        
+        shieldBar = transform.Find("Shield").GetChild(1).GetComponent<Image>();
+        if (heroControl.HeroInfo.ID == 51)
+        {
+            shieldBar.transform.parent.gameObject.SetActive(true);
+            SetShieldBar(1f, true);
+        }
+
         listDamage = transform.Find("ListDamage");
         SetHpBar(1f, true);
+       
         if (heroControl.HeroInfo.ultimate == null)
         {
             manaBar.transform.parent.gameObject.SetActive(false);
         }
         SetManaBar(heroControl.HeroStatRuntime.CurrentMana / heroControl.HeroStatRuntime.MaxMana, true);
+
+
     }
 
     // ===== Flip helpers =====
@@ -146,6 +166,9 @@ public class HeroUI : MonoBehaviour, IObserver
             case AbilityEffectType.Stun:
                 SpawnFloatingEffectText(type);
                 break;
+            case AbilityEffectType.Paralysis:
+                SpawnFloatingEffectText(type);
+                break;
         }
     }
     public void OnNotify(HeroNotifyType type, object value)
@@ -154,6 +177,9 @@ public class HeroUI : MonoBehaviour, IObserver
         {
             case HeroNotifyType.HPChanged:
                 SetHpBar((float)value);
+                break;
+            case HeroNotifyType.ShieldChanged:
+                SetShieldBar((float)value);
                 break;
 
             case HeroNotifyType.ManaChanged:
@@ -257,7 +283,14 @@ public class HeroUI : MonoBehaviour, IObserver
                 StartCoroutine(CoShowAndFade(text));
                 break;
             case AbilityEffectType.Stun:
-                text.text = sturnNotice;
+                text.text = stunNotice;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case AbilityEffectType.Paralysis:
+                text.text = paralysisNotice;
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;
@@ -407,6 +440,33 @@ public class HeroUI : MonoBehaviour, IObserver
             {
                 currentHp01 = v;
                 hpBar.fillAmount = v;
+            }
+        ));
+    }
+    public void SetShieldBar(float target01, bool instant = false)
+    {
+        if (shieldBar == null) return;
+
+        target01 = Mathf.Clamp01(target01);
+
+        if (instant || currentShield01 < 0f)
+        {
+            currentShield01 = target01;
+            shieldBar.fillAmount = target01;
+            return;
+        }
+
+        if (shieldRoutine != null)
+            StopCoroutine(shieldRoutine);
+
+        shieldRoutine = StartCoroutine(CoAnimateBar(
+            currentShield01,
+            target01,
+            barAnimDuration,
+            v =>
+            {
+                currentShield01 = v;
+                shieldBar.fillAmount = v;
             }
         ));
     }

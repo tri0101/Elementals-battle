@@ -6,7 +6,10 @@ public class ItemDatabase : ScriptableObject
 {
     public List<ItemData> items;
     private Dictionary<int, ItemData> itemDict;
-
+    private void OnEnable()
+    {
+        Init();
+    }
     public void Init()
     {
    

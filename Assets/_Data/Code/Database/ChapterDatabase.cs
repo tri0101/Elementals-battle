@@ -8,6 +8,7 @@ public class ChapterDatabase : ScriptableObject
     public List<ChapterConfig> chapters;
 
     private Dictionary<int, ChapterConfig> chapterDict;
+
     public void Init()
     {
         chapterDict = new Dictionary<int, ChapterConfig>();

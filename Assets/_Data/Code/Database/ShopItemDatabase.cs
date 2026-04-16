@@ -7,7 +7,10 @@ public class ShopItemDatabase : ScriptableObject
     public List<ShopItemData> shopItems;
 
     private Dictionary<int, ShopItemData> shopItemDict;
-
+    private void OnEnable()
+    {
+        Init();
+    }
     public void Init()
     {
         shopItemDict = new Dictionary<int, ShopItemData

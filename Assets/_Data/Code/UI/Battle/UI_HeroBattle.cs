@@ -7,6 +7,7 @@ using System.Collections;
 public enum HeroNotifyType
 {
     HPChanged,
+    ShieldChanged,
     ManaChanged,
     Dead,
     Revive

@@ -67,7 +67,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     {
         heroControl = transform.parent.parent.GetComponent<HeroControl>();
 
-       
+
         //maxHealth = heroControl.HeroInfo.health;
         //maxMana = 1000f;
         //physicalArmor = heroControl.HeroInfo.armor;
@@ -80,10 +80,12 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     }
 
 
-    public virtual float ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead, HeroControl attacker = null) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
+    public virtual float ReceiveDamage(float damage, DamageType damageType,
+        bool shouldTakeHit, bool canDead,
+        HeroControl attacker = null) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
     {
 
-        if(shouldTakeHit)
+        if (shouldTakeHit)
             heroControl.SetIsTakeHit();
         float hpBefore = heroControl.HeroStatRuntime.CurrentHealth;
         float maxHp = heroControl.HeroStatRuntime.MaxHealth;
@@ -98,7 +100,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         }
         heroControl.HeroStatRuntime.MinusHP((int)finalDamage, damageType);
 
-        
+
         float hpAfter = heroControl.HeroStatRuntime.CurrentHealth;
         float hpLost = Mathf.Max(0f, hpBefore - hpAfter);
         float hpLost01 = (maxHp > 0f) ? Mathf.Clamp01(hpLost / maxHp) : 0f;
@@ -108,7 +110,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         //nhận mana qua hồn
         foreach (var soul in heroControl.HeroInfo.soulID)
         {
-            if (soul ==2)
+            if (soul == 2)
             {
                 FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
                 if (soulInfo != null)
@@ -118,11 +120,11 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
                     manaGain += manaAdd;
                 }
             }
-           
+
         }
         if (manaGain > 0)
             heroControl.HeroStatRuntime.GainMana(manaGain, true);
-        if(attacker == null)// khi bị cháy
+        if (attacker == null)// khi bị cháy
         {
             if (heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
             {
@@ -136,7 +138,10 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
                 }
             }
         }
-        
+        if (heroControl.HeroInfo.ID == 55)
+        {
+            attacker.HeroReceiveDamagee.ReceiveDamage(finalDamage * 0.25f, DamageType.normalDamage, false, false);
+        }
         return finalDamage;
         
         

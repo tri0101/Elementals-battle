@@ -308,12 +308,13 @@ public class HeroControl : Subject
         
         
     }
-    
-  
+
+
     public void SetIsTakeHit()
     {
-        if(heroStatRuntime.HasAES(AbilityEffectType.Rooted)
-            || heroStatRuntime.HasAES(AbilityEffectType.Stun))
+        if (heroStatRuntime.HasAES(AbilityEffectType.Rooted)
+            || heroStatRuntime.HasAES(AbilityEffectType.Stun)
+            || heroStatRuntime.HasAES(AbilityEffectType.Paralysis))
         {
             return;
         }
@@ -510,6 +511,14 @@ public class HeroControl : Subject
                 // (0, 2.252, z giữ nguyên)
                 result = new Vector3(
                     0f,
+                    2.252f,
+                    transform.position.z
+                );
+                break;
+            case PositionAttack.MiddlePositionEnemy:
+                // (0, 2.252, z giữ nguyên)
+                result = new Vector3(
+                    16.1f,
                     2.252f,
                     transform.position.z
                 );

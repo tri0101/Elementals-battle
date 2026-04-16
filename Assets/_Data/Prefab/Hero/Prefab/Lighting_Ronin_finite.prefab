@@ -82,6 +82,7 @@ MonoBehaviour:
   isAttack: 0
   isUltimate: 0
   isUltimateSpecial: 0
+  canUltimateSpecial: 0
   isSkill: 0
   isFinished: 0
   canSkill: 0
@@ -187,6 +188,8 @@ MonoBehaviour:
     lifeSteal: 0
     speed: 0
     power: 0
+  currentShield: 0
+  maxShield: 0
   currentHealth: 0
   currentMana: 0
   aesDebug: []
@@ -636,7 +639,7 @@ Transform:
   m_GameObject: {fileID: 4246772669096335493}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

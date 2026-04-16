@@ -15,16 +15,16 @@ public enum FightSoulType
   
 
 }
-//public enum FightSoulType
-//{
-//    GuardianSoul = 0, // hồn bảo hộ
-//    ReaperSoul = 1, // hồn tử thần
-//    ArcaneSoul = 2, // hồn ma thuật
-//    WarHammerSoul = 3, // hồn búa chiến
-//    ScriptureSoul = 4,// hồn kinh thư
-//    StarSoul = 5, // hồn sao
-
-//}
+public enum Tag
+{
+    Male = 0 , //Nam
+    Female = 1, //Nữ
+    Warrior = 2, //Chiến binh
+    Mage = 3, //Pháp sư
+    Assassin = 4, //Sát thủ
+    Fighter = 5, //Đấu sĩ
+    
+}
 [CreateAssetMenu(menuName ="hero/heroInfo")]
 
 
@@ -60,9 +60,8 @@ public class HeroInfo : ScriptableObject
     [Header("Speed Food")]
     public List<int> speedFoodList; // 0 - tier 1 , // 1 - tier 2 , // 2 - tier 3
 
-    [Header("Duration Attack")]
-    public float durationA1;
-    public float durationA2;
+    [Header("List Tag")]
+    public List<Tag> tags = new List<Tag>(); // list các tag của hero
 
     [Header("UI")]
     public Sprite iconFace;

@@ -925,7 +925,7 @@ Transform:
   m_GameObject: {fileID: 8554378702225895282}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1104,6 +1104,8 @@ MonoBehaviour:
   isPrepare: 0
   isAttack: 0
   isUltimate: 0
+  isUltimateSpecial: 0
+  canUltimateSpecial: 0
   isSkill: 0
   isFinished: 0
   canSkill: 0
@@ -1115,6 +1117,7 @@ MonoBehaviour:
   isCrit: 0
   shouldPlus: 0
   leftBattle: 0
+  isTransform: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -1208,6 +1211,8 @@ MonoBehaviour:
     lifeSteal: 0
     speed: 0
     power: 0
+  currentShield: 0
+  maxShield: 0
   currentHealth: 0
   currentMana: 0
   aesDebug: []
@@ -1297,6 +1302,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1330,7 +1343,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.18
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

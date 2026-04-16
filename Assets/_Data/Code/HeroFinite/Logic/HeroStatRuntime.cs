@@ -32,8 +32,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         }
     }
 
-    private readonly Dictionary<AbilityEffectType, List<AESStackState>> aesStacksByType =
-        new Dictionary<AbilityEffectType, List<AESStackState>>();
+    // CHANGED: per AbilityEffectType -> per skillName(sourceAbilityName) -> stacks
+    private readonly Dictionary<AbilityEffectType, Dictionary<string, List<AESStackState>>> aesStacksByType =
+        new Dictionary<AbilityEffectType, Dictionary<string, List<AESStackState>>>();
 
     // CHANGED: per ModifyStatType -> per skillName(sourceAbilityName) -> stacks
     private readonly Dictionary<ModifyStatType, Dictionary<string, List<ModifyStatStackState>>> modifyStatStacksByType =
@@ -44,16 +45,40 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         return dicOnStartBattle;
     }
+
     public void ClearAllAES()
     {
         if (aesStacksByType.Count == 0)
             return;
 
-        // Copy keys to avoid modifying while iterating
-        var keys = new List<AbilityEffectType>(aesStacksByType.Keys);
-        for (int i = 0; i < keys.Count; i++)
+        // Clear old VFX/UI for all AES types
+        var typeKeys = new List<AbilityEffectType>(aesStacksByType.Keys);
+        for (int i = 0; i < typeKeys.Count; i++)
         {
-            ClearOldEffect(keys[i]);
+            ClearOldEffect(typeKeys[i]);
+
+            // Cancel UI effect based on type (only if existed)
+            switch (typeKeys[i])
+            {
+                case AbilityEffectType.Burn:
+                    CancelBurn();
+                    break;
+                case AbilityEffectType.Rooted:
+                    heroControl.RefreshObservers("canDisappear", true);
+                    heroControl.HeroEventt.CallCancelStopAnim();
+                    heroControl.CanAttackInBattle = true;
+                    break;
+                case AbilityEffectType.Stun:
+                    CancelStun();
+                    heroControl.HeroEventt.CallCancelStopAnim();
+                    heroControl.CanAttackInBattle = true;
+                    break;
+                case AbilityEffectType.Paralysis:
+                    CancelParalysis();
+                    heroControl.HeroEventt.CallCancelStopAnim();
+                    heroControl.CanAttackInBattle = true;
+                    break;
+            }
         }
 
         aesStacksByType.Clear();
@@ -62,7 +87,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
     }
 
     public bool HasAES(AbilityEffectType type) =>
-        aesStacksByType.TryGetValue(type, out var list) && list != null && list.Count > 0;
+        aesStacksByType.TryGetValue(type, out var bySkill) && bySkill != null && bySkill.Count > 0;
+
+    public bool HasAES(AbilityEffectType type, string sourceAbilityName) =>
+        !string.IsNullOrEmpty(sourceAbilityName)
+        && aesStacksByType.TryGetValue(type, out var bySkill)
+        && bySkill != null
+        && bySkill.TryGetValue(sourceAbilityName, out var stacks)
+        && stacks != null
+        && stacks.Count > 0;
 
     public bool HasModifyStat(ModifyStatType type) =>
         modifyStatStacksByType.TryGetValue(type, out var bySkill) && bySkill != null && bySkill.Count > 0;
@@ -75,17 +108,30 @@ public sealed class HeroStatRuntime : MonoBehaviour
         && stacks != null
         && stacks.Count > 0;
 
-    public List<(AbilityEffectType type, int remainingTurn, int damagePerTurn)> GetAESSnapshot()
+    // CHANGED: include per-skill info. Optional filter by skill name.
+    public List<(AbilityEffectType type, string sourceAbilityName, int remainingTurn, int damagePerTurn)> GetAESSnapshot(string sourceAbilityNameFilter = null)
     {
-        var result = new List<(AbilityEffectType, int, int)>(8);
+        var result = new List<(AbilityEffectType, string, int, int)>(8);
+        bool useFilter = !string.IsNullOrEmpty(sourceAbilityNameFilter);
 
-        foreach (var kv in aesStacksByType)
+        foreach (var typeKv in aesStacksByType)
         {
-            var stacks = kv.Value;
-            if (stacks == null) continue;
+            var type = typeKv.Key;
+            var bySkill = typeKv.Value;
+            if (bySkill == null) continue;
 
-            for (int i = 0; i < stacks.Count; i++)
-                result.Add((kv.Key, stacks[i].remainingTurn, stacks[i].damagePerTurn));
+            foreach (var skillKv in bySkill)
+            {
+                string skillName = skillKv.Key;
+                if (useFilter && skillName != sourceAbilityNameFilter)
+                    continue;
+
+                var stacks = skillKv.Value;
+                if (stacks == null) continue;
+
+                for (int i = 0; i < stacks.Count; i++)
+                    result.Add((type, skillName, stacks[i].remainingTurn, stacks[i].damagePerTurn));
+            }
         }
 
         return result;
@@ -120,22 +166,19 @@ public sealed class HeroStatRuntime : MonoBehaviour
         return result;
     }
 
-    public void MinusRemainTurn(AbilityEffectType types)
+    // CHANGED: tick per type per skill
+    public void MinusRemainTurn(AbilityEffectType type)
     {
-        if (aesStacksByType.Count == 0) return;
-        if (!aesStacksByType.ContainsKey(types))
+        if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null || bySkill.Count == 0)
             return;
 
-        var keys = new List<AbilityEffectType> { types };
-
-        for (int k = 0; k < keys.Count; k++)
+        var skillKeys = new List<string>(bySkill.Keys);
+        for (int k = 0; k < skillKeys.Count; k++)
         {
-            var type = keys[k];
-
-            if (!aesStacksByType.TryGetValue(type, out var stacks) || stacks == null || stacks.Count == 0)
+            string skillName = skillKeys[k];
+            if (!bySkill.TryGetValue(skillName, out var stacks) || stacks == null || stacks.Count == 0)
                 continue;
 
-            // giảm remaining của từng stack (mỗi stack có remaining riêng)
             for (int i = stacks.Count - 1; i >= 0; i--)
             {
                 var s = stacks[i];
@@ -147,27 +190,35 @@ public sealed class HeroStatRuntime : MonoBehaviour
                     stacks[i] = s;
             }
 
-            // nếu hết toàn bộ stack của type này => remove type + cancel UI effect
             if (stacks.Count == 0)
-            {
-                aesStacksByType.Remove(type);
+                bySkill.Remove(skillName);
+        }
 
-                switch (type)
-                {
-                    case AbilityEffectType.Burn:
-                        CancelBurn();
-                        break;
-                    case AbilityEffectType.Rooted:
-                        heroControl.RefreshObservers("canDisappear", true);
-                        heroControl.HeroEventt.CallCancelStopAnim();
-                        heroControl.CanAttackInBattle = true;
-                        break;
-                    case AbilityEffectType.Stun:
-                        CancelStun();
-                        heroControl.HeroEventt.CallCancelStopAnim();
-                        heroControl.CanAttackInBattle = true;
-                        break;
-                }
+        // if no skill remains for this AES type => remove type and cancel UI effect
+        if (bySkill.Count == 0)
+        {
+            aesStacksByType.Remove(type);
+
+            switch (type)
+            {
+                case AbilityEffectType.Burn:
+                    CancelBurn();
+                    break;
+                case AbilityEffectType.Rooted:
+                    heroControl.RefreshObservers("canDisappear", true);
+                    heroControl.HeroEventt.CallCancelStopAnim();
+                    heroControl.CanAttackInBattle = true;
+                    break;
+                case AbilityEffectType.Stun:
+                    CancelStun();
+                    heroControl.HeroEventt.CallCancelStopAnim();
+                    heroControl.CanAttackInBattle = true;
+                    break;
+                case AbilityEffectType.Paralysis:
+                    CancelParalysis();
+                    heroControl.HeroEventt.CallCancelStopAnim();
+                    heroControl.CanAttackInBattle = true;
+                    break;
             }
         }
 
@@ -202,7 +253,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             {
                 bySkill.Remove(skillName);
             }
-               
+
         }
 
         if (bySkill.Count == 0)
@@ -221,7 +272,41 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         SyncModifyStatDebug();
     }
-   
+
+    // NEW: remove AES by skill (mirrors RemoveModifyStatBySkill pattern)
+    public void RemoveAESBySkill(string sourceAbilityName, AbilityEffectType type)
+    {
+        if (string.IsNullOrEmpty(sourceAbilityName)) return;
+        if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
+            return;
+
+        if (bySkill.Remove(sourceAbilityName))
+        {
+            if (bySkill.Count == 0)
+            {
+                aesStacksByType.Remove(type);
+
+                switch (type)
+                {
+                    case AbilityEffectType.Burn:
+                        CancelBurn();
+                        break;
+                    case AbilityEffectType.Rooted:
+                        heroControl.RefreshObservers("canDisappear", true);
+                        heroControl.HeroEventt.CallCancelStopAnim();
+                        heroControl.CanAttackInBattle = true;
+                        break;
+                    case AbilityEffectType.Stun:
+                        CancelStun();
+                        heroControl.HeroEventt.CallCancelStopAnim();
+                        heroControl.CanAttackInBattle = true;
+                        break;
+                }
+            }
+
+            SyncAESDebug();
+        }
+    }
     public void RemoveModifyStatBySkill(string sourceAbilityName, ModifyStatType type)
     {
         if (string.IsNullOrEmpty(sourceAbilityName)) return;
@@ -245,25 +330,29 @@ public sealed class HeroStatRuntime : MonoBehaviour
             SyncModifyStatDebug();
         }
     }
-    public void ApplyAES(AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
+    // CHANGED: per-skill cap (like ModifyStat). If cap reached => refresh duration only.
+    public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
     {
+        if (string.IsNullOrEmpty(sourceAbilityName)) return;
         if (remainingTurn <= 0) return;
         if (maxStacks <= 0) return;
 
         if (type == AbilityEffectType.ModifyStat) return;
 
-        if (!aesStacksByType.TryGetValue(type, out var stacks) || stacks == null)
+        if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
         {
-            stacks = new List<AESStackState>(maxStacks);
-            aesStacksByType[type] = stacks;
+            bySkill = new Dictionary<string, List<AESStackState>>();
+            aesStacksByType[type] = bySkill;
 
             ApplyUIEffect(type);
             heroControl.RefreshObservers(type);
         }
 
-        // nếu đã max stack: bỏ stack cũ nhất (thường rule: drop oldest)
-        while (stacks.Count >= maxStacks)
-            stacks.RemoveAt(0);
+        if (!bySkill.TryGetValue(sourceAbilityName, out var stacks) || stacks == null)
+        {
+            stacks = new List<AESStackState>(maxStacks);
+            bySkill[sourceAbilityName] = stacks;
+        }
 
         int finalDamagePerTurn = 0;
         if (damagePerTurn != 0)
@@ -271,6 +360,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             finalDamagePerTurn = heroControl.HeroReceiveDamagee.GetDamageAfterArmor(damagePerTurn);
         }
 
+        // Apply immediate restrictions (only need once globally, but safe to set each time)
         if (type == AbilityEffectType.Rooted)
         {
             heroControl.RefreshObservers("canDisappear", false);
@@ -281,7 +371,18 @@ public sealed class HeroStatRuntime : MonoBehaviour
             heroControl.CanAttackInBattle = false;
         }
 
-            stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));
+        // per-skill cap reached => refresh duration (max) and exit (no new stack)
+        if (stacks.Count >= maxStacks)
+        {
+            var s = stacks[0];
+            s.remainingTurn = Mathf.Max(s.remainingTurn, remainingTurn);
+            stacks[0] = s;
+
+            SyncAESDebug();
+            return;
+        }
+
+        stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));
 
         SyncAESDebug();
     }
@@ -319,11 +420,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         stacks.Add(new ModifyStatStackState(remainingTurn, modifyValue));
 
-        // Apply to runtime stat immediately (your current stat system is "apply now", not derived each frame)
-        //ApplyStats(type, modifyValue, instant);
-
         SyncModifyStatDebug();
     }
+
     public void ApplyStatOnStartBattle(ModifyStatType type, int value)
     {
         // cộng dồn nếu đã có key, còn không thì add mới
@@ -334,6 +433,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         SyncOnStartBattleDebug();
     }
+
     [Header("Refs")]
     [SerializeField] private HeroControl heroControl;
 
@@ -349,6 +449,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public HeroStat FinalStat => finalStat;
 
     [Header("Runtime Values")]
+    [SerializeField] private float currentShield;
+    public float CurrentShield { get => currentShield; set => currentShield = Mathf.Max(0f, value); }
+    public float maxShield;
     [SerializeField] private float currentHealth;
     public float CurrentHealth { get => currentHealth; set => currentHealth = Mathf.Max(0f, value); }
 
@@ -404,9 +507,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 speed = baseInfo.speed,
                 power = 0f
             };
+
         }
 
         currentHealth = finalStat.health;
+        if (heroControl.HeroInfo.ID == 51)
+        {
+            maxShield = finalStat.health * 0.5f;
+            currentShield = maxShield;
+        }
         currentMana = 0f;
     }
 
@@ -477,7 +586,6 @@ public sealed class HeroStatRuntime : MonoBehaviour
             currentMana = 1000;
         }
 
-        
         float mana01 = currentMana / (float)MaxMana;
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
         if (instant) return;
@@ -498,8 +606,6 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     public void GainHP(int value, DamageType damageType, bool instant = false)
     {
-        // NEW: apply HealingRate (%)
-        // HealingRate is stored in modifyStatStacksByType as percent (20 = +20%).
         float totalHealingRatePercent = GetTotalModifyPercent(ModifyStatType.HealingRate);
         float scaledValueF = value * (1f + (totalHealingRatePercent / 100f));
         int scaledValue = Mathf.RoundToInt(scaledValueF);
@@ -516,15 +622,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, scaledValue);
     }
 
-    //hàm tính toán giá trị hút máu
-    //value truyền vào là finalDamage đã gây ra cho enemy
-    //chỉ việc tính toán % hút máu rồi cộng vào hp hiện tại
     public void LifeStealHP(int value, DamageType damageType, bool instant = false)
     {
         float percentLifeSteal = GetTotalModifyPercent(ModifyStatType.LifeSteal) + LifeSteal;
         if (percentLifeSteal <= 0) return;
         int hpLifeSteal = (int)(value * (percentLifeSteal / 100f));
-        if(hpLifeSteal <= 0) return;
+        if (hpLifeSteal <= 0) return;
         CurrentHealth += hpLifeSteal;
         if (currentHealth >= MaxHealth)
         {
@@ -540,9 +643,52 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public void MinusHP(int value, DamageType damageType, bool instant = false)
     {
         if (heroControl.CanDodge) return;
-        CurrentHealth -= value;
-        if(heroControl.HeroInfo.ID == 57 && currentHealth > 0 && currentHealth/MaxHealth < 0.2f
-            &&heroControl.HeroDodge.CountDodge < 1)
+        bool shieldJustBroke = false;
+        if (currentShield > 0)
+        {
+            currentShield -= value;
+            if (currentShield <= 0f)
+            {
+                currentShield = 0f;
+                shieldJustBroke = true;//cho hero 51
+            }
+        }
+        else
+        {
+            CurrentHealth -= value;
+        }
+        // NEW: khi shield vừa vỡ => apply Burn cho toàn bộ enemy
+        if (shieldJustBroke && BattlefieldRegistry.Instance != null)
+        {
+            string enemyTeam = heroControl.CompareTag("Hero") ? "Enemy" : "Hero";
+            var enemies = BattlefieldRegistry.Instance.GetUnitsByTeam(enemyTeam);
+
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                var root = enemies[i];
+                if (root == null) continue;
+
+                var enemyControl = root.GetComponent<HeroControl>();
+                if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                if (enemyControl.LeftBattle) continue;
+
+                var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+                if (recv != null && recv.IsDead) continue;
+
+                // duration/damage/maxStacks: chỉnh các giá trị này theo design của bạn
+                List<AbilityEffect> effectsSpecial = heroControl.HeroInfo.passive.GetEffectsOnSpecial();
+                float damagePerTurn = maxShield * effectsSpecial[0].modifyValue;
+                enemyControl.HeroStatRuntime.ApplyAES(
+                    heroControl.HeroInfo.passive.abilityName,
+                    AbilityEffectType.Burn,
+                    effectsSpecial[0].durationTurn,
+                    (int)damagePerTurn,
+                    effectsSpecial[0].stackCount
+                );
+            }
+        }
+        if (heroControl.HeroInfo.ID == 57 && currentHealth > 0 && currentHealth / MaxHealth < 0.2f
+            && heroControl.HeroDodge.CountDodge < 1)
         {
             heroControl.SetCanDodge();
         }
@@ -552,8 +698,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         }
         if (instant) return;
         float health01 = CurrentHealth / (float)MaxHealth;
-
+        float shield01 = CurrentShield / (float)maxShield;
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
+        heroControl.RefreshObservers(HeroNotifyType.ShieldChanged, shield01);
         heroControl.RefreshObservers(HPNotifyType.HPMinus, damageType, (int)value);
     }
 
@@ -569,6 +716,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 break;
             case AbilityEffectType.Charge:
                 ApplyCharge();
+                break;
+            case AbilityEffectType.Paralysis:
+                ApplyParalyze();
                 break;
         }
     }
@@ -599,7 +749,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         if (stunEffect != null)
         {
-            
+
             Transform effectTransform = stunEffect.transform;
             Vector3 heroScale = heroControl.transform.localScale;
             Vector3 effectScale = effectTransform.localScale;
@@ -610,7 +760,6 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 1
             );
 
-            
             Vector3 effectPos = effectTransform.position;
             effectTransform.localPosition = new Vector3(
                 0,
@@ -623,12 +772,11 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         if (HasAES(AbilityEffectType.Charge))
         {
-            
             ClearOldEffect(AbilityEffectType.Charge);
-            heroControl.HeroReceiveDamagee.ReceiveDamage(damageUnleash, DamageType.normalDamage,true,true);
+            heroControl.HeroReceiveDamagee.ReceiveDamage(damageUnleash, DamageType.normalDamage, true, true);
         }
     }
-    
+
     void ApplyCharge()
     {
         ClearOldEffect(AbilityEffectType.Charge);
@@ -651,6 +799,35 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 1
             );
 
+            Vector3 effectPos = effectTransform.position;
+            effectTransform.localPosition = new Vector3(
+                0,
+                0.25f,
+                -0.1f
+            );
+        }
+    }
+    void ApplyParalyze()
+    {
+        ClearOldEffect(AbilityEffectType.Paralysis);
+
+        GameObject paralysisEffect = EffectManager.Instance.Spawn(
+            AbilityEffectType.Paralysis,
+            heroControl.transform
+        );
+
+        if (paralysisEffect != null)
+        {
+
+            Transform effectTransform = paralysisEffect.transform;
+            Vector3 heroScale = heroControl.transform.localScale;
+            Vector3 effectScale = effectTransform.localScale;
+
+            effectTransform.localScale = new Vector3(
+                effectScale.x / heroScale.x,
+                effectScale.y / heroScale.y,
+                1
+            );
 
             Vector3 effectPos = effectTransform.position;
             effectTransform.localPosition = new Vector3(
@@ -680,6 +857,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         ClearOldEffectInHeroControl(AbilityEffectType.Stun);
     }
+    void CancelParalysis()
+    {
+        ClearOldEffectInHeroControl(AbilityEffectType.Paralysis);
+    }
     void ClearOldEffectInHeroControl(AbilityEffectType type)
     {
         foreach (Transform child in heroControl.transform)
@@ -699,9 +880,6 @@ public sealed class HeroStatRuntime : MonoBehaviour
         }
     }
 
-
-
-    
     public float GetTotalModifyPercent(ModifyStatType type)
     {
         float totalPercent = 0f;
@@ -724,30 +902,27 @@ public sealed class HeroStatRuntime : MonoBehaviour
         return totalPercent;
     }
 
-    // UPDATED: giữ hàm cũ, nhưng cho lấy luôn totalPercent nếu cần debug
     public float GetFinalValueAfterModifyStat(ModifyStatType type, float baseValue)
     {
         float totalPercent = GetTotalModifyPercent(type);
         switch (type)
         {
             case ModifyStatType.CritRate:
-                totalPercent += CritRate; // cộng thêm %hiện tại của hero 
+                totalPercent += CritRate;
                 break;
             case ModifyStatType.LifeSteal:
-                totalPercent += LifeSteal; 
+                totalPercent += LifeSteal;
                 break;
         }
         return baseValue * (1f + totalPercent / 100f);
     }
-
-
-
 
     // ===================== Debug (Inspector) =====================
     [System.Serializable]
     private struct AESDebugItem
     {
         public AbilityEffectType type;
+        public string sourceAbilityName;
 
         [Header("Stacks")]
         public List<AESStackState> stacks;
@@ -780,21 +955,29 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         aesDebug.Clear();
 
-        foreach (var kv in aesStacksByType)
+        foreach (var typeKv in aesStacksByType)
         {
-            var stacks = kv.Value;
-            if (stacks == null) continue;
+            var type = typeKv.Key;
+            var bySkill = typeKv.Value;
+            if (bySkill == null) continue;
 
-            // NOTE: copy list để inspector hiển thị ổn định và tránh reference tới list runtime
-            var copy = new List<AESStackState>(stacks.Count);
-            for (int i = 0; i < stacks.Count; i++)
-                copy.Add(stacks[i]);
-
-            aesDebug.Add(new AESDebugItem
+            foreach (var skillKv in bySkill)
             {
-                type = kv.Key,
-                stacks = copy
-            });
+                string skillName = skillKv.Key;
+                var stacks = skillKv.Value;
+                if (stacks == null) continue;
+
+                var copy = new List<AESStackState>(stacks.Count);
+                for (int i = 0; i < stacks.Count; i++)
+                    copy.Add(stacks[i]);
+
+                aesDebug.Add(new AESDebugItem
+                {
+                    type = type,
+                    sourceAbilityName = skillName,
+                    stacks = copy
+                });
+            }
         }
     }
 
@@ -827,6 +1010,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             }
         }
     }
+
     [System.Serializable]
     private struct StartBattleStatDebugItem
     {

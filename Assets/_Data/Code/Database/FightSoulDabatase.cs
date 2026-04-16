@@ -7,7 +7,10 @@ public class FightSoulDatabase : ScriptableObject
     public List<FightSoulInfo> souls;
 
     private Dictionary<int, FightSoulInfo> soulDict;
-
+    private void OnEnable()
+    {
+        Init();
+    }
     public void Init()
     {
         soulDict = new Dictionary<int, FightSoulInfo>();

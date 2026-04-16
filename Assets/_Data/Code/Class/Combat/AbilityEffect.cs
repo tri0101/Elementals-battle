@@ -10,7 +10,7 @@ public enum AbilityEffectType
     // CC
     Rooted = 19,            // trói chân
     Stun = 20,              // choáng
-    Paralyze = 21,           // tê liệt
+    Paralysis = 21,           // tê liệt
     Sleep = 22,              // ngủ
     Freeze = 23,             // đóng băng
     Unleash = 24,             // giải phóng điện ( hero id = 54)

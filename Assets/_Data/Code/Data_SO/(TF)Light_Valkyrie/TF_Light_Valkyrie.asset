@@ -14,21 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 53
   Name: Awakened Light Valkyrie
-  role: 0
-  normalAttack: {fileID: 0}
-  skill: {fileID: 0}
+  role: 2
+  normalAttack: {fileID: 11400000, guid: 182b1702cc2fba44eac3f740f4f2d760, type: 2}
+  skill: {fileID: 11400000, guid: 3626cbadefc09c34da9298bac2c11f91, type: 2}
   skillChance: 1
-  ultimate: {fileID: 0}
-  passive: {fileID: 0}
-  damage: 0
-  health: 500
-  armor: 0
-  criticalRate: 100
-  criticalDamageRate: 50
-  speed: 0
+  ultimate: {fileID: 11400000, guid: f7c4be7be404e7e4b94eb7742f32ede4, type: 2}
+  passive: {fileID: 11400000, guid: e23abc87cf81b4d48bf8eb450f8ca81b, type: 2}
+  ultimateSpecial: {fileID: 0}
+  damage: 44
+  health: 2700
+  armor: 66
+  criticalRate: 5
+  criticalDamageRate: 150
+  lifeSteal: 0
+  speed: 55
+  speedFoodList: 
   durationA1: 0.96
   durationA2: 0.8
   iconFace: {fileID: -5092062595891599620, guid: 75e442a365bae0a40a903006bf299208, type: 3}
   soulID: 010000000500000006000000
   HeroPreviewPrefabs: {fileID: 8851441099308657801, guid: 6c97b77a6ea959340a8b809a0db3e5e9, type: 3}
-  HeroPrefab: {fileID: 0}
+  HeroPrefab: {fileID: 2984726467895902675, guid: e489f8aaf49573f4683c06fd211810cc, type: 3}

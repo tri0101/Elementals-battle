@@ -1080,7 +1080,7 @@ Transform:
   m_GameObject: {fileID: 5330161521293547860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.01, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1349,6 +1349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bc9e58f0bb83144c955e4a450203963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  capsuleCollider2D: {fileID: 0}
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   spriteEffect: {fileID: 0}
@@ -1361,6 +1362,8 @@ MonoBehaviour:
   isPrepare: 0
   isAttack: 0
   isUltimate: 0
+  isUltimateSpecial: 0
+  canUltimateSpecial: 0
   isSkill: 0
   isFinished: 0
   canSkill: 0
@@ -1371,6 +1374,8 @@ MonoBehaviour:
   isClear: 0
   isCrit: 0
   shouldPlus: 0
+  leftBattle: 0
+  isTransform: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -1476,6 +1481,8 @@ MonoBehaviour:
     lifeSteal: 0
     speed: 0
     power: 0
+  currentShield: 0
+  maxShield: 0
   currentHealth: 0
   currentMana: 0
   aesDebug: []
@@ -1520,6 +1527,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e34e47d6534997f4dbcced39b22e4ec4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heroControl: {fileID: 0}
+  countDodge: 0
 --- !u!1 &6273607680651053938
 GameObject:
   m_ObjectHideFlags: 0

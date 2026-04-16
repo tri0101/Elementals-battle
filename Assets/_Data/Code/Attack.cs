@@ -85,7 +85,7 @@ public class Attack : Subject
         }
 
         List<AbilityEffect> effects = heroControl.HeroInfo.ultimate.GetEffectsOnAttack();
-        ApplyEffect(effects);
+        ApplyEffect(heroControl.HeroInfo.ultimate.abilityName,effects);
     }
     void ApplyEffectUISkill()
     {
@@ -104,7 +104,7 @@ public class Attack : Subject
         }
 
         List<AbilityEffect> effects = heroControl.HeroInfo.skill.GetEffectsOnAttack();
-       ApplyEffect(effects);
+       ApplyEffect(heroControl.HeroInfo.skill.abilityName,effects);
     }
     void ApplyEffectUINormal()
     {
@@ -123,9 +123,9 @@ public class Attack : Subject
         }
 
         List<AbilityEffect> effects = heroControl.HeroInfo.normalAttack.GetEffectsOnAttack();
-        ApplyEffect(effects);
+        ApplyEffect(heroControl.HeroInfo.normalAttack.abilityName,effects);
     }
-    void ApplyEffect(List<AbilityEffect> listEffect)
+    void ApplyEffect(string nameSkill, List<AbilityEffect> listEffect)
     {
         List<AbilityEffect> effects = listEffect;
 
@@ -169,7 +169,7 @@ public class Attack : Subject
                     HeroControl enemyControl = target.GetComponent<HeroControl>();
                     if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
                     int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
-                    enemyControl.HeroStatRuntime.ApplyAES(effect.type, effect.durationTurn, damagePerTurn, effect.stackCount);
+                    enemyControl.HeroStatRuntime.ApplyAES(nameSkill,effect.type, effect.durationTurn, damagePerTurn, effect.stackCount);
                 }
             }
                

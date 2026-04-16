@@ -14,21 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 56
   Name: Awakened Water Priestess
-  role: 0
-  normalAttack: {fileID: 0}
-  skill: {fileID: 0}
-  skillChance: 1
-  ultimate: {fileID: 0}
-  passive: {fileID: 0}
-  damage: 0
-  health: 500
-  armor: 0
-  criticalRate: 100
-  criticalDamageRate: 50
-  speed: 0
+  role: 2
+  normalAttack: {fileID: 11400000, guid: a81c87c7d6d41e246963bdf6a82a78fc, type: 2}
+  skill: {fileID: 11400000, guid: 6c0beb5b066c6ea44b65dc501ff13ba8, type: 2}
+  skillChance: 0.33
+  ultimate: {fileID: 11400000, guid: aa64d5bc88f5f4f478fdc66f2ba2de10, type: 2}
+  passive: {fileID: 11400000, guid: 846637c344a79d84ba6de5ab6f4c7823, type: 2}
+  ultimateSpecial: {fileID: 0}
+  damage: 55
+  health: 2000
+  armor: 40
+  criticalRate: 5
+  criticalDamageRate: 150
+  lifeSteal: 0
+  speed: 55
+  speedFoodList: 
   durationA1: 0.8
   durationA2: 0.8
   iconFace: {fileID: 1606480960999852472, guid: 127031bad6fffb64e9474976b28622ec, type: 3}
   soulID: 010000000500000006000000
   HeroPreviewPrefabs: {fileID: 8216991082378980923, guid: fb52ad4991522cc47895815a051e36ff, type: 3}
-  HeroPrefab: {fileID: 0}
+  HeroPrefab: {fileID: 6677942218152808764, guid: 8791562a529c6da41aaf1a6eec40cad9, type: 3}

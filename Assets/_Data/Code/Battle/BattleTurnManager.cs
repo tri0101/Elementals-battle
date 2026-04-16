@@ -185,7 +185,8 @@ public class BattleTurnManager : MonoBehaviour
         if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted) ||
             unit.HeroStatRuntime.HasAES(AbilityEffectType.Stun) ||
             unit.HeroStatRuntime.HasAES(AbilityEffectType.Sleep) ||
-            unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze))
+            unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze)||
+            unit.HeroStatRuntime.HasAES(AbilityEffectType.Paralysis))
         {
             skipThisTurn.Add(unit);
             consumeSkipAtEndOfTurn.Add(unit);
@@ -217,6 +218,8 @@ public class BattleTurnManager : MonoBehaviour
 
             if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze))
                 unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Freeze);
+            if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Paralysis))
+                unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Paralysis);
         }
 
         consumeSkipAtEndOfTurn.Clear();
