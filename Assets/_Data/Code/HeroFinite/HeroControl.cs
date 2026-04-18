@@ -133,6 +133,12 @@ public class HeroControl : Subject
         get => isTransform;
         set => isTransform = value;
     }
+    [SerializeField] private bool isStart;// true = đánh trước
+    public bool IsStart
+    {
+        get => isStart;
+        set => isStart = value;
+    }
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
 
@@ -312,12 +318,12 @@ public class HeroControl : Subject
 
     public void SetIsTakeHit()
     {
-        if (heroStatRuntime.HasAES(AbilityEffectType.Rooted)
-            || heroStatRuntime.HasAES(AbilityEffectType.Stun)
-            || heroStatRuntime.HasAES(AbilityEffectType.Paralysis))
-        {
-            return;
-        }
+        //if (heroStatRuntime.HasAES(AbilityEffectType.Rooted)
+        //    || heroStatRuntime.HasAES(AbilityEffectType.Stun)
+        //    || heroStatRuntime.HasAES(AbilityEffectType.Paralysis))
+        //{
+        //    return;
+        //}
         isTakeHit = true;
 
     }

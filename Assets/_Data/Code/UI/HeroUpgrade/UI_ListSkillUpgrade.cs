@@ -60,20 +60,23 @@ public class UI_ListSkillUpgrade : MonoBehaviour
 
         int currentLevel = heroViewData.instance.GetAbilityLevel(type);
         int cost = RefreshCost(type, currentLevel);
-
+        string description = "";
         switch (type)
         {
             case AbilityType.Skill:
                 icon = heroViewData.info.skill.icon;
                 nameSkill = heroViewData.info.skill.abilityName;
+                description = heroViewData.info.skill.description;
                 break;
             case AbilityType.Ultimate:
                 icon = heroViewData.info.ultimate.icon;
                 nameSkill = heroViewData.info.ultimate.abilityName;
+                description = heroViewData.info.ultimate.description;
                 break;
             case AbilityType.Passive:
                 icon = heroViewData.info.passive.icon;
                 nameSkill = heroViewData.info.passive.abilityName;
+                description = heroViewData.info.passive.description;
                 break;
         }
 
@@ -87,8 +90,10 @@ public class UI_ListSkillUpgrade : MonoBehaviour
             cost,
             heroViewData.instance,
             type,
+            description,
             OnClickUp,
-            RefreshCost);
+            RefreshCost
+            );
 
         skillItemsByType[type] = ui;
     }

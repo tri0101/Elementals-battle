@@ -74,7 +74,7 @@ public class AbilityInfo : ScriptableObject
     public int order; 
     [Header("Effects (executed in order)")]
     public List<AbilityEffect> effects = new List<AbilityEffect>();
-
+    public string description;
     public List<AbilityEffect> GetEffectsStartBattle()
     {
         if (effects == null)

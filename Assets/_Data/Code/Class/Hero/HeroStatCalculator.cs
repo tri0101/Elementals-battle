@@ -96,6 +96,10 @@
     {
         return info.lifeSteal;
     }
+    public static float CalculateControlFree(HeroInfo info)
+    {
+        return info.controlFree;
+    }
 
     // =========================
     // POWER CALCULATION
@@ -108,7 +112,8 @@
             stat.armor * 0.6f +
             stat.critRate * 50f +
             stat.critDamage * 30f +
-            stat.lifeSteal * 40f +
+            stat.lifeSteal * 1 +
+            stat.controlFree  * 1+
             stat.speed * 10f;
     }
 
@@ -129,6 +134,7 @@
             critRate = CalculateCritRate(info),
             critDamage = CalculateCritDamage(info),
             lifeSteal = CalculateLifeSteal(info),
+            controlFree = CalculateControlFree(info),
             speed = CalculateSpeed(info, instance)
         };
 

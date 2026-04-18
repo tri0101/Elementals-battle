@@ -34,7 +34,7 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
     private void OnEnable()
     {
         PlayerInventory.Instance.AddObserver(this);
-        LoadFromContext();
+        RefreshUI(HeroUpgradeContext.SelectedHero);
 
         if (upgradeButton != null)
         {
@@ -43,14 +43,11 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
         }
     }
 
-    private void LoadFromContext()
-    {
-        currentHero = HeroUpgradeContext.SelectedHero;
-        RefreshUI();
-    }
+   
 
-    private void RefreshUI()
+    public void RefreshUI(HeroViewData currentHero)
     {
+        this.currentHero = currentHero;
         if (currentHero == null || currentHero.instance == null || heroStarConfig == null)
         {
             SetShardUI(0, 0);
@@ -138,7 +135,7 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
 
         if (ownedShard < nextStarData.shardRequired)
         {
-            RefreshUI();
+            RefreshUI(currentHero);
             return;
         }
 
@@ -175,7 +172,7 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
             if (coinOk) PlayerInventory.Instance.AddItem(CoinItemId, nextStarData.goldRequired);
 
             if (prevClone != null) Destroy(prevClone);
-            RefreshUI();
+            RefreshUI(currentHero);
             return;
         }
 
@@ -226,7 +223,7 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
         if (afterClone != null) Destroy(afterClone);
 
         // Update current panel values (shard/coin/fill/button)
-        RefreshUI();
+        RefreshUI(currentHero);
     }
 
     private GameObject CloneCurrentHeroItemFromList(bool disableButton)
@@ -263,7 +260,7 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
             int value = tuple.Item2;
 
             if (itemId == 1)
-                RefreshUI();
+                RefreshUI(currentHero);
         }
     }
 

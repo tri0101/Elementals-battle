@@ -10,31 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
-  m_Name: U_TF_LRa
+  m_Name: P-WH
   m_EditorClassIdentifier: 
-  abilityName: Messi
-  type: 2
+  abilityName: 
+  type: 3
   animStateName: 
   icon: {fileID: 0}
-  speedToEnemy: 150
-  positionAttack: 1
-  distance: 12
-  targetingMode: 14
+  speedToEnemy: 0
+  positionAttack: 0
+  distance: 0
+  targetingMode: 0
   rowIndex: 1
   column: 1
   randomCount: 1
-  grantManaOnUse: 1
-  manaGain: 120
-  isChangeBackGround: 0
-  backgroundChange: {fileID: 0}
-  order: 0
+  grantManaOnUse: 0
+  manaGain: 0
   effects:
   - type: 0
-    timeToCall: 4
-    target: 1
+    timeToCall: 0
+    target: 5
     chance: 1
-    statType: 11
-    canUpgrade: 0
-    modifyValue: 25
+    statType: 6
+    canUpgrade: 1
+    modifyValue: 5
     stackCount: 1
-    durationTurn: 2
+    durationTurn: -1

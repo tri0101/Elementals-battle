@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using Unity.Properties;
 using Unity.VisualScripting;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class BattleTurnManager : MonoBehaviour
 {
@@ -12,8 +14,7 @@ public class BattleTurnManager : MonoBehaviour
     [SerializeField] private GameObject winExpPlusImage;
     [Header("Defeat UI")]
     [SerializeField] private GameObject panelDefeat;
-    [Header("Refs")]
-    [SerializeField] private BattleManager battleManager;
+
 
     [Header("Turn Config")]
     [Min(1)] private int maxTurns = 20;
@@ -37,28 +38,27 @@ public class BattleTurnManager : MonoBehaviour
 
     private int currentWave = 1;
 
-    // Skip turn effects: unit nào bị effect cấm đánh trong turn này sẽ skip cả turn (ultimate + normal)
-    private readonly HashSet<HeroControl> skipThisTurn = new HashSet<HeroControl>();
+    //// Skip turn effects: unit nào bị effect cấm đánh trong turn này sẽ skip cả turn (ultimate + normal)
+    //private readonly HashSet<HeroControl> skipThisTurn = new HashSet<HeroControl>();
 
-    // Skip turn effects: cuối turn mới trừ duration (để UI chỉ tắt/bật ở cuối turn)
-    private readonly HashSet<HeroControl> consumeSkipAtEndOfTurn = new HashSet<HeroControl>();
+    //// Skip turn effects: cuối turn mới trừ duration (để UI chỉ tắt/bật ở cuối turn)
+    //private readonly HashSet<HeroControl> consumeSkipAtEndOfTurn = new HashSet<HeroControl>();
 
     private void Awake()
     {
-        if (battleManager == null)
-            battleManager = GetComponent<BattleManager>();
+        
     }
 
     private void Start()
     {
         isEnd = false;
-        battleManager.SetActiveForUIBatle(false);
+        BattleManager.Instance.SetActiveForUIBatle(false);
         StartCoroutine(CoBattleLoop());
     }
 
     private IEnumerator CoBattleLoop()
     {
-        while (battleManager == null || !battleManager.IsWaveReady)
+        while (!BattleManager.Instance.IsWaveReady)
             yield return null;
 
         currentWave = 1;
@@ -68,11 +68,11 @@ public class BattleTurnManager : MonoBehaviour
         while (!isEnd)
         {
             heroTeamStarts = DecideHeroTeamStarts();
-
+            SetStartsForTeam();
             for (int turn = 1; turn <= maxTurns; turn++)
             {
-                skipThisTurn.Clear();
-                consumeSkipAtEndOfTurn.Clear();
+                //skipThisTurn.Clear();
+                //consumeSkipAtEndOfTurn.Clear();
 
                 if (turnText != null)
                     turnText.text = $"{turn}/20";
@@ -80,7 +80,7 @@ public class BattleTurnManager : MonoBehaviour
                
                 SetCanSkill();
 
-                battleManager.SetActiveForUIBatle(true);
+                BattleManager.Instance.SetActiveForUIBatle(true);
                 if (currentWave == 1 && turn == 1) yield return new WaitForSeconds(2f);
                 else if (turn == 1) yield return new WaitForSeconds(2f);
                 else yield return new WaitForSeconds(1f);
@@ -125,7 +125,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 else if (AreAllTeamDead(TeamEnemy))
                 {
-                    battleManager.SetActiveForUIBatle(false);
+                    BattleManager.Instance.SetActiveForUIBatle(false);
                     yield return new WaitForSeconds(0.5f);
                     yield return CoHandleWaveCleared();
                     break;
@@ -149,7 +149,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 else if (AreAllTeamDead(TeamEnemy))
                 {
-                    battleManager.SetActiveForUIBatle(false);
+                    BattleManager.Instance.SetActiveForUIBatle(false);
                     yield return new WaitForSeconds(0.5f);
                     yield return CoHandleWaveCleared();
                     break;
@@ -164,45 +164,91 @@ public class BattleTurnManager : MonoBehaviour
 
             }
 
-            if (battleManager == null)
-                yield break;
+           
 
-            while (!battleManager.IsWaveReady)
+            while (!BattleManager.Instance.IsWaveReady)
                 yield return null;
         }
     }
 
+    //private bool TrySkipActionIfDisabled(HeroControl unit)
+    //{
+    //    if (unit == null || unit.HeroStatRuntime == null)
+    //        return false;
+
+    //    // đã đánh dấu skip trong turn => mọi phase đều skip
+    //    if (skipThisTurn.Contains(unit))
+    //        return true;
+
+    //    // Kiểm tra tất cả effect cấm đánh
+    //    if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted) ||
+    //        unit.HeroStatRuntime.HasAES(AbilityEffectType.Stun) ||
+    //        unit.HeroStatRuntime.HasAES(AbilityEffectType.Sleep) ||
+    //        unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze)||
+    //        unit.HeroStatRuntime.HasAES(AbilityEffectType.Paralysis))
+    //    {
+    //        skipThisTurn.Add(unit);
+    //        consumeSkipAtEndOfTurn.Add(unit);
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
     private bool TrySkipActionIfDisabled(HeroControl unit)
     {
         if (unit == null || unit.HeroStatRuntime == null)
             return false;
 
-        // đã đánh dấu skip trong turn => mọi phase đều skip
-        if (skipThisTurn.Contains(unit))
-            return true;
+        
 
         // Kiểm tra tất cả effect cấm đánh
-        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted) ||
-            unit.HeroStatRuntime.HasAES(AbilityEffectType.Stun) ||
-            unit.HeroStatRuntime.HasAES(AbilityEffectType.Sleep) ||
-            unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze)||
-            unit.HeroStatRuntime.HasAES(AbilityEffectType.Paralysis))
+        if (!unit.CanAttackInBattle)
         {
-            skipThisTurn.Add(unit);
-            consumeSkipAtEndOfTurn.Add(unit);
+           
             return true;
         }
 
         return false;
     }
 
+    //private void ConsumeSkipEffectsAtEndOfTurn()
+    //{
+    //    if (consumeSkipAtEndOfTurn.Count == 0)
+    //        return;
+
+    //    foreach (var unit in consumeSkipAtEndOfTurn)
+    //    {
+    //        if (unit == null || unit.HeroStatRuntime == null || IsDead(unit))
+    //            continue;
+
+    //        // Trừ tất cả effect cấm đánh
+    //        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Rooted))
+    //            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Rooted);
+
+    //        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Stun))
+    //            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Stun);
+
+    //        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Sleep))
+    //            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Sleep);
+
+    //        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze))
+    //            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Freeze);
+    //        if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Paralysis))
+    //            unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Paralysis);
+    //    }
+
+    //    consumeSkipAtEndOfTurn.Clear();
+    //}
     private void ConsumeSkipEffectsAtEndOfTurn()
     {
-        if (consumeSkipAtEndOfTurn.Count == 0)
-            return;
-
-        foreach (var unit in consumeSkipAtEndOfTurn)
+        ConsumeSkipEffectsAtEndOfTurnForTeam(TeamHero);
+        ConsumeSkipEffectsAtEndOfTurnForTeam(TeamEnemy);
+    }
+    private void ConsumeSkipEffectsAtEndOfTurnForTeam(string teamTag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
         {
+            var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null || unit.HeroStatRuntime == null || IsDead(unit))
                 continue;
 
@@ -218,13 +264,11 @@ public class BattleTurnManager : MonoBehaviour
 
             if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Freeze))
                 unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Freeze);
+
             if (unit.HeroStatRuntime.HasAES(AbilityEffectType.Paralysis))
                 unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Paralysis);
         }
-
-        consumeSkipAtEndOfTurn.Clear();
     }
-
     private IEnumerator CoTeamUltimate(string teamTag)
     {
         
@@ -350,19 +394,21 @@ public class BattleTurnManager : MonoBehaviour
         {
             var effect = effectOnAttack[i];
             bool shouldPlus = checkShouldPlusTurn(teamTag);
+            AbilityTarget target = effect.target;
             if (effect.statType == ModifyStatType.HealingRate)
             {
                 unit.SetShouldPlus(false);
             }
             else
             {
-                bool value = shouldPlus && effect.shouldPlus();
+                bool value = shouldPlus && effect.shouldPlus(target);
                 unit.SetShouldPlus(value);
             }
         }
         for (int i = 0; i < effectOnUse.Count; i++)
         {
             var effect = effectOnUse[i];
+            AbilityTarget target = effect.target;
             float chance = Mathf.Clamp01(effect.chance);
             if (chance <= 0f) continue;
             if (chance < 1f && Random.value > chance) continue;
@@ -376,7 +422,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 else
                 {
-                    duration = shouldPlus && effect.shouldPlus() ?
+                    duration = shouldPlus && effect.shouldPlus(target) ?
                     effect.durationTurn + 1 : effect.durationTurn;
                 }
                 if (effect.target == AbilityTarget.HeroAll)
@@ -494,7 +540,7 @@ public class BattleTurnManager : MonoBehaviour
 
     private IEnumerator CoHandleWaveCleared()
     {
-        if (currentWave >= battleManager.StageConfig.waveStage)
+        if (currentWave >= BattleManager.Instance.StageConfig.waveStage)
         {
             isEnd = true;
             Time.timeScale = 1f;
@@ -506,24 +552,24 @@ public class BattleTurnManager : MonoBehaviour
 
                 if (IsDead(hero))
                 {
-                    battleManager.BattleResult.SetList(slot, false);
-                    battleManager.BattleResult.SetListByID(hero.HeroInfo.ID, false);
+                    BattleManager.Instance.BattleResult.SetList(slot, false);
+                    BattleManager.Instance.BattleResult.SetListByID(hero.HeroInfo.ID, false);
                 }
                 else
                 {
-                    battleManager.BattleResult.SetListByID(hero.HeroInfo.ID, true);
-                    battleManager.BattleResult.SetList(slot, true);
+                    BattleManager.Instance.BattleResult.SetListByID(hero.HeroInfo.ID, true);
+                    BattleManager.Instance.BattleResult.SetList(slot, true);
                 }
             }
 
-            ProgressManager.Instance.UpdateStage(battleManager.StageConfig.stageID);
+            ProgressManager.Instance.UpdateStage(BattleManager.Instance.StageConfig.stageID);
 
-            battleManager.BattleResult.SetUIExpPlus();
-            battleManager.BattleResult.SetExpPlus();
-            battleManager.BattleResult.SetExpForPlayer();
+            BattleManager.Instance.BattleResult.SetUIExpPlus();
+            BattleManager.Instance.BattleResult.SetExpPlus();
+            BattleManager.Instance.BattleResult.SetExpForPlayer();
             winExpPlusImage.SetActive(true);
-            battleManager.BattleResult.CheckHeroesLost();
-            battleManager.BattleResult.SetUpRollItems();
+            BattleManager.Instance.BattleResult.CheckHeroesLost();
+            BattleManager.Instance.BattleResult.SetUpRollItems();
             yield break;
         }
 
@@ -544,16 +590,16 @@ public class BattleTurnManager : MonoBehaviour
         clearImage.SetActive(true);
         yield return new WaitForSeconds(0.5f);
 
-        if (battleManager == null || battleManager.StageConfig == null)
+        if ( BattleManager.Instance.StageConfig == null)
             yield break;
 
-        int maxWave = Mathf.Max(1, battleManager.StageConfig.waveStage);
+        int maxWave = Mathf.Max(1, BattleManager.Instance.StageConfig.waveStage);
         if (currentWave >= maxWave)
             yield break;
 
         currentWave++;
 
-        battleManager.LoadWave(currentWave);
+        BattleManager.Instance.LoadWave(currentWave);
         if (turnText != null)
             turnText.text = $"1/20";
         clearImage.SetActive(false);
@@ -622,7 +668,20 @@ public class BattleTurnManager : MonoBehaviour
         Debug.Log($"[BattleTurnManager] TeamSpeed: Hero={heroTotal:0.##} Enemy={enemyTotal:0.##}. HeroStarts={heroStarts}");
         return heroStarts;
     }
+    private void SetStartsForTeam()
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unitHero = GetUnitAtSlot(TeamHero, slot);
+            var unitEnemy = GetUnitAtSlot(TeamEnemy, slot);
 
+            if (unitHero != null)
+                unitHero.IsStart = heroTeamStarts;
+
+            if (unitEnemy != null)
+                unitEnemy.IsStart = !heroTeamStarts;
+        }
+    }
     private float SumTeamSpeed(string teamTag)
     {
         if (BattlefieldRegistry.Instance == null)
@@ -721,7 +780,37 @@ public class BattleTurnManager : MonoBehaviour
 
                 }
             }
+            else if (reC.HeroInfo.ID == 53)
+            {
+                // Duyệt các hero nữ trong team của hero 59 và giải khống chế ngẫu nhiên 1 hero
+                var femaleHeroes = new List<HeroControl>(6);
 
+                for (int s = 1; s <= 6; s++)
+                {
+                    var h = GetUnitAtSlot(teamTag, s);
+                    if (h == null) continue;
+                    if (IsDead(h)) continue;
+                    if (IsLeftBattle(h)) continue;
+                    if (h.HeroStatRuntime == null) continue;
+                    if (h.HeroInfo == null) continue;
+
+                    if (h.HeroInfo.GetTag(Tag.Female) && h.HeroStatRuntime.HasAnyAES())
+                        femaleHeroes.Add(h);
+                }
+
+                if (femaleHeroes.Count > 0)
+                {
+                    var target = femaleHeroes[Random.Range(0, femaleHeroes.Count)];
+                    if (target != null && target.HeroStatRuntime != null)
+                    {
+                        target.HeroReceiveDamagee.ClearEffectByName("Cleanse");
+                        target.HeroReceiveDamagee.CallSpawnEffectHero("Cleanse", new Vector3(0, 0.5f, -0.1f));
+                        target.HeroStatRuntime.ClearAllAES();
+                        target.CanAttackInBattle = true;
+                     
+                    }
+                }
+            }
 
         }
         if (delayBetweenActions > 0f)
@@ -783,7 +872,22 @@ public class BattleTurnManager : MonoBehaviour
                         ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Support);
                 }
             }
-
+            // riêng hero id = 59
+            if (reC.HeroInfo.ID == 59 && reC.HeroStatRuntime != null)
+            {
+                int nextSlot = slot + 3;
+                if (nextSlot >= 1 && nextSlot <= 6)
+                {
+                    var nextHero = GetUnitAtSlot(teamTag, nextSlot);
+                    if (nextHero != null && !IsDead(nextHero) && nextHero.HeroStatRuntime != null && nextHero.HeroInfo.ID != 51)
+                    {
+                        
+                        float shieldValue = 0.25f * reC.HeroStatRuntime.MaxHealth;
+                        if (shieldValue > 0f)
+                            nextHero.HeroStatRuntime.GainMaxShield(shieldValue);
+                    }
+                }
+            }
             if (AreAllTeamDead(TeamEnemy))
                 yield break;
         }
@@ -825,7 +929,27 @@ public class BattleTurnManager : MonoBehaviour
             unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
-
+    void ApplyStatCertainTagBattle(ModifyStatType type, float value, Tag tag)
+    {
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamHero, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            
+            if(!HasTagInTeam(unit, tag)) continue;
+            unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
+        }
+    }
+    bool HasTagInTeam(HeroControl heroControl, Tag tag)
+    {
+        foreach(Tag tag1 in heroControl.HeroInfo.tags)
+        {
+            if (tag1 == tag)
+                return true;
+        }
+        return false;
+    }
     private void ConsumeModifyStatForTeam(string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)

@@ -45,7 +45,27 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         return dicOnStartBattle;
     }
+    public bool HasAnyAES()
+    {
+        if (aesStacksByType == null || aesStacksByType.Count == 0)
+            return false;
 
+        foreach (var typeKv in aesStacksByType)
+        {
+            var bySkill = typeKv.Value;
+            if (bySkill == null || bySkill.Count == 0)
+                continue;
+
+            foreach (var skillKv in bySkill)
+            {
+                var stacks = skillKv.Value;
+                if (stacks != null && stacks.Count > 0)
+                    return true;
+            }
+        }
+
+        return false;
+    }
     public void ClearAllAES()
     {
         if (aesStacksByType.Count == 0)
@@ -338,8 +358,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
         if (maxStacks <= 0) return;
 
         if (type == AbilityEffectType.ModifyStat) return;
-
-        if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
+        float controlFreeValue = heroControl.HeroInfo.controlFree / 100;
+        if (Random.value < controlFreeValue) return;
+        
+            if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
         {
             bySkill = new Dictionary<string, List<AESStackState>>();
             aesStacksByType[type] = bySkill;
@@ -367,6 +389,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
             heroControl.CanAttackInBattle = false;
         }
         else if (type == AbilityEffectType.Stun)
+        {
+            heroControl.CanAttackInBattle = false;
+        }
+        else if (type == AbilityEffectType.Paralysis)
         {
             heroControl.CanAttackInBattle = false;
         }
@@ -467,6 +493,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public float CritRate => finalStat != null ? finalStat.critRate : 0f;
     public float CritDamage => finalStat != null ? finalStat.critDamage : 0f;
     public float LifeSteal => finalStat != null ? finalStat.lifeSteal : 0f;
+    public float ControlFree => finalStat != null ? finalStat.controlFree : 0f;
     public float Speed => finalStat != null ? finalStat.speed : 0f;
 
     private void Awake()
@@ -504,6 +531,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 critRate = baseInfo.criticalRate,
                 critDamage = baseInfo.criticalDamageRate,
                 lifeSteal = baseInfo.lifeSteal,
+                controlFree = baseInfo.controlFree,
                 speed = baseInfo.speed,
                 power = 0f
             };
@@ -565,7 +593,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         finalStat.armor *= (1 + value / 100);
     }
-
+    public void GainMaxShield(float  value)
+    {
+        maxShield = value;
+        currentShield = maxShield;
+        heroControl.RefreshObservers(HeroNotifyType.ShieldChanged, currentShield / maxShield);
+    }
     public void GainCritRate(float value, bool instant = false)
     {
         finalStat.critRate += value;
@@ -639,7 +672,6 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
         heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, hpLifeSteal);
     }
-
     public void MinusHP(int value, DamageType damageType, bool instant = false)
     {
         if (heroControl.CanDodge) return;
@@ -652,6 +684,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 currentShield = 0f;
                 shieldJustBroke = true;//cho hero 51
             }
+            if (!instant)
+            {
+                float shield01 = CurrentShield / (float)maxShield;
+                heroControl.RefreshObservers(HeroNotifyType.ShieldChanged, shield01);
+            }
+         
+
         }
         else
         {
@@ -696,11 +735,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         {
             currentHealth = 0;
         }
-        if (instant) return;
+        
         float health01 = CurrentHealth / (float)MaxHealth;
-        float shield01 = CurrentShield / (float)maxShield;
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
-        heroControl.RefreshObservers(HeroNotifyType.ShieldChanged, shield01);
         heroControl.RefreshObservers(HPNotifyType.HPMinus, damageType, (int)value);
     }
 
@@ -912,6 +949,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 break;
             case ModifyStatType.LifeSteal:
                 totalPercent += LifeSteal;
+                break;
+            case ModifyStatType.ControlFree:
+                totalPercent += ControlFree;
                 break;
         }
         return baseValue * (1f + totalPercent / 100f);

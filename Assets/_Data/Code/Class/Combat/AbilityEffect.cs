@@ -36,6 +36,23 @@ public enum AbilityTarget
     FrontHeroColumns = 12,     // cột đồng minh phía trước
     BackHeroColumns = 13,      // cột đồng minh phía sau
     HeroRow = 14,              // hàng đồng minh cùng row với hero
+
+    //for tag Hero
+    HeroTagMale = 15, // đồng minh có tag Nam
+    HeroTagFemale = 16, // đồng minh có tag Nữ
+    HeroTagWarrior = 17, // đồng minh có tag Chiến binh
+    HeroTagAssassin = 18, // đồng minh có tag Sát thủ
+    HeroTagFighter = 19, // đồng minh có tag Đấu sĩ
+    HeroTagAwakened = 20, // đồng minh có tag Thức tỉnh
+    HeroTagDemon = 21, // đồng minh có tag Ác quỷ
+    //for tag Enemy
+    EnemyTagMale = 50, // Kẻ địch có tag Nam
+    EnemyTagFemale = 51, //  Kẻ địch  có tag Nữ
+    EnemyTagWarrior = 52, //  Kẻ địch  có tag Chiến binh
+    EnemyTagAssassin = 53, //  Kẻ địch  có tag Sát thủ
+    EnemyTagFighter = 54, //  Kẻ địch có tag Đấu sĩ
+    EnemyTagAwakened = 55, // Kẻ địch  có tag Thức tỉnh
+    EnemyTagDemon = 56 //  Kẻ địch  có tag Ác quỷ
 }
 
 public enum ModifyStatType
@@ -51,6 +68,7 @@ public enum ModifyStatType
     ManaRecovery = 8, // tốc độ hồi mana (áp dụng cho buff hồi mana)
     LifeSteal = 9, // tỉ lệ hút máu (áp dụng cho buff hút máu)
     Mana = 10, // mana (áp dụng cho buff tăng mana)
+    ControlFree = 11, // kháng hiệu ứng (áp dụng cho buff kháng hiệu ứng)
 }
 public enum TimesToCall
 {
@@ -87,20 +105,40 @@ public class AbilityEffect
 
     [Header("Duration")]
     public int durationTurn = 1 ; // thời gian hiệu lực khống chế /buff/debuff (turn) , bằng - 1 = vĩnh viễn;
-    public bool shouldPlus() // nên tăng duration để cân bằng cho các hero đánh sau ko
+    public bool shouldPlus(AbilityTarget target) // nên tăng duration để cân bằng cho các hero đánh sau ko
     {
-        switch (statType)
+        if(target != AbilityTarget.Self)
         {
-            case ModifyStatType.Damage:
-            case ModifyStatType.Speed:
-            case ModifyStatType.CritRate:
-            case ModifyStatType.CritDamage:
-            case ModifyStatType.LifeSteal:
-                return false;
-            case ModifyStatType.Armor:
-                return true;
-            default:
-                return true;
+            switch (statType)
+            {
+                case ModifyStatType.Damage:
+                case ModifyStatType.Speed:
+                case ModifyStatType.CritRate:
+                case ModifyStatType.CritDamage:
+                case ModifyStatType.LifeSteal:
+                    return false;
+                case ModifyStatType.Armor:
+                    return true;
+                default:
+                    return true;
+            }
         }
+        else
+        {
+            switch (statType)
+            {
+                case ModifyStatType.Damage:
+                case ModifyStatType.Speed:
+                case ModifyStatType.CritRate:
+                case ModifyStatType.CritDamage:
+                case ModifyStatType.LifeSteal:
+                    return true;
+                case ModifyStatType.Armor:
+                    return false;
+                default:
+                    return false;
+            }
+        }
+           
     }
 }

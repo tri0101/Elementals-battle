@@ -111,6 +111,32 @@ public class HeroEventt : MonoBehaviour
             }
         }
     }
+
+    //==chỉ dành cho UI onuse
+    public void SetEffectToHero(TimesToCall timeTocall)
+    {
+        List<AbilityEffect> effects = null;
+        if (timeTocall == TimesToCall.onAttack)
+        {
+            effects = heroControl.HeroInfo.ultimate.GetEffectsOnAttack();
+        }
+        else if (timeTocall == TimesToCall.OnUse)
+        {
+            effects = heroControl.HeroInfo.ultimate.GetEffectsOnUse();
+
+        }
+        for (int i = 0; i < effects.Count; i++)
+        {
+            var effect = effects[i];
+            if (effect.type == AbilityEffectType.ModifyStat)
+            {
+                if (effect.target == AbilityTarget.Self)
+                {
+                    ShowTextEffect(effect.statType, (int)effect.modifyValue);
+                }
+            }
+        }
+    }
     public void SetEffectToEnemy(TimesToCall timeTocall)
     {
         List<AbilityEffect> effects = null;
@@ -177,6 +203,9 @@ public class HeroEventt : MonoBehaviour
                 break;
             case ModifyStatType.ManaRecovery:
                 heroControl.RefreshObservers(ModifyStatType.ManaRecovery, value);
+                break;
+            case ModifyStatType.ControlFree:
+                heroControl.RefreshObservers(ModifyStatType.ControlFree, value);
                 break;
 
         }
@@ -306,4 +335,18 @@ public class HeroEventt : MonoBehaviour
             
         }
     }
+    //public void CleanseForFemale()// cho hero có id = 53
+    //{
+    //    foreach (Transform child in heroControl.transform.parent)
+    //    {
+    //        HeroControl heroC = child.GetComponent<HeroControl>();
+    //        if (heroC == null) continue;
+    //        if (heroC.HeroInfo.tags.Contains(Tag.Female))
+    //        {
+                
+    //            heroC.HeroStatRuntime.ClearAllAES();
+    //        }
+
+    //    }
+    //}
 }

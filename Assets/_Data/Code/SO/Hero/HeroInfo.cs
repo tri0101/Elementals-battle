@@ -23,7 +23,8 @@ public enum Tag
     Mage = 3, //Pháp sư
     Assassin = 4, //Sát thủ
     Fighter = 5, //Đấu sĩ
-    
+    Awakened = 6, //Thức tỉnh
+    Demon = 7, //Ác quỷ
 }
 [CreateAssetMenu(menuName ="hero/heroInfo")]
 
@@ -55,6 +56,7 @@ public class HeroInfo : ScriptableObject
     public float criticalRate; // tỉ lệ chí mạng
     public float criticalDamageRate; // sát thương chí mạng (150 , 200)
     public float lifeSteal; // hút máu
+    public float controlFree; // kháng hiệu ứng
     [Header("Speed")]
     public float speed;
     [Header("Speed Food")]
@@ -62,7 +64,13 @@ public class HeroInfo : ScriptableObject
 
     [Header("List Tag")]
     public List<Tag> tags = new List<Tag>(); // list các tag của hero
-
+    public bool GetTag(Tag tag)
+    {
+        if (tags.Contains(tag))
+            return true;
+        else
+            return false;
+    }
     [Header("UI")]
     public Sprite iconFace;
 

@@ -35,6 +35,7 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
     [Header("Bars")]
     public Image hpBar;
     public Image manaBar;
+    public Image shieldBar;
 
     [Header("Button")]
     public Button button;
@@ -59,9 +60,11 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
     private float currentHp01 = -1f;
     private float currentMana01 = -1f;
+    private float currentShield01 = -1f;
 
     private Coroutine hpRoutine;
     private Coroutine manaRoutine;
+    private Coroutine shieldRoutine;
 
     // ===== Skill Text Blink =====
     [Header("Skill Ready UI")]
@@ -132,6 +135,12 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
         }
         SetHpBar(1f, true);
         SetManaBar(heroControl.HeroStatRuntime.CurrentMana / heroControl.HeroStatRuntime.MaxMana, true);
+        if(heroControl.HeroStatRuntime.maxShield > 0)
+        {
+            shieldBar.transform.parent.gameObject.SetActive(true);
+            SetShieldBar(1f, true);
+        }
+            
     }
 
     public void OnNotify(HeroNotifyType type, object value)
@@ -144,6 +153,9 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
 
             case HeroNotifyType.ManaChanged:
                 SetManaBar((float)value);
+                break;
+            case HeroNotifyType.ShieldChanged:
+                SetShieldBar((float)value);
                 break;
 
             case HeroNotifyType.Dead:
@@ -295,6 +307,35 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
             {
                 currentMana01 = v;
                 manaBar.fillAmount = v;
+            }
+        ));
+    }
+    public void SetShieldBar(float target01, bool instant = false)
+    {
+        if (shieldBar == null) return;
+        if(shieldBar.transform.parent.gameObject.activeSelf == false)
+            shieldBar.transform.parent.gameObject.SetActive(true);
+        target01 = Mathf.Clamp01(target01);
+
+        if (instant || currentShield01 < 0f)
+        {
+
+            currentShield01 = target01;
+            shieldBar.fillAmount = target01;
+            return;
+        }
+
+        if (shieldRoutine != null)
+            StopCoroutine(shieldRoutine);
+
+        shieldRoutine = StartCoroutine(CoAnimateBar(
+            currentShield01,
+            target01,
+            barAnimDuration,
+            v =>
+            {
+                currentShield01 = v;
+                shieldBar.fillAmount = v;
             }
         ));
     }

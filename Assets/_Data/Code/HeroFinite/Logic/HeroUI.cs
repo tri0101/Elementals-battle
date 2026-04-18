@@ -31,6 +31,8 @@ public class HeroUI : MonoBehaviour, IObserver
     private string manaRecoveryDecreased = "Mana Recovery Decreased";
     private string manaRecoveryIncreased = "Mana Recovery Increased";
     private string manaRestoration = "Mana Restoration";
+    private string controlFreeIncreased = "Control-free Increased";
+    private string controlFreeDecreased = "Control-free Decreased";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
     private string stunNotice = "Stun";
@@ -68,7 +70,7 @@ public class HeroUI : MonoBehaviour, IObserver
         manaBar = transform.Find("Mana").GetChild(1).GetComponent<Image>();
         
         shieldBar = transform.Find("Shield").GetChild(1).GetComponent<Image>();
-        if (heroControl.HeroInfo.ID == 51)
+        if (heroControl.HeroStatRuntime.CurrentShield > 0)
         {
             shieldBar.transform.parent.gameObject.SetActive(true);
             SetShieldBar(1f, true);
@@ -149,6 +151,9 @@ public class HeroUI : MonoBehaviour, IObserver
                 SpawnFloatingEffectText(type, value);
                 break;
             case ModifyStatType.Mana:
+                SpawnFloatingEffectText(type, value);
+                break;
+            case ModifyStatType.ControlFree:
                 SpawnFloatingEffectText(type, value);
                 break;
         }
@@ -252,9 +257,14 @@ public class HeroUI : MonoBehaviour, IObserver
                 else text.text = manaRecoveryDecreased;
                 StartCoroutine(CoShowAndFade(text));
                 break;
-            case ModifyStatType:
+            case ModifyStatType.Mana:
                 if (value > 0) text.text = manaRestoration;
                 else text.text = manaRestoration;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case ModifyStatType.ControlFree:
+                if (value > 0) text.text = controlFreeIncreased;
+                else text.text = controlFreeDecreased;
                 StartCoroutine(CoShowAndFade(text));
                 break;
         }
@@ -446,7 +456,8 @@ public class HeroUI : MonoBehaviour, IObserver
     public void SetShieldBar(float target01, bool instant = false)
     {
         if (shieldBar == null) return;
-
+        if (shieldBar.transform.parent.gameObject.activeSelf == false)
+            shieldBar.transform.parent.gameObject.SetActive(true);
         target01 = Mathf.Clamp01(target01);
 
         if (instant || currentShield01 < 0f)

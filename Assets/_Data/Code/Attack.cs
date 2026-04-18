@@ -169,7 +169,8 @@ public class Attack : Subject
                     HeroControl enemyControl = target.GetComponent<HeroControl>();
                     if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
                     int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
-                    enemyControl.HeroStatRuntime.ApplyAES(nameSkill,effect.type, effect.durationTurn, damagePerTurn, effect.stackCount);
+                    int duration = heroControl.IsStart ? effect.durationTurn : effect.durationTurn + 1;
+                    enemyControl.HeroStatRuntime.ApplyAES(nameSkill,effect.type, duration, damagePerTurn, effect.stackCount);
                 }
             }
                
