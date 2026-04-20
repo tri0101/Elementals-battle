@@ -274,10 +274,13 @@ public class BattleManager : MonoBehaviour
             else
                 Debug.LogWarning($"[BattleManager] {heroGo.name} missing HeroStatRuntime. Add it to the hero prefab.");
             var heroControl = heroGo.GetComponent<HeroControl>();
+
+            //bonu giá trị từ empowerSkill
+            heroControl.HeroStatRuntime.GainStatByEmpower();
             //bonus giá trị từ soul
             foreach (var soul in heroData.info.soulID)
             {
-                if (soul == 5 || soul == 6) continue;// tạm skip 2 soul này
+                
                 FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
                 if (soulInfo != null)
                 {

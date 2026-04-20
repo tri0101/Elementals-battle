@@ -18,6 +18,7 @@ public class UI_SoulItem : MonoBehaviour
         button.onClick.RemoveAllListeners();
         currentSoulViewData = soulData;
         OnButtonClicked = onClick;
+        
         button.onClick.AddListener(OnClick);
     }
     private void OnClick()

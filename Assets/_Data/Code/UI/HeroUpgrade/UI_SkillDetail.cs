@@ -19,7 +19,7 @@ public class UI_SkillDetail : MonoBehaviour
     public void SetUp(Image imageSkill, string name, string level, string type, string des)
     {
         Clear();
-        imageSkill.sprite = imageSkill.sprite;
+        this.imageSkill.sprite = imageSkill.sprite;
         textNameSkill.text = name;
         textLevelSkill.text = level;
         textTypeSkill.text = type;

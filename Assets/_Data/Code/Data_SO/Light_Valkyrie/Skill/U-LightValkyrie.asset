@@ -15,7 +15,7 @@ MonoBehaviour:
   abilityName: Light_Valkyrie_U
   type: 2
   animStateName: 
-  icon: {fileID: 0}
+  icon: {fileID: 9008848487686180968, guid: 672897053555f364b9dd7b3c7f68339f, type: 3}
   speedToEnemy: 150
   positionAttack: 1
   distance: 7
@@ -25,6 +25,9 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 120
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 0
     timeToCall: 2
@@ -35,3 +38,4 @@ MonoBehaviour:
     modifyValue: 75
     stackCount: 1
     durationTurn: 1
+  description: 

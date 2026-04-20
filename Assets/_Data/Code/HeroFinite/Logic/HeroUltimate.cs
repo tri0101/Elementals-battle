@@ -14,7 +14,7 @@ public class HeroUltimate : MonoBehaviour
 
     public void ResetMana()
     {
-        heroControl.HeroStatRuntime.MinusMana(1000);
+        heroControl.HeroStatRuntime.MinusMana(1000,true);
     }
     public void RefreshTotalDmg()
     {

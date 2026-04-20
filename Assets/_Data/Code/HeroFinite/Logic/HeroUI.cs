@@ -14,7 +14,8 @@ public enum DamageType // để phân biệt kiểu damage (normal, crit, block)
 {
     critDamage,
     blockDamage,
-    normalDamage
+    normalDamage,
+    turnDamage, // damage theo thời gian (dot)
 }
 
 public class HeroUI : MonoBehaviour, IObserver
@@ -31,6 +32,7 @@ public class HeroUI : MonoBehaviour, IObserver
     private string manaRecoveryDecreased = "Mana Recovery Decreased";
     private string manaRecoveryIncreased = "Mana Recovery Increased";
     private string manaRestoration = "Mana Restoration";
+    private string manaReduced = "Mana Reduced";
     private string controlFreeIncreased = "Control-free Increased";
     private string controlFreeDecreased = "Control-free Decreased";
     private string rootedNotice = "Root";
@@ -259,7 +261,7 @@ public class HeroUI : MonoBehaviour, IObserver
                 break;
             case ModifyStatType.Mana:
                 if (value > 0) text.text = manaRestoration;
-                else text.text = manaRestoration;
+                else text.text = manaReduced;
                 StartCoroutine(CoShowAndFade(text));
                 break;
             case ModifyStatType.ControlFree:
@@ -334,7 +336,7 @@ public class HeroUI : MonoBehaviour, IObserver
                     text.fontSharedMaterial = critMaterial;
                     break;
 
-                case DamageType.normalDamage:
+                case DamageType.normalDamage or DamageType.turnDamage:
                 default:
                     text.text = value.ToString();
                     text.color = new Color32(211, 71, 35, 255);

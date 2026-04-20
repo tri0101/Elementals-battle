@@ -12,6 +12,7 @@ public class Attack : Subject
     public float AttackDamage => attackDamage;
 
     [SerializeField] string myTag;
+    [SerializeField] float finalMutipler; // chỉ gán runtime
     
     private void Awake()
     {
@@ -21,7 +22,22 @@ public class Attack : Subject
         
         
     }
+    public int GetLevelBasedOnSkill()
+    {
+        HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
 
+        switch (heroControl.CurrentStringState)
+        {
+            case HeroStateManager.hero_Skill:
+                return heroInstance.GetAbilityLevel(AbilityType.Skill);
+            case HeroStateManager.hero_Ultimate:
+                return heroInstance.GetAbilityLevel(AbilityType.Ultimate);
+            default:
+                return 0;
+        }
+       
+        
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         DamageType damageType;
@@ -30,9 +46,11 @@ public class Attack : Subject
             Debug.Log(other.tag);
             return;
         }
-        attackDamage = heroControl.HeroStatRuntime.Damage;
-        attackDamage *= attackInfo.mutiplerDamageSend;
-        attackDamage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Damage, attackDamage);
+        attackDamage = heroControl.HeroStatRuntime.Damage; // lấy giá trị hiện tại
+        float finalMutipler = attackInfo.mutiplerDamageSend + GetLevelBasedOnSkill() * 0.01f;// lấy giá trị tăng mỗi level
+        this.finalMutipler = finalMutipler;
+        attackDamage *= finalMutipler;
+        attackDamage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Damage, attackDamage); // lấy giá trị effect
         if (heroControl.IsCrit)
         {
             attackDamage *= (heroControl.HeroInfo.criticalDamageRate / 100);
@@ -153,7 +171,7 @@ public class Attack : Subject
                         var targetUnit = targets[j].GetComponent<HeroControl>();
                         if (targetUnit == null) continue;
                         int duration = heroControl.ShouldPlus ? effect.durationTurn + 1 : effect.durationTurn;
-                        targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, effect.durationTurn, effect.modifyValue, effect.stackCount);
+                        targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, effect.durationTurn, effect.modifyValue, effect.stackCount, heroControl);
 
                     }
 
@@ -170,7 +188,7 @@ public class Attack : Subject
                     if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
                     int damagePerTurn = (int)(heroControl.HeroStatRuntime.Damage * (effect.modifyValue / 100f));
                     int duration = heroControl.IsStart ? effect.durationTurn : effect.durationTurn + 1;
-                    enemyControl.HeroStatRuntime.ApplyAES(nameSkill,effect.type, duration, damagePerTurn, effect.stackCount);
+                    enemyControl.HeroStatRuntime.ApplyAES(nameSkill,effect.type, duration, damagePerTurn, effect.stackCount, heroControl);
                 }
             }
                

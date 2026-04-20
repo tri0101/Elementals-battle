@@ -19,6 +19,7 @@ public class HeroInstance
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Skill, level = 1 });
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Ultimate, level = 1 });
         skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Passive, level = 1 });
+        skillInstances.Add(new SkillInstance { AbilityType = AbilityType.Empower, level = 1 });
     }
     public int GetLevelSoul(int index)
     {

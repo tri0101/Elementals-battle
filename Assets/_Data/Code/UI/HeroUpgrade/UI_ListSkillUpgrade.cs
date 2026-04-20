@@ -47,6 +47,7 @@ public class UI_ListSkillUpgrade : MonoBehaviour
         CreateHeader();
         CreateSkill(AbilityType.Skill);
         CreateSkill(AbilityType.Ultimate);
+        CreateSkill(AbilityType.Empower);
         CreateSkill(AbilityType.Passive);
     }
 
@@ -73,11 +74,17 @@ public class UI_ListSkillUpgrade : MonoBehaviour
                 nameSkill = heroViewData.info.ultimate.abilityName;
                 description = heroViewData.info.ultimate.description;
                 break;
+            case AbilityType.Empower:
+                icon = heroViewData.info.empower.icon;
+                nameSkill = heroViewData.info.empower.abilityName;
+                description = heroViewData.info.empower.description;
+                break;
             case AbilityType.Passive:
                 icon = heroViewData.info.passive.icon;
                 nameSkill = heroViewData.info.passive.abilityName;
                 description = heroViewData.info.passive.description;
                 break;
+           
         }
 
         var go = Instantiate(UI_SkillItemPrefabs, content);
@@ -207,6 +214,9 @@ public class UI_ListSkillUpgrade : MonoBehaviour
             case AbilityType.Ultimate:
                 index = Mathf.Min(index, heroSkillCostConfig.costPerLevelUltimate.Length - 1);
                 return heroSkillCostConfig.costPerLevelUltimate[index];
+            case AbilityType.Empower:
+                index = Mathf.Min(index, heroSkillCostConfig.costPerLevelEmpower.Length - 1);
+                return heroSkillCostConfig.costPerLevelEmpower[index];
 
             case AbilityType.Passive:
                 index = Mathf.Min(index, heroSkillCostConfig.costPerLevelPassive.Length - 1);

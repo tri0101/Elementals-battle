@@ -15,7 +15,7 @@ MonoBehaviour:
   abilityName: Fire_Knight_U
   type: 2
   animStateName: 
-  icon: {fileID: 0}
+  icon: {fileID: 2956313606063970183, guid: 30df339320bb49f408bd32e14b986281, type: 3}
   speedToEnemy: 150
   positionAttack: 1
   distance: 7
@@ -25,6 +25,9 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 200
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 1
     timeToCall: 2
@@ -44,3 +47,4 @@ MonoBehaviour:
     modifyValue: -20
     stackCount: 1
     durationTurn: 2
+  description: 

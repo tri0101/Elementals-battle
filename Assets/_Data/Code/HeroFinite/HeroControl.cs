@@ -498,7 +498,7 @@ public class HeroControl : Subject
     }
     public Vector3 GetAttackPosition(AbilityInfo ability)
     {
-        if(enemyTarget.Count == 0)
+        if(heroInfo.ID != 8 && enemyTarget.Count == 0)
         {
             isFinished = true;
         }
@@ -507,8 +507,9 @@ public class HeroControl : Subject
             Debug.Log("enemy target null or empty");
             return transform.position;
         }
+        
 
-       
+
         Vector3 result = transform.position;
 
         switch (ability.positionAttack)

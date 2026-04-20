@@ -15,4 +15,5 @@ public class ItemData : ScriptableObject
 
     public bool stackable = true;
     public Color colorFrame;
+    public string description;
 }

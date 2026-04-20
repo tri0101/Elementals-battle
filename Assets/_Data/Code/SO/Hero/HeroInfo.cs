@@ -11,7 +11,7 @@ public enum FightSoulType
 {
     ManaSoul = 0, // hồn liên quan đến mana
     SkillRateSoul = 1, // hồn liên quan đến tỉ lệ sử dụng kỹ năng
-    HealthSoul = 2, // hồn liên quan đến máu
+    ControlFreeSoul = 2, // hồn liên quan đến máu
   
 
 }
@@ -25,6 +25,7 @@ public enum Tag
     Fighter = 5, //Đấu sĩ
     Awakened = 6, //Thức tỉnh
     Demon = 7, //Ác quỷ
+    Guardian = 8, // Hộ vệ
 }
 [CreateAssetMenu(menuName ="hero/heroInfo")]
 
@@ -44,6 +45,7 @@ public class HeroInfo : ScriptableObject
     [Range(0f, 1f)] public float skillChance = 1f;
     public AbilityInfo ultimate;
     public AbilityInfo passive;
+    public AbilityInfo empower; //cho 3 sao
     [Header("Special Abilities")]
     public AbilityInfo ultimateSpecial;
     [Header("Attribute Gereral")]
@@ -83,6 +85,7 @@ public class HeroInfo : ScriptableObject
     [Header("HeroPrefab")]
     public GameObject HeroPrefab;
 
+    public UIForBattleSO UIForBattleSO;
 
     
 }

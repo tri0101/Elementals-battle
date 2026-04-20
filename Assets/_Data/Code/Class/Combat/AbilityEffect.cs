@@ -99,6 +99,8 @@ public class AbilityEffect
     public ModifyStatType statType = ModifyStatType.Damage;
     [Header("Value")]
     public bool canUpgrade = false; // có thể nâng cấp hiệu ứng này khi nâng cấp kỹ năng hay không
+    public float valueUpPerLevel = 0f; // giá trị tăng thêm mỗi khi
+                                       // nâng cấp kỹ năng (áp dụng nếu canUpgrade = true), ví dụ 0.05 = 0.05%
     public float modifyValue = 0f; // giá trị tăng ( %)
     public int stackCount = 1; // số stack của hiệu ứng ;
     [Header("Damage over Time( for burn")]

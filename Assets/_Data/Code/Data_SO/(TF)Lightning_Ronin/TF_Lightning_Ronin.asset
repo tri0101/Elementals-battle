@@ -20,17 +20,19 @@ MonoBehaviour:
   skillChance: 1
   ultimate: {fileID: 11400000, guid: 57963b515af903f41a5de27964f721f7, type: 2}
   passive: {fileID: 11400000, guid: a4bf5ef92cff5604badc9b8a9e6274dd, type: 2}
-  damage: 150
+  ultimateSpecial: {fileID: 0}
+  damage: 70
   health: 3200
   armor: 45
   criticalRate: 5
   criticalDamageRate: 150
   lifeSteal: 0
+  controlFree: 0
   speed: 60
   speedFoodList: 
-  durationA1: 0.8
-  durationA2: 0.8
+  tags: 000000000400000006000000
   iconFace: {fileID: 3460066870864695117, guid: 0a6be0692f7d9684aa587fe1c5165b1f, type: 3}
   soulID: 010000000500000006000000
   HeroPreviewPrefabs: {fileID: 5679994735719520801, guid: 7e32efe0a851bb24d9b8aa320baf680a, type: 3}
   HeroPrefab: {fileID: 9137777237629569312, guid: 91eb4dd6eaeb21441b928196203d9b8f, type: 3}
+  UIForBattleSO: {fileID: 11400000, guid: 05a114364f39c4842936599130272d99, type: 2}

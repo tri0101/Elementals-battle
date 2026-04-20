@@ -11,11 +11,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         public int remainingTurn;
         public int damagePerTurn;
+        public HeroControl attacker;
 
-        public AESStackState(int remainingTurn, int damagePerTurn)
+        public AESStackState(int remainingTurn, int damagePerTurn, HeroControl attacker)
         {
             this.remainingTurn = remainingTurn;
             this.damagePerTurn = damagePerTurn;
+            this.attacker = attacker;
         }
     }
 
@@ -24,11 +26,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         public int remainingTurn;
         public float modifyValue;
+        public HeroControl attacker;
 
-        public ModifyStatStackState(int remainingTurn, float modifyValue)
+        public ModifyStatStackState(int remainingTurn, float modifyValue, HeroControl attacker)
         {
             this.remainingTurn = remainingTurn;
             this.modifyValue = modifyValue;
+            this.attacker = attacker;
         }
     }
 
@@ -45,6 +49,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         return dicOnStartBattle;
     }
+
     public bool HasAnyAES()
     {
         if (aesStacksByType == null || aesStacksByType.Count == 0)
@@ -66,6 +71,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         return false;
     }
+
     public void ClearAllAES()
     {
         if (aesStacksByType.Count == 0)
@@ -129,9 +135,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         && stacks.Count > 0;
 
     // CHANGED: include per-skill info. Optional filter by skill name.
-    public List<(AbilityEffectType type, string sourceAbilityName, int remainingTurn, int damagePerTurn)> GetAESSnapshot(string sourceAbilityNameFilter = null)
+    public List<(AbilityEffectType type, string sourceAbilityName, int remainingTurn, int damagePerTurn, HeroControl attacker)> GetAESSnapshot(string sourceAbilityNameFilter = null)
     {
-        var result = new List<(AbilityEffectType, string, int, int)>(8);
+        var result = new List<(AbilityEffectType, string, int, int, HeroControl)>(8);
         bool useFilter = !string.IsNullOrEmpty(sourceAbilityNameFilter);
 
         foreach (var typeKv in aesStacksByType)
@@ -150,7 +156,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 if (stacks == null) continue;
 
                 for (int i = 0; i < stacks.Count; i++)
-                    result.Add((type, skillName, stacks[i].remainingTurn, stacks[i].damagePerTurn));
+                    result.Add((type, skillName, stacks[i].remainingTurn, stacks[i].damagePerTurn, stacks[i].attacker));
             }
         }
 
@@ -158,9 +164,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
     }
 
     // CHANGED: include per-skill info. Optional filter by skill name.
-    public List<(ModifyStatType type, string sourceAbilityName, int remainingTurn, float modifyValue)> GetModifyStatSnapshot(string sourceAbilityNameFilter = null)
+    public List<(ModifyStatType type, string sourceAbilityName, int remainingTurn, float modifyValue, HeroControl attacker)> GetModifyStatSnapshot(string sourceAbilityNameFilter = null)
     {
-        var result = new List<(ModifyStatType, string, int, float)>(8);
+        var result = new List<(ModifyStatType, string, int, float, HeroControl)>(8);
         bool useFilter = !string.IsNullOrEmpty(sourceAbilityNameFilter);
 
         foreach (var statKv in modifyStatStacksByType)
@@ -179,7 +185,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 if (stacks == null) continue;
 
                 for (int i = 0; i < stacks.Count; i++)
-                    result.Add((statType, skillName, stacks[i].remainingTurn, stacks[i].modifyValue));
+                    result.Add((statType, skillName, stacks[i].remainingTurn, stacks[i].modifyValue, stacks[i].attacker));
             }
         }
 
@@ -327,6 +333,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             SyncAESDebug();
         }
     }
+
     public void RemoveModifyStatBySkill(string sourceAbilityName, ModifyStatType type)
     {
         if (string.IsNullOrEmpty(sourceAbilityName)) return;
@@ -350,8 +357,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
             SyncModifyStatDebug();
         }
     }
+
     // CHANGED: per-skill cap (like ModifyStat). If cap reached => refresh duration only.
-    public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
+    // NEW: thêm idAttacker để lưu người gây effect
+    public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks, HeroControl attacker)
     {
         if (string.IsNullOrEmpty(sourceAbilityName)) return;
         if (remainingTurn <= 0) return;
@@ -360,8 +369,8 @@ public sealed class HeroStatRuntime : MonoBehaviour
         if (type == AbilityEffectType.ModifyStat) return;
         float controlFreeValue = heroControl.HeroInfo.controlFree / 100;
         if (Random.value < controlFreeValue) return;
-        
-            if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
+
+        if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
         {
             bySkill = new Dictionary<string, List<AESStackState>>();
             aesStacksByType[type] = bySkill;
@@ -408,14 +417,22 @@ public sealed class HeroStatRuntime : MonoBehaviour
             return;
         }
 
-        stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn));
+        stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn, attacker));
 
         SyncAESDebug();
     }
 
+    // Backward-compatible overload (nếu chỗ nào chưa sửa truyền attacker)
+    //public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
+    //{
+    //    int fallbackAttackerId = -1;
+    //    ApplyAES(sourceAbilityName, type, remainingTurn, damagePerTurn, maxStacks, fallbackAttackerId);
+    //}
+
     // CHANGED: maxStacks is PER SKILL (sourceAbilityName) not global per stat.
     // If same skill reaches cap => refresh duration only; do NOT apply stat again.
-    public void ApplyModifyStat(string sourceAbilityName, ModifyStatType type, int remainingTurn, float modifyValue, int maxStacks, bool instant = true)
+    // NEW: thêm idAttacker để lưu người gây effect
+    public void ApplyModifyStat(string sourceAbilityName, ModifyStatType type, int remainingTurn, float modifyValue, int maxStacks, HeroControl attacker, bool instant = true)
     {
         if (string.IsNullOrEmpty(sourceAbilityName)) return;
         if (remainingTurn <= 0) return;
@@ -444,10 +461,17 @@ public sealed class HeroStatRuntime : MonoBehaviour
             return;
         }
 
-        stacks.Add(new ModifyStatStackState(remainingTurn, modifyValue));
+        stacks.Add(new ModifyStatStackState(remainingTurn, modifyValue, attacker));
 
         SyncModifyStatDebug();
     }
+
+    // Backward-compatible overload (giữ nguyên signature cũ)
+    //public void ApplyModifyStat(string sourceAbilityName, ModifyStatType type, int remainingTurn, float modifyValue, int maxStacks, bool instant = true)
+    //{
+    //    int fallbackAttackerId = -1;
+    //    ApplyModifyStat(sourceAbilityName, type, remainingTurn, modifyValue, maxStacks, fallbackAttackerId, instant);
+    //}
 
     public void ApplyStatOnStartBattle(ModifyStatType type, int value)
     {
@@ -493,9 +517,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public float CritRate => finalStat != null ? finalStat.critRate : 0f;
     public float CritDamage => finalStat != null ? finalStat.critDamage : 0f;
     public float LifeSteal => finalStat != null ? finalStat.lifeSteal : 0f;
-    public float ControlFree => finalStat != null ? finalStat.controlFree : 0f;
+    public float ControlFree
+    {
+        get => finalStat?.controlFree ?? 0f;
+        set => finalStat.controlFree = value;
+    }
     public float Speed => finalStat != null ? finalStat.speed : 0f;
-
+    public float skillChanceFinal;
     private void Awake()
     {
         if (heroControl == null)
@@ -537,7 +565,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             };
 
         }
-
+        skillChanceFinal = baseInfo.skillChance;
         currentHealth = finalStat.health;
         if (heroControl.HeroInfo.ID == 51)
         {
@@ -546,7 +574,22 @@ public sealed class HeroStatRuntime : MonoBehaviour
         }
         currentMana = 0f;
     }
-
+    public void GainStatByEmpower()// tăng chỉ số dựa vào skill 3 sao
+    {
+        AbilityInfo empowerInfo = heroControl.HeroInfo.empower;
+        if (empowerInfo == null) return;
+        if(empowerInfo.effects == null || empowerInfo.effects.Count == 0) return;
+        HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
+        int levelEmpower = heroInstance.GetAbilityLevel(AbilityType.Empower);
+        foreach (var effect in empowerInfo.effects)
+        {
+            
+            if(effect.type == AbilityEffectType.ModifyStat)
+            {
+                ApplyStats(effect.statType, effect.modifyValue + levelEmpower * effect.valueUpPerLevel, true);
+            }
+        }
+    }
     public void GainValueBySoul(HeroInstance instance, FightSoulInfo soulInfo)
     {
         if (soulInfo.fightSoulType == FightSoulType.ManaSoul)
@@ -554,6 +597,18 @@ public sealed class HeroStatRuntime : MonoBehaviour
             if (soulInfo.soulValueConfigs == null || soulInfo.soulValueConfigs.Length == 0)
                 return;
             GainMana(soulInfo.soulValueConfigs[instance.GetLevelSoul(0) - 1].value, true);
+        }
+        else if(soulInfo.fightSoulType == FightSoulType.SkillRateSoul)
+        {
+            if (soulInfo.soulValueConfigs == null || soulInfo.soulValueConfigs.Length == 0)
+                return;
+            skillChanceFinal += soulInfo.soulValueConfigs[instance.GetLevelSoul(1) - 1].value / 100f;
+        }
+        else if(soulInfo.fightSoulType == FightSoulType.ControlFreeSoul)
+        {
+            if (soulInfo.soulValueConfigs == null || soulInfo.soulValueConfigs.Length == 0)
+                return;
+            ControlFree += soulInfo.soulValueConfigs[instance.GetLevelSoul(2) - 1].value;
         }
     }
 
@@ -593,12 +648,14 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         finalStat.armor *= (1 + value / 100);
     }
-    public void GainMaxShield(float  value)
+
+    public void GainMaxShield(float value)
     {
         maxShield = value;
         currentShield = maxShield;
         heroControl.RefreshObservers(HeroNotifyType.ShieldChanged, currentShield / maxShield);
     }
+
     public void GainCritRate(float value, bool instant = false)
     {
         finalStat.critRate += value;
@@ -625,7 +682,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(ModifyStatType.Mana, finalValue);
     }
 
-    public void MinusMana(int value)
+    public void MinusMana(int value, bool instant = false)
     {
         currentMana -= value;
         if (currentMana <= 0)
@@ -635,6 +692,8 @@ public sealed class HeroStatRuntime : MonoBehaviour
         float mana01 = currentMana / (float)MaxMana;
 
         heroControl.RefreshObservers(HeroNotifyType.ManaChanged, mana01);
+        if (instant) return;
+        heroControl.RefreshObservers(ModifyStatType.Mana, -value);
     }
 
     public void GainHP(int value, DamageType damageType, bool instant = false)
@@ -672,6 +731,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
         heroControl.RefreshObservers(HPNotifyType.HPPlus, damageType, hpLifeSteal);
     }
+
     public void MinusHP(int value, DamageType damageType, bool instant = false)
     {
         if (heroControl.CanDodge) return;
@@ -689,7 +749,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 float shield01 = CurrentShield / (float)maxShield;
                 heroControl.RefreshObservers(HeroNotifyType.ShieldChanged, shield01);
             }
-         
+
 
         }
         else
@@ -717,12 +777,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 // duration/damage/maxStacks: chỉnh các giá trị này theo design của bạn
                 List<AbilityEffect> effectsSpecial = heroControl.HeroInfo.passive.GetEffectsOnSpecial();
                 float damagePerTurn = maxShield * effectsSpecial[0].modifyValue;
+                
+
                 enemyControl.HeroStatRuntime.ApplyAES(
                     heroControl.HeroInfo.passive.abilityName,
                     AbilityEffectType.Burn,
                     effectsSpecial[0].durationTurn,
                     (int)damagePerTurn,
-                    effectsSpecial[0].stackCount
+                    effectsSpecial[0].stackCount,
+                    heroControl
                 );
             }
         }
@@ -735,7 +798,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         {
             currentHealth = 0;
         }
-        
+
         float health01 = CurrentHealth / (float)MaxHealth;
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);
         heroControl.RefreshObservers(HPNotifyType.HPMinus, damageType, (int)value);
@@ -775,6 +838,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         );
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
+
     void ApplyStun()
     {
         ClearOldEffect(AbilityEffectType.Stun);
@@ -783,7 +847,6 @@ public sealed class HeroStatRuntime : MonoBehaviour
             AbilityEffectType.Stun,
             heroControl.transform
         );
-
         if (stunEffect != null)
         {
 
@@ -796,15 +859,15 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 effectScale.y / heroScale.y,
                 1
             );
+            if (heroControl.HeroInfo.UIForBattleSO != null)
+            {
+                Vector3 effectPos = heroControl.HeroInfo.UIForBattleSO.GetPosition(AbilityEffectType.Stun);
+                effectTransform.localPosition = effectPos;
+            }
 
-            Vector3 effectPos = effectTransform.position;
-            effectTransform.localPosition = new Vector3(
-                0,
-                0.5f,
-                -0.1f
-            );
         }
     }
+
     public void ApplyUnleashChargeEffect(int damageUnleash)
     {
         if (HasAES(AbilityEffectType.Charge))
@@ -844,6 +907,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             );
         }
     }
+
     void ApplyParalyze()
     {
         ClearOldEffect(AbilityEffectType.Paralysis);
@@ -866,7 +930,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 1
             );
 
-            Vector3 effectPos = effectTransform.position;
+            Vector3 effectPos = paralysisEffect.transform.position;
             effectTransform.localPosition = new Vector3(
                 0,
                 0.25f,
@@ -874,6 +938,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
             );
         }
     }
+
     public void ApplyEartEffect()
     {
         if (heroControl.SpriteRenderer.enabled)
@@ -890,14 +955,17 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         heroControl.SpriteEffect.gameObject.SetActive(false);
     }
+
     void CancelStun()
     {
         ClearOldEffectInHeroControl(AbilityEffectType.Stun);
     }
+
     void CancelParalysis()
     {
         ClearOldEffectInHeroControl(AbilityEffectType.Paralysis);
     }
+
     void ClearOldEffectInHeroControl(AbilityEffectType type)
     {
         foreach (Transform child in heroControl.transform)
@@ -907,6 +975,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 Destroy(child.gameObject);
         }
     }
+
     void ClearOldEffect(AbilityEffectType type)
     {
         foreach (Transform child in heroControl.SpriteEffect.transform)

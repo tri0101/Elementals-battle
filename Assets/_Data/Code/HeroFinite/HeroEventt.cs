@@ -188,6 +188,16 @@ public class HeroEventt : MonoBehaviour
             }
         }
     }
+    public void ApplyMinusManaToEnemy()// hiện tại dành cho hero có id = 9 và 56
+    {
+        foreach (var target in heroControl.enemyTarget)
+        {
+            HeroControl enemyControl = target.GetComponent<HeroControl>();
+            if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+            if (enemyControl.HeroInfo.ultimate == null) continue;
+            enemyControl.HeroStatRuntime.MinusMana(200);
+        }
+    }
     public void ShowTextEffect(ModifyStatType type, int value)
     {
         switch(type)
@@ -203,6 +213,9 @@ public class HeroEventt : MonoBehaviour
                 break;
             case ModifyStatType.ManaRecovery:
                 heroControl.RefreshObservers(ModifyStatType.ManaRecovery, value);
+                break;
+            case ModifyStatType.Mana:
+                heroControl.RefreshObservers(ModifyStatType.Mana, value);
                 break;
             case ModifyStatType.ControlFree:
                 heroControl.RefreshObservers(ModifyStatType.ControlFree, value);

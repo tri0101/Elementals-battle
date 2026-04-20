@@ -124,7 +124,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         }
         if (manaGain > 0)
             heroControl.HeroStatRuntime.GainMana(manaGain, true);
-        if (attacker == null)// khi bị cháy
+        if (damageType == DamageType.turnDamage)// khi bị cháy
         {
             if (heroControl.HeroStatRuntime.CurrentHealth <= 0 && !heroControl.CanDodge)
             {

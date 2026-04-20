@@ -7,9 +7,14 @@ public class StageDatabase : ScriptableObject
     public List<StageConfig> stages;
 
     private Dictionary<int, StageConfig> stageDict;
-    private void OnEnable()
+    public void OnEnable()
     {
+        Clear();
         Init();
+    }
+    void Clear()
+    {
+       stageDict?.Clear();
     }
     public void Init()
     {

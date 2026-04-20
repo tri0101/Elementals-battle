@@ -7,7 +7,8 @@ public enum AbilityType
     Normal = 0,
     Skill = 1,
     Ultimate = 2,
-    Passive = 3
+    Passive = 3,
+    Empower = 4
 }
 
 public enum AbilityTargetingMode

@@ -431,7 +431,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 else if (effect.target == AbilityTarget.Self)
                 {
-                    unit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                    unit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount, unit);
                 }
                 else if (effect.target == AbilityTarget.CurrentTarget)
                 {
@@ -439,7 +439,7 @@ public class BattleTurnManager : MonoBehaviour
                     {
                         var targetUnit = enemy.GetComponent<HeroControl>();
                         if (targetUnit == null) continue;
-                        targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                        targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount, unit);
                     }
                 }
             }
@@ -481,8 +481,9 @@ public class BattleTurnManager : MonoBehaviour
             switch (aes.type)
             {
                 case AbilityEffectType.Burn:
-                    bool shouldTakeHit = i == 0;
-                    unit.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.normalDamage, shouldTakeHit, true);
+                    bool shouldTakeHit = i == 0;// burn index luôn = 0
+                   
+                    unit.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.turnDamage, shouldTakeHit, true, aes.attacker);
                     if (delayBetweenActions > 0f)
                         yield return new WaitForSeconds(0.1f);
                     break;
@@ -723,6 +724,7 @@ public class BattleTurnManager : MonoBehaviour
                 continue;
 
             int count = Mathf.Min(1, reC.HeroInfo.soulID.Count);
+           
             for (int i = 0; i < count; i++)
             {
                 int soulId = reC.HeroInfo.soulID[i];
@@ -773,7 +775,7 @@ public class BattleTurnManager : MonoBehaviour
                         if (effect.type == AbilityEffectType.ModifyStat)
                         {
                             reC.HeroStatRuntime.ApplyModifyStat(nameAbility, effect.statType,
-                                effect.durationTurn, effect.modifyValue, effect.stackCount);
+                                effect.durationTurn, effect.modifyValue, effect.stackCount, reC);
                         }
                     }
 
@@ -782,7 +784,7 @@ public class BattleTurnManager : MonoBehaviour
             }
             else if (reC.HeroInfo.ID == 53)
             {
-                // Duyệt các hero nữ trong team của hero 59 và giải khống chế ngẫu nhiên 1 hero
+                // Duyệt các hero nữ trong team của hero 53 và giải khống chế ngẫu nhiên 1 hero
                 var femaleHeroes = new List<HeroControl>(6);
 
                 for (int s = 1; s <= 6; s++)
@@ -857,20 +859,44 @@ public class BattleTurnManager : MonoBehaviour
             if (reC.HeroInfo.passive == null) continue;
             List<AbilityEffect> effectBattle = reC.HeroInfo.passive.GetEffectsStartBattle();
             if (effectBattle.Count == 0) continue;
+            HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(unit.HeroInfo.ID);
+            int passiveLevel = heroInstance.GetAbilityLevel(AbilityType.Passive);
             for (int i = 0; i < effectBattle.Count; i++)
             {
                 var effect = effectBattle[i];
+                string tagCurrentUnit = unit.transform.tag;
                 if (effect.type == AbilityEffectType.ModifyStat)
                 {
+                    float finalStat = effect.modifyValue;
+                    if (effect.canUpgrade)
+                    {
+                        finalStat +=  passiveLevel * effect.valueUpPerLevel;
+                    }
+                    
+
                     if (effect.target == AbilityTarget.HeroAll)
                         ApplyStatAll(effect.statType, effect.modifyValue);
                     else if (effect.target == AbilityTarget.DPSHeroAll)
-                        ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.DPS);
+                        ApplyStatCertainRoleBattle(tagCurrentUnit, effect.statType, finalStat, RoleHero.DPS);
                     else if (effect.target == AbilityTarget.TankHeroAll)
-                        ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Tank);
+                        ApplyStatCertainRoleBattle(tagCurrentUnit, effect.statType, finalStat, RoleHero.Tank);
                     else if (effect.target == AbilityTarget.SupportHeroAll)
-                        ApplyStatCertainRoleBattle(effect.statType, effect.modifyValue, RoleHero.Support);
-                }
+                        ApplyStatCertainRoleBattle(tagCurrentUnit, effect.statType, finalStat, RoleHero.Support);
+                    else if (effect.target == AbilityTarget.HeroTagMale)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Male);
+                    else if (effect.target == AbilityTarget.HeroTagFemale)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Female);
+                    else if (effect.target == AbilityTarget.HeroTagAssassin)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Assassin);
+                    else if (effect.target == AbilityTarget.HeroTagAwakened)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Awakened);
+                    else if (effect.target == AbilityTarget.HeroTagWarrior)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Warrior);
+                    else if (effect.target == AbilityTarget.HeroTagDemon)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Demon);
+                    else if (effect.target == AbilityTarget.HeroTagFighter)
+                        ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Fighter);
+                }       
             }
             // riêng hero id = 59
             if (reC.HeroInfo.ID == 59 && reC.HeroStatRuntime != null)
@@ -914,33 +940,33 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(TeamHero, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            unit.HeroStatRuntime.ApplyModifyStat(nameAbility, type, turns, value, maxStack);
+            unit.HeroStatRuntime.ApplyModifyStat(nameAbility, type, turns, value, maxStack, unit);
         }
     }
 
-    void ApplyStatCertainRoleBattle(ModifyStatType type, float value, RoleHero role)
+    void ApplyStatCertainRoleBattle(string teamApply, ModifyStatType type, float value, RoleHero role)
     {
         for (int slot = 1; slot <= 6; slot++)
         {
-            var unit = GetUnitAtSlot(TeamHero, slot);
+            var unit = GetUnitAtSlot(teamApply, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             if (unit.HeroInfo.role != role) continue;
             unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
-    void ApplyStatCertainTagBattle(ModifyStatType type, float value, Tag tag)
+    void ApplyStatCertainTagBattle(string teamApply ,ModifyStatType type, float value, Tag tag)
     {
         for (int slot = 1; slot <= 6; slot++)
         {
-            var unit = GetUnitAtSlot(TeamHero, slot);
+            var unit = GetUnitAtSlot(teamApply, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            
-            if(!HasTagInTeam(unit, tag)) continue;
+            if(unit.HeroInfo.GetTag(tag) == false) continue;
             unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
+    
     bool HasTagInTeam(HeroControl heroControl, Tag tag)
     {
         foreach(Tag tag1 in heroControl.HeroInfo.tags)
@@ -968,7 +994,7 @@ public class BattleTurnManager : MonoBehaviour
         if (unit == null || unit.HeroInfo == null || unit.HeroInfo.skill == null)
             return false;
 
-        float chance = unit.HeroInfo.skillChance;
+        float chance = unit.HeroStatRuntime.skillChanceFinal;
         return chance > 0f && Random.value < chance;
     }
 

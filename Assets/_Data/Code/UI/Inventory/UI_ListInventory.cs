@@ -11,6 +11,8 @@ public class UI_ListInventory : MonoBehaviour
     [SerializeField] private Button buttonResource;
     [SerializeField] private Button buttonShard;
     [SerializeField] private Button buttonOther;
+    [Header("Ref")]
+    [SerializeField] private UI_InventoryInfo inventoryInfo;
 
     enum FilterType { All, Resource, Shard, Other }
     FilterType currentFilter = FilterType.All;
@@ -86,7 +88,8 @@ public class UI_ListInventory : MonoBehaviour
 
             if (!ShouldShowItem(itemData))
                 continue;
-
+            int quantity = PlayerInventory.Instance.GetItemQuantity(itemInstance.itemId);
+            if(quantity <= 0 ) continue;
             CreateItem(itemData, itemInstance.quantity);
         }
     }
@@ -127,9 +130,14 @@ public class UI_ListInventory : MonoBehaviour
         var go = Instantiate(prefabToUse, content);
         var ui = go.GetComponent<UI_InventoryItem>();
         if (ui != null)
-            ui.Setup(data, amount);
+            ui.Setup(data, amount, OnItemClicked);
     }
 
+    private void OnItemClicked(GameObject itemCopy, ItemData itemData,int quantity)
+    {
+        if (itemCopy != null)
+            inventoryInfo.Setup(itemCopy, itemData, quantity);
+    }
     void Clear()
     {
         foreach (Transform child in content)

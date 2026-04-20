@@ -5,5 +5,6 @@ public class HeroSkillCostConfig : ScriptableObject
 {
     public int[] costPerLevelSkill;
     public int[] costPerLevelUltimate;
+    public int[] costPerLevelEmpower;
     public int[] costPerLevelPassive;
 }
