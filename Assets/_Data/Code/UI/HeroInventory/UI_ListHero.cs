@@ -2,7 +2,6 @@
 
 public class UI_ListHero : MonoBehaviour
 {
-   
     [SerializeField] private Transform content;
     [SerializeField] private GameObject heroItemPrefab;
 
@@ -15,16 +14,48 @@ public class UI_ListHero : MonoBehaviour
     {
         Clear();
 
-        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
+        if (content == null || heroItemPrefab == null) return;
+        if (DatabaseManager.Instance == null || DatabaseManager.Instance.HeroDatabase == null) return;
+        if (PlayerInventory.Instance == null) return;
 
-        foreach (var hero in heroes)
-            CreateItem(hero);
-    }
+        var db = DatabaseManager.Instance.HeroDatabase;
+        if (db.heroes == null) return;
 
-    void CreateItem(HeroViewData data)
-    {
-        var go = Instantiate(heroItemPrefab, content);
-        go.GetComponent<UI_HeroItem>().Setup(data);
+        // Pass 1: heroes already owned
+        foreach (var info in db.heroes)
+        {
+            if (info == null) continue;
+            if (info.ID >= 500) continue;
+
+            var instance = PlayerInventory.Instance.FindHeroInstance(info.ID);
+            if (instance == null) continue;
+
+            var go = Instantiate(heroItemPrefab, content);
+            var ui = go.GetComponent<UI_HeroItem>();
+            if (ui == null) continue;
+
+            ui.Setup(new HeroViewData
+            {
+                info = info,
+                instance = instance
+            });
+        }
+
+        // Pass 2: heroes not owned (locked) -> push to end
+        foreach (var info in db.heroes)
+        {
+            if (info == null) continue;
+            if (info.ID >= 500) continue;
+
+            var instance = PlayerInventory.Instance.FindHeroInstance(info.ID);
+            if (instance != null) continue;
+
+            var go = Instantiate(heroItemPrefab, content);
+            var ui = go.GetComponent<UI_HeroItem>();
+            if (ui == null) continue;
+
+            ui.SetupLocked(info);
+        }
     }
 
     void Clear()

@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System;
 using TMPro;
-using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class UI_HeroUpgradeItem : MonoBehaviour
 {
@@ -18,17 +18,19 @@ public class UI_HeroUpgradeItem : MonoBehaviour
     [SerializeField] private Transform rankRoot;
     [SerializeField] private Image frameRank;
 
+    [Header("Empty")]
+    [SerializeField] private Image backEmpty;
+
     [SerializeField] private Button button;
     private HorizontalLayoutGroup starLayout;
     private HorizontalLayoutGroup rankLayout;
+
     private HeroViewData data;
-    private Action<HeroViewData> onClickCallback;
+    private Action<HeroViewData> onClickOwned;
 
-    private int blackRank = 1;
-    private int greenRank = 5;
+    private HeroInfo lockedInfo;
+    private Action<HeroInfo> onClickLocked;
 
-    private Color blackColor = new Color(157/255f, 143/255f, 143/255f);
-    private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
     void Awake()
     {
         if (starRoot != null)
@@ -37,32 +39,95 @@ public class UI_HeroUpgradeItem : MonoBehaviour
         if (rankRoot != null)
             rankLayout = rankRoot.GetComponent<HorizontalLayoutGroup>();
     }
-    public void Setup(
-        HeroViewData heroData,
-        Action<HeroViewData> onClick = null
-    )
+
+    public void Setup(HeroViewData heroData, Action<HeroViewData> onClick = null)
     {
         data = heroData;
-        onClickCallback = onClick;
+        onClickOwned = onClick;
 
-        // ===== ICON =====
-        icon.sprite = data.info.iconFace;
+        lockedInfo = null;
+        onClickLocked = null;
 
-        // ===== LEVEL =====
-        levelText.text = $"{data.instance.level}";
+        if (backEmpty != null)
+            backEmpty.gameObject.SetActive(false);
 
-        // ===== STAR + RANK =====
+        if (icon != null) icon.sprite = data.info.iconFace;
+        if (levelText != null) levelText.text = $"{data.instance.level}";
+
         UpdateStar(data.instance.star);
         UpdateRankVisual(data.instance.rank);
 
-        // ===== CLICK =====
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(OnClick);
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnClickOwned);
+            button.interactable = true;
+        }
+    }
+
+    public void SetupLocked(HeroInfo info, Action<HeroInfo> onClick = null)
+    {
+        data = null;
+        onClickOwned = null;
+
+        lockedInfo = info;
+        onClickLocked = onClick;
+
+        if (backEmpty != null)
+            backEmpty.gameObject.SetActive(true);
+
+        if (icon != null)
+            icon.sprite = info != null ? info.iconFace : null;
+
+        if (levelText != null)
+            levelText.text = "1"; // default
+
+        UpdateStar(4); // default 4 star
+        UpdateRankVisual(1);  // default black rank
+
+        if (button != null)
+        {
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(OnClickLocked);
+            button.interactable = true;
+        }
+    }
+
+    private void OnClickOwned()
+    {
+        if (data == null) return;
+
+        onClickOwned?.Invoke(data);
+        ReloadPreviewListIfAny();
+    }
+
+    private void OnClickLocked()
+    {
+        if (lockedInfo == null) return;
+
+        onClickLocked?.Invoke(lockedInfo);
+        ReloadPreviewListIfAny();
+    }
+
+    private void ReloadPreviewListIfAny()
+    {
+        // UI_ListPreview nằm trong cùng HeroUpgradeScene (parent)
+        var preview = GetComponentInParent<HeroUpgradeScene>(true);
+        if (preview != null)
+        {
+            var listPreview = preview.BackPreviewTransform.GetComponent<UI_ListPreview>();
+            if(listPreview != null)
+            {
+                listPreview.RefreshUI(HeroUpgradeContext.SelectedHero);
+              
+            }
+        }
+        
+
     }
 
     void UpdateStar(int star)
     {
-
         if (starLayout != null)
         {
             if (star <= 4)
@@ -70,16 +135,12 @@ public class UI_HeroUpgradeItem : MonoBehaviour
             else
                 starLayout.spacing = -25f;
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(
-                starRoot as RectTransform
-            );
+            LayoutRebuilder.ForceRebuildLayoutImmediate(starRoot as RectTransform);
         }
-
 
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }
-
 
     void UpdateRankVisual(int rank)
     {
@@ -88,6 +149,12 @@ public class UI_HeroUpgradeItem : MonoBehaviour
 
         for (int i = 0; i < rankRoot.childCount; i++)
             rankRoot.GetChild(i).gameObject.SetActive(false);
+
+        // Giữ logic cũ của bạn
+        int blackRank = 1;
+        int greenRank = 5;
+        Color blackColor = new Color(157 / 255f, 143 / 255f, 143 / 255f);
+        Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
 
         if (rank < greenRank)
         {
@@ -122,10 +189,5 @@ public class UI_HeroUpgradeItem : MonoBehaviour
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(rankRoot as RectTransform);
         }
-    }
-
-    void OnClick()
-    {
-        onClickCallback?.Invoke(data);
     }
 }

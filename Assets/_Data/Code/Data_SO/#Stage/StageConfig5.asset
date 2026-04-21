@@ -20,7 +20,14 @@ MonoBehaviour:
   stageCondition: 0
   conditionParam: 1
   enemies:
-  - heroId: 50
+  - heroId: 504
+    rank: 1
+    star: 4
+    level: 1
+    hpRate: 1
+    atkRate: 1
+    isShow: 0
+  - heroId: 500
     rank: 1
     star: 4
     level: 1
@@ -30,7 +37,13 @@ MonoBehaviour:
   enemySpawns:
   - wave: 1
     slotIndex: 2
-    heroId: 50
+    heroId: 504
+  - wave: 1
+    slotIndex: 3
+    heroId: 500
+  - wave: 1
+    slotIndex: 5
+    heroId: 500
   dropItems:
   - itemId: 100
     minAmount: 1

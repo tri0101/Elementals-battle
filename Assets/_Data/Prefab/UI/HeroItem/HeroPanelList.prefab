@@ -33,8 +33,8 @@ RectTransform:
   m_Children:
   - {fileID: 3803884135499329688}
   - {fileID: 7165803440704911396}
-  - {fileID: 6346470896616917985}
   - {fileID: 7021760472232326040}
+  - {fileID: 6346470896616917985}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -94,11 +94,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonUpgrade: {fileID: 1580294499470599664}
   icon: {fileID: 8774979818253207548}
+  backEmpty: {fileID: 2871575256291770539}
   levelText: {fileID: 3375401598780774072}
   nameHero: {fileID: 1038018065097638912}
   starRoot: {fileID: 2335284331974697196}
   rankRoot: {fileID: 8561657813702662353}
   frameRank: {fileID: 5211599374154618560}
+  buttonUpgradeText: {fileID: 0}
 --- !u!1 &858571920373652247
 GameObject:
   m_ObjectHideFlags: 0
@@ -1854,7 +1856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.88235295}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:

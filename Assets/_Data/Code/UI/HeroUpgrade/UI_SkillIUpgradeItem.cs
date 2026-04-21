@@ -54,7 +54,7 @@ public class UI_SkillUpgradeItem : MonoBehaviour
         if (icon != null) icon.sprite = Icon;
         if (nameText != null) nameText.text = name;
 
-        // initial ui
+      
         ApplyLevelAndCost(currentLevel, cost);
 
         if (button != null)
@@ -89,7 +89,7 @@ public class UI_SkillUpgradeItem : MonoBehaviour
         string level = levelText != null ? levelText.text : string.Empty;
         string type = boundAbilityType.ToString();
 
-        // Chưa có dữ liệu mô tả trong context hiện tại => truyền rỗng
+        
         ui.SetUp(icon, skillName, level, type, this.description);
     }
 
@@ -116,6 +116,6 @@ public class UI_SkillUpgradeItem : MonoBehaviour
         if (costUp != null)
             costUp.text = cost.ToString();
 
-        CheckCoin(); // refresh color immediately after changes
+        CheckCoin();
     }
 }

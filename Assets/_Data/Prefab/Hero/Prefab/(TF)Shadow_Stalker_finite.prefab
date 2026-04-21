@@ -49,6 +49,7 @@ MonoBehaviour:
   heroControl: {fileID: 0}
   attackDamage: 0
   myTag: 
+  finalMutipler: 0
 --- !u!60 &3077402119636004215
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -265,6 +266,7 @@ MonoBehaviour:
   shouldPlus: 0
   leftBattle: 0
   isTransform: 0
+  isStart: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -356,12 +358,14 @@ MonoBehaviour:
     critRate: 0
     critDamage: 0
     lifeSteal: 0
+    controlFree: 0
     speed: 0
     power: 0
   currentShield: 0
   maxShield: 0
   currentHealth: 0
   currentMana: 0
+  skillChanceFinal: 0
   aesDebug: []
   modifyStatDebug: []
   onStartBattleDebug: []
@@ -589,6 +593,7 @@ MonoBehaviour:
   heroControl: {fileID: 0}
   attackDamage: 0
   myTag: 
+  finalMutipler: 0
 --- !u!60 &811640993108425344
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -756,6 +761,7 @@ MonoBehaviour:
   heroControl: {fileID: 0}
   attackDamage: 0
   myTag: 
+  finalMutipler: 0
 --- !u!1 &4741663830266554928
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,6 +960,7 @@ MonoBehaviour:
   heroControl: {fileID: 0}
   attackDamage: 0
   myTag: 
+  finalMutipler: 0
 --- !u!1 &5800767136740353258
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,6 +1010,7 @@ MonoBehaviour:
   heroControl: {fileID: 0}
   attackDamage: 0
   myTag: 
+  finalMutipler: 0
 --- !u!60 &3810173006523484834
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1137,6 +1145,7 @@ MonoBehaviour:
   heroControl: {fileID: 0}
   attackDamage: 0
   myTag: 
+  finalMutipler: 0
 --- !u!60 &4538538136517139288
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1418,6 +1427,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanvasUI (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6188617512740351872, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1449,6 +1462,14 @@ PrefabInstance:
     - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.0769231
+      objectReference: {fileID: 0}
+    - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.076923
       objectReference: {fileID: 0}
     - target: {fileID: 8146921398082584509, guid: 545aa0690636c0d4a8552c2fa9089c09, type: 3}
       propertyPath: m_LocalPosition.x
