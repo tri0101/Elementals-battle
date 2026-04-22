@@ -8,23 +8,30 @@ public class Attack : Subject
     [SerializeField] private AttackInfo attackInfo;
     public AttackInfo AttackInfo => attackInfo;
     [SerializeField] private HeroControl heroControl;
+    public HeroControl HeroControl
+    {
+        get => heroControl; set => heroControl = value;
+    }
     [SerializeField] private float attackDamage;
     public float AttackDamage => attackDamage;
 
-    [SerializeField] string myTag;
     [SerializeField] float finalMutipler; // chỉ gán runtime
     
     private void Awake()
     {
 
-       
-        heroControl = transform.parent.parent.parent.parent.GetComponent<HeroControl>();
-        
-        
+
+        heroControl = transform.parent?.parent?.parent?.parent?.GetComponent<HeroControl>();
+
+
     }
     public int GetLevelBasedOnSkill()
     {
-        HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
+        HeroInstance heroInstance = null;
+        if (heroControl.tag == "Hero")
+            heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
+        else
+            heroInstance = BattleManager.Instance.GetEnemyInstance(heroControl.HeroInfo.ID);
 
         switch (heroControl.CurrentStringState)
         {

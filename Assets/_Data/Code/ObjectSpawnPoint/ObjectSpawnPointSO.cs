@@ -5,5 +5,5 @@ public class ObjectSpawnPointSO : ScriptableObject
 {
     public bool canFly;
     public float meterFly; // bay bao xa
-    public Vector3 positionSpawn; // vị trí spawn( tương đối với unit spawn ra nó )
+    
 }

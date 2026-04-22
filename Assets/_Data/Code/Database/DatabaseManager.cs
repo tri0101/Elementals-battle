@@ -27,4 +27,13 @@ public class DatabaseManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
+    private void Start()
+    {
+        chapterDatabase.Init();
+        heroDatabase.Init();
+        stageDatabase.Init();
+        fightSoulDatabase.Init();
+        shopItemDatabase.Init();
+        itemDatabase.Init();
+    }
 }

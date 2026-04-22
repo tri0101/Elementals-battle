@@ -14,16 +14,25 @@ public class ObjectSpawnPointController : MonoBehaviour
     public ObjectSpawnPointSO ObjectSpawnPointSO => objectSpawnPointSO;
 
     [SerializeField] private bool canFly;// có thể bay hay ko
-  
+    [SerializeField] private HeroControl spawner; // ai spawn ra nó
+    public HeroControl Spawner => spawner;
     private void Awake()
     {
         
         animator = transform.GetChild(0).GetComponent<Animator>();
         ospe = transform.GetChild(0).GetComponent<ObjectSpawnPointEvent>();
         objectSpawnPointFly = GetComponent<ObjectSpawnPointFly>();
-        objectSpawnPointSO = GetComponent<ObjectSpawnPointSO>();
+        
         canFly = objectSpawnPointSO.canFly;
 
 
+    }
+    public void SetSpawner(HeroControl spawner)
+    {
+        if(this.spawner == null && spawner != null)
+        {
+            this.spawner = spawner;
+            transform.GetComponentInChildren<Attack>().HeroControl = spawner;
+        }
     }
 }

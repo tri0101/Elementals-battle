@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+
 public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance { get; private set; }
+
     [Header("UI")]
     [SerializeField] private TextMeshProUGUI waveText;
-
 
     [Header("Stage")]
     [SerializeField] private StageConfig stageConfig;
@@ -24,15 +25,19 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private Transform backBottom;
     [SerializeField] private Transform backHeroExp;
     Dictionary<int, UI_HeroBattle> dictHeroBattle = new Dictionary<int, UI_HeroBattle>();
-    Dictionary<int, bool> listHeroStatus = new Dictionary<int, bool>();// true = live , false = dead
+    Dictionary<int, bool> listHeroStatus = new Dictionary<int, bool>(); // true = live , false = dead
     [SerializeField] private UI_StageReward uiStageReward;
     [SerializeField] private BattleResult battleResult;
     public BattleResult BattleResult => battleResult;
+
     [Header("Growth (for HeroStatCalculator)")]
     [SerializeField] private HeroGrowthConfig growthConfig;
 
     private readonly List<GameObject> spawnedHeroes = new List<GameObject>();
     private readonly List<GameObject> spawnedEnemies = new List<GameObject>();
+
+    // NEW: instance enemy theo heroId (tại wave hiện tại)
+    private readonly Dictionary<int, HeroInstance> listEnemyInstance = new Dictionary<int, HeroInstance>();
 
     public bool IsWaveReady { get; private set; }
 
@@ -50,13 +55,14 @@ public class BattleManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
+
         Instance = this;
         stageConfig = StageContext.selectedStage;
+
         if (battleResult == null)
             battleResult = GetComponent<BattleResult>();
 
         backGround.sprite = stageConfig.background;
-
     }
 
     void Start()
@@ -78,12 +84,21 @@ public class BattleManager : MonoBehaviour
         }
     }
 
+    // NEW: lấy level enemy theo heroId ở stage/wave hiện tại
+    public HeroInstance GetEnemyInstance(int enemyHeroId)
+    {
+        if (enemyHeroId <= 0) return null;
+
+        return listEnemyInstance.TryGetValue(enemyHeroId, out var inst)
+            ? inst
+            : null;
+    }
 
     public void LoadWave(int wave, bool keepHeroes)
     {
         waveText.text = $"Wave {wave}/{stageConfig.waveStage}";
         IsWaveReady = false;
-        
+
         if (readyRoutine != null)
         {
             StopCoroutine(readyRoutine);
@@ -99,21 +114,19 @@ public class BattleManager : MonoBehaviour
         }
         else
         {
-           
             ClearSpawnedEnemies();
 
-            
             if (BattlefieldRegistry.Instance != null)
             {
                 BattlefieldRegistry.Instance.Clear();
                 ReRegisterExistingHeroes();
             }
 
-     
             ResetHeroesToStartAndRunIn();
         }
 
         SpawnEnemiesForWave(wave);
+
         if (formation == null)
         {
             Debug.LogError("[BattleManager] formation is NULL");
@@ -132,8 +145,6 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        
-
         if (growthConfig == null)
             Debug.LogWarning("[BattleManager] growthConfig is NULL. Units will fallback to HeroInfo base stats (no scaling).");
 
@@ -144,9 +155,6 @@ public class BattleManager : MonoBehaviour
             SpawnPlayerHeroes();
             battleResult.HeroTotal = formation.ListHeroRoot.childCount;
         }
-           
-
-        //SpawnEnemiesForWave(wave);
 
         readyRoutine = StartCoroutine(CoSetWaveReadyAfterDelay());
     }
@@ -173,17 +181,12 @@ public class BattleManager : MonoBehaviour
             Transform battleT = formation.GetBattle(slotIndex);
             if (startT == null || battleT == null) continue;
 
-            
             go.transform.position = startT.position;
 
-        
             var heroControl = go.GetComponent<HeroControl>();
             if (heroControl != null)
             {
-                
                 heroControl.SetBattleTarget(battleT.position);
-
-               
                 heroControl.GoBackBattleTarget();
             }
         }
@@ -219,6 +222,7 @@ public class BattleManager : MonoBehaviour
     {
         var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
         var heroById = new Dictionary<int, HeroViewData>();
+
         foreach (var h in heroes)
         {
             if (h?.instance == null) continue;
@@ -267,31 +271,30 @@ public class BattleManager : MonoBehaviour
             if (BattlefieldRegistry.Instance != null)
                 BattlefieldRegistry.Instance.Register(heroGo.transform, slotIndex, "Hero");
 
-            ///init giá trị mặc định
             var statRuntime = heroGo.GetComponent<HeroStatRuntime>();
             if (statRuntime != null)
                 statRuntime.Init(heroData.info, heroData.instance, growthConfig);
             else
                 Debug.LogWarning($"[BattleManager] {heroGo.name} missing HeroStatRuntime. Add it to the hero prefab.");
-            var heroControl = heroGo.GetComponent<HeroControl>();
 
-            //bonu giá trị từ empowerSkill
-            heroControl.HeroStatRuntime.GainStatByEmpower();
-            //bonus giá trị từ soul
+            var heroControl = heroGo.GetComponent<HeroControl>();
+            if (heroControl != null && heroControl.HeroStatRuntime != null)
+            {
+                heroControl.HeroStatRuntime.GainStatByEmpower();
+            }
+
             foreach (var soul in heroData.info.soulID)
             {
-                
                 FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
-                if (soulInfo != null)
+                if (soulInfo != null && statRuntime != null)
                 {
                     statRuntime.GainValueBySoul(heroData.instance, soulInfo);
                 }
             }
+
             if (heroControl != null && dictHeroBattle.ContainsKey(slotIndex))
                 dictHeroBattle[slotIndex].BindHeroControl(heroControl);
 
-            
-            
             if (heroControl != null)
             {
                 heroControl.SetBattleTarget(battleT.position);
@@ -315,6 +318,9 @@ public class BattleManager : MonoBehaviour
             Debug.LogWarning("[BattleManager] stageConfig.enemySpawns empty. Skip spawning enemies.");
             return;
         }
+
+        // NEW: reset cache mỗi wave
+        listEnemyInstance.Clear();
 
         // Allow multiple EnemySpawnData per heroId (consume sequentially)
         Dictionary<int, Queue<EnemySpawnData>> enemyQueueByHeroId = null;
@@ -384,7 +390,10 @@ public class BattleManager : MonoBehaviour
 
             // Pick per-spawn config (if provided). If multiple configs exist for same heroId, consume in order.
             EnemySpawnData enemyData = null;
-            if (enemyQueueByHeroId != null && enemyQueueByHeroId.TryGetValue(enemyHeroId, out var q) && q != null && q.Count > 0)
+            if (enemyQueueByHeroId != null &&
+                enemyQueueByHeroId.TryGetValue(enemyHeroId, out var q) &&
+                q != null &&
+                q.Count > 0)
             {
                 enemyData = q.Dequeue();
             }
@@ -401,6 +410,9 @@ public class BattleManager : MonoBehaviour
                     rank = enemyData.rank,
                     shard = 0
                 };
+
+                // NEW: lưu instance theo heroId (nếu trùng id trong wave, sẽ overwrite bản cuối)
+                listEnemyInstance[enemyHeroId] = enemyInstance;
             }
 
             var statRuntime = enemyGo.GetComponent<HeroStatRuntime>();
@@ -437,17 +449,20 @@ public class BattleManager : MonoBehaviour
 
         spawnedHeroes.Clear();
     }
+
     public void SetActiveForUIBatle(bool value)
     {
-        foreach(Transform child in backBottom)
+        foreach (Transform child in backBottom)
         {
-           child.gameObject.SetActive(value);
+            child.gameObject.SetActive(value);
         }
     }
+
     private void ClearSpawned()
     {
         ClearSpawnedHeroes();
     }
+
     // ========== sàn đấu (Arena)
     [System.Serializable]
     private struct Arena
@@ -488,13 +503,13 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"[Arena] No arena found with skill: {skillName}");
         return false;
     }
+
     public void PutArenaOnStack(string skillName, string nameHero, int heroId, int order, Sprite arenaSprite = null)
     {
         if (string.IsNullOrEmpty(skillName) || string.IsNullOrEmpty(nameHero) || heroId <= 0) return;
 
         Arena newArena = new Arena(skillName, nameHero, heroId, order, arenaSprite);
 
-        // Nếu stack rỗng => thêm trực tiếp
         if (stack.Count == 0)
         {
             stack.Push(newArena);
@@ -504,10 +519,8 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // Peek arena hiện tại (không lấy ra)
         Arena currentArena = stack.Peek();
 
-        // Nếu order của arena hiện tại > order mới => đặt arena mới PHÍA SAU (pop rồi push lại)
         if (currentArena.order > newArena.order)
         {
             stack.Pop();
@@ -533,7 +546,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    // NEW: Xóa arena theo nameHero
     public void RemoveArenaByHeroName(string nameHero)
     {
         if (string.IsNullOrEmpty(nameHero) || stack.Count == 0) return;
@@ -541,7 +553,6 @@ public class BattleManager : MonoBehaviour
         bool isCurrentArenaRemoved = false;
         Arena currentArena = stack.Peek();
 
-        // Check xem arena đỉnh stack (đang apply) có phải của hero này không
         if (currentArena.nameHero == nameHero)
         {
             isCurrentArenaRemoved = true;
@@ -549,7 +560,6 @@ public class BattleManager : MonoBehaviour
             Debug.Log($"[Arena] Xóa arena đang apply '{currentArena.skillApply}' của hero {nameHero}");
         }
 
-        // Xóa tất cả arena khác của hero này
         var tempList = new List<Arena>();
         while (stack.Count > 0)
         {
@@ -564,11 +574,9 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        // Push lại các arena còn lại
         for (int i = tempList.Count - 1; i >= 0; i--)
             stack.Push(tempList[i]);
 
-        // Nếu xóa arena đang apply, update background
         if (isCurrentArenaRemoved)
         {
             UpdateBackgroundSprite();
@@ -578,7 +586,6 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"[Arena] Sau khi xóa arena của {nameHero}, arena hiện tại: {(stack.Count > 0 ? stack.Peek().skillApply : "Không có")}");
     }
 
-    // NEW: Xóa arena theo heroId
     public void RemoveArenaByHeroId(int heroId)
     {
         if (heroId <= 0 || stack.Count == 0) return;
@@ -586,7 +593,6 @@ public class BattleManager : MonoBehaviour
         bool isCurrentArenaRemoved = false;
         Arena currentArena = stack.Peek();
 
-        // Check xem arena đỉnh stack (đang apply) có phải của hero này không
         if (currentArena.heroId == heroId)
         {
             isCurrentArenaRemoved = true;
@@ -594,7 +600,6 @@ public class BattleManager : MonoBehaviour
             Debug.Log($"[Arena] Xóa arena đang apply '{currentArena.skillApply}' của hero {heroId}");
         }
 
-        // Xóa tất cả arena khác của hero này
         var tempList = new List<Arena>();
         while (stack.Count > 0)
         {
@@ -609,11 +614,9 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        // Push lại các arena còn lại
         for (int i = tempList.Count - 1; i >= 0; i--)
             stack.Push(tempList[i]);
 
-        // Nếu xóa arena đang apply, update background
         if (isCurrentArenaRemoved)
         {
             UpdateBackgroundSprite();
@@ -623,7 +626,6 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"[Arena] Sau khi xóa arena của hero {heroId}, arena hiện tại: {(stack.Count > 0 ? stack.Peek().skillApply : "Không có")}");
     }
 
-    // NEW: update background sprite dựa trên arena hiện tại
     private void UpdateBackgroundSprite()
     {
         if (backGround == null) return;
@@ -649,7 +651,6 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    // ========== sàn đấu (Arena) - DEBUG
     [System.Serializable]
     private struct ArenaDebugItem
     {
@@ -685,5 +686,4 @@ public class BattleManager : MonoBehaviour
             });
         }
     }
-
 }

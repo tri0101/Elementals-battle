@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -286,13 +287,18 @@ public class HeroEventt : MonoBehaviour
 
         hideTotalDmgRoutine = null;
     }
-    public void SpawnObjectSpawnPoint(string nameObject)
+    public void SpawnObjectByName(string nameObject)
     {
-        ObjectSpawnPoint.instance.SpawnObjectAtPosition(transform, nameObject);
+        NameAndVector nameAndVector = load.dicSpawnName.Find(dic => dic.nameObject == nameObject);
+        if (nameAndVector == null) return;
+        Vector3 newPos = heroControl.transform.position;
+        newPos.x += nameAndVector.positionSpawn.x;
+        newPos.y += nameAndVector.positionSpawn.y;  
+        ObjectSpawnPoint.instance.SpawnObjectAtPosition(newPos, nameObject, heroControl.transform.localScale.x, heroControl);
     }
-    public void SpawnObject(int index)
+    public void SpawnObjectByType(int index)
     {
-        TypeAndVector typeAndvector = load.dicSpawn.Find(dic => dic.indexSpawn == index);
+        TypeAndVector typeAndvector = load.dicSpawnType.Find(dic => dic.indexSpawn == index);
         if(typeAndvector == null) return;
         Vector3 newPos = heroControl.transform.position;
         newPos.x += typeAndvector.positionSpawn.x;

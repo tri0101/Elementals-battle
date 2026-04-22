@@ -45,10 +45,9 @@ public class ObjectSpawnPoint : MonoBehaviour
         return tmpSpawwn;
     }
 
-    public void SpawnObjectAtPosition(Transform unitTransform, string nameObjectSpawn)
+    public void SpawnObjectAtPosition(Vector3 vector, string nameObjectSpawn, float scaleX, HeroControl spawner)
     {
-        if (unitTransform == null)
-            return;
+        
 
         GameObject prefab = BrowseList(nameObjectSpawn);
         if (prefab == null)
@@ -61,17 +60,21 @@ public class ObjectSpawnPoint : MonoBehaviour
             spawned.transform.SetParent(holder, false);
 
         ObjectSpawnPointController controller = spawned.GetComponent<ObjectSpawnPointController>();
+        controller.SetSpawner(spawner);
+        Vector3 scale = controller.transform.localScale;
+        scale.x = scaleX;
+        controller.transform.localScale = scale;
         if (controller == null || controller.ObjectSpawnPointSO == null)
         {
-            spawned.transform.position = unitTransform.position;
+            
             return;
         }
 
-        spawned.transform.position = unitTransform.position + controller.ObjectSpawnPointSO.positionSpawn;
+        spawned.transform.position = vector;
 
         if (controller.ObjectSpawnPointSO.canFly && controller.ObjectSpawnPointFly != null)
         {
-            controller.ObjectSpawnPointFly.SetDirectionFromUnitScale(unitTransform.localScale.x);
+            controller.ObjectSpawnPointFly.SetDirectionFromUnitScale(scaleX);
             controller.ObjectSpawnPointFly.Fly();
         }
     }
