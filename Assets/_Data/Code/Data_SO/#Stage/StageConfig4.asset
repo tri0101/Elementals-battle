@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: StageConfig4
   m_EditorClassIdentifier: 
   stageID: 4
-  waveStage: 3
+  waveStage: 1
   staminaCost: 7
   expForAliveHero: 40
   expForPlayer: 100
@@ -36,22 +36,22 @@ MonoBehaviour:
     isShow: 0
   enemySpawns:
   - wave: 1
+    slotIndex: 1
+    heroId: 500
+  - wave: 1
     slotIndex: 2
+    heroId: 500
+  - wave: 1
+    slotIndex: 3
     heroId: 500
   - wave: 1
     slotIndex: 4
     heroId: 501
   - wave: 1
+    slotIndex: 5
+    heroId: 501
+  - wave: 1
     slotIndex: 6
-    heroId: 501
-  - wave: 2
-    slotIndex: 1
-    heroId: 501
-  - wave: 2
-    slotIndex: 4
-    heroId: 501
-  - wave: 3
-    slotIndex: 1
     heroId: 501
   dropItems:
   - itemId: 100

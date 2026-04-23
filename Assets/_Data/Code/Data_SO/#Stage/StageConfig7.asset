@@ -10,31 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3446855f4b1fe7644a9d47c020838a86, type: 3}
-  m_Name: StageConfig3
+  m_Name: StageConfig7
   m_EditorClassIdentifier: 
-  stageID: 3
-  waveStage: 2
+  stageID: 7
+  waveStage: 1
   staminaCost: 7
   expForAliveHero: 40
   expForPlayer: 100
   stageCondition: 0
   conditionParam: 1
   enemies:
-  - heroId: 501
-    rank: 1
-    star: 4
-    level: 1
-    hpRate: 1
-    atkRate: 1
-    isShow: 0
-  - heroId: 500
-    rank: 1
-    star: 4
-    level: 1
-    hpRate: 1
-    atkRate: 1
-    isShow: 0
-  - heroId: 1
+  - heroId: 506
     rank: 1
     star: 4
     level: 1
@@ -43,32 +29,8 @@ MonoBehaviour:
     isShow: 0
   enemySpawns:
   - wave: 1
-    slotIndex: 1
-    heroId: 500
-  - wave: 1
-    slotIndex: 4
-    heroId: 501
-  - wave: 2
     slotIndex: 2
-    heroId: 500
-  - wave: 2
-    slotIndex: 5
-    heroId: 501
-  - wave: 3
-    slotIndex: 1
-    heroId: 500
-  - wave: 3
-    slotIndex: 4
-    heroId: 501
-  - wave: 3
-    slotIndex: 3
-    heroId: 500
-  - wave: 3
-    slotIndex: 6
-    heroId: 501
-  - wave: 3
-    slotIndex: 1
-    heroId: 1
+    heroId: 506
   dropItems:
   - itemId: 100
     minAmount: 1

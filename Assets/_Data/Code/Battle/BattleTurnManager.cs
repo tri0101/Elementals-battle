@@ -156,6 +156,7 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 ConsumeModifyStatForTeam(TeamHero);
                 ConsumeModifyStatForTeam(TeamEnemy);
+                yield return new WaitForSeconds(0.5f);
                 // DOT tick + giảm duration DOT ở cuối full round (2 team cùng lúc)
                 yield return CoApplyEffect(false);
 

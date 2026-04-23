@@ -169,7 +169,7 @@ public class Attack : Subject
             if (chance < 1f && Random.value > chance) continue;
             if (effect.type == AbilityEffectType.ModifyStat)
             {
-                string skillName = heroControl.HeroInfo.ultimate.abilityName;
+                string skillName = nameSkill;
                 if (effect.target == AbilityTarget.CurrentTarget)
                 {
                     List<Transform> targets = heroControl.enemyTarget;
