@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 34997416078746582}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: -0.07, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -189,7 +189,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: e0050349bbde5434c8b24328f67dd360, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &577540422152167640
 GameObject:
   m_ObjectHideFlags: 0
@@ -258,10 +258,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3bc9e58f0bb83144c955e4a450203963, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  capsuleCollider2D: {fileID: 0}
   animator: {fileID: 0}
   spriteRenderer: {fileID: 0}
   spriteEffect: {fileID: 0}
   listEffect: {fileID: 0}
+  canvasTotalDamage: {fileID: 0}
   fixedLayer: 
   normalT: {fileID: 0}
   receiveT: {fileID: 0}
@@ -269,13 +271,22 @@ MonoBehaviour:
   isPrepare: 0
   isAttack: 0
   isUltimate: 0
+  isUltimateSpecial: 0
+  canUltimateSpecial: 0
   isSkill: 0
   isFinished: 0
   canSkill: 0
+  canDodge: 0
   isTakeHit: 0
   isDead: 0
+  isDodge: 0
   isClear: 0
   isCrit: 0
+  shouldPlus: 0
+  leftBattle: 0
+  isTransform: 0
+  isStart: 0
+  isSpawn: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -366,11 +377,18 @@ MonoBehaviour:
     armor: 0
     critRate: 0
     critDamage: 0
+    lifeSteal: 0
+    controlFree: 0
     speed: 0
     power: 0
+  currentShield: 0
+  maxShield: 0
   currentHealth: 0
   currentMana: 0
+  skillChanceFinal: 0
   aesDebug: []
+  modifyStatDebug: []
+  onStartBattleDebug: []
 --- !u!114 &-9086197703002039033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -729,7 +747,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: bc0fba1913724fb4bad7d1e1664bf2c1, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &4063624905916522477
 GameObject:
   m_ObjectHideFlags: 0
@@ -1209,7 +1227,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: ce15d37a4fea9c84e88df1def08db217, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &6184787489642493089
 GameObject:
   m_ObjectHideFlags: 0
@@ -1413,7 +1431,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: d0d8710a361a4d04ea381a559e567670, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &8267834621062207850
 GameObject:
   m_ObjectHideFlags: 0
@@ -1522,7 +1540,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 006431c171eab2e4283e1288a179deaa, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1001 &3162407622287750920
 PrefabInstance:
   m_ObjectHideFlags: 0

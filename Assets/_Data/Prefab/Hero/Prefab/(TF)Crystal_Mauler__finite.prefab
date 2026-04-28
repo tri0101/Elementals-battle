@@ -48,7 +48,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 0ec678957ff02174ea9231c6ff56141a, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &6832849528840562475
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -219,7 +219,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: fe491d45e44811b449162830877751f7, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &2405812715245368292
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,7 +549,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: ade69a767fae45b4aa0398bcacf352bd, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &4835483377032374650
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -720,7 +720,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 716a0be231a1680458e218a6f59796fa, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &6579022654789088032
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,7 +861,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: ade69a767fae45b4aa0398bcacf352bd, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &8301449070552050932
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -974,7 +974,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 00784bb893599934cb8e635c3b66ec79, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &3573285737755680367
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1159,6 +1159,8 @@ MonoBehaviour:
   shouldPlus: 0
   leftBattle: 0
   isTransform: 0
+  isStart: 0
+  isSpawn: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -1250,12 +1252,14 @@ MonoBehaviour:
     critRate: 0
     critDamage: 0
     lifeSteal: 0
+    controlFree: 0
     speed: 0
     power: 0
   currentShield: 0
   maxShield: 0
   currentHealth: 0
   currentMana: 0
+  skillChanceFinal: 0
   aesDebug: []
   modifyStatDebug: []
   onStartBattleDebug: []
@@ -1346,7 +1350,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: a75f6d2bc3561f645a0a1c449e35446e, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &5714699828694926847
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1434,7 +1438,7 @@ Transform:
   m_GameObject: {fileID: 9129970930355556450}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: -0.01, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

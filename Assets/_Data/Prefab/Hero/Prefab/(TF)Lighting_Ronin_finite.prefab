@@ -150,7 +150,7 @@ Transform:
   m_GameObject: {fileID: 1339192579147555469}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: -0.01, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -313,7 +313,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 9e39479e57c21424dae2dd2d484b9a10, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &2816670877308151517
 GameObject:
   m_ObjectHideFlags: 0
@@ -418,7 +418,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: c0ccc33405095ff4699a0f18df05adfe, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &2898581014862985083
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,7 +586,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: f1170025cf6876041918e6e7c86a30e3, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &4651567609654097949
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +691,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: b351b5a73c60a364d891fa8485d0640a, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &5025875411345310984
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,7 +772,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: aeea3423cc1555c40aa05fa2c5abc4db, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &7258616162837863672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1119,6 +1119,7 @@ MonoBehaviour:
   leftBattle: 0
   isTransform: 0
   isStart: 0
+  isSpawn: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -1217,6 +1218,7 @@ MonoBehaviour:
   maxShield: 0
   currentHealth: 0
   currentMana: 0
+  skillChanceFinal: 0
   aesDebug: []
   modifyStatDebug: []
   onStartBattleDebug: []

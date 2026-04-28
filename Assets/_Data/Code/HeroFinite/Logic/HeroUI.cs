@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public enum HPNotifyType
 {
     HPMinus,
@@ -27,6 +28,8 @@ public class HeroUI : MonoBehaviour, IObserver
     private string critRatePattern = "Crit Rate Increased";
     private string armorDecreased = "Armor Decreased";
     private string armorIncreased = "Armor Increased";
+    private string damageIncreased = "Damage Increased";
+    private string damageDecreased = "Damage Decreased";
     private string healRateIncreased = "Heaing Rate Increased";
     private string healRateDecreased = "Heaing Rate Decreased";
     private string manaRecoveryDecreased = "Mana Recovery Decreased";
@@ -37,6 +40,8 @@ public class HeroUI : MonoBehaviour, IObserver
     private string controlFreeDecreased = "Control-free Decreased";
     private string rootedNotice = "Root";
     private string burnNotice = "Burn";
+    private string poisonNotice = "Poison";
+    private string bleedingNotice = "Bleeding";
     private string stunNotice = "Stun";
     private string paralysisNotice = "Paralysis";
 
@@ -143,6 +148,9 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.CritRate:
                 SpawnFloatingEffectText(type, value);
                 break;
+            case ModifyStatType.Damage:
+                SpawnFloatingEffectText(type, value);
+                break;
             case ModifyStatType.Armor:
                 SpawnFloatingEffectText(type, value);
                 break;
@@ -165,6 +173,9 @@ public class HeroUI : MonoBehaviour, IObserver
         switch (type)
         {
             case AbilityEffectType.Burn:
+                SpawnFloatingEffectText(type);
+                break;
+            case AbilityEffectType.Poison:
                 SpawnFloatingEffectText(type);
                 break;
             case AbilityEffectType.Rooted:
@@ -217,8 +228,23 @@ public class HeroUI : MonoBehaviour, IObserver
                 break;
         }
     }
+    public void OnNotify(string textString)
+    {
+
+        SpawnFloatingEffectText(textString);
+    }
 
     // ================= FLOATING TEXT =================
+    public void SpawnFloatingEffectText(string optionString)
+    {
+
+        TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+        text.color = new Color32(253, 255, 0, 255);
+        text.fontSize = 12;
+        text.fontSharedMaterial = critMaterial;
+        text.text = optionString;
+        StartCoroutine(CoShowAndFade(text));
+    }
     public void SpawnFloatingEffectText(ModifyStatType type, int value)
     {
         if (damageTextPrefab == null || listDamage == null) return;
@@ -247,6 +273,11 @@ public class HeroUI : MonoBehaviour, IObserver
             case ModifyStatType.Armor:
                 if (value < 0) text.text = armorDecreased;
                 else text.text = armorIncreased;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case ModifyStatType.Damage:
+                if (value < 0) text.text = damageDecreased;
+                else text.text = damageIncreased;
                 StartCoroutine(CoShowAndFade(text));
                 break;
             case ModifyStatType.HealingRate:
@@ -282,6 +313,20 @@ public class HeroUI : MonoBehaviour, IObserver
         {
             case AbilityEffectType.Burn:
                 text.text = burnNotice;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case AbilityEffectType.Poison:
+                text.text = poisonNotice;
+                text.color = new Color32(253, 255, 0, 255);
+                text.fontSize = 15;
+                text.fontSharedMaterial = critMaterial;
+                StartCoroutine(CoShowAndFade(text));
+                break;
+            case AbilityEffectType.Bleeding:
+                text.text = bleedingNotice;
                 text.color = new Color32(253, 255, 0, 255);
                 text.fontSize = 15;
                 text.fontSharedMaterial = critMaterial;

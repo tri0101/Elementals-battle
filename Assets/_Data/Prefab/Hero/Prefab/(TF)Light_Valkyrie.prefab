@@ -48,7 +48,6 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 219686ded42c2c34ab9f8b9649ce4d9b, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
   finalMutipler: 0
 --- !u!60 &5208347103480998632
 PolygonCollider2D:
@@ -156,7 +155,6 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: cda583137bd60e641b314f8fda715f57, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
   finalMutipler: 0
 --- !u!60 &7039527722496593838
 PolygonCollider2D:
@@ -260,7 +258,6 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: bdde81651a29b8d4c8f3dfc01688a56f, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
   finalMutipler: 0
 --- !u!60 &8226130210959935181
 PolygonCollider2D:
@@ -414,6 +411,7 @@ MonoBehaviour:
   leftBattle: 0
   isTransform: 0
   isStart: 0
+  isSpawn: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
@@ -581,7 +579,7 @@ Transform:
   m_GameObject: {fileID: 4387256995954107255}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1}
+  m_LocalPosition: {x: 0, y: -0.01, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1131,7 +1129,6 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: c6176d15a37bd3441ba6013acc724059, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
   finalMutipler: 0
 --- !u!60 &8388649517886101212
 PolygonCollider2D:
@@ -1298,7 +1295,6 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 9a48f6e47000144409057beaccc2b106, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
   finalMutipler: 0
 --- !u!60 &8770934072521018477
 PolygonCollider2D:

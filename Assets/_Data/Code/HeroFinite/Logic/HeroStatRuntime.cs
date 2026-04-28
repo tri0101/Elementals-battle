@@ -89,6 +89,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 case AbilityEffectType.Burn:
                     CancelBurn();
                     break;
+                case AbilityEffectType.Bleeding:
+                    CancelBleeding();
+                    break;
+                case AbilityEffectType.Poison:
+                    CancelPoison();
+                    break;
                 case AbilityEffectType.Rooted:
                     heroControl.RefreshObservers("canDisappear", true);
                     heroControl.HeroEventt.CallCancelStopAnim();
@@ -230,6 +236,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 case AbilityEffectType.Burn:
                     CancelBurn();
                     break;
+                case AbilityEffectType.Poison:
+                    CancelPoison();
+                    break;
+                case AbilityEffectType.Bleeding:
+                    CancelBleeding();
+                    break;
                 case AbilityEffectType.Rooted:
                     heroControl.RefreshObservers("canDisappear", true);
                     heroControl.HeroEventt.CallCancelStopAnim();
@@ -317,6 +329,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
                     case AbilityEffectType.Burn:
                         CancelBurn();
                         break;
+                    case AbilityEffectType.Poison:
+                        CancelPoison();
+                        break;
+                    case AbilityEffectType.Bleeding:
+                        CancelBleeding();
+                        break;
                     case AbilityEffectType.Rooted:
                         heroControl.RefreshObservers("canDisappear", true);
                         heroControl.HeroEventt.CallCancelStopAnim();
@@ -383,7 +401,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
         {
             stacks = new List<AESStackState>(maxStacks);
             bySkill[sourceAbilityName] = stacks;
+            heroControl.RefreshObservers(type);
         }
+      
 
         int finalDamagePerTurn = 0;
         if (damagePerTurn != 0)
@@ -412,12 +432,13 @@ public sealed class HeroStatRuntime : MonoBehaviour
             var s = stacks[0];
             s.remainingTurn = Mathf.Max(s.remainingTurn, remainingTurn);
             stacks[0] = s;
-
+            heroControl.RefreshObservers(type);
             SyncAESDebug();
             return;
         }
 
         stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn, attacker));
+        heroControl.RefreshObservers(type);
 
         SyncAESDebug();
     }
@@ -508,15 +529,39 @@ public sealed class HeroStatRuntime : MonoBehaviour
     [SerializeField] private float currentMana;
     public float CurrentMana { get => currentMana; set => currentMana = Mathf.Max(0f, value); }
 
-    public float MaxHealth => finalStat != null ? finalStat.health : 0f;
+    public float MaxHealth
+    {
+        get => finalStat?.health ?? 0f;
+        set => finalStat.health = value;
+    }
     public float MaxMana => 1000f;
 
-    public float Damage => finalStat != null ? finalStat.damage : 0f;
-    public float Armor => finalStat != null ? finalStat.armor : 0f;
+    public float Damage
+    {
+        get => finalStat?.damage ?? 0f;
+        set => finalStat.damage = value;
+    }
+    public float Armor
+    {
+        get => finalStat?.armor ?? 0f;
+        set => finalStat.armor = value;
+    }
 
-    public float CritRate => finalStat != null ? finalStat.critRate : 0f;
-    public float CritDamage => finalStat != null ? finalStat.critDamage : 0f;
-    public float LifeSteal => finalStat != null ? finalStat.lifeSteal : 0f;
+    public float CritRate
+    {
+        get => finalStat?.critRate ?? 0f;
+        set => finalStat.critRate = value;
+        }
+    public float CritDamage
+    {
+        get => finalStat?.critDamage ?? 0f;
+        set => finalStat.critDamage = value;
+    }
+    public float LifeSteal
+    {
+        get => finalStat?.lifeSteal ?? 0f;
+        set => finalStat.lifeSteal = value;
+    }
     public float ControlFree
     {
         get => finalStat?.controlFree ?? 0f;
@@ -531,7 +576,10 @@ public sealed class HeroStatRuntime : MonoBehaviour
         baseInfo = heroControl != null ? heroControl.HeroInfo : null;
         dicOnStartBattle.Clear();
     }
+    public void Init()
+    {
 
+    }
     public void Init(HeroInfo info, HeroInstance instance, HeroGrowthConfig growth)
     {
         baseInfo = info;
@@ -814,6 +862,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
             case AbilityEffectType.Stun:
                 ApplyStun();
                 break;
+            case AbilityEffectType.Poison:
+                ApplyPoison();
+                break;
+            case AbilityEffectType.Bleeding:
+                ApplyBleeding();
+                break;
             case AbilityEffectType.Charge:
                 ApplyCharge();
                 break;
@@ -836,6 +890,66 @@ public sealed class HeroStatRuntime : MonoBehaviour
             AbilityEffectType.Burn,
             heroControl.SpriteEffect.transform
         );
+        heroControl.SpriteEffect.gameObject.SetActive(true);
+    }
+    void ApplyPoison()
+    {
+        heroControl.SpriteEffect.color = new Color(
+            0 / 255f,
+            255f / 255f,
+            0f / 255f,
+            150f / 255f
+        );
+        ClearOldEffect(AbilityEffectType.Poison);
+        GameObject posionEffect = EffectManager.Instance.Spawn(
+            AbilityEffectType.Poison,
+            heroControl.SpriteEffect.transform
+        );
+
+        Transform effectTransform = posionEffect.transform;
+        Vector3 heroScale = heroControl.transform.localScale;
+        Vector3 effectScale = effectTransform.localScale;
+
+        effectTransform.localScale = new Vector3(
+            effectScale.x / heroScale.x,
+            effectScale.y / heroScale.y,
+            1
+        );
+        if (heroControl.HeroInfo.UIForBattleSO != null)
+        {
+            Vector3 effectPos = heroControl.HeroInfo.UIForBattleSO.GetPosition(AbilityEffectType.Poison);
+            effectTransform.localPosition = effectPos;
+        }
+        heroControl.SpriteEffect.gameObject.SetActive(true);
+    }
+    void ApplyBleeding()
+    {
+        heroControl.SpriteEffect.color = new Color(
+            255f / 255f,
+            255f / 255f,
+            255f / 255f,
+            150f / 255f
+        );
+        ClearOldEffect(AbilityEffectType.Bleeding);
+        GameObject bleedingEffect = EffectManager.Instance.Spawn(
+            AbilityEffectType.Bleeding,
+            heroControl.SpriteEffect.transform
+        );
+
+        Transform effectTransform = bleedingEffect.transform;
+        Vector3 heroScale = heroControl.transform.localScale;
+        Vector3 effectScale = effectTransform.localScale;
+
+        effectTransform.localScale = new Vector3(
+            effectScale.x / heroScale.x,
+            effectScale.y / heroScale.y,
+            1
+        );
+        if (heroControl.HeroInfo.UIForBattleSO != null)
+        {
+            Vector3 effectPos = heroControl.HeroInfo.UIForBattleSO.GetPosition(AbilityEffectType.Bleeding);
+            effectTransform.localPosition = effectPos;
+        }
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
 
@@ -867,6 +981,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
         }
     }
+   
 
     public void ApplyUnleashChargeEffect(int damageUnleash)
     {
@@ -953,6 +1068,17 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     void CancelBurn()
     {
+        ClearOldEffect(AbilityEffectType.Burn);
+        heroControl.SpriteEffect.gameObject.SetActive(false);
+    }
+    void CancelPoison()
+    {
+        ClearOldEffect(AbilityEffectType.Poison);
+        heroControl.SpriteEffect.gameObject.SetActive(false);
+    }
+    void CancelBleeding()
+    {
+        ClearOldEffect(AbilityEffectType.Bleeding);
         heroControl.SpriteEffect.gameObject.SetActive(false);
     }
 

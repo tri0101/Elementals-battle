@@ -38,6 +38,7 @@ public enum PositionAttack
     MiddlePosition = 2,
     MiddleRow = 3,
     MiddlePositionEnemy = 4,
+    CurrentPosition = 5
 }
 [CreateAssetMenu(menuName = "Hero/Ability Info")]
 public class AbilityInfo : ScriptableObject

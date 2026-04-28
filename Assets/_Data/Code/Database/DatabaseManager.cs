@@ -29,6 +29,10 @@ public class DatabaseManager : MonoBehaviour
     }
     private void Start()
     {
+        Init();
+    }
+    private void Init()
+    {
         chapterDatabase.Init();
         heroDatabase.Init();
         stageDatabase.Init();
@@ -36,4 +40,5 @@ public class DatabaseManager : MonoBehaviour
         shopItemDatabase.Init();
         itemDatabase.Init();
     }
+
 }

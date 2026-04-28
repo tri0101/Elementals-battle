@@ -90,7 +90,7 @@ public class UI_PanelDetailStage : MonoBehaviour, IObserver
         {
             HeroInfo heroData = DatabaseManager.Instance.HeroDatabase.GetHero(enemy.heroId);
             if (heroData == null) continue;
-
+            if(!enemy.isShow) continue;
             CreateEnemy(heroData, enemy);
         }
     }

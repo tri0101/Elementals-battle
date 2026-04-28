@@ -26,6 +26,7 @@ public class HeroStateManager : MonoBehaviour
     public HeroDodgeState dodgeState = new HeroDodgeState();
     public HeroTransformState transformState = new HeroTransformState();
     //List các state normal
+    public const string hero_Spawn = "Spawn";
     public const string hero_Idle = "Idle";
     public const string hero_Run = "Run";
     public const string hero_Attack_1 = "Attack_1";
@@ -36,7 +37,6 @@ public class HeroStateManager : MonoBehaviour
     public const string hero_Dodge = "Dodge";
     public const string hero_Dead = "death";
     public const string hero_Transform = "Transform";
-    //List các state transform
 
 
 
@@ -47,7 +47,6 @@ public class HeroStateManager : MonoBehaviour
 
     private void Start()
     {
-        //currentState = idleState;
         currentState = idleState;
         currentState.EnterState(this);
     }

@@ -60,7 +60,7 @@ public class Attack : Subject
         attackDamage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Damage, attackDamage); // lấy giá trị effect
         if (heroControl.IsCrit)
         {
-            attackDamage *= (heroControl.HeroInfo.criticalDamageRate / 100);
+            attackDamage *= (heroControl.HeroStatRuntime.CritDamage / 100);
             damageType = DamageType.critDamage;
         }
         else

@@ -139,6 +139,12 @@ public class HeroControl : Subject
         get => isStart;
         set => isStart = value;
     }
+    [SerializeField] private bool isSpawn;// true = đánh trước
+    public bool IsSpawn
+    {
+        get => isSpawn;
+        set => isSpawn = value;
+    }
     [SerializeField] private Vector3 battleTarget;
     public Vector3 BattleTarget => battleTarget;
 
@@ -294,6 +300,8 @@ public class HeroControl : Subject
             return;
         needMoveToBattle = false;
         if (!(heroInfo.ID == 8 && info.type == AbilityType.Skill))
+            BuildTargets(info);
+        if (!(heroInfo.ID == 507 && info.type == AbilityType.Ultimate))
             BuildTargets(info);
         distanceToTarget = GetAttackPosition(info);
 
@@ -514,6 +522,9 @@ public class HeroControl : Subject
 
         switch (ability.positionAttack)
         {
+            case PositionAttack.CurrentPosition:
+                result = transform.position;
+                break;
             case PositionAttack.MiddlePosition:
                 // (0, 2.252, z giữ nguyên)
                 result = new Vector3(
@@ -890,6 +901,10 @@ public class HeroControl : Subject
     public void RefreshObservers(string name, bool value)
     {
         NotifyObservers(name, value);
+    }
+    public void RefreshObservers(string value)
+    {
+        NotifyObservers( value);
     }
 
     public void RefreshObservers(object data1)

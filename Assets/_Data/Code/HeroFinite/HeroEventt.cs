@@ -12,6 +12,7 @@ public class HeroEventt : MonoBehaviour
     public LoadNormalAttack load;
     HeroControl heroControl;
     private Coroutine hideTotalDmgRoutine;
+    private static readonly int[] RandomSummonHeroIds = { 500, 501, 502 };
     private void Awake()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
@@ -354,18 +355,125 @@ public class HeroEventt : MonoBehaviour
             
         }
     }
-    //public void CleanseForFemale()// cho hero có id = 53
-    //{
-    //    foreach (Transform child in heroControl.transform.parent)
-    //    {
-    //        HeroControl heroC = child.GetComponent<HeroControl>();
-    //        if (heroC == null) continue;
-    //        if (heroC.HeroInfo.tags.Contains(Tag.Female))
-    //        {
-                
-    //            heroC.HeroStatRuntime.ClearAllAES();
-    //        }
+    public void SpawnHeroByID()// chỉ dùng cho 1 số con nhất định
+    {
+        if (heroControl == null)
+            return;
 
-    //    }
-    //}
+        if (BattlefieldRegistry.Instance == null || BattleManager.Instance == null)
+            return;
+
+        if (BattleManager.Instance.Formation == null)
+            return;
+
+        if (DatabaseManager.Instance == null || DatabaseManager.Instance.HeroDatabase == null)
+            return;
+
+        string teamTag = heroControl.CompareTag("Hero") ? "Hero" : "Enemy";
+
+        List<int> emptySlots = BattlefieldRegistry.Instance.FindListEmptySlots(teamTag);
+        if (emptySlots == null || emptySlots.Count == 0)
+        {
+            float damage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
+           ModifyStatType.Damage,
+           heroControl.HeroStatRuntime.Damage
+       );
+
+            // modifyValue = 20 nghĩa là 20%
+            int hpGain = Mathf.RoundToInt(damage * (20 / 100f));
+
+            Debug.Log(hpGain);
+            foreach (Transform child in heroControl.transform.parent)
+            {
+                HeroControl heroC = child.GetComponent<HeroControl>();
+                if (heroC == null) continue;
+
+                heroC.HeroStatRuntime.GainHP(hpGain, DamageType.normalDamage);
+
+            }
+            StartCoroutine(CoFinishAfterDelay(0.25f));
+            return;
+        }
+
+        for (int i = 0; i < emptySlots.Count; i++)
+        {
+            int slot = emptySlots[i];
+
+            int randomHeroId = RandomSummonHeroIds[UnityEngine.Random.Range(0, RandomSummonHeroIds.Length)];
+
+            var heroInfo = DatabaseManager.Instance.HeroDatabase.GetHero(randomHeroId);
+            if (heroInfo == null || heroInfo.HeroPrefab == null)
+                continue;
+
+            Transform battlePos = teamTag == "Enemy"
+                ? BattleManager.Instance.Formation.GetEnemyBattle(slot)
+                : BattleManager.Instance.Formation.GetBattle(slot);
+
+            if (battlePos == null)
+                continue;
+
+            Transform parentRoot = teamTag == "Enemy"
+                ? BattleManager.Instance.Formation.ListEnemyRoot
+                : BattleManager.Instance.Formation.ListHeroRoot;
+
+            if (parentRoot == null)
+                parentRoot = heroControl.transform.parent;
+
+            GameObject go = Instantiate(heroInfo.HeroPrefab, parentRoot);
+            go.tag = teamTag;
+            go.transform.position = battlePos.position;
+
+            var spawnedHeroControl = go.GetComponent<HeroControl>();
+            if (spawnedHeroControl != null)
+            {
+                spawnedHeroControl.IsSpawn = true;
+                spawnedHeroControl.SetBattleTarget(battlePos.position);
+                spawnedHeroControl.SetArrivedBattle();
+
+                ApplySummonStats(spawnedHeroControl, randomHeroId);
+            }
+
+            BattlefieldRegistry.Instance.Register(go.transform, slot, teamTag);
+        }
+        StartCoroutine(CoFinishAfterDelay(2f));
+    }
+
+    private static void ApplySummonStats(HeroControl spawned, int heroId)
+    {
+        if (spawned == null)
+            return;
+
+        var runtime = spawned.GetComponent<HeroStatRuntime>();
+        var recv = spawned.GetComponentInChildren<HeroReceiveDamagee>();
+
+        int health;
+        int damage;
+        int armor;
+
+        switch (heroId)
+        {
+            case 500:
+                health = 500; damage = 50; armor = 50;
+                break;
+            case 501:
+                health = 350; damage = 75; armor = 25;
+                break;
+            case 502:
+                health = 800; damage = 35; armor = 70;
+                break;
+            default:
+                return;
+        }
+
+        runtime.FinalStat.health = health;
+        runtime.FinalStat.damage = damage;
+        runtime.FinalStat.armor = armor;
+        runtime.CurrentHealth = health;
+    }
+    private IEnumerator CoFinishAfterDelay(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        SetFinished();
+    }
+
 }

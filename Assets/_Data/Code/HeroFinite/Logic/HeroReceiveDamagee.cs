@@ -11,7 +11,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
     protected List<string> nameObjectEffect = new List<string>();
     
 
-    [SerializeField] HeroControl heroControl;
+    [SerializeField] protected HeroControl heroControl;
     public HeroControl HeroControl => heroControl;
 
     [Header("Attribute")]

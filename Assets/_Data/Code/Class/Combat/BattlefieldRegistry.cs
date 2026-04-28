@@ -69,7 +69,72 @@ public sealed class BattlefieldRegistry : MonoBehaviour
         teamTag = string.Empty;
         return false;
     }
+    public int FindEmptySlot(string teamTag)
+    {
+        if (string.IsNullOrEmpty(teamTag))
+            return 0;
 
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            bool occupiedAlive = false;
+
+            foreach (var kv in teamByRoot)
+            {
+                Transform root = kv.Key;
+                if (root == null) continue;
+                if (kv.Value != teamTag) continue;
+
+                if (!slotByRoot.TryGetValue(root, out int s)) continue;
+                if (s != slot) continue;
+
+                var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+                if (recv == null || !recv.IsDead)
+                {
+                    occupiedAlive = true;
+                    break;
+                }
+            }
+
+            if (!occupiedAlive)
+                return slot;
+        }
+
+        return 0;
+    }
+    public List<int> FindListEmptySlots(string teamTag)
+    {
+        var emptySlots = new List<int>(6);
+
+        if (string.IsNullOrEmpty(teamTag))
+            return emptySlots;
+
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            bool occupiedAlive = false;
+
+            foreach (var kv in teamByRoot)
+            {
+                Transform root = kv.Key;
+                if (root == null) continue;
+                if (kv.Value != teamTag) continue;
+
+                if (!slotByRoot.TryGetValue(root, out int s)) continue;
+                if (s != slot) continue;
+
+                var recv = root.GetComponentInChildren<HeroReceiveDamagee>();
+                if (recv == null || !recv.IsDead)
+                {
+                    occupiedAlive = true;
+                    break;
+                }
+            }
+
+            if (!occupiedAlive)
+                emptySlots.Add(slot);
+        }
+
+        return emptySlots;
+    }
     public List<Transform> GetAllUnits()
     {
         var list = new List<Transform>(slotByRoot.Count);

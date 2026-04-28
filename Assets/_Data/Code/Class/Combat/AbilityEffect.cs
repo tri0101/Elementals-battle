@@ -17,6 +17,8 @@ public enum AbilityEffectType
     Unleash2 = 25,             // giải phóng sét ( hero id = 54)
     Charge =  26,             // tích điện ( hero id = 54)
     Revive = 27,             // hồi sinh (áp dụng cho buff hồi sinh)
+    Poison = 28,             //độc
+    Bleeding = 29,            // chảy máu
 }
 
 public enum AbilityTarget

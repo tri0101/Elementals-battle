@@ -481,7 +481,7 @@ public class BattleTurnManager : MonoBehaviour
 
             switch (aes.type)
             {
-                case AbilityEffectType.Burn:
+                case AbilityEffectType.Burn or AbilityEffectType.Poison or AbilityEffectType.Bleeding:
                     bool shouldTakeHit = i == 0;// burn index luôn = 0
                    
                     unit.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.turnDamage, shouldTakeHit, true, aes.attacker);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using NUnit.Framework.Interfaces;
 
 public class BattleManager : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class BattleManager : MonoBehaviour
 
     [Header("Formation (scene setup)")]
     [SerializeField] private BattleFormation formation;
+    public BattleFormation Formation => formation;
 
     [Header("Transform")]
     [SerializeField] private Transform backBottom;
@@ -319,23 +321,21 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // NEW: reset cache mỗi wave
+        // reset cache mỗi wave
         listEnemyInstance.Clear();
 
-        // Allow multiple EnemySpawnData per heroId (consume sequentially)
-        Dictionary<int, Queue<EnemySpawnData>> enemyQueueByHeroId = null;
+        // NEW: build lookup heroId -> EnemySpawnData (treat as base config per heroId)
+        Dictionary<int, EnemySpawnData> enemyDataByHeroId = null;
         if (stageConfig.enemies != null && stageConfig.enemies.Count > 0)
         {
-            enemyQueueByHeroId = new Dictionary<int, Queue<EnemySpawnData>>(stageConfig.enemies.Count);
+            enemyDataByHeroId = new Dictionary<int, EnemySpawnData>(stageConfig.enemies.Count);
             for (int i = 0; i < stageConfig.enemies.Count; i++)
             {
                 var e = stageConfig.enemies[i];
                 if (e == null) continue;
 
-                if (!enemyQueueByHeroId.TryGetValue(e.heroId, out var q))
-                    enemyQueueByHeroId[e.heroId] = q = new Queue<EnemySpawnData>();
-
-                q.Enqueue(e);
+                // If duplicated heroId exists, keep the last one (deterministic)
+                enemyDataByHeroId[e.heroId] = e;
             }
         }
 
@@ -388,38 +388,38 @@ public class BattleManager : MonoBehaviour
                 enemyGo.transform.localScale = new Vector3(-Mathf.Abs(s.x), s.y, s.z);
             }
 
-            // Pick per-spawn config (if provided). If multiple configs exist for same heroId, consume in order.
+            // NEW: always resolve EnemySpawnData by heroId (base config)
             EnemySpawnData enemyData = null;
-            if (enemyQueueByHeroId != null &&
-                enemyQueueByHeroId.TryGetValue(enemyHeroId, out var q) &&
-                q != null &&
-                q.Count > 0)
-            {
-                enemyData = q.Dequeue();
-            }
+            if (enemyDataByHeroId != null)
+                enemyDataByHeroId.TryGetValue(enemyHeroId, out enemyData);
 
-            HeroInstance enemyInstance = null;
-            if (enemyData != null)
-            {
-                enemyInstance = new HeroInstance
-                {
-                    heroId = enemyHeroId,
-                    level = enemyData.level,
-                    currentExp = 0,
-                    star = enemyData.star,
-                    rank = enemyData.rank,
-                    shard = 0
-                };
+            // NEW: always create enemyInstance so stats scale (power always available)
+            int level = (enemyData != null && enemyData.level > 0) ? enemyData.level : 1;
+            int star = (enemyData != null && enemyData.star > 0) ? enemyData.star : 1;
+            int rank = (enemyData != null && enemyData.rank > 0) ? enemyData.rank : 1;
 
-                // NEW: lưu instance theo heroId (nếu trùng id trong wave, sẽ overwrite bản cuối)
-                listEnemyInstance[enemyHeroId] = enemyInstance;
-            }
+            HeroInstance enemyInstance = new HeroInstance
+            {
+                heroId = enemyHeroId,
+                level = level,
+                currentExp = 0,
+                star = star,
+                rank = rank,
+                shard = 0
+            };
+
+            listEnemyInstance[enemyHeroId] = enemyInstance;
 
             var statRuntime = enemyGo.GetComponent<HeroStatRuntime>();
             if (statRuntime != null)
                 statRuntime.Init(enemyInfo, enemyInstance, growthConfig);
 
             var enemyControl = enemyGo.GetComponent<HeroControl>();
+            if (enemyControl != null && enemyControl.HeroInfo != null && enemyControl.HeroInfo.ID == 507)
+            {
+                statRuntime.CurrentMana = 1000f;
+            }
+
             if (enemyControl != null)
             {
                 enemyControl.SetBattleTarget(battleT.position);
