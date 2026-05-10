@@ -36,7 +36,7 @@ public class HeroRun : MonoBehaviour
             next.x = Mathf.MoveTowards(
                 cur.x,
                 targetPos.x,
-                step * 1f
+                step * 0.3f
             );
         }
         // ---- PHASE 2: y đã bằng, X đi full ----
@@ -90,7 +90,7 @@ public class HeroRun : MonoBehaviour
     public void SetZ() // dùng để hiển thị nhân vật tấn cong phía trước nhân vật khác, tránh bị che khuất
     {
         Vector3 position = transform.position;
-        position.z -= 0.01f;
+        position.z -= 1.01f;
         transform.position = position;
     }
 }

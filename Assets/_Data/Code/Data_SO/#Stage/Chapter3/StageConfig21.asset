@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageID: 21
   waveStage: 2
-  staminaCost: 8
-  expForAliveHero: 50
-  expForPlayer: 300
+  staminaCost: 9
+  expForAliveHero: 75
+  expForPlayer: 400
   stageCondition: 0
   conditionParam: 1
   enemies:
@@ -49,15 +49,15 @@ MonoBehaviour:
   dropItems:
   - itemId: 100
     minAmount: 1
-    maxAmount: 3
+    maxAmount: 20
     dropRate: 0.5
-  - itemId: 101
+  - itemId: 107
     minAmount: 1
-    maxAmount: 2
+    maxAmount: 4
     dropRate: 0.8
   - itemId: 1
-    minAmount: 780
-    maxAmount: 1000
+    minAmount: 3000
+    maxAmount: 5000
     dropRate: 1
-  background: {fileID: 5770377477300134334, guid: 14b1c72a6966dbe4a8d64396f6ada6ff, type: 3}
+  background: {fileID: -4659963502579513735, guid: d7870d47c8a56114c967e9e4c06b09b6, type: 3}
   powerRecommend: 0

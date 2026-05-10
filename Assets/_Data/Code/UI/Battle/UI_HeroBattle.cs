@@ -51,10 +51,12 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
     // ===== Rank config =====
     private int blackRank = 1;
     private int greenRank = 5;
-
+    private int blueRank = 9;
+    private int yellowRank = 13;
     private Color blackColor = new Color(157/255f, 143/255f, 143/255f);
     private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
-
+    private Color blueColor = new Color(0 / 255f, 38/255f, 255f / 255f);
+    private Color yellowColor = new Color(1f, 1f, 0f);
     // ===== Bar Animation =====
     [SerializeField] private float barAnimDuration = 0.25f;
 
@@ -384,7 +386,7 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-        else
+        else if(rank < blueRank)
         {
             frameRank.color = greenColor;
             int plus = rank - greenRank;
@@ -392,7 +394,20 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-
+        else if(rank < yellowRank)
+        {
+            frameRank.color = blueColor;
+            int plus = rank - blueRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
+        else
+        {
+            frameRank.color = yellowColor;
+            int plus = rank - yellowRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
         if (rankLayout != null)
         {
             int activeCount = 0;
@@ -407,7 +422,10 @@ public class UI_HeroBattle : MonoBehaviour, IObserver
             LayoutRebuilder.ForceRebuildLayoutImmediate(rankRoot as RectTransform);
         }
     }
-
+    public void DisableManaBar()
+    {
+        manaBar.transform.parent.gameObject.SetActive(false);
+    }
     void OnClick()
     {
         onClickCallback?.Invoke(data);

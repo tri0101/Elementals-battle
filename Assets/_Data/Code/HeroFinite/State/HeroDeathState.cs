@@ -4,6 +4,7 @@ public class HeroDeathState : HeroBaseState
 {
     public override void EnterState(HeroStateManager hero)
     {
+        hero.HeroControl.IsFinished = false;
         hero.HeroControl.ChangeLayerAtReceive("RollLayer");
         hero.HeroControl.ChangeAnimationAnyState(HeroStateManager.hero_Dead);
         
@@ -31,6 +32,7 @@ public class HeroDeathState : HeroBaseState
         if ((hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Dead, 1f, 1)))
         {
             //if (hero.HeroControl.HeroInfo.ID == 58) return;
+            //hero.HeroControl.IsFinished = true;
             hero.HeroControl.gameObject.SetActive(false);
         }
     }

@@ -9,7 +9,8 @@ using UnityEngine;
 public class HeroEventt : MonoBehaviour
 {
 
-    public LoadNormalAttack load;
+    public LoadNormalAttack loadNormalAttack;
+    public LoadSlideToPosition loadSlideToPosition;
     HeroControl heroControl;
     private Coroutine hideTotalDmgRoutine;
     private static readonly int[] RandomSummonHeroIds = { 500, 501, 502 };
@@ -21,23 +22,56 @@ public class HeroEventt : MonoBehaviour
     public void SetFinished()
     {
         heroControl.IsFinished = true;
-        heroControl.NotifyActionFinished();
+        //heroControl.NotifyActionFinished();
        
 
     }
-    
-    public void ChangeBackGround()
+    public void SetCoroutineFinished(float value)
     {
-        if(BattleManager.Instance.HasArenaWithSkill(heroControl.HeroInfo.ultimate.abilityName))
-            return;
-        if (heroControl.HeroInfo.ultimate.isChangeBackGround)
-        {
-            BattleManager.Instance.PutArenaOnStack(heroControl.HeroInfo.ultimate.abilityName,
-                heroControl.HeroInfo.name, heroControl.HeroInfo.ID, heroControl.HeroInfo.ultimate.order,
-                heroControl.HeroInfo.ultimate.backgroundChange);
-            SetEffectToEnemy(TimesToCall.OnUse);
-        }
+        StartCoroutine(CoSetFinishedAfterDelay(value));
     }
+    IEnumerator CoSetFinishedAfterDelay(float value)
+    {
+        yield return new WaitForSeconds(value);
+        heroControl.IsFinished = true;
+    }
+    public void ChangeBackGround(AbilityType type)
+    {
+        switch(type)
+        {
+            case AbilityType.Ultimate:
+                if (heroControl.HeroInfo.ultimate.isChangeBackGround)
+                {
+                    BattleManager.Instance.PutArenaOnStack(heroControl.HeroInfo.ultimate.abilityName,
+                        heroControl.HeroInfo.name, heroControl.HeroInfo.ID, heroControl.HeroInfo.ultimate.order,
+                        heroControl.HeroInfo.ultimate.backgroundChange);
+                    SetEffectToEnemy(TimesToCall.OnUse);
+                }
+                break;
+            case AbilityType.Passive:
+                if (heroControl.HeroInfo.passive.isChangeBackGround)
+                {
+                    BattleManager.Instance.PutArenaOnStack(heroControl.HeroInfo.passive.abilityName,
+                        heroControl.HeroInfo.name, heroControl.HeroInfo.ID, heroControl.HeroInfo.passive.order,
+                        heroControl.HeroInfo.passive.backgroundChange);
+                    //SetEffectToEnemy(TimesToCall.OnUse);
+                }
+                break;
+        }
+      
+    }
+    //public void ChangeBackGround()
+    //{
+    //    if(BattleManager.Instance.HasArenaWithSkill(heroControl.HeroInfo.ultimate.abilityName))
+    //        return;
+    //    if (heroControl.HeroInfo.ultimate.isChangeBackGround)
+    //    {
+    //        BattleManager.Instance.PutArenaOnStack(heroControl.HeroInfo.ultimate.abilityName,
+    //            heroControl.HeroInfo.name, heroControl.HeroInfo.ID, heroControl.HeroInfo.ultimate.order,
+    //            heroControl.HeroInfo.ultimate.backgroundChange);
+    //        SetEffectToEnemy(TimesToCall.OnUse);
+    //    }
+    //}
     public void RemoveArena() // sử dụng khi hero có sàn
     {
         BattleManager.Instance.RemoveArenaByHeroId(heroControl.HeroInfo.ID);
@@ -75,6 +109,7 @@ public class HeroEventt : MonoBehaviour
                 break;
         }
     }
+
     public void SetGainManaNormal()
     {
         int manaGain = heroControl.HeroInfo.normalAttack.manaGain;
@@ -290,7 +325,7 @@ public class HeroEventt : MonoBehaviour
     }
     public void SpawnObjectByName(string nameObject)
     {
-        NameAndVector nameAndVector = load.dicSpawnName.Find(dic => dic.nameObject == nameObject);
+        NameAndVector nameAndVector = loadNormalAttack.dicSpawnName.Find(dic => dic.nameObject == nameObject);
         if (nameAndVector == null) return;
         Vector3 newPos = heroControl.transform.position;
         newPos.x += nameAndVector.positionSpawn.x;
@@ -299,7 +334,7 @@ public class HeroEventt : MonoBehaviour
     }
     public void SpawnObjectByType(int index)
     {
-        TypeAndVector typeAndvector = load.dicSpawnType.Find(dic => dic.indexSpawn == index);
+        TypeAndVector typeAndvector = loadNormalAttack.dicSpawnType.Find(dic => dic.indexSpawn == index);
         if(typeAndvector == null) return;
         Vector3 newPos = heroControl.transform.position;
         newPos.x += typeAndvector.positionSpawn.x;
@@ -476,4 +511,75 @@ public class HeroEventt : MonoBehaviour
         SetFinished();
     }
 
+    public void CallSlideToPosition(int index)
+    {
+        if (heroControl == null)
+            return;
+
+        if (loadSlideToPosition == null || loadSlideToPosition.listPosition == null)
+            return;
+
+        var cfg = loadSlideToPosition.listPosition.Find(p => p != null && p.index == index);
+        if (cfg == null)
+            return;
+
+        Vector3 from = heroControl.transform.position;
+
+        // If facing left (scale.x < 0) => invert X offset
+        Vector3 offset = cfg.positionSpawn;
+        if (heroControl.transform.localScale.x < 0f)
+            offset.x = -offset.x;
+
+        Vector3 to = from + offset;
+
+        // speed = units/second
+        StartCoroutine(CoSlideToPosition(to, cfg.speed));
+    }
+
+    private IEnumerator CoSlideToPosition(Vector3 targetPos, float speed)
+    {
+        if (speed <= 0f)
+        {
+            heroControl.transform.position = targetPos;
+            yield break;
+        }
+
+        while ((heroControl.transform.position - targetPos).sqrMagnitude > 0.0001f)
+        {
+            heroControl.transform.position = Vector3.MoveTowards(
+                heroControl.transform.position,
+                targetPos,
+                speed * Time.deltaTime
+            );
+
+            yield return null;
+        }
+
+        heroControl.transform.position = targetPos;
+    }
+
+    public void CallTeleportToPosition(int index)
+    {
+        if (heroControl == null)
+            return;
+
+        if (loadSlideToPosition == null || loadSlideToPosition.listPosition == null)
+            return;
+
+        var cfg = loadSlideToPosition.listPosition.Find(p => p != null && p.index == index);
+        if (cfg == null)
+            return;
+
+        Vector3 offset = cfg.positionSpawn;
+        if (heroControl.transform.localScale.x < 0f)
+            offset.x = -offset.x;
+
+        heroControl.transform.position += offset;
+    }
+    public void CallChangeScale(float coefficient) //truyền vào hệ số thay đổi scale
+    {
+        float newScaleX = heroControl.transform.localScale.x * coefficient;
+        float newScaleY = heroControl.transform.localScale.y * coefficient;
+        heroControl.transform.localScale = new Vector3(newScaleX, newScaleY, heroControl.transform.localScale.z);
+    }
 }

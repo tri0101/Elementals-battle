@@ -17,6 +17,7 @@ public enum DamageType // để phân biệt kiểu damage (normal, crit, block)
     blockDamage,
     normalDamage,
     turnDamage, // damage theo thời gian (dot)
+    counterDamage, //Damage phản
 }
 
 public class HeroUI : MonoBehaviour, IObserver
@@ -65,6 +66,7 @@ public class HeroUI : MonoBehaviour, IObserver
     private Coroutine shieldRoutine;
     private void Start()
     {
+        
         heroControl = transform.parent.GetComponent<HeroControl>();
         if (heroControl != null && heroControl.transform != null)
         {
@@ -75,7 +77,11 @@ public class HeroUI : MonoBehaviour, IObserver
         heroControl.AddObserver(this);
         hpBar = transform.Find("HP").GetChild(1).GetComponent<Image>();
         manaBar = transform.Find("Mana").GetChild(1).GetComponent<Image>();
-        
+        if (StageContext.selectedStage.stageID >= 31 && StageContext.selectedStage.stageID <= 40)
+        {
+            if(heroControl.transform.tag == "Hero")
+            manaBar.transform.parent.gameObject.SetActive(false);
+        }
         shieldBar = transform.Find("Shield").GetChild(1).GetComponent<Image>();
         if (heroControl.HeroStatRuntime.CurrentShield > 0)
         {
@@ -381,7 +387,7 @@ public class HeroUI : MonoBehaviour, IObserver
                     text.fontSharedMaterial = critMaterial;
                     break;
 
-                case DamageType.normalDamage or DamageType.turnDamage:
+                case DamageType.normalDamage or DamageType.turnDamage or DamageType.counterDamage:
                 default:
                     text.text = value.ToString();
                     text.color = new Color32(211, 71, 35, 255);

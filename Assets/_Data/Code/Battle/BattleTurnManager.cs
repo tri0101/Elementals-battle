@@ -205,7 +205,7 @@ public class BattleTurnManager : MonoBehaviour
         // Kiểm tra tất cả effect cấm đánh
         if (!unit.CanAttackInBattle)
         {
-           
+            unit.IsFinished = true;
             return true;
         }
 
@@ -270,16 +270,50 @@ public class BattleTurnManager : MonoBehaviour
                 unit.HeroStatRuntime.MinusRemainTurn(AbilityEffectType.Paralysis);
         }
     }
+    bool WaitForAllFinished()
+    {
+        //if (AreAllTeamDead(TeamHero) || AreAllTeamDead(TeamEnemy)) return false;
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamHero, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            if (IsLeftBattle(unit)) continue;
+            if (!unit.CanAttackInBattle) continue;
+
+            if (!unit.IsFinished)
+                return false;
+        }
+  
+        for (int slot = 1; slot <= 6; slot++)
+        {
+            var unit = GetUnitAtSlot(TeamEnemy, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+            if (IsLeftBattle(unit)) continue;
+            if (!unit.CanAttackInBattle) continue;
+
+            if (!unit.IsFinished)
+                return false;
+        }
+
+        return true;
+    }
     private IEnumerator CoTeamUltimate(string teamTag)
     {
-        
+        if(teamTag == TeamHero && BattleManager.Instance.StageConfig.stageID >= 31 && BattleManager.Instance.StageConfig.stageID <= 40)
+        {
+            yield return new WaitForSeconds(0.5f);
+            yield break;
+        }
+
         for (int slot = 1; slot <= 6; slot++)
         {
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             if(IsLeftBattle(unit)) continue;
-            unit.IsFinished = false;
+ 
 
             if (TrySkipActionIfDisabled(unit))
                 continue;
@@ -288,7 +322,11 @@ public class BattleTurnManager : MonoBehaviour
             if (reC == null) continue;
             if (reC.HeroInfo.ultimate == null) continue;
             if (!reC.CanAttackInBattle) continue;
-            if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana) continue;
+            if (reC.HeroStatRuntime.CurrentMana < reC.HeroStatRuntime.MaxMana)
+            {
+                unit.IsFinished = true;
+                continue;
+            }
             unit.CheckCanSpecial();
             if (unit.CanUltimateSpecial)
             {
@@ -299,7 +337,7 @@ public class BattleTurnManager : MonoBehaviour
                 unit.SetTarget(unit.HeroInfo.ultimate);
             }
 
-            if (unit.IsFinished) continue;
+            unit.IsFinished = false;
             string skillName = reC.HeroInfo.ultimate.abilityName;
             List<AbilityEffect> effectOnUse = reC.HeroInfo.ultimate.GetEffectsOnUse();
             List<AbilityEffect> effectOnAttack = reC.HeroInfo.ultimate.GetEffectsOnAttack();
@@ -309,7 +347,8 @@ public class BattleTurnManager : MonoBehaviour
                 unit.SetUltimateSpecial();
             else
                 unit.SetUltimate();
-            yield return new WaitUntil(() => unit.IsFinished);
+            //yield return new WaitUntil(() => unit.IsFinished);
+            yield return new WaitUntil(() => WaitForAllFinished());
 
             if (delayBetweenUltimates > 0f)
                 yield return new WaitForSeconds(delayBetweenUltimates);
@@ -333,16 +372,20 @@ public class BattleTurnManager : MonoBehaviour
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             if(IsLeftBattle(unit)) continue;
-            unit.IsFinished = false;
+
 
             if (TrySkipActionIfDisabled(unit))
                 continue;
 
-            if (!unit.CanAttackInBattle) continue;
+            if (!unit.CanAttackInBattle)
+            {
+                unit.IsFinished = true;
+                continue;
+            }
             if (unit.CanSkill)
             {
                 unit.SetTarget(unit.HeroInfo.skill);
-                if (unit.IsFinished) continue;
+                //if (unit.IsFinished) continue;
                 string skillName = unit.HeroInfo.skill.abilityName;
                 List<AbilityEffect> effectOnUse = unit.HeroInfo.skill.GetEffectsOnUse();
                 List<AbilityEffect> effectOnAttack = unit.HeroInfo.skill.GetEffectsOnAttack();
@@ -351,19 +394,20 @@ public class BattleTurnManager : MonoBehaviour
             else
             {
                 unit.SetTarget(unit.HeroInfo.normalAttack);
-                if (unit.IsFinished) continue;
+                //if (unit.IsFinished) continue;
                 string skillName = unit.HeroInfo.normalAttack.abilityName;
                 List<AbilityEffect> effectOnUse = unit.HeroInfo.normalAttack.GetEffectsOnUse();
                 List<AbilityEffect> effectOnAttack = unit.HeroInfo.normalAttack.GetEffectsOnAttack();
                 ApplyEffectOnUse(effectOnUse, effectOnAttack, teamTag, skillName, unit);
             }
-
+            unit.IsFinished = false;
             if (unit.CanSkill)
                 unit.SetSkill();
             else
                 unit.SetAttack();
 
-            yield return new WaitUntil(() => unit.IsFinished);
+            //yield return new WaitUntil(() => unit.IsFinished);
+            yield return new WaitUntil(() => WaitForAllFinished());
 
             if (delayBetweenActions > 0f)
                 yield return new WaitForSeconds(delayBetweenActions);
@@ -714,7 +758,7 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            unit.IsFinished = false;
+            //unit.IsFinished = false;
 
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
@@ -746,7 +790,6 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            unit.IsFinished = false;
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
             if (reC.HeroInfo.ID == 57)
@@ -827,7 +870,6 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-            unit.IsFinished = false;
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
             Dictionary<ModifyStatType, int> dict = reC.HeroStatRuntime.GetDicOnStartBattle();
@@ -851,9 +893,6 @@ public class BattleTurnManager : MonoBehaviour
             var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
-
-            unit.IsFinished = false;
-
             var reC = unit.GetComponent<HeroControl>();
             if (reC == null) continue;
 

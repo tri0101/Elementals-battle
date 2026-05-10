@@ -1,44 +1,100 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HeroDesertReceiveDamage : HeroReceiveDamagee
 {
-
-
-    bool hasBeenUsed = false;
-    public bool HasBeenUsed
+    [SerializeField] bool hasBeenFrenzy = false;
+    public bool HasBeenFrenzy
     {
-        get => hasBeenUsed;
+        get => hasBeenFrenzy;
         set
         {
-
-            hasBeenUsed = value;
-
+            hasBeenFrenzy = value;
         }
     }
+
     protected override void HandleDead(HeroControl attacker)
     {
         base.HandleDead(attacker);
     }
+
     public void ClearEffect()
     {
-        
-
     }
+
     public override float ReceiveDamage(float damage, DamageType damageType, bool shouldTakeHit, bool canDead, HeroControl attacker = null)
     {
-
         float dmg = base.ReceiveDamage(damage, damageType, shouldTakeHit, canDead, attacker);
-        if(HeroControl.HeroStatRuntime.CurrentHealth <= HeroControl.HeroStatRuntime.MaxHealth * 0.5f && !hasBeenUsed)
-        {
-            hasBeenUsed = true;
-            SetInsane();
-            heroControl.CanSkill = true;
-            HeroControl.RefreshObservers("Frenzy Activated");
-        }
         return dmg;
-
     }
+
+    public override void CallWaitForAttackerFinished(HeroControl attacker)
+    {
+        if (attacker == null)
+            return;
+
+        StartCoroutine(WaitForAttackerFinished(attacker));
+    }
+
+    IEnumerator WaitForAttackerFinished(HeroControl attacker)
+    {
+        yield return new WaitUntil(() => attacker.IsFinished);
+        if (attacker == null)
+            yield break;
+        if (heroControl.HeroStatRuntime.CurrentHealth <= heroControl.HeroStatRuntime.MaxHealth * 0.5f && !heroControl.IsDead && !hasBeenFrenzy)
+        {
+            StartCoroutine(CoFrenzyFlow(attacker));
+        }
+
+        if (heroControl.HeroInfo.ID == 512 && hasBeenFrenzy && attacker.CurrentStringState == HeroStateManager.hero_Ultimate)
+        {
+            Debug.Log("Desert is waiting for attack to finish before counterattacking.");
+            StartCoroutine(CoCounterAttackFlow(attacker));
+        }
+    }
+
+    public override void CallTakeHit(bool shouldTakeHit)
+    {
+        if (shouldTakeHit)
+        {
+            heroControl.SetIsTakeHit();
+        }
+    }
+
+    private IEnumerator CoFrenzyFlow(HeroControl attacker)
+    {
+        heroControl.IsFinished = false;
+
+        yield return new WaitUntil(() => attacker.IsFinished);
+
+        hasBeenFrenzy = true;
+        SetInsane();
+        heroControl.CanSkill = true;
+        HeroControl.RefreshObservers("Frenzy Activated");
+        if (heroControl.HeroInfo.ID == 512)
+        {
+            heroControl.ChangeAnimationAnyState("Frenzy");
+            yield break;
+        }
+        heroControl.IsFinished = true;
+    }
+
+    private IEnumerator CoCounterAttackFlow(HeroControl attacker)
+    {
+        heroControl.IsFinished = false;
+
+        yield return new WaitUntil(() => attacker.IsFinished);
+        yield return new WaitForSeconds(1f);
+
+        heroControl.SetTarget(new List<Transform> { attacker.transform }, heroControl.HeroInfo.normalAttack);
+        heroControl.SetAttack();
+
+        yield return new WaitUntil(() => heroControl.IsFinished);
+    }
+
     void SetInsane()
     {
         heroControl.IsCrit = true;
@@ -48,6 +104,4 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
         heroControl.HeroStatRuntime.Damage *= 2f;
         heroControl.HeroStatRuntime.Armor *= 2f;
     }
-
-
 }

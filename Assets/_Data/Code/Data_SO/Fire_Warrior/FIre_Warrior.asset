@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5778393a6ad6a424fa917611adfe4062, type: 3}
+  m_Name: FIre_Warrior
+  m_EditorClassIdentifier: 
+  ID: 11
+  Name: FIre Warrior
+  role: 1
+  normalAttack: {fileID: 11400000, guid: e03959474941acc429bc116fe6ee445d, type: 2}
+  skill: {fileID: 11400000, guid: 0d28171de96fa17469ebd46ec771847e, type: 2}
+  skillChance: 0
+  ultimate: {fileID: 11400000, guid: 1766d243c3b40114fb54cde1751f6103, type: 2}
+  passive: {fileID: 11400000, guid: c6aaecb37bff84045915063be9bab1eb, type: 2}
+  empower: {fileID: 0}
+  ultimateSpecial: {fileID: 0}
+  damage: 100
+  health: 3500
+  armor: 55
+  criticalRate: 5
+  criticalDamageRate: 150
+  lifeSteal: 0
+  controlFree: 0
+  speed: 77
+  speedFoodList: cb000000cc000000cd000000
+  tags: 0000000002000000
+  iconFace: {fileID: 1264877717251755983, guid: bb63c16d75bb08b4e9023ae21bc337ed, type: 3}
+  soulID: 020000000500000006000000
+  HeroPreviewPrefabs: {fileID: 5637980007648266394, guid: 7081b1f853cfa944eaad3c62d67efb14, type: 3}
+  HeroPrefab: {fileID: 5754241200264373405, guid: c68d65b19ed1678459db39ff753c5f66, type: 3}
+  UIForBattleSO: {fileID: 11400000, guid: 6c1b4df3381079b45b1b83262656e824, type: 2}

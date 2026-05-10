@@ -234,7 +234,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 0adff78b61ac6c744b94bb4689e9fa1d, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &5747598036360219478
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -431,7 +431,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 1deb4dcf1d23f284abc04fe8fc243fe4, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &321921946964207937
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -589,7 +589,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: 716a0be231a1680458e218a6f59796fa, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &5354147544561888179
 GameObject:
   m_ObjectHideFlags: 0
@@ -638,7 +638,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: d7f697494048ff6478eac56d30516f02, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &3901949486147231041
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -790,14 +790,15 @@ MonoBehaviour:
   shouldPlus: 0
   leftBattle: 0
   isTransform: 0
+  isStart: 0
+  isSpawn: 0
   battleTarget: {x: 0, y: 0, z: 0}
   clearPosition: {fileID: 0}
   needMoveToBattle: 0
   currentStringState: 
-  heroInfo: {fileID: 11400000, guid: ef985806e829e28438f0f12a12c1a699, type: 2}
+  heroInfo: {fileID: 11400000, guid: 9f3073b7ac65dd040b204d59cdc5201d, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!114 &7176037769065786066
 MonoBehaviour:
@@ -881,12 +882,14 @@ MonoBehaviour:
     critRate: 0
     critDamage: 0
     lifeSteal: 0
+    controlFree: 0
     speed: 0
     power: 0
   currentShield: 0
   maxShield: 0
   currentHealth: 0
   currentMana: 0
+  skillChanceFinal: 0
   aesDebug: []
   modifyStatDebug: []
   onStartBattleDebug: []
@@ -977,7 +980,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: be8a5a08ed97c504bb3d9b2e2f543862, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &8408314656721273
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1080,7 +1083,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: bc5da30cff502a046855f431a2479dff, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!60 &6497385820369069000
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -1246,7 +1249,7 @@ MonoBehaviour:
   attackInfo: {fileID: 11400000, guid: fe491d45e44811b449162830877751f7, type: 2}
   heroControl: {fileID: 0}
   attackDamage: 0
-  myTag: 
+  finalMutipler: 0
 --- !u!1 &8654488718501641487
 GameObject:
   m_ObjectHideFlags: 0
@@ -1496,7 +1499,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 11400000, guid: c89fbb79604a37b47a074de8603b4004, type: 2}
+  loadSlideToPosition: {fileID: 0}
 --- !u!1001 &2886820700053009650
 PrefabInstance:
   m_ObjectHideFlags: 0

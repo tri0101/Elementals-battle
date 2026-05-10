@@ -41,6 +41,7 @@ public class PlayerInventory :  Subject
         AddItem(200, 10);
         AddItem(201, 10);
         AddItem(202, 10);
+        AddItem(203, 10);
         AddItem(51, 1000); 
         AddItem(52, 1000); 
         AddItem(55, 1000); 
@@ -53,6 +54,12 @@ public class PlayerInventory :  Subject
         AddItem(104, 1000); 
         AddItem(105, 1000); 
         AddItem(106, 1000); 
+        AddItem(107, 1000); 
+        AddItem(108, 1000); 
+        AddItem(109, 1000); 
+        AddItem(110, 1000); 
+        AddItem(111, 1000); 
+        AddItem(112, 1000); 
         AddItem(1, 500); 
         AddItem(2, 25000); 
         AddItem(3, 1); 

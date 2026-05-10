@@ -37,7 +37,7 @@ public class Hero58ReceiveDamage : HeroReceiveDamagee
             {
                 this.attacker = attacker;
                 attacker.HeroReceiveDamagee.CallSpawnEffectHero("EffectHero58", new Vector3(0, 0.1f, -0.1f));
-                attacker.HeroReceiveDamagee.CallSpawnEffectHero("EffectHero58_2", new Vector3(0, 0.173f, 0.1f));
+                attacker.HeroReceiveDamagee.CallSpawnEffectHero("EffectHero58_2", new Vector3(0, 0.372f, 0.1f));
                 attacker.HeroReceiveDamagee.CallSpawnEffectHero("EffectHero58_3", new Vector3(0, 0.355f, -0.1f));
             }
                 
@@ -73,7 +73,7 @@ public class Hero58ReceiveDamage : HeroReceiveDamagee
     protected override void ApplyEffectForHero()
     {
         CallSpawnEffectHero("EffectHero58", new Vector3(0,0.1f, -0.1f));
-        CallSpawnEffectHero("EffectHero58_2", new Vector3(0, 0.173f, 0.1f));
+        CallSpawnEffectHero("EffectHero58_2", new Vector3(0, 0.372f, 0.1f));
         CallSpawnEffectHero("EffectHero58_3", new Vector3(0, 0.355f, -0.1f));
     }
     

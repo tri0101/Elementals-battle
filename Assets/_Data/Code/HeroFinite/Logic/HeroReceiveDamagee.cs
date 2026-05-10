@@ -1,7 +1,9 @@
 ﻿using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net.Mail;
 using UnityEditor.Analytics;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.MPE;
 using UnityEngine;
 
@@ -85,8 +87,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         HeroControl attacker = null) // nếu shouldTakeHit = false thì chỉ trừ máu mà không gọi anim hit
     {
 
-        if (shouldTakeHit)
-            heroControl.SetIsTakeHit();
+        CallTakeHit(shouldTakeHit);
         float hpBefore = heroControl.HeroStatRuntime.CurrentHealth;
         float maxHp = heroControl.HeroStatRuntime.MaxHealth;
         float finalDamage = GetDamageAfterArmor(damage);
@@ -134,17 +135,35 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
 
                     HandleDead(attacker);
                     heroControl.HeroStatRuntime.ClearAllAES();
+                    //heroControl.IsFinished = false;
                     heroControl.SetIsDead();
                 }
             }
         }
         if (heroControl.HeroInfo.ID == 55)
         {
-            attacker.HeroReceiveDamagee.ReceiveDamage(finalDamage * 0.25f, DamageType.normalDamage, false, false);
+            attacker.HeroReceiveDamagee.ReceiveDamage(finalDamage * 0.25f, DamageType.counterDamage, false, false);
         }
+        if(damageType != DamageType.counterDamage || damageType != DamageType.turnDamage)
+            CallWaitForAttackerFinished(attacker);
         return finalDamage;
         
         
+    }
+    public virtual void CallWaitForAttackerFinished(HeroControl attacker)
+    {
+        StartCoroutine(WaitForAttackerFinished(attacker));
+    }
+    IEnumerator WaitForAttackerFinished(HeroControl attacker)
+    {
+        yield return new WaitUntil(() => attacker.IsFinished);
+        if (isDead) yield break;
+        heroControl.IsFinished = true;
+    }
+    public virtual void CallTakeHit(bool shouldTakeHit)
+    {
+        if (shouldTakeHit)
+            heroControl.SetIsTakeHit();
     }
     public void RefreshTotalDmg()
     {
@@ -162,6 +181,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
             HandleDead(attacker);
             
             heroControl.HeroStatRuntime.ClearAllAES();
+            //heroControl.IsFinished = false;
             heroControl.SetIsDead();
         }
     }

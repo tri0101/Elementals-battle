@@ -824,6 +824,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
                 // duration/damage/maxStacks: chỉnh các giá trị này theo design của bạn
                 List<AbilityEffect> effectsSpecial = heroControl.HeroInfo.passive.GetEffectsOnSpecial();
+                if(effectsSpecial == null || effectsSpecial.Count == 0) continue;
                 float damagePerTurn = maxShield * effectsSpecial[0].modifyValue;
                 
 

@@ -24,9 +24,12 @@ public class UI_HeroItem : MonoBehaviour
 
     private int blackRank = 1;
     private int greenRank = 5;
-
+    private int blueRank = 9;
+    private int yellowRank = 13;
     private Color blackColor = new Color(157 / 255f, 143 / 255f, 143 / 255f);
     private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
+    private Color blueColor = new Color(0 / 255f, 38f/255f, 255f / 255f);
+    private Color yellowColor = new Color(255 / 255f, 215 / 255f, 0 / 255f);
 
     void Awake()
     {
@@ -149,15 +152,27 @@ public class UI_HeroItem : MonoBehaviour
             frameRank.color = blackColor;
             plusValue = Mathf.Max(0, rank - blackRank);
         }
-        else
+        else if (rank < blueRank)
         {
             rankColor = greenColor;
             frameRank.color = greenColor;
             plusValue = Mathf.Max(0, rank - greenRank);
         }
+        else if(rank < yellowRank)
+        {
+            rankColor = blueColor;
+            frameRank.color = blueColor;
+            plusValue = Mathf.Max(0, rank - blueRank);
+        }
+        else
+        {
+            rankColor = yellowColor;
+            frameRank.color = yellowColor;
+            plusValue = Mathf.Max(0, rank - yellowRank);
+        }
 
         for (int i = 0; i < plusValue && i < rankRoot.childCount; i++)
-            rankRoot.GetChild(i).gameObject.SetActive(true);
+                rankRoot.GetChild(i).gameObject.SetActive(true);
 
         if (rankLayout != null)
         {

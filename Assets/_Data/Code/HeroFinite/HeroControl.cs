@@ -196,8 +196,7 @@ public class HeroControl : Subject
     public Vector3 distanceToTarget;
     public const string SkillObserver = "Skill";
 
-    [SerializeField] private bool actionInProgress;
-    public bool ActionInProgress => actionInProgress;
+
 
 
     [SerializeField] private bool canAttackInBattle = true;
@@ -224,10 +223,10 @@ public class HeroControl : Subject
 
         clearPosition = clearObj.transform;
     }
-    public void NotifyActionFinished()
-    {
-        actionInProgress = false;
-    }
+    //public void NotifyActionFinished()
+    //{
+    //    actionInProgress = false;
+    //}
     public void SetClear()
     {
         isClear = true;
@@ -251,8 +250,7 @@ public class HeroControl : Subject
     {
         if(heroInfo.normalAttack == null)
             return;
-        if (actionInProgress)
-            return;
+
      
         isAttack = true;
         isCrit = IsCritical();
@@ -273,8 +271,6 @@ public class HeroControl : Subject
     {
         if(heroInfo.ultimate == null)
             return;
-        if (actionInProgress) 
-            return;
         isUltimate = true;
         isCrit = IsCritical();
   
@@ -285,8 +281,7 @@ public class HeroControl : Subject
     {
         if(heroInfo.ultimateSpecial == null)
             return;
-        if (actionInProgress) 
-            return;
+
         isUltimateSpecial = true;
         isCrit = IsCritical();
   
@@ -296,8 +291,7 @@ public class HeroControl : Subject
     public void SetTarget(AbilityInfo info)
     {
         
-        if (actionInProgress)
-            return;
+
         needMoveToBattle = false;
         if (!(heroInfo.ID == 8 && info.type == AbilityType.Skill))
             BuildTargets(info);
@@ -308,14 +302,17 @@ public class HeroControl : Subject
 
 
     }
-
+    public void SetTarget(List<Transform> targets, AbilityInfo info)// khi muốn set cụ thể
+    {
+        enemyTarget = targets;
+        distanceToTarget = GetAttackPosition(info);
+    }
 
     public void SetSkill()
     {
         if(heroInfo.skill == null)
             return;
-        if (actionInProgress)
-            return;
+  
         isSkill = true;
         isCrit = IsCritical();
 
@@ -326,12 +323,6 @@ public class HeroControl : Subject
 
     public void SetIsTakeHit()
     {
-        //if (heroStatRuntime.HasAES(AbilityEffectType.Rooted)
-        //    || heroStatRuntime.HasAES(AbilityEffectType.Stun)
-        //    || heroStatRuntime.HasAES(AbilityEffectType.Paralysis))
-        //{
-        //    return;
-        //}
         isTakeHit = true;
 
     }
@@ -788,6 +779,7 @@ public class HeroControl : Subject
         spriteRenderer = normalT.GetComponent<SpriteRenderer>();
         Transform spriteEffectT = transform.Find("SpriteEffect");
         spriteEffect = spriteEffectT.GetComponent<SpriteRenderer>();
+        SetUpZEffect();
         Transform listEffectT = transform.Find("ListEffect");
         listEffect = listEffectT;
         canvasTotalDamage = GameObject.Find("Canvas").GetComponent<UI_CanvasTotalDamage>();
@@ -805,7 +797,12 @@ public class HeroControl : Subject
         capsuleCollider2D = heroReceiveDamagee.GetComponent<CapsuleCollider2D>();
         heroEventt = transform.GetChild(0).GetComponent<HeroEventt>();
     }
-
+    void SetUpZEffect()
+    {
+        Vector3 pos = spriteEffect.transform.position;
+        pos.z =  -0.01f;
+        spriteEffect.transform.position = pos;
+    }
     public void ChangeAnimationState(string newState, float time = 0)
     {
         if (time > 0) StartCoroutine(Wait());

@@ -27,10 +27,12 @@ public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
 
     private int blackRank = 1;
     private int greenRank = 5;
-
+    private int blueRank = 9;
+    private int yellowRank = 13;    
     private Color blackColor = new Color(157/255f, 143/255f, 143/255f);
     private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
-
+    private Color blueColor = new Color(0 / 255f, 38f/255f, 2555f / 255f);
+    private Color yellowColor = new Color(255f / 255f, 255f / 255f, 0f / 255f);
     void Awake()
     {
         if (starRoot != null)
@@ -108,7 +110,7 @@ public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-        else
+        else if(rank < blueRank)
         {
             frameRank.color = greenColor;
 
@@ -116,7 +118,20 @@ public class UI_HeroChooseItem : MonoBehaviour, IBeginDragHandler, IDragHandler,
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-
+        else if(rank < yellowRank)
+        { 
+            frameRank.color = blueColor;
+            int plus = rank - blueRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
+        else
+        {
+            frameRank.color = yellowColor;
+            int plus = rank - yellowRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
         if (rankLayout != null)
         {
             int activeCount = 0;

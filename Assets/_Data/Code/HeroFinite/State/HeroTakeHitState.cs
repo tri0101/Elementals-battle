@@ -5,7 +5,6 @@ public class HeroTakeHitState : HeroBaseState
 {
     public override void EnterState(HeroStateManager hero)
     {
-
         hero.HeroControl.IsTakeHit = false;
         hero.HeroControl.ChangeAnimationAnyState(HeroStateManager.hero_Take_Hit);
         
@@ -37,12 +36,10 @@ public class HeroTakeHitState : HeroBaseState
         }
         if (hero.HeroControl.CheckCurrentAnimation(HeroStateManager.hero_Take_Hit, 0.99f, 1))
         {
+            Debug.Log("ve idle");
+            hero.SwitchState(hero.idleState);
 
-            
-            
-                Debug.Log("ve idle");
-                hero.SwitchState(hero.idleState);
-            
+
 
         }
       

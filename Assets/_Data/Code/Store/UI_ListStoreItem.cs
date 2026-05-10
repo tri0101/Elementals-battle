@@ -149,6 +149,24 @@ public class UI_ListStoreItem : MonoBehaviour
             SetUpItem(102);
             SetUpItem(103);
         }
+        else if(chapter == 3)
+        {
+            SetUpItem(104);
+            SetUpItem(105);
+            SetUpItem(106);
+        }
+        else if(chapter == 4)
+        {
+            SetUpItem(107);
+            SetUpItem(108);
+            SetUpItem(109);
+        }
+        else if(chapter == 5)
+        {
+            SetUpItem(110);
+            SetUpItem(111);
+            SetUpItem(112);
+        }
     }
 
     void GetNeedItems()
@@ -167,6 +185,19 @@ public class UI_ListStoreItem : MonoBehaviour
             SetUpItem(105);
             SetUpItem(106);
         }
+        else if (chapter == 3)
+        {
+            SetUpItem(107);
+            SetUpItem(108);
+            SetUpItem(109);
+        }
+        else if (chapter == 4)
+        {
+            SetUpItem(110);
+            SetUpItem(111);
+            SetUpItem(112);
+        }
+
     }
 
     public void SetUpItem(int itemId)

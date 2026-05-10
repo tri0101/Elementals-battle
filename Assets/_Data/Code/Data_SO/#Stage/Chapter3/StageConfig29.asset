@@ -14,80 +14,80 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stageID: 29
   waveStage: 2
-  staminaCost: 8
-  expForAliveHero: 50
-  expForPlayer: 300
+  staminaCost: 9
+  expForAliveHero: 75
+  expForPlayer: 400
   stageCondition: 0
   conditionParam: 1
   enemies:
-  - heroId: 510
-    rank: 1
-    star: 4
-    level: 1
-    hpRate: 1
-    atkRate: 1
-    isShow: 1
-  - heroId: 10
-    rank: 1
-    star: 4
-    level: 1
-    hpRate: 1
-    atkRate: 1
+  - heroId: 506
+    rank: 0
+    star: 0
+    level: 0
+    hpRate: 0
+    atkRate: 0
     isShow: 1
   - heroId: 2
-    rank: 1
-    star: 4
-    level: 1
-    hpRate: 1
-    atkRate: 1
+    rank: 0
+    star: 0
+    level: 0
+    hpRate: 0
+    atkRate: 0
     isShow: 1
-  - heroId: 6
-    rank: 1
-    star: 4
-    level: 1
-    hpRate: 1
-    atkRate: 1
+  - heroId: 11
+    rank: 0
+    star: 0
+    level: 0
+    hpRate: 0
+    atkRate: 0
+    isShow: 1
+  - heroId: 51
+    rank: 0
+    star: 0
+    level: 0
+    hpRate: 0
+    atkRate: 0
     isShow: 1
   enemySpawns:
   - wave: 1
     slotIndex: 1
-    heroId: 510
+    heroId: 506
   - wave: 1
     slotIndex: 2
-    heroId: 510
+    heroId: 506
   - wave: 1
     slotIndex: 3
-    heroId: 510
+    heroId: 506
   - wave: 1
     slotIndex: 4
-    heroId: 510
+    heroId: 506
   - wave: 1
     slotIndex: 5
-    heroId: 510
+    heroId: 506
   - wave: 1
     slotIndex: 6
-    heroId: 510
-  - wave: 2
-    slotIndex: 1
-    heroId: 6
+    heroId: 506
   - wave: 2
     slotIndex: 2
+    heroId: 51
+  - wave: 2
+    slotIndex: 4
     heroId: 2
   - wave: 2
-    slotIndex: 3
-    heroId: 10
+    slotIndex: 6
+    heroId: 11
   dropItems:
   - itemId: 100
     minAmount: 1
-    maxAmount: 3
+    maxAmount: 20
     dropRate: 0.5
-  - itemId: 101
+  - itemId: 109
     minAmount: 1
-    maxAmount: 2
+    maxAmount: 7
     dropRate: 0.8
   - itemId: 1
-    minAmount: 780
-    maxAmount: 1000
+    minAmount: 3000
+    maxAmount: 5000
     dropRate: 1
-  background: {fileID: 5770377477300134334, guid: 14b1c72a6966dbe4a8d64396f6ada6ff, type: 3}
+  background: {fileID: -4659963502579513735, guid: d7870d47c8a56114c967e9e4c06b09b6, type: 3}
   powerRecommend: 0

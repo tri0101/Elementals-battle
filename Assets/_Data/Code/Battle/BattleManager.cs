@@ -81,6 +81,10 @@ public class BattleManager : MonoBehaviour
         foreach (Transform child in backBottom)
         {
             var ui = child.GetComponent<UI_HeroBattle>();
+            if(stageConfig.stageID  >= 31 && stageConfig.stageID <= 40)
+            {
+                ui.DisableManaBar();
+            }
             if (ui != null)
                 dictHeroBattle.Add(int.Parse(child.name), ui);
         }
@@ -190,6 +194,7 @@ public class BattleManager : MonoBehaviour
             {
                 heroControl.SetBattleTarget(battleT.position);
                 heroControl.GoBackBattleTarget();
+                heroControl.IsFinished = true;
             }
         }
     }
@@ -301,6 +306,7 @@ public class BattleManager : MonoBehaviour
             {
                 heroControl.SetBattleTarget(battleT.position);
                 heroControl.GoBackBattleTarget();
+                heroControl.IsFinished = true;
             }
 
             spawnedHeroes.Add(heroGo);
@@ -419,13 +425,19 @@ public class BattleManager : MonoBehaviour
             {
                 statRuntime.CurrentMana = 1000f;
             }
+            if(enemyControl.HeroInfo.ID < 500) 
+            { 
+                statRuntime.CurrentMana = 1000f;
+                statRuntime.ControlFree = 100f;
+            } 
 
             if (enemyControl != null)
             {
                 enemyControl.SetBattleTarget(battleT.position);
                 enemyControl.GoBackBattleTarget();
+  
             }
-
+            enemyControl.IsFinished = true;
             spawnedEnemies.Add(enemyGo);
         }
     }

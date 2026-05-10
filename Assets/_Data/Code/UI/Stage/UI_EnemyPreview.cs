@@ -24,9 +24,10 @@ public class UI_EnemyPreview : MonoBehaviour
 
     private int blackRank = 1;
     private int greenRank = 5;
-
+    private int blueRank = 9;
     private Color blackColor = new Color(157 / 255f, 143 / 255f, 143 / 255f);
     private Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
+    private Color blueColor = new Color(0 / 255f, 38 / 255f, 255f / 255f);
     void Awake()
     {
         if (starRoot != null)
@@ -82,11 +83,19 @@ public class UI_EnemyPreview : MonoBehaviour
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-        else
+        else if(rank < blueRank)
         {
             frameRank.color = greenColor;
 
             int plus = rank - greenRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
+        else
+        {
+            frameRank.color = blueColor;
+
+            int plus = rank - blueRank;
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }

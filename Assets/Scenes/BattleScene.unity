@@ -2789,6 +2789,9 @@ MonoBehaviour:
   - {fileID: 584408341437324118, guid: 508e215638e03914a86f06b9d55b060c, type: 3}
   - {fileID: 8991720875711650541, guid: 2eac073ff31f5874fb39cff753ed3178, type: 3}
   - {fileID: 3591741273713814088, guid: 0475a7524b046aa44a35e903e0b0d380, type: 3}
+  - {fileID: 3356809424313887524, guid: 9b3df12e9fc46ff4ca664d3d77b26d14, type: 3}
+  - {fileID: 92082357976161392, guid: a5d929bad580b3347a56566086ceb509, type: 3}
+  - {fileID: 1699662367352474008, guid: 56e5a9482f9a64f419bc03b59e373948, type: 3}
   poolObject: []
 --- !u!1 &795087438
 GameObject:
@@ -3438,7 +3441,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!212 &905612287
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -6390,7 +6394,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: e689bb9ddaa49604a9701cd06b795ced, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!114 &1410899522
 MonoBehaviour:
@@ -11130,7 +11133,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &263937238447572054
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15905,7 +15909,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 9b5dc9a67497baa43aff0e363e53225c, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &1475605824587332985
 GameObject:
@@ -16404,7 +16407,6 @@ MonoBehaviour:
   heroInfo: {fileID: 0}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!222 &1722322223008832146
 CanvasRenderer:
@@ -17447,7 +17449,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 75f93fd365d18dd49b1caa09e8f27e56, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!222 &2036106520626785886
 CanvasRenderer:
@@ -17517,7 +17518,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: b72300e76744ca9468b7db503bacdbdc, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!114 &2046727305818247848
 MonoBehaviour:
@@ -18161,7 +18161,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &2270371643528272306
 GameObject:
@@ -18649,7 +18648,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 3343c61da32157148a6c404766f9eaa2, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!50 &2426842453500336478
 Rigidbody2D:
@@ -19307,7 +19305,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!222 &2649912303729996891
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -19631,7 +19630,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 939e9a5ba92e76f4e8416170783282f1, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!224 &2717656370294955466
 RectTransform:
@@ -21034,7 +21032,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: d46ccf584dbc99e48be881d8d1956253, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!222 &3007653292481478307
 CanvasRenderer:
@@ -21181,7 +21178,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!50 &3048306677982823576
 Rigidbody2D:
   serializedVersion: 5
@@ -22770,7 +22768,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: e7df6e6b090d6bf419eabe2dedda7852, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &3508843006691866155
 GameObject:
@@ -22891,7 +22888,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: ef985806e829e28438f0f12a12c1a699, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &3547939820874522298
 GameObject:
@@ -23392,7 +23388,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!4 &3657839346891139503
 Transform:
   m_ObjectHideFlags: 0
@@ -24585,7 +24582,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &3960716848508111793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24628,7 +24626,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!4 &3969967425624812468
 Transform:
   m_ObjectHideFlags: 0
@@ -24763,7 +24762,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: f3f0f818e21a77e4ea3f06c08183b136, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!114 &4043473186108526100
 MonoBehaviour:
@@ -26114,7 +26112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!222 &4308485990928309953
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -27826,7 +27825,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 593fc2bd94c5a8b4fae4891450987139, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &4762002514480804876
 GameObject:
@@ -28999,7 +28997,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!4 &5119774641266082964
 Transform:
   m_ObjectHideFlags: 0
@@ -29837,7 +29836,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &5387738708173829711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30210,7 +30210,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &5460760955713911315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31793,7 +31794,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 5d6617aacb601274fa099a5ed9b782b8, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &5856925456541855968
 GameObject:
@@ -32217,7 +32217,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 13dcf669b18f83c468f3fc76536c6e0b, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!114 &5952713845633248837
 MonoBehaviour:
@@ -34444,7 +34443,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 0357db14e59236c41ad958c96fb0b752, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &6630603979045199047
 GameObject:
@@ -34888,7 +34886,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &6763390313784137755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35475,7 +35474,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &6905089565837990364
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36634,7 +36634,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 7880a0635a6ea884c8d7f1aa2683ebca, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!212 &7224565162892353595
 SpriteRenderer:
@@ -36902,7 +36901,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &7320259262101778362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36951,7 +36951,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 2ddc47c0f3f154447ae43f21ebdd51f1, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!4 &7329656024837228981
 Transform:
@@ -38543,7 +38542,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &7765491389294852284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -39061,7 +39061,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &7957629026558302605
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41604,7 +41605,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!222 &8644976928779205697
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -42384,7 +42386,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!1 &8851630788303432968
 GameObject:
   m_ObjectHideFlags: 0
@@ -42651,7 +42654,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: b98b625904fc7324a9db1db894bfa5d5, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!1 &8932182989061187845
 GameObject:
@@ -43289,7 +43291,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!114 &9156896345348959567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43370,7 +43373,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
 --- !u!222 &9162310528461047225
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -43446,7 +43450,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 492c410bffe7f844e95c397927de2afc, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!4 &9184342620650985162
 Transform:

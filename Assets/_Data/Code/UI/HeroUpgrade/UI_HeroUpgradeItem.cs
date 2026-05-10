@@ -153,8 +153,12 @@ public class UI_HeroUpgradeItem : MonoBehaviour
         // Giữ logic cũ của bạn
         int blackRank = 1;
         int greenRank = 5;
+        int blueRank = 9;
+        int yellowRank = 13;
         Color blackColor = new Color(157 / 255f, 143 / 255f, 143 / 255f);
         Color greenColor = new Color(73f / 255f, 1f, 115f / 255f);
+        Color blueColor = new Color(0f / 255f, 38/255f, 255f / 255f);
+        Color yellowColor = new Color(1f, 1f, 0f);
 
         if (rank < greenRank)
         {
@@ -164,11 +168,23 @@ public class UI_HeroUpgradeItem : MonoBehaviour
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
-        else
+        else if(rank < blueRank)
         {
             frameRank.color = greenColor;
 
             int plus = rank - greenRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
+        else if(rank < yellowRank){
+            frameRank.color = blueColor;
+            int plus = rank - blueRank;
+            for (int i = 0; i < plus && i < rankRoot.childCount; i++)
+                rankRoot.GetChild(i).gameObject.SetActive(true);
+        }
+        else { 
+            frameRank.color = yellowColor;
+            int plus = rank - yellowRank;
             for (int i = 0; i < plus && i < rankRoot.childCount; i++)
                 rankRoot.GetChild(i).gameObject.SetActive(true);
         }
