@@ -35,6 +35,8 @@ public class HeroUI : MonoBehaviour, IObserver
     private string healRateDecreased = "Heaing Rate Decreased";
     private string manaRecoveryDecreased = "Mana Recovery Decreased";
     private string manaRecoveryIncreased = "Mana Recovery Increased";
+    private string lifeStealRateDecreased = "LifeSteal Rate Decreased";
+    private string lifeStealRateIncreased = "LifeSteal Rate Increased";
     private string manaRestoration = "Mana Restoration";
     private string manaReduced = "Mana Reduced";
     private string controlFreeIncreased = "Control-free Increased";
@@ -53,6 +55,7 @@ public class HeroUI : MonoBehaviour, IObserver
     public TextMeshProUGUI damageTextPrefab;
 
     public Transform listDamage;
+    public Transform listEffect;
     // ===== Bar Animation =====
     [SerializeField] private float barAnimDuration = 0.25f;
     [SerializeField] private Material normalMaterial;
@@ -90,6 +93,7 @@ public class HeroUI : MonoBehaviour, IObserver
         }
 
         listDamage = transform.Find("ListDamage");
+        listEffect = transform.Find("ListEffect");
         SetHpBar(1f, true);
        
         if (heroControl.HeroInfo.ultimate == null)
@@ -161,6 +165,9 @@ public class HeroUI : MonoBehaviour, IObserver
                 SpawnFloatingEffectText(type, value);
                 break;
             case ModifyStatType.HealingRate:
+                SpawnFloatingEffectText(type, value);
+                break;
+            case ModifyStatType.LifeSteal:
                 SpawnFloatingEffectText(type, value);
                 break;
             case ModifyStatType.ManaRecovery:
@@ -244,7 +251,7 @@ public class HeroUI : MonoBehaviour, IObserver
     public void SpawnFloatingEffectText(string optionString)
     {
 
-        TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+        TextMeshProUGUI text = Instantiate(damageTextPrefab, listEffect);
         text.color = new Color32(253, 255, 0, 255);
         text.fontSize = 12;
         text.fontSharedMaterial = critMaterial;
@@ -253,9 +260,9 @@ public class HeroUI : MonoBehaviour, IObserver
     }
     public void SpawnFloatingEffectText(ModifyStatType type, int value)
     {
-        if (damageTextPrefab == null || listDamage == null) return;
+        if (damageTextPrefab == null || listEffect == null) return;
 
-        TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+        TextMeshProUGUI text = Instantiate(damageTextPrefab, listEffect);
         StartCoroutine(CoKeepFlipSynced(text));
         if(value > 0)
         {
@@ -291,6 +298,11 @@ public class HeroUI : MonoBehaviour, IObserver
                 else text.text = healRateDecreased;
                 StartCoroutine(CoShowAndFade(text));
                 break;
+            case ModifyStatType.LifeSteal:
+                if (value > 0) text.text = lifeStealRateIncreased;
+                else text.text = lifeStealRateDecreased;
+                StartCoroutine(CoShowAndFade(text));
+                break;
             case ModifyStatType.ManaRecovery:
                 if (value > 0) text.text = manaRecoveryIncreased;
                 else text.text = manaRecoveryDecreased;
@@ -310,9 +322,9 @@ public class HeroUI : MonoBehaviour, IObserver
     }
     public void SpawnFloatingEffectText(AbilityEffectType type)
     {
-        if (damageTextPrefab == null || listDamage == null) return;
+        if (damageTextPrefab == null || listEffect == null) return;
 
-        TextMeshProUGUI text = Instantiate(damageTextPrefab, listDamage);
+        TextMeshProUGUI text = Instantiate(damageTextPrefab, listEffect);
         StartCoroutine(CoKeepFlipSynced(text));
 
         switch (type)
@@ -368,7 +380,6 @@ public class HeroUI : MonoBehaviour, IObserver
         TextMeshProUGUI text =
             Instantiate(damageTextPrefab, listDamage);
         StartCoroutine(CoKeepFlipSynced(text));
-
         if (hpType == HPNotifyType.HPPlus)
         {
             
@@ -403,8 +414,8 @@ public class HeroUI : MonoBehaviour, IObserver
     private IEnumerator CoShowAndFade(TextMeshProUGUI text)
     {
         if (text == null) yield break;
-
-        float yOffset = 0.35f;
+        int count = listEffect.childCount;
+        float yOffset = 0.35f + 0.125f * (count - 1) ;
         float showDuration = 0.35f;
         float fadeDuration = 1f;
 
@@ -444,8 +455,9 @@ public class HeroUI : MonoBehaviour, IObserver
 
     private IEnumerator CoFloatAndFade(TextMeshProUGUI text)
     {
-        float startY = 0.35f;
-        float endY = 0.55f;
+        int count = listDamage.childCount;
+        float startY = 0.35f + 0.08f * (count - 1);
+        float endY = 0.55f + 0.08f * (count - 1);
         float duration = 0.5f;
 
         float t = 0f;

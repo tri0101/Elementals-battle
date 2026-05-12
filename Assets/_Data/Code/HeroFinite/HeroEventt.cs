@@ -14,6 +14,19 @@ public class HeroEventt : MonoBehaviour
     HeroControl heroControl;
     private Coroutine hideTotalDmgRoutine;
     private static readonly int[] RandomSummonHeroIds = { 500, 501, 502 };
+
+    [SerializeField] private bool hasShown = false;
+    public bool HasShown
+    {
+        get => hasShown;
+        set => hasShown = value;
+    }
+    [SerializeField] private bool firstAttack = false; // lần collider đầu tiên
+    public bool FirstAttack
+    {
+        get => firstAttack;
+        set => firstAttack = value;
+    }
     private void Awake()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
@@ -136,7 +149,7 @@ public class HeroEventt : MonoBehaviour
     }
     public void SetEffect()
     {
-        List<AbilityEffect> effectOnAttack = heroControl.HeroInfo.ultimate.GetEffectsOnAttack();
+        List<AbilityEffect> effectOnAttack = heroControl.HeroInfo.ultimate.GetEffectsOnSpecial();
         for (int i = 0; i < effectOnAttack.Count; i++)
         {
             var effect = effectOnAttack[i];
@@ -176,6 +189,8 @@ public class HeroEventt : MonoBehaviour
     }
     public void SetEffectToEnemy(TimesToCall timeTocall)
     {
+        //if(hasShown ) return;
+        //hasShown = true;
         List<AbilityEffect> effects = null;
         if (timeTocall == TimesToCall.onAttack)
         {
@@ -198,6 +213,8 @@ public class HeroEventt : MonoBehaviour
                     {
                         HeroControl enemyControl = target.GetComponent<HeroControl>();
                         if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
+                        if (enemyControl.HeroEventt.HasShown) continue;
+                        heroControl.HeroEventt.HasShown = true;
                         enemyControl.HeroEventt.ShowTextEffect(effect.statType, (int)effect.modifyValue);
                     }
                 }
@@ -218,12 +235,14 @@ public class HeroEventt : MonoBehaviour
 
                         var recv = enemyRoot.GetComponentInChildren<HeroReceiveDamagee>();
                         if (recv != null && recv.IsDead) continue;
-
+                        if (enemyControl.HeroEventt.HasShown) continue;
+                        heroControl.HeroEventt.HasShown = true;
                         enemyControl.HeroEventt.ShowTextEffect(statType, value);
                     }
                 }
             }
         }
+        
     }
     public void ApplyMinusManaToEnemy()// hiện tại dành cho hero có id = 9 và 56
     {
@@ -239,6 +258,9 @@ public class HeroEventt : MonoBehaviour
     {
         switch(type)
         {
+            case ModifyStatType.Damage:
+                heroControl.RefreshObservers(ModifyStatType.Damage, value);
+                break;
             case ModifyStatType.CritRate:
                 heroControl.RefreshObservers(ModifyStatType.CritRate, value);
                 break;
@@ -582,4 +604,10 @@ public class HeroEventt : MonoBehaviour
         float newScaleY = heroControl.transform.localScale.y * coefficient;
         heroControl.transform.localScale = new Vector3(newScaleX, newScaleY, heroControl.transform.localScale.z);
     }
+    public void RefreshHasShown()
+    {
+        hasShown = false;
+    }
+
+  
 }

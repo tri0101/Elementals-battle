@@ -378,8 +378,94 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     // CHANGED: per-skill cap (like ModifyStat). If cap reached => refresh duration only.
     // NEW: thêm idAttacker để lưu người gây effect
+    //public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks, HeroControl attacker)
+    //{
+    //    bool hasShown = false;
+    //    if (string.IsNullOrEmpty(sourceAbilityName)) return;
+    //    if (remainingTurn <= 0) return;
+    //    if (maxStacks <= 0) return;
+
+    //    if (type == AbilityEffectType.ModifyStat) return;
+    //    float controlFreeValue = heroControl.HeroInfo.controlFree / 100;
+    //    if (Random.value < controlFreeValue) return;
+
+    //    if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
+    //    {
+    //        bySkill = new Dictionary<string, List<AESStackState>>();
+    //        aesStacksByType[type] = bySkill;
+
+    //        ApplyUIEffect(type);
+    //        if (!hasShown)
+    //        {
+    //            heroControl.RefreshObservers(type);
+    //            hasShown = true;
+    //        }
+
+    //    }
+
+    //    if (!bySkill.TryGetValue(sourceAbilityName, out var stacks) || stacks == null)
+    //    {
+    //        stacks = new List<AESStackState>(maxStacks);
+    //        bySkill[sourceAbilityName] = stacks;
+    //        if (!hasShown)
+    //        {
+    //            heroControl.RefreshObservers(type);
+    //            hasShown = true;
+    //        }
+
+    //    }
+
+
+    //    int finalDamagePerTurn = 0;
+    //    if (damagePerTurn != 0)
+    //    {
+    //        finalDamagePerTurn = heroControl.HeroReceiveDamagee.GetDamageAfterArmor(damagePerTurn);
+    //    }
+
+    //    // Apply immediate restrictions (only need once globally, but safe to set each time)
+    //    if (type == AbilityEffectType.Rooted)
+    //    {
+    //        heroControl.RefreshObservers("canDisappear", false);
+    //        heroControl.CanAttackInBattle = false;
+    //    }
+    //    else if (type == AbilityEffectType.Stun)
+    //    {
+    //        heroControl.CanAttackInBattle = false;
+    //    }
+    //    else if (type == AbilityEffectType.Paralysis)
+    //    {
+    //        heroControl.CanAttackInBattle = false;
+    //    }
+
+    //    // per-skill cap reached => refresh duration (max) and exit (no new stack)
+    //    if (stacks.Count >= maxStacks)
+    //    {
+    //        var s = stacks[0];
+    //        s.remainingTurn = Mathf.Max(s.remainingTurn, remainingTurn);
+    //        stacks[0] = s;
+    //        if (!hasShown)
+    //        {
+    //            heroControl.RefreshObservers(type);
+    //            hasShown = true;
+    //        }
+    //        SyncAESDebug();
+    //        return;
+    //    }
+
+    //    stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn, attacker));
+    //    if (!hasShown)
+    //    {
+    //        heroControl.RefreshObservers(type);
+    //        hasShown = true;
+    //    }
+
+    //    SyncAESDebug();
+    //}
+
     public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks, HeroControl attacker)
     {
+        if(heroControl.HeroEventt.HasShown) return;
+        
         if (string.IsNullOrEmpty(sourceAbilityName)) return;
         if (remainingTurn <= 0) return;
         if (maxStacks <= 0) return;
@@ -394,22 +480,27 @@ public sealed class HeroStatRuntime : MonoBehaviour
             aesStacksByType[type] = bySkill;
 
             ApplyUIEffect(type);
-            heroControl.RefreshObservers(type);
+            if (!heroControl.HeroEventt.HasShown)
+            {
+                heroControl.RefreshObservers(type);
+                heroControl.HeroEventt.HasShown = true;
+            }
+
         }
 
         if (!bySkill.TryGetValue(sourceAbilityName, out var stacks) || stacks == null)
         {
             stacks = new List<AESStackState>(maxStacks);
             bySkill[sourceAbilityName] = stacks;
-            heroControl.RefreshObservers(type);
-        }
-      
+            if (!heroControl.HeroEventt.HasShown)
+            {
+                heroControl.RefreshObservers(type);
+                heroControl.HeroEventt.HasShown = true;
+            }
 
-        int finalDamagePerTurn = 0;
-        if (damagePerTurn != 0)
-        {
-            finalDamagePerTurn = heroControl.HeroReceiveDamagee.GetDamageAfterArmor(damagePerTurn);
         }
+
+
 
         // Apply immediate restrictions (only need once globally, but safe to set each time)
         if (type == AbilityEffectType.Rooted)
@@ -432,29 +523,27 @@ public sealed class HeroStatRuntime : MonoBehaviour
             var s = stacks[0];
             s.remainingTurn = Mathf.Max(s.remainingTurn, remainingTurn);
             stacks[0] = s;
-            heroControl.RefreshObservers(type);
+            if (!heroControl.HeroEventt.HasShown)
+            {
+                heroControl.RefreshObservers(type);
+                heroControl.HeroEventt.HasShown = true;
+            }
             SyncAESDebug();
             return;
         }
 
-        stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn, attacker));
-        heroControl.RefreshObservers(type);
+        stacks.Add(new AESStackState(remainingTurn, damagePerTurn, attacker));
+        if (!heroControl.HeroEventt.HasShown)
+        {
+            heroControl.RefreshObservers(type);
+            heroControl.HeroEventt.HasShown = true;
+        }
 
         SyncAESDebug();
     }
-
-    // Backward-compatible overload (nếu chỗ nào chưa sửa truyền attacker)
-    //public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks)
-    //{
-    //    int fallbackAttackerId = -1;
-    //    ApplyAES(sourceAbilityName, type, remainingTurn, damagePerTurn, maxStacks, fallbackAttackerId);
-    //}
-
-    // CHANGED: maxStacks is PER SKILL (sourceAbilityName) not global per stat.
-    // If same skill reaches cap => refresh duration only; do NOT apply stat again.
-    // NEW: thêm idAttacker để lưu người gây effect
     public void ApplyModifyStat(string sourceAbilityName, ModifyStatType type, int remainingTurn, float modifyValue, int maxStacks, HeroControl attacker, bool instant = true)
     {
+        bool hasShown = false;
         if (string.IsNullOrEmpty(sourceAbilityName)) return;
         if (remainingTurn <= 0) return;
         if (maxStacks <= 0) return;
@@ -463,12 +552,22 @@ public sealed class HeroStatRuntime : MonoBehaviour
         {
             bySkill = new Dictionary<string, List<ModifyStatStackState>>();
             modifyStatStacksByType[type] = bySkill;
+            if (!hasShown)
+            {
+                heroControl.RefreshObservers(type, (int)modifyValue);
+                hasShown = true;
+            }
         }
 
         if (!bySkill.TryGetValue(sourceAbilityName, out var stacks) || stacks == null)
         {
             stacks = new List<ModifyStatStackState>(maxStacks);
             bySkill[sourceAbilityName] = stacks;
+            if (!hasShown)
+            {
+                heroControl.RefreshObservers(type, (int)modifyValue);
+                hasShown = true;
+            }
         }
 
         // per-skill cap reached => refresh duration (max) and exit (no re-apply)
@@ -477,13 +576,21 @@ public sealed class HeroStatRuntime : MonoBehaviour
             var s = stacks[0];
             s.remainingTurn = Mathf.Max(s.remainingTurn, remainingTurn);
             stacks[0] = s;
-
+            if (!hasShown)
+            {
+                heroControl.RefreshObservers(type, (int)modifyValue);
+                hasShown = true;
+            }
             SyncModifyStatDebug();
             return;
         }
 
         stacks.Add(new ModifyStatStackState(remainingTurn, modifyValue, attacker));
-
+        if (!hasShown)
+        {
+            heroControl.RefreshObservers(type, (int)modifyValue);
+            hasShown = true;
+        }
         SyncModifyStatDebug();
     }
 
@@ -676,6 +783,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
             case ModifyStatType.CritRate:
                 GainCritRate(value, instant);
                 break;
+            case ModifyStatType.LifeSteal:
+                GainLifeSteal(value, instant);
+                break;
             case ModifyStatType.CritDamage:
                 break;
             case ModifyStatType.Speed:
@@ -707,6 +817,11 @@ public sealed class HeroStatRuntime : MonoBehaviour
     public void GainCritRate(float value, bool instant = false)
     {
         finalStat.critRate += value;
+        if (instant) return;
+    }
+    public void GainLifeSteal(float value, bool instant = false)
+    {
+        finalStat.lifeSteal += value;
         if (instant) return;
     }
 

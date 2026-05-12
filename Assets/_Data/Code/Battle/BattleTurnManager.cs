@@ -5,6 +5,7 @@ using Unity.Properties;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.Rendering.DebugUI;
 
 public class BattleTurnManager : MonoBehaviour
 {
@@ -134,7 +135,12 @@ public class BattleTurnManager : MonoBehaviour
                 yield return new WaitForSeconds(0.5f);
                 yield return SetUpStartTurn(secondTeam);
                 yield return CoTeamUltimate(secondTeam);
-                if (AreAllTeamDead(TeamEnemy))
+                if (AreAllTeamDead(TeamHero))
+                {
+                    HandleDefeat();
+                    yield break;
+                }
+                else if (AreAllTeamDead(TeamEnemy))
                 {
                     yield return new WaitForSeconds(1f);
                     yield return CoHandleWaveCleared();
@@ -435,6 +441,7 @@ public class BattleTurnManager : MonoBehaviour
     {
         List<AbilityEffect> effectOnUse = onUse;
         List<AbilityEffect> effectOnAttack = onAttack;
+        string teamTagEnemy = teamTag == TeamHero ? TeamEnemy : TeamHero;
         for (int i = 0; i < effectOnAttack.Count; i++)
         {
             var effect = effectOnAttack[i];
@@ -472,7 +479,11 @@ public class BattleTurnManager : MonoBehaviour
                 }
                 if (effect.target == AbilityTarget.HeroAll)
                 {
-                    ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount);
+                    ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount, teamTag);
+                }
+                else if(effect.target == AbilityTarget.EnemyAll)
+                {
+                    ApplyModifyStatAll(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount, teamTagEnemy);
                 }
                 else if (effect.target == AbilityTarget.Self)
                 {
@@ -529,8 +540,6 @@ public class BattleTurnManager : MonoBehaviour
                     bool shouldTakeHit = i == 0;// burn index luôn = 0
                    
                     unit.HeroReceiveDamagee.ReceiveDamage(aes.damagePerTurn, DamageType.turnDamage, shouldTakeHit, true, aes.attacker);
-                    if (delayBetweenActions > 0f)
-                        yield return new WaitForSeconds(0.1f);
                     break;
             }
         }
@@ -916,6 +925,8 @@ public class BattleTurnManager : MonoBehaviour
 
                     if (effect.target == AbilityTarget.HeroAll)
                         ApplyStatAll(effect.statType, effect.modifyValue);
+                    else if(effect.target == AbilityTarget.Self)
+                        unit.HeroStatRuntime.ApplyStatOnStartBattle(effect.statType, (int)finalStat);
                     else if (effect.target == AbilityTarget.DPSHeroAll)
                         ApplyStatCertainRoleBattle(tagCurrentUnit, effect.statType, finalStat, RoleHero.DPS);
                     else if (effect.target == AbilityTarget.TankHeroAll)
@@ -936,7 +947,9 @@ public class BattleTurnManager : MonoBehaviour
                         ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Demon);
                     else if (effect.target == AbilityTarget.HeroTagFighter)
                         ApplyStatCertainTagBattle(tagCurrentUnit, effect.statType, finalStat, Tag.Fighter);
-                }       
+                    else if (effect.target == AbilityTarget.FrontHeroColumns)
+                        ApplyStatForFrontColumn(tagCurrentUnit, effect.statType, finalStat);
+                    }       
             }
             // riêng hero id = 59
             if (reC.HeroInfo.ID == 59 && reC.HeroStatRuntime != null)
@@ -962,6 +975,18 @@ public class BattleTurnManager : MonoBehaviour
             yield return new WaitForSeconds(delayBetweenActions);
     }
 
+    void ApplyStatForFrontColumn(string teamApply, ModifyStatType type, float value)
+    {
+        
+        for (int slot = 1; slot <= 3; slot++)
+        {
+            var unit = GetUnitAtSlot(teamApply, slot);
+            if (unit == null) continue;
+            if (IsDead(unit)) continue;
+
+            unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
+        }
+    }
     void ApplyStatAll(ModifyStatType type, float value)
     {
         for (int slot = 1; slot <= 6; slot++)
@@ -972,12 +997,12 @@ public class BattleTurnManager : MonoBehaviour
             unit.HeroStatRuntime.ApplyStatOnStartBattle(type, (int)value);
         }
     }
-
-    void ApplyModifyStatAll(string nameAbility, ModifyStatType type, int turns, float value, int maxStack)
+    
+    void ApplyModifyStatAll(string nameAbility, ModifyStatType type, int turns, float value, int maxStack, string teamTag)
     {
         for (int slot = 1; slot <= 6; slot++)
         {
-            var unit = GetUnitAtSlot(TeamHero, slot);
+            var unit = GetUnitAtSlot(teamTag, slot);
             if (unit == null) continue;
             if (IsDead(unit)) continue;
             unit.HeroStatRuntime.ApplyModifyStat(nameAbility, type, turns, value, maxStack, unit);

@@ -35,7 +35,7 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
     {
         if (attacker == null)
             return;
-
+        heroControl.HeroEventt.RefreshHasShown();
         StartCoroutine(WaitForAttackerFinished(attacker));
     }
 

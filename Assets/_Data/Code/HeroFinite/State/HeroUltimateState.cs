@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections.Generic;
 public class HeroUltimateState : HeroBaseState
 {
     public override void EnterState(HeroStateManager hero)
@@ -25,12 +25,30 @@ public class HeroUltimateState : HeroBaseState
 
     public override void ExitState(HeroStateManager hero)
     {
+        hero.HeroControl.HeroEventt.RefreshHasShown();
         hero.HeroControl.HeroEventt.NotifyCanHideTotalDmg();
         if (hero.HeroControl.HeroInfo.ID == 4)
         {
             if (hero.HeroControl.CheckEnemyDead(1))
             {
+                AbilityInfo abilityInfo = hero.HeroControl.HeroInfo.ultimate;
+                List<AbilityEffect> abilityEffect = abilityInfo.GetEffectsOnSpecial();
                 hero.HeroControl.HeroEventt.SetEffect();
+                foreach (var effect in abilityEffect)
+                {
+                    if(effect.type == AbilityEffectType.ModifyStat)
+                    {
+                        string skillName = abilityInfo.abilityName;
+                        if (effect.target == AbilityTarget.Self)
+                        {
+                            
+                            
+                            int duration = hero.HeroControl.ShouldPlus ? effect.durationTurn + 1 : effect.durationTurn;
+                            hero.HeroControl.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, duration, effect.modifyValue, effect.stackCount, hero.HeroControl);
+                            
+                        }
+                    }
+                }
             }
         }
     }
@@ -49,7 +67,7 @@ public class HeroUltimateState : HeroBaseState
            
 
             hero.HeroControl.GoBackBattleTarget();
-
+            
             hero.SwitchState(hero.runState);
         }
 

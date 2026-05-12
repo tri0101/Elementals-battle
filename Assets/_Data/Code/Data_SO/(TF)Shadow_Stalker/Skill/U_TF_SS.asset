@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U_TF_SS
   m_EditorClassIdentifier: 
-  abilityName: Messi
+  abilityName: Demon's Fury
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -28,4 +28,17 @@ MonoBehaviour:
   isChangeBackGround: 0
   backgroundChange: {fileID: 0}
   order: 0
-  effects: []
+  effects:
+  - type: 0
+    timeToCall: 4
+    target: 4
+    chance: 0.5
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: -10
+    stackCount: 1
+    durationTurn: 1
+  description: "Awakens the demon sealed within the blade, dealing damage to a row
+    of enemies with a 50% chance to reduce all enemies\u2019 Damage by 10% for 1
+    turn."

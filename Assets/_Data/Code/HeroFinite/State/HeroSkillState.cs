@@ -12,7 +12,7 @@ public class HeroSkillState : HeroBaseState
 
     public override void ExitState(HeroStateManager hero)
     {
-        
+        hero.HeroControl.HeroEventt.RefreshHasShown();
     }
 
     public override void FixedUpdateState(HeroStateManager hero)

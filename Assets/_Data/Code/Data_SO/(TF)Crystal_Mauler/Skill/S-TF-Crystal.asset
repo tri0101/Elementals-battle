@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-TF-Crystal
   m_EditorClassIdentifier: 
-  abilityName: TF_CM_S
+  abilityName: Devastating Blow
   type: 1
   animStateName: 
   icon: {fileID: 7384871912388057748, guid: 928735813f8c5314c9ff66ece43f9e0f, type: 3}
@@ -32,11 +32,12 @@ MonoBehaviour:
   - type: 20
     timeToCall: 2
     target: 0
-    chance: 1
+    chance: 0.5
     statType: 0
     canUpgrade: 0
     valueUpPerLevel: 0
     modifyValue: 0
     stackCount: 1
     durationTurn: 1
-  description: 
+  description: Borg swings his hammer and delivers a devastating blow to a single
+    enemy, with a 50% chance to stun the target for 1 turn.

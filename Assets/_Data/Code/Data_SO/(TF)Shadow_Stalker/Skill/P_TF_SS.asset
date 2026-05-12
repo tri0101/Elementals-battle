@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: P_TF_SS
   m_EditorClassIdentifier: 
-  abilityName: Haaland
+  abilityName: "Demon\u2019s Pact"
   type: 3
   animStateName: 
   icon: {fileID: 0}
@@ -34,7 +34,23 @@ MonoBehaviour:
     target: 1
     chance: 1
     statType: 9
-    canUpgrade: 1
+    canUpgrade: 0
+    valueUpPerLevel: 0
     modifyValue: 15
     stackCount: 1
     durationTurn: 2
+  - type: 0
+    timeToCall: 0
+    target: 1
+    chance: 1
+    statType: 9
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 15
+    stackCount: 1
+    durationTurn: 99999
+  description: "At the start of battle, increases Lifesteal Rate by 15%. When receiving
+    a fatal blow, Thanatos does not die. Instead, He seize the attacker\u2019s soul
+    and form a pact with the demon. During that turn, all incoming damage is redirected
+    to that enemy. At the start of the next turn, restores 25% of Max HP and increases
+    Lifesteal Rate by 15% for 2 turns."

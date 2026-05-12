@@ -14,7 +14,7 @@ public class HeroAttackState : HeroBaseState
 
     public override void ExitState(HeroStateManager hero)
     {
-       
+        hero.HeroControl.HeroEventt.RefreshHasShown();
     }
 
     public override void FixedUpdateState(HeroStateManager hero)

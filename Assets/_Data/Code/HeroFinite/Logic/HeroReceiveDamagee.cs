@@ -144,6 +144,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         {
             attacker.HeroReceiveDamagee.ReceiveDamage(finalDamage * 0.25f, DamageType.counterDamage, false, false);
         }
+        
         if(damageType != DamageType.counterDamage || damageType != DamageType.turnDamage)
             CallWaitForAttackerFinished(attacker);
         return finalDamage;
@@ -159,6 +160,23 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
         yield return new WaitUntil(() => attacker.IsFinished);
         if (isDead) yield break;
         heroControl.IsFinished = true;
+        if (heroControl.HeroInfo.ID == 513)
+        {
+            List<AbilityEffect> effectsSpecial = heroControl.HeroInfo.passive.GetEffectsOnSpecial();
+            float finalDamage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(ModifyStatType.Damage, heroControl.HeroInfo.damage);
+            if (effectsSpecial == null || effectsSpecial.Count == 0) yield break ;
+            float damagePerTurn = effectsSpecial[0].modifyValue/100f * finalDamage ;
+            attacker.HeroStatRuntime.ApplyAES(
+                    heroControl.HeroInfo.passive.abilityName,
+                    AbilityEffectType.Burn,
+                    effectsSpecial[0].durationTurn,
+                    (int)damagePerTurn,
+                    effectsSpecial[0].stackCount,
+                    heroControl
+                );
+        }
+        heroControl.HeroEventt.RefreshHasShown();
+        heroControl.HeroEventt.FirstAttack = false;
     }
     public virtual void CallTakeHit(bool shouldTakeHit)
     {

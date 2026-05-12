@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
+  m_Name: E-TF-Crystal
+  m_EditorClassIdentifier: 
+  abilityName: Empowerment
+  type: 4
+  animStateName: 
+  icon: {fileID: -1635963809266141271, guid: d3b024e0c8d993a409af1b8eaef1978d, type: 3}
+  speedToEnemy: 0
+  positionAttack: 0
+  distance: 0
+  targetingMode: 0
+  rowIndex: 1
+  column: 1
+  randomCount: 1
+  grantManaOnUse: 0
+  manaGain: 0
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
+  effects:
+  - type: 0
+    timeToCall: 0
+    target: 1
+    chance: 1
+    statType: 3
+    canUpgrade: 1
+    valueUpPerLevel: 0.07
+    modifyValue: 10
+    stackCount: 1
+    durationTurn: 999
+  - type: 0
+    timeToCall: 0
+    target: 1
+    chance: 1
+    statType: 0
+    canUpgrade: 1
+    valueUpPerLevel: 0.07
+    modifyValue: 10
+    stackCount: 1
+    durationTurn: 999
+  description: Increases Armor and Damage by 10% (0.07% per level).

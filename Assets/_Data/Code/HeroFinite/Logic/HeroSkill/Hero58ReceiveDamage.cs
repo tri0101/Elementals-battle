@@ -25,7 +25,16 @@ public class Hero58ReceiveDamage : HeroReceiveDamagee
          get => isDiabolicPact;
     }
     [SerializeField] HeroControl attacker;
-    
+    public HeroControl Attacker
+    {
+        set
+        {
+            attacker = value;
+            
+        }
+        get => attacker;
+    }
+
     protected override void HandleDead(HeroControl attacker)
     {
         if (hasBeenUsed) base.HandleDead();

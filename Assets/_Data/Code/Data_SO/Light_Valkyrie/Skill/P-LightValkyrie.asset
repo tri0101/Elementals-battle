@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: P-LightValkyrie
   m_EditorClassIdentifier: 
-  abilityName: Haaland
+  abilityName: Justice Shield
   type: 3
   animStateName: 
   icon: {fileID: 6894999169920593895, guid: c631f4d494ec9e44e84f42c7894dad33, type: 3}
@@ -35,7 +35,9 @@ MonoBehaviour:
     chance: 1
     statType: 3
     canUpgrade: 1
-    modifyValue: 5
+    valueUpPerLevel: 0
+    modifyValue: 15
     stackCount: 1
     durationTurn: -1
-  description: 
+  description: At the start of battle, increases the Armor of all front-row allies
+    by 15%.

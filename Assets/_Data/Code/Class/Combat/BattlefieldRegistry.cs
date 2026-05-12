@@ -196,7 +196,7 @@ public sealed class BattlefieldRegistry : MonoBehaviour
     /// </summary>
     public static int SlotToRow(int slotIndex1To6)
     {
-        if (slotIndex1To6 == 6) return 6;
+        if (slotIndex1To6 == 6) return 3;
         int mod = slotIndex1To6 % 3;
         return mod == 0 ? 3 : mod;
     }

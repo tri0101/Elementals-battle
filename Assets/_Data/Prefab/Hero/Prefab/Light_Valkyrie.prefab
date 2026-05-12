@@ -211,7 +211,6 @@ MonoBehaviour:
   heroInfo: {fileID: 11400000, guid: 13dcf669b18f83c468f3fc76536c6e0b, type: 2}
   enemyTarget: []
   distanceToTarget: {x: 0, y: 0, z: 0}
-  actionInProgress: 0
   canAttackInBattle: 0
 --- !u!114 &3324530120718876871
 MonoBehaviour:
@@ -995,7 +994,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbd84cb16a9ae164f888904437ec79e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  load: {fileID: 0}
+  loadNormalAttack: {fileID: 0}
+  loadSlideToPosition: {fileID: 0}
+  hasShown: 0
 --- !u!1 &6212890441187924533
 GameObject:
   m_ObjectHideFlags: 0
