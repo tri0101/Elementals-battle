@@ -64,10 +64,10 @@ public class UI_ListPreview : MonoBehaviour
         AddLine($"Armor: {Mathf.RoundToInt(info.armor)}");
         AddLine($"Speed: {info.speed:0.#}");
 
-        AddLine($"Crit Rate: {info.criticalRate * 100f:0.#}%");
+        AddLine($"Crit Rate: {info.criticalRate * 1f:0.#}%");
         AddLine($"Crit Damage: {info.criticalDamageRate:0.#}%");
-        AddLine($"Life Steal: {info.lifeSteal * 100f:0.#}%");
-        AddLine($"Control-Free: {info.controlFree * 100f:0.#}%");
+        AddLine($"Life Steal: {info.lifeSteal * 1f:0.#}%");
+        AddLine($"Control-Free: {info.controlFree * 1f:0.#}%");
     }
 
     private void AddLine(string content)
@@ -106,13 +106,14 @@ public class UI_ListPreview : MonoBehaviour
 
         AddSkillIcon(info.skill);
         AddSkillIcon(info.ultimate);
-        AddSkillIcon(info.passive);
         AddSkillIcon(info.empower);
+        AddSkillIcon(info.passive);
+      
     }
 
     private void AddSkillIcon(AbilityInfo ability)
     {
-        if (ability == null || ability.icon == null) return;
+        if (ability == null ) return;
         if (skillPanel == null || skillObject == null) return;
 
         GameObject go = Instantiate(skillObject, skillPanel);

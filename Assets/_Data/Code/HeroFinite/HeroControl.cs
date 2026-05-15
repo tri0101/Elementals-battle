@@ -266,6 +266,7 @@ public class HeroControl : Subject
         canDodge = true;
         IsDodge = true;
         leftBattle = true;
+        isFinished = true;
     }
     public void SetUltimate()
     {

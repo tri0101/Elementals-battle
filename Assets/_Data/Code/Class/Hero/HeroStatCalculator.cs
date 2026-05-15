@@ -37,9 +37,10 @@
     )
     {
         float bonus = CalculateTotalBonus(instance, growth);
-        var roleScale = RoleScaleTable.Get(info.role);
+        //var roleScale = RoleScaleTable.Get(info.role);
 
-        return info.damage * roleScale.damage * (1f + bonus);
+        //return info.damage * roleScale.damage * (1f + bonus);
+        return info.damage * (1f + bonus);
     }
 
     public static float CalculateHealth(
@@ -49,9 +50,10 @@
     )
     {
         float bonus = CalculateTotalBonus(instance, growth);
-        var roleScale = RoleScaleTable.Get(info.role);
+        //var roleScale = RoleScaleTable.Get(info.role);
 
-        return info.health * roleScale.health * (1f + bonus);
+        //return info.health * roleScale.health * (1f + bonus);
+        return info.health * (1f + bonus);
     }
 
     public static float CalculateArmor(
@@ -61,9 +63,10 @@
     )
     {
         float bonus = CalculateTotalBonus(instance, growth);
-        var roleScale = RoleScaleTable.Get(info.role);
+        //var roleScale = RoleScaleTable.Get(info.role);
 
-        return info.armor * roleScale.armor * (1f + bonus);
+        //return info.armor * roleScale.armor * (1f + bonus);
+        return info.armor * (1f + bonus);
     }
 
     // Speed = (base speed * role scale) + (speedLevel * 3)
@@ -110,8 +113,8 @@
             stat.damage * 1.0f +
             stat.health * 0.2f +
             stat.armor * 0.6f +
-            stat.critRate * 50f +
-            stat.critDamage * 30f +
+            stat.critRate * 5f +
+            stat.critDamage * 3f +
             stat.lifeSteal * 1 +
             stat.controlFree  * 1+
             stat.speed * 10f;
@@ -143,7 +146,7 @@
         return stat;
     }
 
-    public static void ApplyStartBattlePassive(
+    public static void ApplyStartBattlePassive( // tạm ko dùng
         HeroInfo info,
         HeroInstance instance,
         HeroGrowthConfig growth,

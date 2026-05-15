@@ -275,10 +275,10 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
         if (compiled == null || compiled.Count == 0) return false;
         foreach (var c in compiled)
         {
-            if(c.itemId == 1) // coin
-            {
-                continue;
-            }
+            //if(c.itemId == 1) // coin
+            //{
+            //    continue;
+            //}
             int owned = GetOwned(c.itemId);
             if (owned < c.amount) return false;
         }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-TF-WP
   m_EditorClassIdentifier: 
-  abilityName: 
+  abilityName: Frost Slash
   type: 1
   animStateName: 
   icon: {fileID: 0}
@@ -29,13 +29,25 @@ MonoBehaviour:
   backgroundChange: {fileID: 0}
   order: 0
   effects:
-  - type: 1
-    timeToCall: 2
-    target: 0
+  - type: 0
+    timeToCall: 4
+    target: 12
+    chance: 1
+    statType: 3
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 10
+    stackCount: 1
+    durationTurn: 2
+  - type: 0
+    timeToCall: 4
+    target: 13
     chance: 1
     statType: 0
     canUpgrade: 0
-    modifyValue: 40
-    stackCount: 3
+    valueUpPerLevel: 0
+    modifyValue: 10
+    stackCount: 1
     durationTurn: 2
-  description: 
+  description: Attacks a row of enemies, increasing Armor of frontline allies by
+    10% for 2 turns and Damage of backline allies by 10% for 2 turns.

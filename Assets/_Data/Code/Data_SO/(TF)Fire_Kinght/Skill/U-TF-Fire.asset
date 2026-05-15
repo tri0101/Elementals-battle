@@ -12,20 +12,42 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U-TF-Fire
   m_EditorClassIdentifier: 
-  abilityName: TF_FK_U
+  abilityName: Infernal Blast
   type: 2
   animStateName: 
   icon: {fileID: 0}
   speedToEnemy: 150
   positionAttack: 1
   distance: 3
-  targetingMode: 13
+  targetingMode: 10
   rowIndex: 1
   column: 1
   randomCount: 1
-  grantManaOnUse: 1
+  grantManaOnUse: 0
   manaGain: 200
-  isChangeBackGround: 1
-  backgroundChange: {fileID: 6616925714565559882, guid: 695b19d5c91dc554a90042f117856d5b, type: 3}
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
   order: 0
-  effects: []
+  effects:
+  - type: 1
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 30
+    stackCount: 5
+    durationTurn: 3
+  - type: 20
+    timeToCall: 2
+    target: 0
+    chance: 0.75
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 30
+    stackCount: 1
+    durationTurn: 2
+  description: Attacks the enemy with the highest Damage, inflicting Burn for 3 turns
+    and having a 70% chance to Stun the target for 2 turns.

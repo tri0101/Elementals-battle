@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-CrystalMauler
   m_EditorClassIdentifier: 
-  abilityName: Ronaldo
+  abilityName: Crystal Burst
   type: 1
   animStateName: 
   icon: {fileID: 0}
@@ -28,5 +28,16 @@ MonoBehaviour:
   isChangeBackGround: 0
   backgroundChange: {fileID: 0}
   order: 0
-  effects: []
-  description: "Skill n\xE0y ch\xE1y l\u1EAFm e"
+  effects:
+  - type: 0
+    timeToCall: 4
+    target: 5
+    chance: 1
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 15
+    stackCount: 1
+    durationTurn: 2
+  description: Creates a crystal explosion to attack a single enemy, increasing Damage
+    of all allies by 15% for 2 turns.

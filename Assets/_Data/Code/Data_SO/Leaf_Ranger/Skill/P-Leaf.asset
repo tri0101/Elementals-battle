@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: P-Leaf
   m_EditorClassIdentifier: 
-  abilityName: Haaland
+  abilityName: Piercing Arrow
   type: 3
   animStateName: 
   icon: {fileID: 0}
@@ -25,13 +25,19 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 0
   manaGain: 0
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 0
     timeToCall: 0
-    target: 12
+    target: 9
     chance: 1
-    statType: 3
+    statType: 0
     canUpgrade: 1
-    modifyValue: 5
+    valueUpPerLevel: 0
+    modifyValue: 15
     stackCount: 1
     durationTurn: -1
+  description: "Increases Damage of allied DPS heroes by 15%. All of Legorin\u2019s
+    attacks deal 25% increased damage to Tank heroes."

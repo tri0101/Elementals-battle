@@ -27,6 +27,8 @@ public class HeroUI : MonoBehaviour, IObserver
     public HeroControl HeroControl => heroControl;
     [Header("String pattern")]
     private string critRatePattern = "Crit Rate Increased";
+    private string critDamageIncreased = "Crit Damage Increased";
+    private string critDamageDecreased = "Crit Damage Decreased";
     private string armorDecreased = "Armor Decreased";
     private string armorIncreased = "Armor Increased";
     private string damageIncreased = "Damage Increased";

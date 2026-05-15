@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U-SW
   m_EditorClassIdentifier: 
-  abilityName: U_SW
+  abilityName: Lightning Spear
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -32,9 +32,23 @@ MonoBehaviour:
   - type: 21
     timeToCall: 2
     target: 0
-    chance: 1
+    chance: 0.3
     statType: 0
     canUpgrade: 0
+    valueUpPerLevel: 0
     modifyValue: 5
     stackCount: 1
     durationTurn: 1
+  - type: 0
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 8
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: -20
+    stackCount: 1
+    durationTurn: 2
+  description: Voltara soars into the sky and drives her spear toward a single enemy,
+    unleashing lightning with a 30% chance to Paralyze the target for 1 turn, while
+    reducing their Mana Recovery by 20% for 2 turns.

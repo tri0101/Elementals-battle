@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-GrondMonk
   m_EditorClassIdentifier: 
-  abilityName: Ronaldo
+  abilityName: Earth Spike
   type: 1
   animStateName: 
   icon: {fileID: 0}
@@ -25,13 +25,29 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 400
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 19
     timeToCall: 2
     target: 0
-    chance: 0.25
+    chance: 0.3
     statType: 0
     canUpgrade: 0
+    valueUpPerLevel: 0
     modifyValue: 0
     stackCount: 1
     durationTurn: 1
+  - type: 0
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 3
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: -30
+    stackCount: 1
+    durationTurn: 1
+  description: Summons an Earth Spike to attack a single enemy, reducing their Armor
+    by 30% for 1 turn, with a 30% chance to Root the target.

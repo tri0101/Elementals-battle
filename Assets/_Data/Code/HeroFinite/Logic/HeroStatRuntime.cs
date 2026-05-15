@@ -724,10 +724,14 @@ public sealed class HeroStatRuntime : MonoBehaviour
         currentHealth = finalStat.health;
         if (heroControl.HeroInfo.ID == 51)
         {
-            maxShield = finalStat.health * 0.5f;
-            currentShield = maxShield;
+            UpdateShield();
         }
         currentMana = 0f;
+    }
+    public void UpdateShield()
+    {
+        maxShield = finalStat.health * 0.5f;
+        currentShield = maxShield;
     }
     public void GainStatByEmpower()// tăng chỉ số dựa vào skill 3 sao
     {
@@ -777,6 +781,9 @@ public sealed class HeroStatRuntime : MonoBehaviour
             case ModifyStatType.Health:
                 GainHP((int)value, DamageType.normalDamage, instant);
                 break;
+            case ModifyStatType.HealthMax:
+                GainHPMax((int)value, true);
+                break;
             case ModifyStatType.Armor:
                 GainArmor(value);
                 break;
@@ -797,6 +804,8 @@ public sealed class HeroStatRuntime : MonoBehaviour
     {
         finalStat.health *= (1 + value / 100);
         currentHealth = finalStat.health;
+        if(heroControl.HeroInfo.ID != 55)
+            UpdateShield();
         if (instant) return;
         float health01 = CurrentHealth / (float)MaxHealth;
         heroControl.RefreshObservers(HeroNotifyType.HPChanged, health01);

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U-CrystalMauler
   m_EditorClassIdentifier: 
-  abilityName: Messi
+  abilityName: Borg's power
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -25,4 +25,29 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 120
-  effects: []
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
+  effects:
+  - type: 20
+    timeToCall: 2
+    target: 0
+    chance: 0.3
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 0
+    stackCount: 1
+    durationTurn: 1
+  - type: 0
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: -15
+    stackCount: 1
+    durationTurn: 2
+  description: Attacks a single enemy with a 30% chance to Stun the target for 1
+    turn, while reducing their Damage by 15% for 2 turns.

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-SW
   m_EditorClassIdentifier: 
-  abilityName: S_SW
+  abilityName: Relentless Assault
   type: 1
   animStateName: 
   icon: {fileID: 0}
@@ -29,12 +29,15 @@ MonoBehaviour:
   backgroundChange: {fileID: 0}
   order: 0
   effects:
-  - type: 0
+  - type: 21
     timeToCall: 2
-    target: 5
-    chance: 1
+    target: 0
+    chance: 0.2
     statType: 1
     canUpgrade: 0
+    valueUpPerLevel: 0
     modifyValue: 50
     stackCount: 1
     durationTurn: 1
+  description: Voltara unleashes a relentless spear assault against a single enemy,
+    with a 20% chance to Paralyze the target for 1 turn.

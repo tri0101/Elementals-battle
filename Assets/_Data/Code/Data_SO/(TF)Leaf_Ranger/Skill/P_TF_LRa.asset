@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: P_TF_LRa
   m_EditorClassIdentifier: 
-  abilityName: Haaland
+  abilityName: "Nature\u2019s Blessing."
   type: 3
   animStateName: 
   icon: {fileID: 0}
@@ -35,6 +35,10 @@ MonoBehaviour:
     chance: 1
     statType: 11
     canUpgrade: 1
-    modifyValue: 5
+    valueUpPerLevel: 0
+    modifyValue: 15
     stackCount: 1
     durationTurn: -1
+  description: "Increases the caster\u2019s Control-Free Rate by 15%. Grants a shield
+    equal to 25% of the caster\u2019s Max HP to the ally positioned behind the caster
+    in the same row."

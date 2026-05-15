@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U_TF_Wind
   m_EditorClassIdentifier: 
-  abilityName: Messi
+  abilityName: Desert Reaper
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -28,4 +28,17 @@ MonoBehaviour:
   isChangeBackGround: 0
   backgroundChange: {fileID: 0}
   order: 0
-  effects: []
+  effects:
+  - type: 0
+    timeToCall: 4
+    target: 1
+    chance: 1
+    statType: 3
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 15
+    stackCount: 1
+    durationTurn: 2
+  description: Launches a relentless assault against a single enemy, with the final
+    strike dealing damage to the entire row. Increases the Armor by 15% for 2 turns
+    (stacks up to 1 time). Has a 50% chance to cast the Ultimate Skill a second time.

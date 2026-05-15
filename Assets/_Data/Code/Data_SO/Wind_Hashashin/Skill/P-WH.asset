@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: P-WH
   m_EditorClassIdentifier: 
-  abilityName: 
+  abilityName: Swift Action
   type: 3
   animStateName: 
   icon: {fileID: 0}
@@ -25,13 +25,19 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 0
   manaGain: 0
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 0
     timeToCall: 0
     target: 5
     chance: 1
-    statType: 6
+    statType: 9
     canUpgrade: 1
+    valueUpPerLevel: 0
     modifyValue: 5
     stackCount: 1
     durationTurn: -1
+  description: Increases Lifesteal by 5% for all allies. At the start of battle,
+    all backline allied heroes gain 15% increased Mana Recovery for 2 turns.

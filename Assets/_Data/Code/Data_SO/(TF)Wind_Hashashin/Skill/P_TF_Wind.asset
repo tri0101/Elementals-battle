@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: P_TF_Wind
   m_EditorClassIdentifier: 
-  abilityName: Haaland
+  abilityName: "Assassin\u2019s Instinct"
   type: 3
   animStateName: 
   icon: {fileID: 0}
@@ -31,10 +31,36 @@ MonoBehaviour:
   effects:
   - type: 0
     timeToCall: 0
-    target: 5
+    target: 15
+    chance: 0.5
+    statType: 0
+    canUpgrade: 1
+    valueUpPerLevel: 0
+    modifyValue: 10
+    stackCount: 1
+    durationTurn: -1
+  - type: 0
+    timeToCall: 5
+    target: 1
     chance: 1
     statType: 0
     canUpgrade: 1
-    modifyValue: 5
-    stackCount: 1
-    durationTurn: -1
+    valueUpPerLevel: 0
+    modifyValue: 20
+    stackCount: 2
+    durationTurn: 2
+  - type: 0
+    timeToCall: 5
+    target: 1
+    chance: 1
+    statType: 3
+    canUpgrade: 1
+    valueUpPerLevel: 0
+    modifyValue: 20
+    stackCount: 2
+    durationTurn: 2
+  description: Increases Damage of all allied heroes with the Male tag by 10%.  If
+    Kaelum receives damage that reduces his HP below 20% without killing him, he
+    vanishes into the void for the remainder of the turn and returns on the next
+    turn, while fully restoring his Mana and increasing his Damage and Armor by 20%
+    for 2 turns.

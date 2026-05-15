@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-Leaf
   m_EditorClassIdentifier: 
-  abilityName: Ronaldo
+  abilityName: Rain of Arrows
   type: 1
   animStateName: 
   icon: {fileID: 0}
@@ -28,4 +28,16 @@ MonoBehaviour:
   isChangeBackGround: 0
   backgroundChange: {fileID: 0}
   order: 0
-  effects: []
+  effects:
+  - type: 29
+    timeToCall: 2
+    target: 0
+    chance: 1
+    statType: 0
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 15
+    stackCount: 2
+    durationTurn: 2
+  description: Legorin draws his bow and unleashes a barrage of countless arrows,
+    dealing massive damage to a row of enemies and inflicting Bleeding for 2 turns.

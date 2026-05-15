@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U_TF_LRa
   m_EditorClassIdentifier: 
-  abilityName: Messi
+  abilityName: Heavenly Earth Prison
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -35,6 +35,31 @@ MonoBehaviour:
     chance: 1
     statType: 11
     canUpgrade: 0
+    valueUpPerLevel: 0
     modifyValue: 25
     stackCount: 1
     durationTurn: 2
+  - type: 0
+    timeToCall: 4
+    target: 1
+    chance: 1
+    statType: 3
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 30
+    stackCount: 1
+    durationTurn: 2
+  - type: 0
+    timeToCall: 4
+    target: 14
+    chance: 1
+    statType: 1
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 30
+    stackCount: 1
+    durationTurn: 1
+  description: "Attacks a single enemy, increasing the Control-Free Rate by 25% and
+    Armor by 30% for 2 turns. Also restores HP to the ally behind the caster equal
+    to 100% of the caster\u2019s Damage. If there is no ally behind the caster or
+    the ally is dead, the healing is applied to the caster instead."

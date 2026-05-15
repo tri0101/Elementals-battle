@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-
+using Random = UnityEngine.Random;
 public class HeroEventt : MonoBehaviour
 {
 
@@ -27,6 +27,8 @@ public class HeroEventt : MonoBehaviour
         get => firstAttack;
         set => firstAttack = value;
     }
+
+    private int hasBeenUseUltimateAgain = 0; // dùng để đếm số lần đã dùng ultimate lặp lại
     private void Awake()
     {
         heroControl = transform.parent.GetComponent<HeroControl>();
@@ -38,6 +40,43 @@ public class HeroEventt : MonoBehaviour
         //heroControl.NotifyActionFinished();
        
 
+    }
+    public void CheckAndSetFinished(float value) // tỉ lệ dùng tuyệt kĩ lần tiếp theo (0..100)
+    {
+        
+        if (hasBeenUseUltimateAgain >= 1)
+        {
+            heroControl.IsFinished = true;
+            hasBeenUseUltimateAgain = 0;
+            return;
+        }
+
+        float roll = Random.Range(0f, 100f);
+        if (roll < value)
+        {
+            
+            heroControl.HeroStatRuntime.GainMana(1000);
+            heroControl.SetTarget(heroControl.HeroInfo.ultimate);
+            if (heroControl.enemyTarget.Count == 0)
+            {
+                heroControl.IsFinished = true;
+                hasBeenUseUltimateAgain = 0;
+                return;
+            }
+            hasBeenUseUltimateAgain = 1;
+            StartCoroutine(DelayThenUltimate(0.5f));
+            
+            return;
+        }
+
+        heroControl.IsFinished = true;
+    }
+    IEnumerator DelayThenUltimate(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        yield return new WaitUntil(() => heroControl.CurrentStringState == HeroStateManager.hero_Idle);
+
+        heroControl.SetUltimate();
     }
     public void SetCoroutineFinished(float value)
     {
@@ -140,12 +179,31 @@ public class HeroEventt : MonoBehaviour
             }
            
         }
+        float totalManaRecovery = heroControl.HeroStatRuntime.GetTotalModifyPercent(ModifyStatType.Mana) / 100f;
+        manaGain = Mathf.RoundToInt(manaGain * (1 + totalManaRecovery));
         heroControl.HeroStatRuntime.GainMana(manaGain,true);
     }
  
     public void SetGainManaSkill()
     {
-        heroControl.HeroStatRuntime.GainMana(heroControl.HeroInfo.skill.manaGain, true);
+        int manaGain = heroControl.HeroInfo.skill.manaGain;
+        foreach (var soul in heroControl.HeroInfo.soulID)
+        {
+            if (soul == 4)
+            {
+                FightSoulInfo soulInfo = DatabaseManager.Instance.FightSoulDatabase.GetSoulInfo(soul);
+                if (soulInfo != null)
+                {
+                    HeroInstance heroInstance = PlayerInventory.Instance.GetHeroInstance(heroControl.HeroInfo.ID);
+                    int manaAdd = soulInfo.soulValueConfigs[heroInstance.GetLevelSoul(0) - 1].value;
+                    manaGain += manaAdd;
+                }
+            }
+
+        }
+        float totalManaRecovery = heroControl.HeroStatRuntime.GetTotalModifyPercent(ModifyStatType.Mana) / 100f;
+        manaGain = Mathf.RoundToInt(manaGain * (1 + totalManaRecovery));
+        heroControl.HeroStatRuntime.GainMana(manaGain, true);
     }
     public void SetEffect()
     {
@@ -251,6 +309,7 @@ public class HeroEventt : MonoBehaviour
             HeroControl enemyControl = target.GetComponent<HeroControl>();
             if (enemyControl == null || enemyControl.HeroStatRuntime == null) continue;
             if (enemyControl.HeroInfo.ultimate == null) continue;
+            if (enemyControl.HeroReceiveDamagee.IsDead) continue;
             enemyControl.HeroStatRuntime.MinusMana(200);
         }
     }
@@ -389,10 +448,10 @@ public class HeroEventt : MonoBehaviour
             heroC.HeroStatRuntime.ApplyUnleashChargeEffect(damageUnleash);
         }
     }
-    public void GainHPAllHero() // chỉ dành cho hero có id = 8
+  
+    public void GainHPAllHero(float value ) // value = phần trăm damage hồi
     {
-        AbilityInfo abilityInfo = heroControl.HeroInfo.skill;
-        AbilityEffect abilityeffect = abilityInfo.effects[0];
+
 
         float damage = heroControl.HeroStatRuntime.GetFinalValueAfterModifyStat(
             ModifyStatType.Damage,
@@ -400,7 +459,7 @@ public class HeroEventt : MonoBehaviour
         );
 
         // modifyValue = 20 nghĩa là 20%
-        int hpGain = Mathf.RoundToInt(damage * (abilityeffect.modifyValue / 100f));
+        int hpGain = Mathf.RoundToInt(damage * (value / 100f));
 
         Debug.Log(hpGain);
         foreach (Transform child in heroControl.transform.parent)

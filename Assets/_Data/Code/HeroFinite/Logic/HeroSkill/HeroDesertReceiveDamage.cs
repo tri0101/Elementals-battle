@@ -15,6 +15,7 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
             hasBeenFrenzy = value;
         }
     }
+    bool hasCallFrenzy = false;
 
     protected override void HandleDead(HeroControl attacker)
     {
@@ -73,13 +74,19 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
         hasBeenFrenzy = true;
         SetInsane();
         heroControl.CanSkill = true;
-        HeroControl.RefreshObservers("Frenzy Activated");
+        if (!hasCallFrenzy)
+        {
+            HeroControl.RefreshObservers("Frenzy Activated");
+            hasCallFrenzy = true;
+        }
+            
         if (heroControl.HeroInfo.ID == 512)
         {
             heroControl.ChangeAnimationAnyState("Frenzy");
             yield break;
         }
         heroControl.IsFinished = true;
+        hasCallFrenzy = false;
     }
 
     private IEnumerator CoCounterAttackFlow(HeroControl attacker)

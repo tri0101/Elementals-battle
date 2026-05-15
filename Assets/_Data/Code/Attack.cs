@@ -73,7 +73,13 @@ public class Attack : Subject
         currentTarget = other.transform.parent.parent;
 
         attackDamage = heroControl.HeroStatRuntime.Damage;
-
+        if(heroControl.HeroInfo.ID == 10)
+        {
+            if(other.transform.parent.parent.GetComponent<HeroControl>().HeroInfo.role == RoleHero.Tank)
+            {
+                attackDamage += attackDamage * 0.25f; // tăng 25% sát thương khi tấn công tướng địch có vai trò Tank
+            }
+        }
         float finalMutipler =
             attackInfo.mutiplerDamageSend + GetLevelBasedOnSkill() * 0.01f;
 
@@ -268,11 +274,13 @@ public class Attack : Subject
                     int duration = heroControl.ShouldPlus ? effect.durationTurn + 1 : effect.durationTurn;
                     targetUnit.HeroStatRuntime.ApplyModifyStat(skillName, effect.statType, effect.durationTurn, effect.modifyValue, effect.stackCount, heroControl);
 
-                    
-
-                    //heroControl.HeroEventt.SetEffectToEnemy(TimesToCall.onAttack);
 
 
+                }
+                else if(effect.target == AbilityTarget.Self)
+                {
+                    int duration = heroControl.ShouldPlus ? effect.durationTurn + 1 : effect.durationTurn;
+                    heroControl.HeroStatRuntime.ApplyModifyStat(nameSkill, effect.statType, effect.durationTurn, effect.modifyValue, effect.stackCount, heroControl);
                 }
             }
             else

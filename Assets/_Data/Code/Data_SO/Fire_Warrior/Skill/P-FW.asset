@@ -25,13 +25,18 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 0
   manaGain: 0
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 0
     timeToCall: 0
-    target: 5
+    target: 17
     chance: 1
-    statType: 6
+    statType: 0
     canUpgrade: 1
-    modifyValue: 5
+    valueUpPerLevel: 0
+    modifyValue: 15
     stackCount: 1
     durationTurn: -1
+  description: Increases Damage of heroes with the Warrior tag by 15%.

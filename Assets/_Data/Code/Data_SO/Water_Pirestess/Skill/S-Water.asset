@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: S-Water
   m_EditorClassIdentifier: 
-  abilityName: Watet_S
+  abilityName: Soul Healing
   type: 1
   animStateName: 
   icon: {fileID: 0}
@@ -25,6 +25,9 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 100
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 0
     timeToCall: 2
@@ -32,6 +35,8 @@ MonoBehaviour:
     chance: 1
     statType: 1
     canUpgrade: 0
-    modifyValue: 50
+    valueUpPerLevel: 0
+    modifyValue: 25
     stackCount: 1
     durationTurn: 1
+  description: Restores HP to all allies equal to 25% of the Seraphina's Damage.

@@ -264,4 +264,26 @@ public sealed class BattlefieldRegistry : MonoBehaviour
 
         return hc.HeroInfo != null ? hc.HeroInfo.speed : 0f;
     }
+    public bool TryGetSlotIndex(HeroControl unit, string teamTag, out int slotIndex1To6)
+    {
+        slotIndex1To6 = 0;
+
+        if (unit == null)
+            return false;
+        if (!string.IsNullOrEmpty(teamTag))
+        {
+            if (TryGetTeamTag(unit.transform, out string registeredTeam))
+            {
+                if (registeredTeam != teamTag)
+                    return false;
+            }
+            else
+            {
+                if (!unit.CompareTag(teamTag))
+                    return false;
+            }
+        }
+
+        return TryGetSlotIndex(unit.transform, out slotIndex1To6);
+    }
 }

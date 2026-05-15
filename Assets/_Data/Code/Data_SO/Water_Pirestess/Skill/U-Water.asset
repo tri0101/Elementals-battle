@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94a0b6eca7713b84f8e974e99b567293, type: 3}
   m_Name: U-Water
   m_EditorClassIdentifier: 
-  abilityName: Water_U
+  abilityName: 'Oceanic Burst:'
   type: 2
   animStateName: 
   icon: {fileID: 0}
@@ -25,6 +25,9 @@ MonoBehaviour:
   randomCount: 1
   grantManaOnUse: 1
   manaGain: 200
+  isChangeBackGround: 0
+  backgroundChange: {fileID: 0}
+  order: 0
   effects:
   - type: 0
     timeToCall: 4
@@ -32,6 +35,19 @@ MonoBehaviour:
     chance: 1
     statType: 6
     canUpgrade: 0
+    valueUpPerLevel: 0
     modifyValue: -25
     stackCount: 1
     durationTurn: 2
+  - type: 0
+    timeToCall: 4
+    target: 5
+    chance: 1
+    statType: 6
+    canUpgrade: 0
+    valueUpPerLevel: 0
+    modifyValue: 15
+    stackCount: 1
+    durationTurn: 2
+  description: Attacks the enemy with the highest Damage, reducing their Healing
+    Rate by 25% for 2 turns.
