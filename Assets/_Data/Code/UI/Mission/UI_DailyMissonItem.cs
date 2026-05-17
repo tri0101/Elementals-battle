@@ -11,6 +11,7 @@ public class UI_MissonTask : MonoBehaviour, IObserver
     [SerializeField] private TextMeshProUGUI progressText;
     [SerializeField] private Button buttonClaim;
     [SerializeField] private Button buttonGo;
+    [SerializeField] private UI_PanelMission panelMisson;
 
     int taskId;
     private DailyTask task;
@@ -26,7 +27,11 @@ public class UI_MissonTask : MonoBehaviour, IObserver
     {
         if (data is int id && id == taskId) RefreshUI();
     }
-
+    private void OnDisable()
+    {
+        if (DailyTaskManager.Instance != null)
+            DailyTaskManager.Instance.RemoveObbserver(this);
+    }
 
     void RefreshUI()
     {
@@ -44,11 +49,13 @@ public class UI_MissonTask : MonoBehaviour, IObserver
             buttonClaim.gameObject.SetActive(false);
             buttonGo.gameObject.SetActive(true);
         }
+        panelMisson.RefreshClaimAllButton();
     }
 
-    public void SetUp(DailyTask task, DailyTaskProgress taskProgress)
+    public void SetUp(DailyTask task, DailyTaskProgress taskProgress, UI_PanelMission panelMisson)
     {
         DailyTaskManager.Instance.AddObserver(this);
+        this.panelMisson = panelMisson;
         this.taskId = task.taskID;
         this.task = task;
         this.taskProgress = taskProgress;
@@ -89,8 +96,17 @@ public class UI_MissonTask : MonoBehaviour, IObserver
         {
             buttonGo.onClick.AddListener(() => UI_ShowResource.Instance.UI_Exchange.ShowPanelBuyCoin());
         }
+        else if(task.action == TaskAction.OpenMap)
+        {
+            buttonGo.onClick.AddListener(() => LoadMapScene());
+        }
+        
     }
-
+    void LoadMapScene()
+    {
+        GameManager.Instance.LoadAdditiveScene((SceneId)6);
+        GameManager.Instance.UnLoadAdditiveScene((SceneId)0);
+    }
     public void ClaimReward()
     {
         if (!taskProgress.isCompleted) return;
@@ -106,7 +122,7 @@ public class UI_MissonTask : MonoBehaviour, IObserver
             UI_CanvasReward.Instance.SetUp(itemData, itemAndAmount.amount);
         }
 
-
+        
         UI_CanvasReward.Instance.SetUp(DatabaseManager.Instance.ItemDatabase.GetItem(0), task.expReward);
 
         AccountManager.Instance.AddExp(task.expReward);

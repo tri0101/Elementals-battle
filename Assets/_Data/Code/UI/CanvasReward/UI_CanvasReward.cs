@@ -41,7 +41,7 @@ public class UI_CanvasReward : MonoBehaviour
 
         gameObject.SetActive(false);
     }
-
+    
     #endregion
 
     #region CLEAR

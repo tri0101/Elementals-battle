@@ -17,15 +17,23 @@ MonoBehaviour:
     description: Buy stamina 3 times
     target: 3
     rewards:
-    - itemId: 2
-      amount: 10
+    - itemId: 1
+      amount: 10000
     expReward: 60
     action: 1
   - taskID: 2
     description: Buy gold 3 times
     target: 3
     rewards:
-    - itemId: 2
-      amount: 10
+    - itemId: 1
+      amount: 10000
     expReward: 60
     action: 2
+  - taskID: 3
+    description: Spend 60 Staminas
+    target: 60
+    rewards:
+    - itemId: 1
+      amount: 10000
+    expReward: 60
+    action: 6

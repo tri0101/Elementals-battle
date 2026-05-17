@@ -71,6 +71,7 @@ public class UI_StoreItem : MonoBehaviour, IObserver
                 transform.root.Find("PanelDetail").GetComponent<UI_PanelStoreDetail>();
 
             panel.SetUp(go, itemdata, shopItemData, iconCurrency.sprite, this);
+         
         });
     }
     public void SetSoldOut()

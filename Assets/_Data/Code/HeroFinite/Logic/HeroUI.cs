@@ -202,6 +202,9 @@ public class HeroUI : MonoBehaviour, IObserver
             case AbilityEffectType.Paralysis:
                 SpawnFloatingEffectText(type);
                 break;
+            case AbilityEffectType.Bleeding:
+                SpawnFloatingEffectText(type);
+                break;
         }
     }
     public void OnNotify(HeroNotifyType type, object value)

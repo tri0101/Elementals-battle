@@ -801,7 +801,7 @@ public class HeroControl : Subject
     void SetUpZEffect()
     {
         Vector3 pos = spriteEffect.transform.position;
-        pos.z =  -0.01f;
+        pos.z -=  0.01f;
         spriteEffect.transform.position = pos;
     }
     public void ChangeAnimationState(string newState, float time = 0)

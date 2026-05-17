@@ -1,3 +1,4 @@
+using NUnit.Framework.Interfaces;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -50,7 +51,7 @@ public class UI_PanelStoreDetail : MonoBehaviour
         TextMeshProUGUI text = buyButton.GetComponentInChildren<TextMeshProUGUI>();
         text.text = "BUY";
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(()=> OnClickBuy(itemData.id, shopItemData.amount, uI_StoreItem));
+        buyButton.onClick.AddListener(()=> OnClickBuy(itemData.id, shopItemData.amount, uI_StoreItem, itemData));
         gameObject.SetActive(true);
     }
 
@@ -58,7 +59,7 @@ public class UI_PanelStoreDetail : MonoBehaviour
     {
         return PlayerInventory.Instance.GetItemQuantity(itemId);
     }
-    void OnClickBuy(int itemId ,int amount, UI_StoreItem uI_StoreItem)
+    void OnClickBuy(int itemId ,int amount, UI_StoreItem uI_StoreItem, ItemData itemData)
     {
         PlayerInventory.Instance.AddItem(itemId, amount);
         buyButton.interactable = false;
@@ -66,5 +67,10 @@ public class UI_PanelStoreDetail : MonoBehaviour
         text.text = "SOLD";
         uI_StoreItem.SetSoldOut();
         transform.gameObject.SetActive(false);
+        UI_CanvasReward.Instance.ClearOldItems();
+        UI_CanvasReward.Instance.SetUp(itemData, amount);
+        UI_CanvasReward.Instance.gameObject.SetActive(true);
+        UI_CanvasReward.Instance.ShowReward();
     }
+    
 }

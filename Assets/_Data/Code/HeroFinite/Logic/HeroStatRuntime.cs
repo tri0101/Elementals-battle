@@ -376,91 +376,7 @@ public sealed class HeroStatRuntime : MonoBehaviour
         }
     }
 
-    // CHANGED: per-skill cap (like ModifyStat). If cap reached => refresh duration only.
-    // NEW: thêm idAttacker để lưu người gây effect
-    //public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks, HeroControl attacker)
-    //{
-    //    bool hasShown = false;
-    //    if (string.IsNullOrEmpty(sourceAbilityName)) return;
-    //    if (remainingTurn <= 0) return;
-    //    if (maxStacks <= 0) return;
-
-    //    if (type == AbilityEffectType.ModifyStat) return;
-    //    float controlFreeValue = heroControl.HeroInfo.controlFree / 100;
-    //    if (Random.value < controlFreeValue) return;
-
-    //    if (!aesStacksByType.TryGetValue(type, out var bySkill) || bySkill == null)
-    //    {
-    //        bySkill = new Dictionary<string, List<AESStackState>>();
-    //        aesStacksByType[type] = bySkill;
-
-    //        ApplyUIEffect(type);
-    //        if (!hasShown)
-    //        {
-    //            heroControl.RefreshObservers(type);
-    //            hasShown = true;
-    //        }
-
-    //    }
-
-    //    if (!bySkill.TryGetValue(sourceAbilityName, out var stacks) || stacks == null)
-    //    {
-    //        stacks = new List<AESStackState>(maxStacks);
-    //        bySkill[sourceAbilityName] = stacks;
-    //        if (!hasShown)
-    //        {
-    //            heroControl.RefreshObservers(type);
-    //            hasShown = true;
-    //        }
-
-    //    }
-
-
-    //    int finalDamagePerTurn = 0;
-    //    if (damagePerTurn != 0)
-    //    {
-    //        finalDamagePerTurn = heroControl.HeroReceiveDamagee.GetDamageAfterArmor(damagePerTurn);
-    //    }
-
-    //    // Apply immediate restrictions (only need once globally, but safe to set each time)
-    //    if (type == AbilityEffectType.Rooted)
-    //    {
-    //        heroControl.RefreshObservers("canDisappear", false);
-    //        heroControl.CanAttackInBattle = false;
-    //    }
-    //    else if (type == AbilityEffectType.Stun)
-    //    {
-    //        heroControl.CanAttackInBattle = false;
-    //    }
-    //    else if (type == AbilityEffectType.Paralysis)
-    //    {
-    //        heroControl.CanAttackInBattle = false;
-    //    }
-
-    //    // per-skill cap reached => refresh duration (max) and exit (no new stack)
-    //    if (stacks.Count >= maxStacks)
-    //    {
-    //        var s = stacks[0];
-    //        s.remainingTurn = Mathf.Max(s.remainingTurn, remainingTurn);
-    //        stacks[0] = s;
-    //        if (!hasShown)
-    //        {
-    //            heroControl.RefreshObservers(type);
-    //            hasShown = true;
-    //        }
-    //        SyncAESDebug();
-    //        return;
-    //    }
-
-    //    stacks.Add(new AESStackState(remainingTurn, finalDamagePerTurn, attacker));
-    //    if (!hasShown)
-    //    {
-    //        heroControl.RefreshObservers(type);
-    //        hasShown = true;
-    //    }
-
-    //    SyncAESDebug();
-    //}
+    
 
     public void ApplyAES(string sourceAbilityName, AbilityEffectType type, int remainingTurn, int damagePerTurn, int maxStacks, HeroControl attacker)
     {
@@ -985,23 +901,24 @@ public sealed class HeroStatRuntime : MonoBehaviour
                 ApplyBurn();
                 break;
             case AbilityEffectType.Stun:
-                ApplyStun();
+                ApplyAESUI(AbilityEffectType.Stun);
                 break;
             case AbilityEffectType.Poison:
                 ApplyPoison();
                 break;
             case AbilityEffectType.Bleeding:
-                ApplyBleeding();
+                ApplyAESUI(AbilityEffectType.Bleeding);
                 break;
             case AbilityEffectType.Charge:
-                ApplyCharge();
+                ApplyAESUI(AbilityEffectType.Charge);
                 break;
             case AbilityEffectType.Paralysis:
-                ApplyParalyze();
+                ApplyAESUI(AbilityEffectType.Paralysis);
                 break;
         }
     }
 
+    
     void ApplyBurn()
     {
         heroControl.SpriteEffect.color = new Color(
@@ -1010,11 +927,12 @@ public sealed class HeroStatRuntime : MonoBehaviour
             0f / 255f,
             150f / 255f
         );
-        ClearOldEffect(AbilityEffectType.Burn);
-        EffectManager.Instance.Spawn(
-            AbilityEffectType.Burn,
-            heroControl.SpriteEffect.transform
-        );
+        //ClearOldEffect(AbilityEffectType.Burn);
+        //EffectManager.Instance.Spawn(
+        //    AbilityEffectType.Burn,
+        //    heroControl.SpriteEffect.transform
+        //);
+        ApplyAESUI(AbilityEffectType.Burn); 
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
     void ApplyPoison()
@@ -1047,138 +965,61 @@ public sealed class HeroStatRuntime : MonoBehaviour
         }
         heroControl.SpriteEffect.gameObject.SetActive(true);
     }
-    void ApplyBleeding()
+    
+    void ApplyAESUI(AbilityEffectType type)
     {
-        heroControl.SpriteEffect.color = new Color(
-            255f / 255f,
-            255f / 255f,
-            255f / 255f,
-            150f / 255f
-        );
-        ClearOldEffect(AbilityEffectType.Bleeding);
-        GameObject bleedingEffect = EffectManager.Instance.Spawn(
-            AbilityEffectType.Bleeding,
-            heroControl.SpriteEffect.transform
-        );
+        ClearOldEffectInHeroControl(type);
 
-        Transform effectTransform = bleedingEffect.transform;
-        Vector3 heroScale = heroControl.transform.localScale;
-        Vector3 effectScale = effectTransform.localScale;
-
-        effectTransform.localScale = new Vector3(
-            effectScale.x / heroScale.x,
-            effectScale.y / heroScale.y,
-            1
-        );
-        if (heroControl.HeroInfo.UIForBattleSO != null)
-        {
-            Vector3 effectPos = heroControl.HeroInfo.UIForBattleSO.GetPosition(AbilityEffectType.Bleeding);
-            effectTransform.localPosition = effectPos;
-        }
-        heroControl.SpriteEffect.gameObject.SetActive(true);
-    }
-
-    void ApplyStun()
-    {
-        ClearOldEffect(AbilityEffectType.Stun);
-
-        GameObject stunEffect = EffectManager.Instance.Spawn(
-            AbilityEffectType.Stun,
+        GameObject effect = EffectManager.Instance.Spawn(
+            type,
             heroControl.transform
         );
-        if (stunEffect != null)
+        if (effect != null)
         {
 
-            Transform effectTransform = stunEffect.transform;
+            Transform effectTransform = effect.transform;
             Vector3 heroScale = heroControl.transform.localScale;
             Vector3 effectScale = effectTransform.localScale;
 
-            effectTransform.localScale = new Vector3(
+            if(type == AbilityEffectType.Bleeding)
+            {
+                effectTransform.localScale = new Vector3(
+                Mathf.Abs(effectScale.x / heroScale.x),
+                effectScale.y / heroScale.y,
+                1
+                );
+            }
+            else
+            {
+                effectTransform.localScale = new Vector3(
                 effectScale.x / heroScale.x,
                 effectScale.y / heroScale.y,
                 1
-            );
+                );
+            }
+
             if (heroControl.HeroInfo.UIForBattleSO != null)
             {
-                Vector3 effectPos = heroControl.HeroInfo.UIForBattleSO.GetPosition(AbilityEffectType.Stun);
+                Vector3 effectPos = heroControl.HeroInfo.UIForBattleSO.GetPosition(type);
+                effectPos.z = -1.1f;
                 effectTransform.localPosition = effectPos;
             }
 
         }
     }
-   
+    
 
     public void ApplyUnleashChargeEffect(int damageUnleash)
     {
         if (HasAES(AbilityEffectType.Charge))
         {
-            ClearOldEffect(AbilityEffectType.Charge);
+            ClearOldEffectInHeroControl(AbilityEffectType.Charge);
             heroControl.HeroReceiveDamagee.ReceiveDamage(damageUnleash, DamageType.normalDamage, true, true);
         }
     }
 
-    void ApplyCharge()
-    {
-        ClearOldEffect(AbilityEffectType.Charge);
-
-        GameObject chargeEffect = EffectManager.Instance.Spawn(
-            AbilityEffectType.Charge,
-            heroControl.transform
-        );
-
-        if (chargeEffect != null)
-        {
-
-            Transform effectTransform = chargeEffect.transform;
-            Vector3 heroScale = heroControl.transform.localScale;
-            Vector3 effectScale = effectTransform.localScale;
-
-            effectTransform.localScale = new Vector3(
-                effectScale.x / heroScale.x,
-                effectScale.y / heroScale.y,
-                1
-            );
-
-            Vector3 effectPos = effectTransform.position;
-            effectTransform.localPosition = new Vector3(
-                0,
-                0.25f,
-                -0.1f
-            );
-        }
-    }
-
-    void ApplyParalyze()
-    {
-        ClearOldEffect(AbilityEffectType.Paralysis);
-
-        GameObject paralysisEffect = EffectManager.Instance.Spawn(
-            AbilityEffectType.Paralysis,
-            heroControl.transform
-        );
-
-        if (paralysisEffect != null)
-        {
-
-            Transform effectTransform = paralysisEffect.transform;
-            Vector3 heroScale = heroControl.transform.localScale;
-            Vector3 effectScale = effectTransform.localScale;
-
-            effectTransform.localScale = new Vector3(
-                effectScale.x / heroScale.x,
-                effectScale.y / heroScale.y,
-                1
-            );
-
-            Vector3 effectPos = paralysisEffect.transform.position;
-            effectTransform.localPosition = new Vector3(
-                0,
-                0.25f,
-                -0.1f
-            );
-        }
-    }
-
+    
+    
     public void ApplyEartEffect()
     {
         if (heroControl.SpriteRenderer.enabled)
@@ -1193,17 +1034,17 @@ public sealed class HeroStatRuntime : MonoBehaviour
 
     void CancelBurn()
     {
-        ClearOldEffect(AbilityEffectType.Burn);
+        ClearOldEffectInHeroControl(AbilityEffectType.Burn);
         heroControl.SpriteEffect.gameObject.SetActive(false);
     }
     void CancelPoison()
     {
-        ClearOldEffect(AbilityEffectType.Poison);
+        ClearOldEffectInHeroControl(AbilityEffectType.Poison);
         heroControl.SpriteEffect.gameObject.SetActive(false);
     }
     void CancelBleeding()
     {
-        ClearOldEffect(AbilityEffectType.Bleeding);
+        ClearOldEffectInHeroControl(AbilityEffectType.Bleeding);
         heroControl.SpriteEffect.gameObject.SetActive(false);
     }
 

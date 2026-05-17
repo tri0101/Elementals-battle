@@ -39,17 +39,7 @@ public class UI_HeroExpPlus : MonoBehaviour, IObserver
     private Color yellowColor = new Color(1f, 1f, 0f);
 
 
-    void Awake()
-    {
-        if (starRoot != null)
-            starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
-
-        if (rankRoot != null)
-            rankLayout = rankRoot.GetComponent<HorizontalLayoutGroup>();
-
-        
-    }
-
+    
  
     public void Setup(
         HeroViewData heroData
@@ -58,6 +48,11 @@ public class UI_HeroExpPlus : MonoBehaviour, IObserver
         data = heroData;
         if (icon != null)
             icon.sprite = data.info.iconFace;
+        if (starRoot != null)
+            starLayout = starRoot.GetComponent<HorizontalLayoutGroup>();
+
+        if (rankRoot != null)
+            rankLayout = rankRoot.GetComponent<HorizontalLayoutGroup>();
         UpdateStar(data.instance.star);
         UpdateRankVisual(data.instance.rank);
 
@@ -73,11 +68,16 @@ public class UI_HeroExpPlus : MonoBehaviour, IObserver
 
     void UpdateStar(int star)
     {
-        if (starRoot == null) return;
+        if (starLayout != null)
+        {
+            starLayout.spacing = (star <= 4) ? -70f : -25f;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(starRoot as RectTransform);
+        }
 
         for (int i = 0; i < starRoot.childCount; i++)
             starRoot.GetChild(i).gameObject.SetActive(i < star);
     }
+
 
     void UpdateRankVisual(int rank)
     {

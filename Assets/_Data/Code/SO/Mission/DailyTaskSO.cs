@@ -9,7 +9,8 @@ public enum TaskAction
     OpenBuyCoin,
     OpenShop,
     OpenStage,
-    OpenHeroSummon
+    OpenHeroSummon,
+    OpenMap
 }
 
 

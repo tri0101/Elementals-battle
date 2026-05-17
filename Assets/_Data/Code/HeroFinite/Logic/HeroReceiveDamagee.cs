@@ -176,7 +176,7 @@ public class HeroReceiveDamagee : MonoBehaviour, IObserver
                 );
         }
         heroControl.HeroEventt.RefreshHasShown();
-        heroControl.HeroEventt.FirstAttack = false;
+        heroControl.HeroEventt.RefreshFirstAttack();
     }
     public virtual void CallTakeHit(bool shouldTakeHit)
     {

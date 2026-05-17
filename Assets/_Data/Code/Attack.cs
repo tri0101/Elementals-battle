@@ -57,7 +57,12 @@ public class Attack : Subject
 
         HeroControl otherHeroControl =
             other.transform.parent.parent.GetComponent<HeroControl>();
-
+        var hero = other.GetComponent<HeroReceiveDamagee>();
+        if (!heroControl.enemyTarget.Contains(hero.transform.parent.parent))
+        {
+            Debug.Log("Not enemy target");
+            return;
+        }
         bool isFirstAttack = false;
 
         if (otherHeroControl != null)
@@ -105,7 +110,7 @@ public class Attack : Subject
 
         Debug.Log("Attack Damage: " + attackDamage);
 
-        var hero = other.GetComponent<HeroReceiveDamagee>();
+       
 
         if (hero == null)
         {
@@ -113,11 +118,7 @@ public class Attack : Subject
             return;
         }
 
-        if (!heroControl.enemyTarget.Contains(hero.transform.parent.parent))
-        {
-            Debug.Log("Not enemy target");
-            return;
-        }
+       
 
         float finalDamage =
             hero.ReceiveDamage(attackDamage, damageType, true, false, heroControl);

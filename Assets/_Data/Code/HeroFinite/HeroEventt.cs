@@ -569,13 +569,13 @@ public class HeroEventt : MonoBehaviour
         switch (heroId)
         {
             case 500:
-                health = 500; damage = 50; armor = 50;
+                health = 4500; damage = 3000; armor = 125;
                 break;
             case 501:
-                health = 350; damage = 75; armor = 25;
+                health = 4250; damage = 3210; armor = 75;
                 break;
             case 502:
-                health = 800; damage = 35; armor = 70;
+                health = 6000; damage = 2000; armor = 2000;
                 break;
             default:
                 return;
@@ -667,6 +667,9 @@ public class HeroEventt : MonoBehaviour
     {
         hasShown = false;
     }
+    public void RefreshFirstAttack()
+    {
+        firstAttack = false;
+    }
 
-  
 }

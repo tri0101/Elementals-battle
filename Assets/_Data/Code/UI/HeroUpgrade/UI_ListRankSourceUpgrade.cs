@@ -85,15 +85,30 @@ public class UI_ListRankSourceUpgrade : MonoBehaviour, IObserver
     }
     void RefreshAmountCoin()
     {
-        if(int.Parse(amountTextCoin.text) > PlayerInventory.Instance.GetItemQuantity(1))
+        if (amountTextCoin == null || upgradeButton == null)
+            return;
+
+        int requiredCoin = 0;
+        int.TryParse(amountTextCoin.text, out requiredCoin);
+
+        int ownedCoin = PlayerInventory.Instance.GetItemQuantity(1);
+        amountTextCoin.color = requiredCoin > ownedCoin ? Color.red : Color.white;
+
+        
+        bool can = false;
+        if (currentHero != null && rankConfig != null && rankConfig.rankRequirements != null)
         {
-            amountTextCoin.color = Color.red;
+            RankRequirement req = rankConfig.rankRequirements
+                .Find(r => r.rank == currentHero.instance.rank);
+
+            if (req != null)
+            {
+                var compiled = CompileRequirements(req, currentHero.info.role);
+                can = CanUpgrade(compiled);
+            }
         }
-        else
-        {
-            amountTextCoin.color = Color.white;
-            upgradeButton.interactable = true && !isProcessing;
-        }
+
+        upgradeButton.interactable = can && !isProcessing;
     }
     public void OnNotify(object data)
     {

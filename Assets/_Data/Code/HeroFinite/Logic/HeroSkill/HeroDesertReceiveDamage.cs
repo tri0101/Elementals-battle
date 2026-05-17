@@ -55,6 +55,8 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
             Debug.Log("Desert is waiting for attack to finish before counterattacking.");
             StartCoroutine(CoCounterAttackFlow(attacker));
         }
+        heroControl.HeroEventt.RefreshHasShown();
+        heroControl.HeroEventt.RefreshFirstAttack();
     }
 
     public override void CallTakeHit(bool shouldTakeHit)
@@ -86,7 +88,7 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
             yield break;
         }
         heroControl.IsFinished = true;
-        hasCallFrenzy = false;
+        
     }
 
     private IEnumerator CoCounterAttackFlow(HeroControl attacker)
@@ -106,9 +108,9 @@ public class HeroDesertReceiveDamage : HeroReceiveDamagee
     {
         heroControl.IsCrit = true;
         heroControl.HeroStatRuntime.skillChanceFinal = 1f;
-        heroControl.HeroStatRuntime.CritRate = 99f;
+        heroControl.HeroStatRuntime.CritRate = 50f;
         heroControl.HeroStatRuntime.CritDamage = 150f;
-        heroControl.HeroStatRuntime.Damage *= 2f;
+        heroControl.HeroStatRuntime.Damage *= 1.5f;
         heroControl.HeroStatRuntime.Armor *= 2f;
     }
 }
