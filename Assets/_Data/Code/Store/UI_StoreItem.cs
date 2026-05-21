@@ -44,6 +44,9 @@ public class UI_StoreItem : MonoBehaviour, IObserver
 
         RefreshCostText();
 
+        // NEW: restore sold state by shopItemId (not itemId)
+        isSold = ShopPurchaseState.Instance != null && ShopPurchaseState.Instance.IsSold(shopItemData.shopItemId);
+
         GameObject prefab =
             itemdata.type == ItemType.HeroShard
             ? (shardItemPrefabs ?? itemPrefabs)
@@ -59,11 +62,12 @@ public class UI_StoreItem : MonoBehaviour, IObserver
         if (ui != null)
             ui.Setup(itemdata);
 
-        if(isSold)
+        if (isSold)
         {
             SetSoldOut();
             return;
         }
+
         buttonBuy.onClick.RemoveAllListeners();
         buttonBuy.onClick.AddListener(() =>
         {
@@ -71,7 +75,6 @@ public class UI_StoreItem : MonoBehaviour, IObserver
                 transform.root.Find("PanelDetail").GetComponent<UI_PanelStoreDetail>();
 
             panel.SetUp(go, itemdata, shopItemData, iconCurrency.sprite, this);
-         
         });
     }
     public void SetSoldOut()

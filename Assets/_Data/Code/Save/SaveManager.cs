@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -13,6 +14,11 @@ public class HeroInstanceData
     public List<HeroInstance> heroes = new();
 }
 
+[System.Serializable]
+public class DailyTaskProgressData
+{
+    public List<DailyTaskProgress> dailyTaskProgress = new();
+}
 public class ProgressInstanceData
 {
     public PlayerProgress progress = new();
@@ -36,7 +42,17 @@ public class AccountSaveData
     public int playerLevel;
     public int playerExp;
 }
+[System.Serializable]
+public class ShopPurchaseStateSaveData
+{
+    public List<int> currentShopItemIds = new List<int>(16);
+    public List<int> soldShopItemIds = new List<int>(16);
+}
 
+public class TriaviaQuestionStateSaveData
+{
+    public List<TriviaQuestionProgress> triviaQuestionProgress = new();
+}
 public class SaveManager : MonoBehaviour, IObserver
 {
     public static SaveManager Instance;
@@ -47,6 +63,9 @@ public class SaveManager : MonoBehaviour, IObserver
     const string LIMITED_OFFER_SAVE_KEY = "LimitedOfferSaveData";
     const string GACHA_PITY_SAVE_KEY = "GachaPitySaveData";
     const string HERO_SELECTEDID_BANNER = "BannerHeroIdSaveData";
+    const string MISSON_SAVE_KEY = "MissonSaveData";
+    const string SHOP_PURCHASE_STATE_SAVE_KEY = "ShopPurchaseStateSaveData";
+    const string TRIVIA_QUESTION_STATE_SAVE_KEY = "TriviaQuestionStateSaveData";
     const string ACCOUNT_SAVE_KEY = "AccountSaveData";
     const string DEFAULT_PLAYER_NAME = "Abc123";
 
@@ -60,12 +79,15 @@ public class SaveManager : MonoBehaviour, IObserver
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+       
     }
 
     void Start()
     {
+        
         if (PlayerInventory.Instance != null)
             PlayerInventory.Instance.AddObserver(this);
+            
 
         if (HeroUpgradeService.Instance != null)
             HeroUpgradeService.Instance.AddObserver(this);
@@ -83,6 +105,13 @@ public class SaveManager : MonoBehaviour, IObserver
 
         if (AccountManager.Instance != null)
             AccountManager.Instance.AddObserver(this);
+        if(DailyTaskManager.Instance != null)
+            DailyTaskManager.Instance.AddObserver(this);
+         if(ShopPurchaseState.Instance != null)
+            ShopPurchaseState.Instance.AddObserver(this);
+         if(TriviaQuestionState.Instance != null)
+            TriviaQuestionState.Instance.AddObserver(this);
+
 
         LoadInventoryItems();
         LoadInventoryHeroes();
@@ -90,7 +119,34 @@ public class SaveManager : MonoBehaviour, IObserver
         LoadTokenExchange();
         LoadLimitedOffer();
         LoadGachaPity();
-        LoadAccount(); 
+        LoadMisson();
+        LoadShopPurchaseState();
+        LoadTriviaQuestionState();
+        LoadAccount();
+       
+    }
+    private void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus)
+            SaveAll();
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveAll();
+    }
+
+    private void SaveAll()
+    {
+        SaveInventory();
+        SaveCurrentProgress();
+        SaveTokenExchange();
+        SaveLimitedOffer();
+        SaveGachaPity();
+        SaveAccount();
+        SaveMisson();
+        SaveShopPurchaseState();
+        SaveTriviaQuestionState();
     }
 
     public void SaveInventory()
@@ -104,6 +160,14 @@ public class SaveManager : MonoBehaviour, IObserver
         SaveProgress();
     }
 
+    void SaveTriviaQuestionState()
+    {
+        TriaviaQuestionStateSaveData data = new TriaviaQuestionStateSaveData();
+        data.triviaQuestionProgress = new List<TriviaQuestionProgress>(TriviaQuestionState.Instance.GetListTriviaQuestion());
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(TRIVIA_QUESTION_STATE_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
     void SaveItem()
     {
         ItemInstanceData data = new ItemInstanceData();
@@ -112,6 +176,28 @@ public class SaveManager : MonoBehaviour, IObserver
         string json = JsonUtility.ToJson(data);
         PlayerPrefs.SetString(ITEMS_SAVE_KEY, json);
         PlayerPrefs.Save();
+    }
+    void SaveMisson()
+    {
+ 
+        DailyTaskProgressData data = new DailyTaskProgressData();
+        data.dailyTaskProgress = new List<DailyTaskProgress>(DailyTaskManager.Instance.GetDailyTaskProgress());
+
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(MISSON_SAVE_KEY, json);
+        PlayerPrefs.Save();
+    }
+    void SaveShopPurchaseState()
+    {
+        ShopPurchaseStateSaveData data = new ShopPurchaseStateSaveData
+        {
+            currentShopItemIds = new List<int>(ShopPurchaseState.Instance.GetCurrentShopItemIds()),
+            soldShopItemIds = new List<int>(ShopPurchaseState.Instance.GetSoldShopItemIdsCollection())
+        };
+        string json = JsonUtility.ToJson(data);
+        PlayerPrefs.SetString(SHOP_PURCHASE_STATE_SAVE_KEY, json);
+        PlayerPrefs.Save();
+        
     }
 
     void SaveHero()
@@ -207,7 +293,9 @@ public class SaveManager : MonoBehaviour, IObserver
         SaveTokenExchange();
         SaveLimitedOffer();
         SaveGachaPity();
-        SaveAccount(); 
+        SaveAccount();
+        SaveMisson();
+        SaveShopPurchaseState();
     }
 
     public void LoadInventoryItems()
@@ -248,7 +336,17 @@ public class SaveManager : MonoBehaviour, IObserver
 
         ProgressManager.Instance.SetProgress(data.progress);
     }
-
+    void LoadTriviaQuestionState()
+    {
+        if(!PlayerPrefs.HasKey(TRIVIA_QUESTION_STATE_SAVE_KEY))
+            return;
+        string json = PlayerPrefs.GetString(TRIVIA_QUESTION_STATE_SAVE_KEY);
+        TriaviaQuestionStateSaveData data = JsonUtility.FromJson<TriaviaQuestionStateSaveData>(json);
+        if (data == null)
+            return;
+        if (TriviaQuestionState.Instance != null)
+        TriviaQuestionState.Instance.SetListTriviaQuestion(data.triviaQuestionProgress);
+    }
     void LoadAccount() 
     {
         if (AccountManager.Instance == null)
@@ -330,6 +428,36 @@ public class SaveManager : MonoBehaviour, IObserver
             return -1;
         return PlayerPrefs.GetInt(HERO_SELECTEDID_BANNER);
 
+    }
+    void LoadMisson()
+    {
+ 
+
+        if (!PlayerPrefs.HasKey(MISSON_SAVE_KEY))
+            return;
+
+        string json = PlayerPrefs.GetString(MISSON_SAVE_KEY);
+        DailyTaskProgressData data = JsonUtility.FromJson<DailyTaskProgressData>(json);
+
+        if (data == null)
+            return;
+        DailyTaskManager.Instance.SetTasks(data.dailyTaskProgress);
+    }
+    void LoadShopPurchaseState()
+    {
+        if (!PlayerPrefs.HasKey(SHOP_PURCHASE_STATE_SAVE_KEY))
+            return;
+
+        string json = PlayerPrefs.GetString(SHOP_PURCHASE_STATE_SAVE_KEY);
+        ShopPurchaseStateSaveData data = JsonUtility.FromJson<ShopPurchaseStateSaveData>(json);
+
+        if (data == null)
+            return;
+
+        ShopPurchaseState.Instance.SetCurrentShopItemIds(data.currentShopItemIds);
+
+        ShopPurchaseState.Instance.ResetSoldOnly();
+        ShopPurchaseState.Instance.SetSoldShopItemIds(data.soldShopItemIds);
     }
 
 #if UNITY_EDITOR

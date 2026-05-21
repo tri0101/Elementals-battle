@@ -799,6 +799,7 @@ MonoBehaviour:
   chapterDatabase: {fileID: 11400000, guid: 8b572b87b17c6a848b57fd9c8f41a1c5, type: 2}
   fightSoulDatabase: {fileID: 11400000, guid: fc8fd3dc9c33d6b4bba759f799775e8a, type: 2}
   shopItemDatabase: {fileID: 11400000, guid: 779f9934d0070014bb5b072fcee26583, type: 2}
+  heroGrowthConfig: {fileID: 11400000, guid: b60d27722f477f64caf6d071614a7f55, type: 2}
 --- !u!4 &604357441
 Transform:
   m_ObjectHideFlags: 0
@@ -853,6 +854,50 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 793.62823, y: 468.2741, z: 1.8040272}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &609507353
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 609507355}
+  - component: {fileID: 609507354}
+  m_Layer: 0
+  m_Name: StoreManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &609507354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609507353}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa1013ef28f43434788fee0d432104ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &609507355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 609507353}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 884.0812, y: 492.87836, z: -1.9000804}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1996,6 +2041,54 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1598428716
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1598428718}
+  - component: {fileID: 1598428717}
+  m_Layer: 0
+  m_Name: TriviaQuestionState
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1598428717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1598428716}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5b75a468d43eb14f8f06f952037879a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  triviaProgressList: []
+  triviaRewardSOList:
+  - {fileID: 11400000, guid: 127349a7b0e5be14dadde388fe301035, type: 2}
+  - {fileID: 11400000, guid: 2aa78b94e89484f4591fadb34000953e, type: 2}
+--- !u!4 &1598428718
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1598428716}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1159.0222, y: 617.1051, z: -5.2983317}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3265,3 +3358,5 @@ SceneRoots:
   - {fileID: 604357441}
   - {fileID: 1991249530}
   - {fileID: 1906505127}
+  - {fileID: 609507355}
+  - {fileID: 1598428718}

@@ -7,6 +7,7 @@ public class UI_PanelChooseHero : MonoBehaviour
 {
     [SerializeField] private int currentStageId;
 
+    [Header("Refs")]
     [SerializeField] private HeroGrowthConfig growthConfig;
     [SerializeField] private Transform content;
     [SerializeField] private GameObject heroItemPrefab;
@@ -22,10 +23,31 @@ public class UI_PanelChooseHero : MonoBehaviour
     [SerializeField] private Button buttonTank;
     [SerializeField] private Button buttonSupport;
 
+    [Header("Sprites")]
+    [SerializeField] private Sprite selectedSprite;
+    [SerializeField] private Sprite normalSprite;
+
+    private Image imageAll;
+    private Image imageDPS;
+    private Image imageTank;
+    private Image imageSupport;
+
     private RoleHero? currentFilter = null;
 
     void Awake()
     {
+        imageAll = buttonAll.GetComponent<Image>();
+        imageDPS = buttonDPS.GetComponent<Image>();
+        imageTank = buttonTank.GetComponent<Image>();
+        imageSupport = buttonSupport.GetComponent<Image>();
+
+        buttonBack.onClick.RemoveAllListeners();
+        buttonNext.onClick.RemoveAllListeners();
+        buttonAll.onClick.RemoveAllListeners();
+        buttonDPS.onClick.RemoveAllListeners();
+        buttonTank.onClick.RemoveAllListeners();
+        buttonSupport.onClick.RemoveAllListeners();
+
         buttonBack.onClick.AddListener(OnClickBack);
         buttonNext.onClick.AddListener(OnClickNext);
 
@@ -37,7 +59,10 @@ public class UI_PanelChooseHero : MonoBehaviour
 
     void OnEnable()
     {
+        UpdateFilterButtons();
+
         LoadHeroes();
+
         RefreshPower();
     }
 
@@ -49,24 +74,57 @@ public class UI_PanelChooseHero : MonoBehaviour
     void OnClickFilter(RoleHero? role)
     {
         currentFilter = role;
+
+        UpdateFilterButtons();
+
         LoadHeroes();
+    }
+
+    void UpdateFilterButtons()
+    {
+        imageAll.sprite =
+            !currentFilter.HasValue
+            ? selectedSprite
+            : normalSprite;
+
+        imageDPS.sprite =
+            currentFilter == RoleHero.DPS
+            ? selectedSprite
+            : normalSprite;
+
+        imageTank.sprite =
+            currentFilter == RoleHero.Tank
+            ? selectedSprite
+            : normalSprite;
+
+        imageSupport.sprite =
+            currentFilter == RoleHero.Support
+            ? selectedSprite
+            : normalSprite;
     }
 
     public void LoadHeroes()
     {
-        
-        if (formationManager != null && formationManager.IsBusy)
+        if (formationManager != null &&
+            formationManager.IsBusy)
             return;
 
         Clear();
-        var heroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
+
+        var heroes =
+            PlayerInventory.Instance.GetHeroViewList(
+                DatabaseManager.Instance.HeroDatabase
+            );
 
         foreach (var hero in heroes)
         {
-            if (formationManager != null && formationManager.IsHeroInFormation(hero.instance.heroId))
+            if (formationManager != null &&
+                formationManager.IsHeroInFormation(
+                    hero.instance.heroId))
                 continue;
 
-            if (currentFilter.HasValue && hero.info.role != currentFilter.Value)
+            if (currentFilter.HasValue &&
+                hero.info.role != currentFilter.Value)
                 continue;
 
             CreateItem(hero);
@@ -76,29 +134,48 @@ public class UI_PanelChooseHero : MonoBehaviour
     public void RefreshPower()
     {
         float totalPower = 0f;
-        var allHeroes = PlayerInventory.Instance.GetHeroViewList(DatabaseManager.Instance.HeroDatabase);
+
+        var allHeroes =
+            PlayerInventory.Instance.GetHeroViewList(
+                DatabaseManager.Instance.HeroDatabase
+            );
 
         int[] idsInFormation = FormationManager.Load();
 
         foreach (int id in idsInFormation)
         {
-            if (id == -1) continue;
+            if (id == -1)
+                continue;
 
-            var heroData = allHeroes.Find(h => h.instance.heroId == id);
+            var heroData =
+                allHeroes.Find(
+                    h => h.instance.heroId == id
+                );
+
             if (heroData != null)
             {
-                var stat = HeroStatCalculator.Calculate(heroData.info, heroData.instance, growthConfig);
+                var stat =
+                    HeroStatCalculator.Calculate(
+                        heroData.info,
+                        heroData.instance,
+                        growthConfig
+                    );
+
                 totalPower += stat.power;
             }
         }
 
-        powerText.text = $"{Mathf.RoundToInt(totalPower)}";
+        powerText.text =
+            $"{Mathf.RoundToInt(totalPower)}";
     }
 
     void CreateItem(HeroViewData data)
     {
-        var go = Instantiate(heroItemPrefab, content);
-        go.GetComponent<UI_HeroChooseItem>().Setup(data, formationManager, this);
+        var go =
+            Instantiate(heroItemPrefab, content);
+
+        go.GetComponent<UI_HeroChooseItem>()
+            .Setup(data, formationManager, this);
     }
 
     void Clear()
@@ -112,30 +189,38 @@ public class UI_PanelChooseHero : MonoBehaviour
     void OnClickBack()
     {
         gameObject.SetActive(false);
+
         panelDetailStage.gameObject.SetActive(true);
+
         panelDetailStage.SetStageInt(currentStageId);
     }
 
     void OnClickNext()
     {
-        PlayerInventory.Instance.ConsumeItem(3, StageContext.selectedStage.staminaCost);
-        gameObject.SetActive(false);
-        //StageContext.selectedStage = panelDetailStage.CurrentStage;
-        GameManager.Instance.LoadAdditiveScene(SceneId.BattleScene);
-        
-        GameManager.Instance.UnLoadAdditiveScene(SceneId.MapScene);
+        PlayerInventory.Instance.ConsumeItem(
+            3,
+            StageContext.selectedStage.staminaCost
+        );
 
+        gameObject.SetActive(false);
+
+        GameManager.Instance.LoadAdditiveScene(
+            SceneId.BattleScene
+        );
+
+        GameManager.Instance.UnLoadAdditiveScene(
+            SceneId.MapScene
+        );
     }
+
     private void Update()
     {
-        if(formationManager.CheckEmpty())
-        {
-            buttonNext.interactable = false;
-        }
-        else
-        {
-            buttonNext.interactable = true;
-        }
+        buttonNext.interactable =
+            !formationManager.CheckEmpty();
     }
-    public void SetStageInt(int stageId) => currentStageId = stageId;
+
+    public void SetStageInt(int stageId)
+    {
+        currentStageId = stageId;
+    }
 }

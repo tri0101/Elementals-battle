@@ -8,6 +8,7 @@ public enum CurrencyType
 [System.Serializable]
 public class ShopItemData
 {
+    public int shopItemId;
     public int itemId;
     public int amount;
     public CurrencyType currencyType;

@@ -16,12 +16,21 @@ public class DailyTaskManager : Subject
 
     [SerializeField] private DailyTaskSO DailyTaskSO;
 
-    [SerializeField] private  List<DailyTaskProgress> tasks = new List<DailyTaskProgress>();
+    [SerializeField] private List<DailyTaskProgress> tasks = new List<DailyTaskProgress>();
 
+    private bool needReset = false;
+    public bool NeedReset => needReset;
     private void Awake()
     {
+        
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    
     }
 
     private void Start()
@@ -37,17 +46,21 @@ public class DailyTaskManager : Subject
             return;
         }
 
-        // Không init lại nếu đã có data (sau này bạn load save vào tasks thì không bị overwrite)
-        if (tasks.Count > 0)
+        // luôn merge để bù task thiếu (kể cả khi đã có save)
+        MergeMissingTasksFromSO();
+    }
+
+    private void MergeMissingTasksFromSO()
+    {
+        if (DailyTaskSO == null || DailyTaskSO.dailyTasks == null)
             return;
+
+        bool changed = false;
 
         foreach (var t in DailyTaskSO.dailyTasks)
         {
             if (t == null) continue;
-
-            // tránh duplicate id
-            if (tasks.Exists(x => x.taskID == t.taskID))
-                continue;
+            if (tasks.Exists(x => x.taskID == t.taskID)) continue;
 
             tasks.Add(new DailyTaskProgress
             {
@@ -56,7 +69,24 @@ public class DailyTaskManager : Subject
                 isCompleted = false,
                 isClaimed = false
             });
+
+            changed = true;
         }
+
+        if (changed)
+            NotifyObservers();
+    }
+
+    public void SetTasks(List<DailyTaskProgress> savedTasks)
+    {
+        tasks.Clear();
+
+        if (savedTasks != null)
+            tasks.AddRange(savedTasks);
+
+        //bù task mới từ SO
+        MergeMissingTasksFromSO();
+
     }
 
     public DailyTask GetDailyTask(int taskId)
@@ -68,6 +98,7 @@ public class DailyTaskManager : Subject
     {
         return tasks;
     }
+
     public void SetClaim(int takskID)
     {
         DailyTaskProgress taskProgress = tasks.Find(x => x.taskID == takskID);
@@ -75,8 +106,10 @@ public class DailyTaskManager : Subject
         {
             taskProgress.isClaimed = true;
             NotifyObservers(takskID);
+            NotifyObservers();
         }
     }
+
     public void AddProgress(int taskID, int amount)
     {
         if (amount <= 0) return;
@@ -85,9 +118,10 @@ public class DailyTaskManager : Subject
         if (task == null) return;
 
         DailyTaskProgress taskProgress = tasks.Find(x => x.taskID == taskID);
+        if (taskProgress != null && taskProgress.isCompleted) return;
+
         if (taskProgress == null)
         {
-            
             taskProgress = new DailyTaskProgress
             {
                 taskID = taskID,
@@ -98,19 +132,16 @@ public class DailyTaskManager : Subject
             tasks.Add(taskProgress);
         }
 
-        //if (taskProgress.isClaimed) return;
-
         taskProgress.progress += amount;
 
         if (taskProgress.progress >= task.target)
-        {
-            //taskProgress.progress = task.target;
             taskProgress.isCompleted = true;
-        }
+
         NotifyObservers(taskID);
+        NotifyObservers();
     }
 
-    void ResetDailyTasks()
+    public void ResetDailyTasks()
     {
         foreach (var task in tasks)
         {
@@ -118,5 +149,19 @@ public class DailyTaskManager : Subject
             task.isCompleted = false;
             task.isClaimed = false;
         }
+
+        NotifyObservers();
+    }
+    private void Update()
+    {
+        if(TimeManager.Instance.ShouldResetDailyMission())
+        {
+            ResetDailyTasks();
+            needReset = true;
+        }
+    }
+    public void SetReset(bool value)
+    {
+        needReset = value;
     }
 }

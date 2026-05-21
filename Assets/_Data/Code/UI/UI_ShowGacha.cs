@@ -114,6 +114,7 @@ public class UI_ShowGacha : MonoBehaviour
 
     IEnumerator ShowResult(GachaResult result)
     {
+        DailyTaskManager.Instance.AddProgress(5, 1);
         RefreshTextGuaranteed();
         if (result.type == GachaResultType.Hero)
         {

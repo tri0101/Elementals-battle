@@ -4961,6 +4961,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   content: {fileID: 31478391}
   heroItemPrefab: {fileID: 766095083686343310, guid: 04829cf586fe25f4493cf78db39256ca, type: 3}
+  growthConfig: {fileID: 11400000, guid: b60d27722f477f64caf6d071614a7f55, type: 2}
 --- !u!1 &738850158
 GameObject:
   m_ObjectHideFlags: 0
@@ -14873,11 +14874,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonUpgrade: {fileID: 3462533320235541071}
   icon: {fileID: 6639936889351651395}
+  backEmpty: {fileID: 0}
   levelText: {fileID: 807519900518584583}
   nameHero: {fileID: 3135896372619789247}
   starRoot: {fileID: 399604817104086867}
   rankRoot: {fileID: 5994898753399873390}
   frameRank: {fileID: 7903928156842054015}
+  buttonUpgradeText: {fileID: 0}
 --- !u!114 &2678978222579596893
 MonoBehaviour:
   m_ObjectHideFlags: 0

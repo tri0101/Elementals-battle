@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NUnit.Framework.Internal.Commands;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class UI_PanelMission : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button claimAllButton;
     private bool shouldCheck = false;
+
     public void OnClickPanel()
     {
         ClearItem();
@@ -19,26 +21,53 @@ public class UI_PanelMission : MonoBehaviour
         panelDailyTask.gameObject.SetActive(true);
         claimAllButton.onClick.RemoveAllListeners();
         claimAllButton.onClick.AddListener(() => ClaimAll());
-        
     }
+
     void Start()
     {
         closeButton.onClick.RemoveAllListeners();
         closeButton.onClick.AddListener(() => panelDailyTask.gameObject.SetActive(false));
     }
+
     void SetUp()
     {
-
         var tasks = DailyTaskManager.Instance.GetDailyTaskProgress();
-        foreach (var task in tasks)
+        if (tasks == null || tasks.Count == 0)
+            return;
+
+        // Filter not-claimed
+        var list = new List<DailyTaskProgress>(tasks.Count);
+        for (int i = 0; i < tasks.Count; i++)
         {
-            var taskData = DailyTaskManager.Instance.GetDailyTask(task.taskID);
-            if (task.isClaimed) continue;
-            var item = Instantiate(taskItem, content);
-            item.GetComponent<UI_MissonTask>().SetUp(taskData, task, this);
+            var t = tasks[i];
+            if (t == null) continue;
+            if (t.isClaimed) continue;
+            list.Add(t);
         }
-       
+
+        // Sort: completed first, then by taskID asc
+        list.Sort((a, b) =>
+        {
+            int aCompleted = a.isCompleted ? 0 : 1;
+            int bCompleted = b.isCompleted ? 0 : 1;
+
+            int byCompleted = aCompleted.CompareTo(bCompleted);
+            if (byCompleted != 0) return byCompleted;
+
+            return a.taskID.CompareTo(b.taskID);
+        });
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            var taskProgress = list[i];
+            var taskData = DailyTaskManager.Instance.GetDailyTask(taskProgress.taskID);
+            if (taskData == null) continue;
+
+            var item = Instantiate(taskItem, content);
+            item.GetComponent<UI_MissonTask>().SetUp(taskData, taskProgress, this);
+        }
     }
+
     public void RefreshClaimAllButton()
     {
         if (claimAllButton == null || content == null)
@@ -61,6 +90,7 @@ public class UI_PanelMission : MonoBehaviour
 
         claimAllButton.interactable = hasAnyClaimable;
     }
+
     void ClaimAll()
     {
         int totalExp = 0;
@@ -89,6 +119,7 @@ public class UI_PanelMission : MonoBehaviour
 
         RefreshClaimAllButton();
     }
+
     void ClearItem()
     {
         foreach (Transform child in content)
@@ -96,8 +127,16 @@ public class UI_PanelMission : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
+
     void Update()
     {
+        if(DailyTaskManager.Instance.NeedReset)
+        {
+            ClearItem();
+            SetUp();
+            RefreshClaimAllButton();
+            DailyTaskManager.Instance.SetReset(false);
+        }
         if (shouldCheck && !UI_LevelUp.Instance.CheckActivePanelLevelUp())
         {
             shouldCheck = false;
@@ -107,6 +146,7 @@ public class UI_PanelMission : MonoBehaviour
             RefreshClaimAllButton();
         }
     }
+
     void DestroyAllChild()
     {
         foreach (Transform child in content)
@@ -116,4 +156,5 @@ public class UI_PanelMission : MonoBehaviour
             Destroy(child.gameObject);
         }
     }
+    
 }

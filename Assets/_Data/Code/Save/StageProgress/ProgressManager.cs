@@ -77,27 +77,31 @@ public class ProgressManager : Subject
         NotifyObservers();
     }
 
-    //public void Save()
-    //{
-    //    string json = JsonUtility.ToJson(progress);
-    //    PlayerPrefs.SetString("player_progress", json);
-    //}
-
-    //public void Load()
-    //{
-    //    if (PlayerPrefs.HasKey("player_progress"))
-    //    {
-    //        string json = PlayerPrefs.GetString("player_progress");
-    //        progress = JsonUtility.FromJson<PlayerProgress>(json);
-    //    }
-    //    else
-    //    {
-    //        progress = new PlayerProgress();
-    //    }
-    //}
+ 
     public int  GetChapter()
     {
         return progress.currentChapter;
+    }
+    public int GetMaxChapterReached()
+    {
+        if (progress == null)
+            return 1;
+
+        int maxStageId = progress.currentStageId;
+
+        if (progress.stageResults != null && progress.stageResults.Count > 0)
+        {
+            for (int i = 0; i < progress.stageResults.Count; i++)
+            {
+                var r = progress.stageResults[i];
+                if (r == null) continue;
+                if (r.stageId > maxStageId)
+                    maxStageId = r.stageId;
+            }
+        }
+
+        int maxChapter = (maxStageId - 1) / 10 + 1;
+        return Mathf.Max(1, maxChapter);
     }
     public int GetStage()
     {

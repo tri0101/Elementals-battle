@@ -5,34 +5,53 @@ public class TimeManager : MonoBehaviour
 {
     public static TimeManager Instance;
 
+    // Public fields kept for compatibility with existing code
     public DateTime resetManaLastTime;
     public DateTime resetShopLastTime;
 
-    void Awake()
+    // New: daily mission reset (00:00)
+    public DateTime resetDailyMissionLastTime;
+
+    private const string MANA_TIME_KEY = "ManaTime";
+    private const string SHOP_TIME_KEY = "ShopTime";
+    private const string DAILY_MISSION_TIME_KEY = "DailyMissionTime";
+
+    private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            LoadTime();
-        }
-        else
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        LoadTime();
     }
 
-    void LoadTime()
+    private void LoadTime()
     {
-        if (PlayerPrefs.HasKey("ManaTime"))
-            resetManaLastTime = DateTime.Parse(PlayerPrefs.GetString("ManaTime"));
-        else
-            resetManaLastTime = DateTime.Now;
+        resetManaLastTime = LoadDateTimeOrNow(MANA_TIME_KEY);
+        resetShopLastTime = LoadDateTimeOrNow(SHOP_TIME_KEY);
+        resetDailyMissionLastTime = LoadDateTimeOrNow(DAILY_MISSION_TIME_KEY);
+    }
 
-        if (PlayerPrefs.HasKey("ShopTime"))
-            resetShopLastTime = DateTime.Parse(PlayerPrefs.GetString("ShopTime"));
-        else
-            resetShopLastTime = DateTime.Now;
+    private static DateTime LoadDateTimeOrNow(string key)
+    {
+        if (!PlayerPrefs.HasKey(key))
+            return DateTime.Now;
+
+        string value = PlayerPrefs.GetString(key);
+        if (DateTime.TryParse(value, out DateTime dt))
+            return dt;
+
+        return DateTime.Now;
+    }
+
+    private static void SaveDateTime(string key, DateTime dt)
+    {
+        PlayerPrefs.SetString(key, dt.ToString());
     }
 
     // =========================
@@ -47,13 +66,12 @@ public class TimeManager : MonoBehaviour
     public void AdvanceManaTime(int seconds)
     {
         resetManaLastTime = resetManaLastTime.AddSeconds(seconds);
-
-        PlayerPrefs.SetString("ManaTime", resetManaLastTime.ToString());
+        SaveDateTime(MANA_TIME_KEY, resetManaLastTime);
         PlayerPrefs.Save();
     }
 
     // =========================
-    // SHOP RESET
+    // SHOP RESET (0/6/12/18h)
     // =========================
 
     public DateTime GetLastResetTime()
@@ -79,20 +97,40 @@ public class TimeManager : MonoBehaviour
         if (resetShopLastTime < lastReset)
         {
             resetShopLastTime = DateTime.Now;
-
-            PlayerPrefs.SetString("ShopTime", resetShopLastTime.ToString());
+            SaveDateTime(SHOP_TIME_KEY, resetShopLastTime);
             PlayerPrefs.Save();
-
             return true;
         }
 
         return false;
     }
 
-    void OnApplicationQuit()
+    // =========================
+    // DAILY MISSION RESET (00:00)
+    // =========================
+
+    public bool ShouldResetDailyMission()
     {
-        PlayerPrefs.SetString("ManaTime", resetManaLastTime.ToString());
-        PlayerPrefs.SetString("ShopTime", resetShopLastTime.ToString());
+        DateTime now = DateTime.Now;
+        DateTime todayMidnight = new DateTime(now.Year, now.Month, now.Day, 0, 0, 0);
+
+        // If last mission reset happened before today's midnight => crossed day boundary
+        if (resetDailyMissionLastTime < todayMidnight)
+        {
+            resetDailyMissionLastTime = now;
+            SaveDateTime(DAILY_MISSION_TIME_KEY, resetDailyMissionLastTime);
+            PlayerPrefs.Save();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void OnApplicationQuit()
+    {
+        SaveDateTime(MANA_TIME_KEY, resetManaLastTime);
+        SaveDateTime(SHOP_TIME_KEY, resetShopLastTime);
+        SaveDateTime(DAILY_MISSION_TIME_KEY, resetDailyMissionLastTime);
         PlayerPrefs.Save();
     }
 
@@ -100,7 +138,7 @@ public class TimeManager : MonoBehaviour
     // TEST EDITOR
     // =========================
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
@@ -112,6 +150,12 @@ public class TimeManager : MonoBehaviour
         {
             resetShopLastTime = DateTime.Now.AddHours(-7);
             Debug.Log("Test shop vượt reset");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            resetDailyMissionLastTime = DateTime.Now.AddDays(-1);
+            Debug.Log("Test daily mission vượt 0h");
         }
     }
 }

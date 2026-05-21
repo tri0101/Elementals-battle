@@ -51,7 +51,7 @@ public class UI_PanelStoreDetail : MonoBehaviour
         TextMeshProUGUI text = buyButton.GetComponentInChildren<TextMeshProUGUI>();
         text.text = "BUY";
         buyButton.onClick.RemoveAllListeners();
-        buyButton.onClick.AddListener(()=> OnClickBuy(itemData.id, shopItemData.amount, uI_StoreItem, itemData));
+        buyButton.onClick.AddListener(() => OnClickBuy(shopItemData.shopItemId, itemData.id, shopItemData.amount, uI_StoreItem, itemData));
         gameObject.SetActive(true);
     }
 
@@ -59,18 +59,26 @@ public class UI_PanelStoreDetail : MonoBehaviour
     {
         return PlayerInventory.Instance.GetItemQuantity(itemId);
     }
-    void OnClickBuy(int itemId ,int amount, UI_StoreItem uI_StoreItem, ItemData itemData)
+    void OnClickBuy(int shopItemId, int itemId, int amount, UI_StoreItem uI_StoreItem, ItemData itemData)
     {
         PlayerInventory.Instance.AddItem(itemId, amount);
+
+        // NEW: mark sold by shopItemId
+        if (ShopPurchaseState.Instance != null)
+            ShopPurchaseState.Instance.MarkSold(shopItemId);
+
         buyButton.interactable = false;
         TextMeshProUGUI text = buyButton.GetComponentInChildren<TextMeshProUGUI>();
         text.text = "SOLD";
         uI_StoreItem.SetSoldOut();
         transform.gameObject.SetActive(false);
+
+        DailyTaskManager.Instance.AddProgress(6, 1);
+
         UI_CanvasReward.Instance.ClearOldItems();
         UI_CanvasReward.Instance.SetUp(itemData, amount);
         UI_CanvasReward.Instance.gameObject.SetActive(true);
         UI_CanvasReward.Instance.ShowReward();
     }
-    
+
 }

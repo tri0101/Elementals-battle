@@ -79,7 +79,7 @@ public class UI_StarUpgrade : MonoBehaviour, IObserver
         bool hasCoin = PlayerInventory.Instance != null &&
                        PlayerInventory.Instance.GetItemQuantity(CoinItemId) >= nextStarData.goldRequired;
 
-        if(!hasCoin)
+        
         if (upgradeButton != null)
             upgradeButton.interactable = hasShard ;
     }

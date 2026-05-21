@@ -199,7 +199,13 @@ public class PlayerInventory :  Subject
         item.quantity -= amount;
         if (itemId == 1 || itemId == 2 || itemId == 3 || itemId == 5 || itemId == 6 || itemId == 7)
         {
+            if(itemId == 3)
+            {
+                DailyTaskManager.Instance.AddProgress(3, amount);
+
+            }
             NotifyObservers((itemId, item.quantity));
+
         }
         NotifyObservers();
         return true;

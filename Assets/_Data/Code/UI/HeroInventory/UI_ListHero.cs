@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class UI_ListHero : MonoBehaviour
 {
     [SerializeField] private Transform content;
     [SerializeField] private GameObject heroItemPrefab;
+
 
     void OnEnable()
     {
@@ -21,40 +23,54 @@ public class UI_ListHero : MonoBehaviour
         var db = DatabaseManager.Instance.HeroDatabase;
         if (db.heroes == null) return;
 
-        // Pass 1: heroes already owned
-        foreach (var info in db.heroes)
+        var owned = new List<(HeroViewData view, float power)>(64);
+        var locked = new List<HeroInfo>(64);
+
+        for (int i = 0; i < db.heroes.Count; i++)
         {
+            var info = db.heroes[i];
             if (info == null) continue;
             if (info.ID >= 500) continue;
 
             var instance = PlayerInventory.Instance.FindHeroInstance(info.ID);
-            if (instance == null) continue;
-
-            var go = Instantiate(heroItemPrefab, content);
-            var ui = go.GetComponent<UI_HeroItem>();
-            if (ui == null) continue;
-
-            ui.Setup(new HeroViewData
+            if (instance == null)
             {
-                info = info,
-                instance = instance
-            });
+                locked.Add(info);
+                continue;
+            }
+
+            float power = 0f;
+            if (DatabaseManager.Instance.HeroGrowthConfig != null)
+                power = HeroStatCalculator.Calculate(info, instance, DatabaseManager.Instance.HeroGrowthConfig).power;
+
+            owned.Add((new HeroViewData { info = info, instance = instance }, power));
         }
 
-        // Pass 2: heroes not owned (locked) -> push to end
-        foreach (var info in db.heroes)
+        owned.Sort((a, b) =>
         {
-            if (info == null) continue;
-            if (info.ID >= 500) continue;
+            int byPower = b.power.CompareTo(a.power);
+            if (byPower != 0) return byPower;
+            return a.view.info.ID.CompareTo(b.view.info.ID);
+        });
 
-            var instance = PlayerInventory.Instance.FindHeroInstance(info.ID);
-            if (instance != null) continue;
+        locked.Sort((a, b) => a.ID.CompareTo(b.ID));
 
+        for (int i = 0; i < owned.Count; i++)
+        {
             var go = Instantiate(heroItemPrefab, content);
             var ui = go.GetComponent<UI_HeroItem>();
             if (ui == null) continue;
 
-            ui.SetupLocked(info);
+            ui.Setup(owned[i].view);
+        }
+
+        for (int i = 0; i < locked.Count; i++)
+        {
+            var go = Instantiate(heroItemPrefab, content);
+            var ui = go.GetComponent<UI_HeroItem>();
+            if (ui == null) continue;
+
+            ui.SetupLocked(locked[i]);
         }
     }
 

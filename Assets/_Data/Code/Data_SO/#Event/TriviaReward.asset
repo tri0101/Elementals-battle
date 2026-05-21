@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc7af30b92fb311498fa20f5b7e67cc1, type: 3}
+  m_Name: TriviaReward
+  m_EditorClassIdentifier: 
+  triviaType: 0
+  triviaList:
+  - rewardID: 1
+    rewardItems:
+    - itemId: 1
+      amount: 200000
+    questionsToClaim: 3
+  - rewardID: 2
+    rewardItems:
+    - itemId: 2
+      amount: 100
+    questionsToClaim: 6
+  - rewardID: 3
+    rewardItems:
+    - itemId: 100
+      amount: 150
+    questionsToClaim: 9
+  - rewardID: 4
+    rewardItems:
+    - itemId: 5
+      amount: 100
+    questionsToClaim: 12
+  - rewardID: 5
+    rewardItems:
+    - itemId: 4
+      amount: 10
+    questionsToClaim: 15
+  - rewardID: 6
+    rewardItems:
+    - itemId: 7
+      amount: 10
+    questionsToClaim: 18

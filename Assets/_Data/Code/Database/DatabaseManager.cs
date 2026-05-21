@@ -17,6 +17,8 @@ public class DatabaseManager : MonoBehaviour
     [SerializeField] private ShopItemDatabase shopItemDatabase;
     public ShopItemDatabase ShopItemDatabase => shopItemDatabase;
 
+    [SerializeField] HeroGrowthConfig heroGrowthConfig;
+    public HeroGrowthConfig HeroGrowthConfig => heroGrowthConfig;
     private void Awake()
     {
         if (Instance != null && Instance != this)

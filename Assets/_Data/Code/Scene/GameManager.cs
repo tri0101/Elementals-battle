@@ -14,7 +14,7 @@ public enum SceneId
     StoreScene = 8,
     TeamScene = 9,
     RestaurantScene = 10,   
-
+    EventScene = 11,
 }
 
 public class GameManager : MonoBehaviour

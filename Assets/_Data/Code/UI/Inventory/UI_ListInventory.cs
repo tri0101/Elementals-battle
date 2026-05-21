@@ -13,7 +13,8 @@ public class UI_ListInventory : MonoBehaviour
     [SerializeField] private Button buttonOther;
     [Header("Ref")]
     [SerializeField] private UI_InventoryInfo inventoryInfo;
-
+    [SerializeField] private Sprite selectedSprite;
+    [SerializeField] private Sprite noneSprite;
     enum FilterType { All, Resource, Shard, Other }
     FilterType currentFilter = FilterType.All;
 
@@ -66,9 +67,16 @@ public class UI_ListInventory : MonoBehaviour
     void SetFilter(FilterType filter)
     {
         currentFilter = filter;
+        UpdateButtonSprites();
         LoadItems();
     }
-
+    void UpdateButtonSprites()
+    {
+        buttonAll.image.sprite = currentFilter == FilterType.All ? selectedSprite : noneSprite;
+        buttonResource.image.sprite = currentFilter == FilterType.Resource ? selectedSprite : noneSprite;
+        buttonShard.image.sprite = currentFilter == FilterType.Shard ? selectedSprite : noneSprite;
+        buttonOther.image.sprite = currentFilter == FilterType.Other ? selectedSprite : noneSprite;
+    }
     void LoadItems()
     {
         Clear();

@@ -32,7 +32,10 @@ public class UI_MissonTask : MonoBehaviour, IObserver
         if (DailyTaskManager.Instance != null)
             DailyTaskManager.Instance.RemoveObbserver(this);
     }
-
+    private void OnDestroy()
+    {
+        DailyTaskManager.Instance?.RemoveObbserver(this);
+    }
     void RefreshUI()
     {
         progressText.text = $"{taskProgress.progress}/{task.target}";
@@ -100,7 +103,73 @@ public class UI_MissonTask : MonoBehaviour, IObserver
         {
             buttonGo.onClick.AddListener(() => LoadMapScene());
         }
-        
+        else if(task.action == TaskAction.OpenHeroUpgrade)
+        {
+            buttonGo.onClick.AddListener(() => LoadHeroUpgradeScene());
+        }
+        else if(task.action == TaskAction.OpenHeroSummon)
+        {
+            buttonGo.onClick.AddListener(() => LoadHeroSummonScene());
+        }
+        else if(task.action == TaskAction.OpenShop)
+        {
+            buttonGo.onClick.AddListener(() => LoadOpenShop());
+        }
+
+    }
+    void LoadOpenShop()
+    {
+        GameManager.Instance.LoadAdditiveScene((SceneId)8);
+        GameManager.Instance.UnLoadAdditiveScene((SceneId)0);
+    }
+    void LoadHeroUpgradeScene()
+    {
+        // Pick owned hero with highest power
+        if (PlayerInventory.Instance == null ||
+            DatabaseManager.Instance == null ||
+            DatabaseManager.Instance.HeroDatabase == null ||
+            DatabaseManager.Instance.HeroGrowthConfig == null)
+        {
+            Debug.LogWarning("[UI_MissonTask] Missing dependencies (Inventory/Database/GrowthConfig).");
+            return;
+        }
+
+        HeroViewData best = null;
+        float bestPower = float.NegativeInfinity;
+
+        var heroes = PlayerInventory.Instance.Heroes;
+        for (int i = 0; i < heroes.Count; i++)
+        {
+            var inst = heroes[i];
+            if (inst == null) continue;
+
+            var info = DatabaseManager.Instance.HeroDatabase.GetHero(inst.heroId);
+            if (info == null) continue;
+
+            float power = HeroStatCalculator.Calculate(info, inst, DatabaseManager.Instance.HeroGrowthConfig).power;
+            if (power > bestPower)
+            {
+                bestPower = power;
+                best = new HeroViewData { info = info, instance = inst };
+            }
+        }
+
+        if (best == null)
+        {
+            Debug.LogWarning("[UI_MissonTask] No owned hero found to open upgrade.");
+            return;
+        }
+
+        HeroUpgradeContext.SelectedHero = best;
+        HeroUpgradeContext.Mode = HeroUpgradeContext.OpenMode.Upgrade;
+
+        GameManager.Instance.LoadAdditiveScene(SceneId.HeroUpgradeScene);
+        GameManager.Instance.UnLoadAdditiveScene((SceneId)0);
+    }
+    void LoadHeroSummonScene()
+    {
+        GameManager.Instance.LoadAdditiveScene((SceneId)1);
+        GameManager.Instance.UnLoadAdditiveScene((SceneId)0);
     }
     void LoadMapScene()
     {

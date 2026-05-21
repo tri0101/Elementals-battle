@@ -244,6 +244,7 @@ public class UI_ListSkillUpgrade : MonoBehaviour
         else
         {
             PlayerInventory.Instance.ConsumeItem(1, cost);
+            DailyTaskManager.Instance.AddProgress(4, 1);
         }
         HeroUpgradeService.Instance.UpSkill(hero, type);
 
